@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.7.3
+
+- Fixed function-argument duplication bug which occurs after Help is consulted.
+
 0.7.2
 
 - Fixed a drawing bug to do with long lines and screens wider than 80
