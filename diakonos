@@ -3297,7 +3297,7 @@ class Diakonos
             
             # Does the "file" utility exist?
             if FileTest.exist? "/usr/bin/file" and filename != nil
-                file_type = `/usr/bin/file #{filename}`
+                file_type = `/usr/bin/file -L #{filename}`
                 if file_type !~ /text/
                     choice = getChoice(
                         "#{filename} doesn't appear readable.  Open anyway?",
