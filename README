@@ -1,0 +1,11 @@
+Diakonos
+--------
+
+Place the diakonos.conf file in /usr/local/share/diakonos/ or ~/.diakonos/.
+The diakonos program can be run from anywhere, such as ~/bin/ or /usr/local/bin/.
+
+Send comments, feedback and tech support requests to irc.freenode.net:6667#geobot
+or http://purepistos.net/forums .
+
+Pistos
+http://purepistos.net/diakonos
