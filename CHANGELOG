@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.7.4
+
+- Prevent attempts to open non-files.
+
 0.7.3
 
 - Fixed function-argument duplication bug which occurs after Help is consulted.

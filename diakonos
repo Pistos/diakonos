@@ -2056,8 +2056,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
-    VERSION = "0.7.3"
-    LAST_MODIFIED = "December 20, 2004"
+    VERSION = "0.7.4"
+    LAST_MODIFIED = "February 17, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3449,6 +3449,9 @@ class Diakonos
             buffer_key = @untitled_id
             @untitled_id += 1
         end
+        
+        # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
+        do_open &&= FileTest.file?( filename )
 
         if do_open
             # Is file readable?
@@ -3458,7 +3461,7 @@ class Diakonos
                 file_type = `/usr/bin/file -L #{filename}`
                 if file_type !~ /text/ and file_type !~ /empty$/
                     choice = getChoice(
-                        "#{filename} doesn't appear readable.  Open anyway?",
+                        "#{filename} does not appear to be readable.  Try to open it anyway?",
                         [ CHOICE_YES, CHOICE_NO ],
                         CHOICE_NO
                     )
