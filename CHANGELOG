@@ -25,3 +25,5 @@ goToTagUnderCursor, popTag.
 curses display.
 - Malformed regular expressions given for regexp searching are now searched
 for as literal text, instead of just throwing an error.
+- Keychains that have no assignment are now shown in full on the interaction
+line.

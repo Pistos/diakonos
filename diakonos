@@ -2467,7 +2467,7 @@ class Diakonos
                 keychain_pressed.each do |key|
                     chain_str << key.keyString + " "
                 end
-                setILine chain_str
+                setILine chain_str + "..."
                 getKeystroke( keychain_pressed )
             else
                 if context == nil
@@ -2482,13 +2482,16 @@ class Diakonos
                 end
 
                 if not found
-                    keystr = c.keyString
-                    if keystr != nil
-                        setILine "Key: " + keystr
-                        log ">" + keystr
-                    else
-                        setILine "Key code: #{c}"
-                    end
+                    iline = ""
+                    #if keychain_pressed != nil and keychain_pressed.length > 0
+                        chain_str = ""
+                        keychain_pressed.each do |key|
+                            chain_str << ( key.keyString or "(keycode #{c})" ) + " "
+                        end
+                        iline << chain_str
+                    #end
+                    
+                    setILine "Nothing assigned to #{iline}"
                 end
             end
         end
