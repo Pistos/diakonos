@@ -9,6 +9,7 @@ columns.
 - Added a suspend command, to suspend the Diakonos process/job to background
 and return to the shell.
 - Altered drawing code a bit re: the shell and suspend commands.
+- Fixed "view.jump.* 0" bug.
 
 0.7.1
 
