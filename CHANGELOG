@@ -3,14 +3,25 @@ Diakonos Changelog
 
 0.6.13
 
-- Fixed the bug where searching backwards from the start of a line will cause the search to start from the end of the line, instead of from the end of the next line up.
-- Added a "seek" command, which is a sort of silent find.  Used for implementing features like go to next word and previous word.
-- Adjusted default conf file to include alternate ANSI sequences for function keys.
-- Context line truncation now omits the more proximate code, not the less proximate code.
+- Fixed the bug where searching backwards from the start of a line will cause
+the search to start from the end of the line, instead of from the end of the
+next line up.
+- Added a "seek" command, which is a sort of silent find.  Used for
+implementing features like go to next word and previous word.
+- Adjusted default conf file to include alternate ANSI sequences for function
+keys.
+- Context line truncation now omits the more proximate code, not the less
+proximate code.
 
 0.7.0
 
-- Adjusted buffer management system so that, internally, absolute file paths are used.
-- Added limited preliminary ctags support.  Commands: goToTag, goToTagUnderCursor, popTag.
+- Adjusted buffer management system so that, internally, absolute file paths
+are used.
+- Added limited (line-number-based) ctags support.  Commands: goToTag,
+goToTagUnderCursor, popTag.
 - Fixed revert command bug.
 - Added an evaluate command, which lets you run any Diakonos command.
+- Fixed display bug where Diakonos errors (Ruby exceptions) would ruin the
+curses display.
+- Malformed regular expressions given for regexp searching are now searched
+for as literal text, instead of just throwing an error.

@@ -1929,7 +1929,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
     VERSION = "0.7.0"
-    LAST_MODIFIED = "August 19, 2004"
+    LAST_MODIFIED = "August 20, 2004"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2692,9 +2692,7 @@ class Diakonos
     end
     
     def showException( e )
-            puts "showException"
         begin
-            puts "showException2"
             File.open( @diakonos_home + "/diakonos.err", "w" ) do |f|
                 f.puts "Diakonos Error:"
                 f.puts
@@ -3052,7 +3050,12 @@ class Diakonos
 
         if regexp_source != nil
             direction = dir_str.toDirection
-            regexp = Regexp.new( regexp_source )
+            begin
+                regexp = Regexp.new( regexp_source )
+            rescue Exception => e
+                setILine "Searching literally; #{e.message}"
+                regexp = Regexp.new( Regexp.escape( regexp_source ) )
+            end
             @current_buffer.find( regexp, direction )
         end
     end
