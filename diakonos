@@ -1027,48 +1027,46 @@ class Buffer
         else
             @name = name
             @read_only = false
-            if @name != nil
-                if @name != ""
-                    proceed = true
-                    
-                    if prompt_overwrite and FileTest.exists? @name
-                        proceed = false
-                        choice = @diakonos.getChoice(
-                            "Overwrite existing '#{@name}'?",
-                            [ Diakonos::CHOICE_YES, Diakonos::CHOICE_NO ],
-                            Diakonos::CHOICE_NO
-                        )
-                        case choice
-                            when Diakonos::CHOICE_YES
-                                proceed = true
-                            when Diakonos::CHOICE_NO
-                                proceed = false
-                        end
-                    end
-                    
-                    if proceed
-                        File.open( @name, "w" ) do |f|
-                            @lines[ 0..-2 ].each do |line|
-                                f.puts line
-                            end
-                            if @lines[ -1 ] != ""
-                                # No final newline character
-                                f.print @lines[ -1 ]
-                                f.print "\n" if @settings[ "eof_newline" ]
-                            end
-                        end
-
-                        if @name == @diakonos.diakonos_conf
-                            @diakonos.loadConfiguration
-                        end
-
-                        @modified = false
-                        display
-                        @diakonos.updateStatusLine
+            if @name == nil
+                @diakonos.saveFileAs
+            else
+                proceed = true
+                
+                if prompt_overwrite and FileTest.exists? @name
+                    proceed = false
+                    choice = @diakonos.getChoice(
+                        "Overwrite existing '#{@name}'?",
+                        [ Diakonos::CHOICE_YES, Diakonos::CHOICE_NO ],
+                        Diakonos::CHOICE_NO
+                    )
+                    case choice
+                        when Diakonos::CHOICE_YES
+                            proceed = true
+                        when Diakonos::CHOICE_NO
+                            proceed = false
                     end
                 end
-            else
-                @diakonos.saveFileAs
+                
+                if proceed
+                    File.open( @name, "w" ) do |f|
+                        @lines[ 0..-2 ].each do |line|
+                            f.puts line
+                        end
+                        if @lines[ -1 ] != ""
+                            # No final newline character
+                            f.print @lines[ -1 ]
+                            f.print "\n" if @settings[ "eof_newline" ]
+                        end
+                    end
+                        
+                    if @name == @diakonos.diakonos_conf
+                        @diakonos.loadConfiguration
+                    end
+                    
+                    @modified = false
+                    display
+                    @diakonos.updateStatusLine
+                end
             end
         end
     end
@@ -1981,7 +1979,7 @@ class Buffer
                 word = match_text
                 break
             end
-            $diakonos.debugLog "'#{last_match}' [#{last_match.begin( 0 )}, #{last_match.end( 0 )}] #{@last_col} outside"
+            #$diakonos.debugLog "'#{last_match}' [#{last_match.begin( 0 )}, #{last_match.end( 0 )}] #{@last_col} outside"
         end
         
         return word
@@ -2008,7 +2006,7 @@ class Curses::Window
         x2 = curx + string.length
         
         if y < 0 or x < 0 or y > lines or x > cols or x2 < 0 or x2 > cols
-            $diakonos.debugLog "addstr: x = #{x}, x2 = #{x2}, y = #{y}, lines = #{lines}, cols = #{cols}, string = '#{string}'"
+            #$diakonos.debugLog "addstr: x = #{x}, x2 = #{x2}, y = #{y}, lines = #{lines}, cols = #{cols}, string = '#{string}'"
             begin
                 raise Exception
             rescue Exception => e
@@ -2054,7 +2052,7 @@ end
 
 class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
-    attr_reader :indenters, :unindenters, :clipboard, :current_buffer
+    attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.4"
     LAST_MODIFIED = "February 17, 2005"
@@ -2182,6 +2180,7 @@ class Diakonos
             Dir.mkdir @diakonos_home
         end
         @debug = File.new( "#{@diakonos_home}/debug.log", "w" )
+        @list_filename = @diakonos_home + "/listing.txt"
 
         @files = Array.new
         @read_only_files = Array.new
@@ -2999,6 +2998,17 @@ class Diakonos
         @win_interaction.refresh
     end
     
+    def openListBuffer
+        if @previous_to_list_buffer == nil
+            @previous_to_list_buffer = @current_buffer
+        end
+        @list_buffer = openFile( @list_filename )
+    end
+    
+    def closeListBuffer
+        closeFile( @list_buffer )
+    end
+    
     # --------------------------------------------------------------------
     #
     # Program Functions
@@ -3035,7 +3045,9 @@ class Diakonos
     end
 
     # Returns the choice the user made, or nil if the user was not prompted to choose.
-    def closeFile( to_all = nil, buffer = @current_buffer )
+    def closeFile( buffer = @current_buffer, to_all = nil )
+        return nil if buffer == nil
+        
         choice = nil
         if @buffers.has_value?( buffer )
             do_closure = true
@@ -3068,22 +3080,30 @@ class Diakonos
             end
 
             if do_closure
-                switching = false
+                del_buffer_key = nil
                 previous_buffer = nil
                 to_switch_to = nil
-                del_buffer_key = nil
+                if @previous_to_list_buffer == nil
+                    switching = false
 
-                @buffers.each do |buffer_key,buf|
-                    if switching
-                        to_switch_to = buf
-                        break
+                    # Search the buffer hash for the buffer we want to delete,
+                    # and mark the one we will switch to after deletion.
+                    @buffers.each do |buffer_key,buf|
+                        if switching
+                            to_switch_to = buf
+                            break
+                        end
+                        if buf == buffer
+                            del_buffer_key = buffer_key
+                            switching = true
+                            next
+                        end
+                        previous_buffer = buf
                     end
-                    if buf == buffer
-                        del_buffer_key = buffer_key
-                        switching = true
-                        next
-                    end
-                    previous_buffer = buf
+                else
+                    del_buffer_key = @list_filename
+                    to_switch_to = @previous_to_list_buffer
+                    @previous_to_list_buffer = nil
                 end
 
                 if to_switch_to != nil
@@ -3431,9 +3451,11 @@ class Diakonos
         buffer = nil
         if filename != nil
             buffer_key = filename
-            if (not force_revert) and
+            if(
+                (not force_revert) and
                     ( (existing_buffer = @buffers[ filename ]) != nil ) and
                     ( filename !~ /\.diakonos/ )
+            )
                 switchTo( existing_buffer )
                 choice = getChoice(
                     "Revert to on-disk version of #{existing_buffer.nice_name}?",
@@ -3445,14 +3467,14 @@ class Diakonos
                         do_open = false
                 end
             end
+            
+            # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
+            do_open &&= FileTest.file?( filename )
         else
             buffer_key = @untitled_id
             @untitled_id += 1
         end
         
-        # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
-        do_open &&= FileTest.file?( filename )
-
         if do_open
             # Is file readable?
             
@@ -3564,7 +3586,7 @@ class Diakonos
         @buffers.each_value do |buffer|
             if buffer.modified
                 switchTo buffer
-                closure_choice = closeFile( to_all, buffer )
+                closure_choice = closeFile( buffer, to_all )
                 case closure_choice
                     when CHOICE_CANCEL
                         @quitting = false
@@ -3784,7 +3806,7 @@ class Diakonos::Readline
         @diakonos = diakonos
         @initial_text = initial_text
         @completion_array = completion_array
-        @list_filename = @diakonos.diakonos_home + "/listing.txt"
+        @list_filename = @diakonos.list_filename
     end
 
     # Returns nil on cancel.
@@ -3845,13 +3867,11 @@ class Diakonos::Readline
                 when KEY_PPAGE
                     @diakonos.pageUp
                 else
-                    $diakonos.log "Other input: #{c}"
+                    @diakonos.log "Other input: #{c}"
             end
         end
         
-        if @list_buffer != nil
-            $diakonos.closeFile( nil, @list_buffer )
-        end
+        @diakonos.closeListBuffer
 
         return @input
     end
@@ -3925,7 +3945,7 @@ class Diakonos::Readline
                 f.puts "(no matches)"
             end
         end
-        @list_buffer = @diakonos.openFile( @list_filename )
+        @diakonos.openListBuffer
         @window.setpos( @window.cury, @window.curx )
     end
 end

@@ -4,6 +4,8 @@ Diakonos Changelog
 0.7.4
 
 - Prevent attempts to open non-files.
+- Fixed saveFileAs bug which saved the wrong file when tab-completion was used
+in the filename prompt.
 
 0.7.3
 
