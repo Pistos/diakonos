@@ -24,6 +24,7 @@
 require "curses"
 require "open3"
 require "thread"
+require "English"
 
 include Curses
 
@@ -2139,6 +2140,7 @@ class Diakonos
         "setReadOnly",
         "shell",
         "showClips",
+        "suspend",
         "switchToBufferNumber",
         "switchToNextBuffer",
         "switchToPreviousBuffer",
@@ -2960,6 +2962,13 @@ class Diakonos
         end
     end
     
+    def refreshAll
+        @win_main.refresh
+        @win_context.refresh
+        @win_status.refresh
+        @win_interaction.refresh
+    end
+    
     # --------------------------------------------------------------------
     #
     # Program Functions
@@ -3644,7 +3653,8 @@ class Diakonos
             File.open( result_file , "w" ) do |f|
                 f.puts command
                 f.puts
-                def_prog_mode
+                #def_prog_mode
+                close_screen
 
                 #f.puts `#{command}`
 
@@ -3664,11 +3674,22 @@ class Diakonos
                 t1.join
                 t2.join
 
-                reset_prog_mode
-                refresh
+                #reset_prog_mode
+                init_screen
+                refreshAll
             end
             openFile result_file
         end
+    end
+    
+    # Send the Diakonos job to background, as if with Ctrl-Z
+    def suspend
+        #def_prog_mode
+        close_screen
+        Process.kill( "SIGSTOP", $PID )
+        #reset_prog_mode
+        init_screen
+        refreshAll
     end
 
     def toggleMacroRecording( name = nil )
