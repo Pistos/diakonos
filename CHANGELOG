@@ -8,6 +8,7 @@ Diakonos Changelog
 - Fixed popTag bug where popping from an empty stack caused an exception.
 - The seek command now no longer (incorrectly) cancels text selection.
 - Drawing bugs fixed (to do with illegal off-screen drawing).
+- Added the ability to use \n in searches, to match across lines.
 
 0.7.0
 
