@@ -5,6 +5,10 @@ Diakonos Changelog
 
 - Fixed a drawing bug to do with long lines and screens wider than 80
 columns.
+- Added support for specifying any numeric keycode as a keystroke.
+- Added a suspend command, to suspend the Diakonos process/job to background
+and return to the shell.
+- Altered drawing code a bit re: the shell and suspend commands.
 
 0.7.1
 
