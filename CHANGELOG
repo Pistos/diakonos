@@ -15,6 +15,8 @@ curses display.
 for as literal text, instead of just throwing an error.
 - Keychains that have no assignment are now shown in full on the interaction
 line.
+- Error message for some caught exceptions now includes a listing of probable
+causes.
 
 0.6.13
 

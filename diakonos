@@ -1929,7 +1929,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
     VERSION = "0.7.0"
-    LAST_MODIFIED = "August 20, 2004"
+    LAST_MODIFIED = "August 23, 2004"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2694,13 +2694,20 @@ class Diakonos
         return retval
     end
     
-    def showException( e )
+    def showException( e, probable_causes = [ "Unknown" ] )
         begin
             File.open( @diakonos_home + "/diakonos.err", "w" ) do |f|
                 f.puts "Diakonos Error:"
                 f.puts
                 f.puts e.message
                 f.puts
+                f.puts "Probable Causes:"
+                f.puts
+                probable_causes.each do |pc|
+                    f.puts pc
+                end
+                f.puts
+                f.puts "----------------"
                 f.puts e.backtrace
             end
             openFile( @diakonos_home + "/diakonos.err" )
@@ -3036,7 +3043,15 @@ class Diakonos
             begin
                 eval code
             rescue Exception => e
-                showException e
+                showException(
+                    e,
+                    [
+                        "The code given to evaluate has a syntax error.",
+                        "The code given to evaluate refers to a Diakonos command which does not exist, or is misspelled.",
+                        "The code given to evaluate refers to a Diakonos command with missing arguments.",
+                        "The code given to evaluate refers to a variable or method which does not exist.",
+                    ]
+                )
             end
         end
     end
@@ -3223,7 +3238,16 @@ class Diakonos
                 begin
                     load( f )
                 rescue Exception => e
-                    showException e
+                    showException(
+                        e,
+                        [
+                            "The filename given does not exist.",
+                            "The filename given is not accessible or readable.",
+                            "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursorBOL instead of $diakonos.cursorBOL",
+                            "The loaded script has syntax errors.",
+                            "The loaded script references objects or object members which do not exist."
+                        ]
+                    )
                 end
                 setILine "Loaded script '#{name}'."
             end
