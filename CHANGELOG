@@ -4,6 +4,8 @@ Diakonos Changelog
 0.7.3
 
 - Fixed function-argument duplication bug which occurs after Help is consulted.
+- Updated default conf file to include CSS and modifications to "conf" format
+and the ruby format.
 
 0.7.2
 
