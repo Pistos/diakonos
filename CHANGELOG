@@ -6,6 +6,10 @@ Diakonos Changelog
 - Fixed function-argument duplication bug which occurs after Help is consulted.
 - Updated default conf file to include CSS and modifications to "conf" format
 and the ruby format.
+- Added display debug logging.
+- Fixed off-screen drawing bug.
+- Fixed on-startup drawing bug.
+
 
 0.7.2
 
