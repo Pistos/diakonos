@@ -5,6 +5,9 @@ Diakonos Changelog
 
 - The openFile command now uses /usr/bin/file (if available) to check if the
   file is readable (text), prompting to confirm open if it isn't.
+- Fixed popTag bug where popping from an empty stack caused an exception.
+- The seek command now no longer (incorrectly) cancels text selection.
+- Drawing bugs fixed (to do with illegal off-screen drawing).
 
 0.7.0
 

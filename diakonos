@@ -666,7 +666,7 @@ class Buffer
                         linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
                     end
                     
-                    @win_main.addstr linestr
+                    @win_main.addstr_ linestr
                 end
         
                 @win_main.setpos( @last_screen_y , @last_screen_x )
@@ -785,16 +785,20 @@ class Buffer
 
     # Prints text to the screen, truncating where necessary.
     # Returns nil if the string is completely off-screen.
+    # write_cursor_col is buffer-relative, not screen-relative
     def truncateOffScreen( string, write_cursor_col )
         retval = string
+        
+        # Truncate based on left edge of display area
         if write_cursor_col < @left_column
             retval = retval[ (@left_column - write_cursor_col)..-1 ]
-            write_cursor_col = 0
+            write_cursor_col = @left_column
         end
 
         if retval != nil
+            # Truncate based on right edge of display area
             if write_cursor_col + retval.length > @left_column + cols - 1
-                retval = retval[ 0...cols ]
+                retval = retval[ 0...( @left_column + cols - write_cursor_col ) ]
             end
         end
         return retval
@@ -812,7 +816,7 @@ class Buffer
                 @win_main.attrset text_mark.formatting
                 if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
                     @win_main.setpos( cury, curx )
-                    @win_main.addstr string
+                    @win_main.addstr_ string
                 elsif row == text_mark.start_row and row == text_mark.end_row
                     expanded_col = tabExpandedColumn( text_mark.start_col, row )
                     if expanded_col < @left_column + cols
@@ -820,7 +824,7 @@ class Buffer
                         right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
                         if left < right
                             @win_main.setpos( cury, curx + left )
-                            @win_main.addstr string[ left...right ]
+                            @win_main.addstr_ string[ left...right ]
                         end
                     end
                 elsif row == text_mark.start_row
@@ -828,12 +832,12 @@ class Buffer
                     if expanded_col < @left_column + cols
                         left = [ expanded_col - @left_column, 0 ].max
                         @win_main.setpos( cury, curx + left )
-                        @win_main.addstr string[ left..-1 ]
+                        @win_main.addstr_ string[ left..-1 ]
                     end
                 elsif row == text_mark.end_row
                     right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
                     @win_main.setpos( cury, curx )
-                    @win_main.addstr string[ 0...right ]
+                    @win_main.addstr_ string[ 0...right ]
                 else
                     # This row not in selection.
                 end
@@ -846,9 +850,13 @@ class Buffer
         return if string == nil
 
         @win_main.attrset formatting
-        @win_main.addstr string
+        @win_main.addstr_ string
     end
 
+    # This method assumes that the cursor has been setup already at
+    # the left-most column of the correct on-screen row.
+    # It merely unintelligently prints the characters on the current curses line,
+    # refusing to print characters of the in-buffer line which are offscreen.
     def printLine( line )
         i = 0
         substr = nil
@@ -925,7 +933,12 @@ class Buffer
     def printPaddingFrom( col )
         return if not @pen_down
 
-        remainder = @left_column + cols - col
+        if col < @left_column
+            remainder = 80
+        else
+            remainder = @left_column + cols - col
+        end
+        
         if remainder > 0
             printString( " " * remainder )
         end
@@ -1701,15 +1714,11 @@ class Buffer
         end
         
         if found_text != nil
-            removeSelection( DONT_DISPLAY )
+            #removeSelection( DONT_DISPLAY )
             @last_found_row = found_row
             @last_found_col = found_col
-            #if @settings[ "found_cursor_start" ]
-                cursorTo( found_row, found_col )
-            #else
-                #cursorTo( found_row, found_col + found_text.length )
-            #end
-            @changing_selection = false
+            cursorTo( found_row, found_col )
+            #@changing_selection = false
             
             display
         end
@@ -1891,6 +1900,24 @@ class Curses::Window
         $diakonos.debugLog "setpos: x > cols (#{x})" if x > cols
         setpos( y, x )
     end
+    
+    def addstr_( string )
+        x = curx
+        y = cury
+        x2 = curx + string.length
+        
+        if y < 0 or x < 0 or y > lines or x > cols or x2 < 0 or x2 > cols
+            $diakonos.debugLog "addstr: x = #{x}, x2 = #{x2}, y = #{y}, lines = #{lines}, cols = #{cols}, string = '#{string}'"
+            begin
+                raise Exception
+            rescue Exception => e
+                $diakonos.debugLog e.backtrace[ 1 ]
+                $diakonos.debugLog e.backtrace[ 2 ]
+            end
+        end
+        
+        addstr( string )
+    end
 end
 
 class Clipboard
@@ -1929,7 +1956,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
     VERSION = "0.7.1"
-    LAST_MODIFIED = "August 25, 2004"
+    LAST_MODIFIED = "August 27, 2004"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3387,10 +3414,14 @@ class Diakonos
     
     def popTag
         tag = @tag_stack.pop
-        if not switchTo( @buffers[ tag[ 0 ] ] )
-            openFile( tag[ 0 ] )
+        if tag != nil
+            if not switchTo( @buffers[ tag[ 0 ] ] )
+                openFile( tag[ 0 ] )
+            end
+            @current_buffer.cursorTo( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
+        else
+            setILine "Tag stack empty."
         end
-        @current_buffer.cursorTo( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
     end
 
     def quit
