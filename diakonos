@@ -978,7 +978,7 @@ class Buffer
         return if not @pen_down
 
         if col < @left_column
-            remainder = 80
+            remainder = cols
         else
             remainder = @left_column + cols - col
         end
@@ -2029,8 +2029,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
-    VERSION = "0.7.1"
-    LAST_MODIFIED = "August 30, 2004"
+    VERSION = "0.7.2"
+    LAST_MODIFIED = "October 10, 2004"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
