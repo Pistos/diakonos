@@ -2491,28 +2491,31 @@ class Diakonos
     end
 
     def start
+        num_opened = 0
         if @files.length == 0 and @read_only_files.length == 0
-            openFile
+            num_opened += 1 if openFile
         else
             @files.each do |file|
-                openFile file
+                num_opened += 1 if openFile file
             end
             @read_only_files.each do |file|
-                openFile( file, Buffer::READ_ONLY )
+                num_opened += 1 if openFile( file, Buffer::READ_ONLY )
             end
         end
-
-        switchToBufferNumber 1
         
-        updateStatusLine
-        updateContextLine
-        @win_main.setpos( @y, @x )
-        # Main keyboard loop.
-        while not @quitting
-            getKeystroke
-            @win_main.refresh
+        if num_opened > 0
+            switchToBufferNumber 1
+            
+            updateStatusLine
+            updateContextLine
+            @win_main.setpos( @y, @x )
+            # Main keyboard loop.
+            while not @quitting
+                getKeystroke
+                @win_main.refresh
+            end
+            @debug.close
         end
-        @debug.close
     end
 
     # context is an array of characters (bytes) which are keystrokes previously
@@ -3412,7 +3415,7 @@ class Diakonos
             # Does the "file" utility exist?
             if FileTest.exist?( "/usr/bin/file" ) and filename != nil and FileTest.exist?( filename )
                 file_type = `/usr/bin/file -L #{filename}`
-                if file_type !~ /text/
+                if file_type !~ /text/ and file_type !~ /empty$/
                     choice = getChoice(
                         "#{filename} doesn't appear readable.  Open anyway?",
                         [ CHOICE_YES, CHOICE_NO ],
