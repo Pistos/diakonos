@@ -9,7 +9,7 @@ and the ruby format.
 - Added display debug logging.
 - Fixed off-screen drawing bug.
 - Fixed on-startup drawing bug.
-
+- Minor conf file additions and changes, including PHP and PL/pgSQL support.
 
 0.7.2
 
