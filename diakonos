@@ -134,6 +134,8 @@ class String
                 retval = [ Diakonos::ESCAPE, $1[ 0 ] ]
             when /^ctrl\+alt\+(.)$/, /^alt\+ctrl\+(.)$/
                 retval = [ Diakonos::ESCAPE, self.downcase[ -1 ] - 96 ]
+            when /^keycode(\d+)$/
+                retval = $1.to_i
             when /^.$/
                 retval = self[ 0 ]
         end
