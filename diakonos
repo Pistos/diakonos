@@ -2055,7 +2055,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.4"
-    LAST_MODIFIED = "February 17, 2005"
+    LAST_MODIFIED = "February 21, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2793,6 +2793,7 @@ class Diakonos
         end
     end
 
+    # completion_array is the array of strings that tab completion can use
     def getUserInput( prompt, initial_text = "", completion_array = nil )
         if @playing_macro
             retval = @macro_input_history.shift
@@ -3468,8 +3469,10 @@ class Diakonos
                 end
             end
             
-            # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
-            do_open &&= FileTest.file?( filename )
+            if FileTest.exist?( filename )
+                # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
+                do_open &&= FileTest.file?( filename )
+            end
         else
             buffer_key = @untitled_id
             @untitled_id += 1
@@ -3801,6 +3804,7 @@ end
 
 class Diakonos::Readline
 
+    # completion_array is the array of strings that tab completion can use
     def initialize( diakonos, window, initial_text = "", completion_array = nil )
         @window = window
         @diakonos = diakonos
@@ -3907,7 +3911,7 @@ class Diakonos::Readline
             File.open( @list_filename, "w" ) do |f|
                 f.puts "(unique)"
             end
-            if @completion_array != nil and FileTest.directory? @input
+            if @completion_array == nil and FileTest.directory?( @input )
                 @input << "/"
                 cursorWriteInput
                 completeInput

@@ -6,6 +6,8 @@ Diakonos Changelog
 - Prevent attempts to open non-files.
 - Fixed saveFileAs bug which saved the wrong file when tab-completion was used
 in the filename prompt.
+- Fixed bug in tab completion: Directories are now completed properly and their
+contents are listed.
 
 0.7.3
 
