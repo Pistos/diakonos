@@ -1928,8 +1928,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
-    VERSION = "0.7.0"
-    LAST_MODIFIED = "August 23, 2004"
+    VERSION = "0.7.1"
+    LAST_MODIFIED = "August 25, 2004"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3293,9 +3293,30 @@ class Diakonos
         end
 
         if do_open
-            buffer = Buffer.new( self, filename, read_only )
-            @buffers[ buffer_key ] = buffer
-            switchTo( buffer )
+            # Is file readable?
+            
+            # Does the "file" utility exist?
+            if FileTest.exist? "/usr/bin/file" and filename != nil
+                file_type = `/usr/bin/file #{filename}`
+                if file_type !~ /text/
+                    choice = getChoice(
+                        "#{filename} doesn't appear readable.  Open anyway?",
+                        [ CHOICE_YES, CHOICE_NO ],
+                        CHOICE_NO
+                    )
+                    case choice
+                        when CHOICE_NO
+                            do_open = false
+                    end
+                    
+                end
+            end
+            
+            if do_open
+                buffer = Buffer.new( self, filename, read_only )
+                @buffers[ buffer_key ] = buffer
+                switchTo( buffer )
+            end
         end
         
         return buffer
