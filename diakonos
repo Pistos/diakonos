@@ -1466,7 +1466,7 @@ class Buffer
         elsif selection.start_row == selection.end_row
             text = [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
         else
-            text = @lines[ selection.start_row ][ selection.end_col..-1 ].to_a +
+            text = @lines[ selection.start_row ][ selection.start_col..-1 ].to_a +
                 ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
                 @lines[ selection.end_row ][ 0...selection.end_col ].to_a
         end
@@ -2033,7 +2033,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
     VERSION = "0.7.2"
-    LAST_MODIFIED = "November 25, 2004"
+    LAST_MODIFIED = "December 16, 2004"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
