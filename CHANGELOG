@@ -1,6 +1,11 @@
 Diakonos Changelog
 ------------------
 
+0.7.5
+
+- Fixed bug which stopped Diakonos from completing refresh operations when
+the context line is disabled.
+
 0.7.4
 
 - Prevent attempts to open non-files.

@@ -2054,8 +2054,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
-    VERSION = "0.7.4"
-    LAST_MODIFIED = "February 21, 2005"
+    VERSION = "0.7.5"
+    LAST_MODIFIED = "March 30, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2994,7 +2994,9 @@ class Diakonos
     
     def refreshAll
         @win_main.refresh
-        @win_context.refresh
+        if @win_context != nil
+            @win_context.refresh
+        end
         @win_status.refresh
         @win_interaction.refresh
     end
