@@ -10,6 +10,8 @@ columns.
 and return to the shell.
 - Altered drawing code a bit re: the shell and suspend commands.
 - Fixed "view.jump.* 0" bug.
+- Fixed copy/cut bug for selections starting or ending in columns besides
+the left-most column.
 
 0.7.1
 
