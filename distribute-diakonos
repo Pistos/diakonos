@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+if ARGV[ 0 ] == "eric"
+    puts "to rzeric1..."
+    puts `scp /home/alex/svn/diakonos/trunk/diakonos root@192.168.2.112:/usr/local/bin`
+    puts `scp /home/alex/.diakonos/diakonos.conf root@192.168.2.112:/usr/local/share/diakonos`
+    puts "to rzeric2..."
+    puts `scp /home/alex/svn/diakonos/trunk/diakonos root@192.168.2.115:/usr/local/bin`
+    puts `scp /home/alex/.diakonos/diakonos.conf root@192.168.2.115:/usr/local/share/diakonos`
+elsif ARGV[ 0 ] == "home"
+    puts "to rome..."
+    puts `scp /home/alex/svn/diakonos/trunk/diakonos root@rome:/usr/local/bin`
+    puts `scp /home/alex/.diakonos/diakonos.conf root@rome:/usr/local/share/diakonos`
+else
+    puts "to 192.168.2.243..."
+    puts `scp /home/alex/svn/diakonos/trunk/diakonos root@192.168.2.243:/usr/raidzone`
+    puts `scp /home/alex/.diakonos/diakonos.conf root@192.168.2.243:/root/.diakonos`
+    #puts "to interhact.net..."
+    #puts `scp /home/alex/svn/diakonos/trunk/diakonos pistos@interhact.net:/home/pistos/bin`
+    #puts `scp /home/alex/.diakonos/diakonos.conf pistos@interhact.net:/home/pistos/.diakonos`
+    #puts `ssh pistos@interhact.net 'cksum /home/pistos/bin/diakonos > /home/pistos/public_html/diakonos.sum'`
+    puts "to purepistos.net..."
+    puts `scp /home/alex/svn/diakonos/trunk/diakonos pistos@purepistos.net:/home/pistos/bin`
+    puts `scp /home/alex/svn/diakonos/trunk/CHANGELOG pistos@purepistos.net:/home/pistos/www/diakonos`
+    puts `scp /home/alex/.diakonos/diakonos.conf pistos@purepistos.net:/home/pistos/.diakonos`
+end
