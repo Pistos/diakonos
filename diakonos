@@ -2032,8 +2032,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer
 
-    VERSION = "0.7.2"
-    LAST_MODIFIED = "December 16, 2004"
+    VERSION = "0.7.3"
+    LAST_MODIFIED = "December 20, 2004"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2555,7 +2555,6 @@ class Diakonos
                     if @macro_history != nil
                         @macro_history.push to_eval
                     end
-                    #log "eval #{to_eval}"
                     eval to_eval, nil, "eval"
                     @last_command = to_eval unless to_eval == "repeatLast"
                 rescue Exception => e
@@ -2822,7 +2821,10 @@ class Diakonos
                     f.puts pc
                 end
                 f.puts
-                f.puts "----------------"
+                f.puts "----------------------------------------------------"
+                f.puts "If you can reproduce this error, please report it at"
+                f.puts "http://purepistos.net/forums !"
+                f.puts "----------------------------------------------------"
                 f.puts e.backtrace
             end
             openFile( @diakonos_home + "/diakonos.err" )
@@ -3324,7 +3326,7 @@ class Diakonos
                 keystrokes.each do |keystroke|
                     keychain_string << keystroke.keyString + " "
                 end
-                function_string = function
+                function_string = function.dup
                 if args != nil and args.length > 0
                     function_string << "( #{args} )"
                 end
