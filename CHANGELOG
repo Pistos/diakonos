@@ -1,18 +1,6 @@
 Diakonos Changelog
 ------------------
 
-0.6.13
-
-- Fixed the bug where searching backwards from the start of a line will cause
-the search to start from the end of the line, instead of from the end of the
-next line up.
-- Added a "seek" command, which is a sort of silent find.  Used for
-implementing features like go to next word and previous word.
-- Adjusted default conf file to include alternate ANSI sequences for function
-keys.
-- Context line truncation now omits the more proximate code, not the less
-proximate code.
-
 0.7.0
 
 - Adjusted buffer management system so that, internally, absolute file paths
@@ -27,3 +15,15 @@ curses display.
 for as literal text, instead of just throwing an error.
 - Keychains that have no assignment are now shown in full on the interaction
 line.
+
+0.6.13
+
+- Fixed the bug where searching backwards from the start of a line will cause
+the search to start from the end of the line, instead of from the end of the
+next line up.
+- Added a "seek" command, which is a sort of silent find.  Used for
+implementing features like go to next word and previous word.
+- Adjusted default conf file to include alternate ANSI sequences for function
+keys.
+- Context line truncation now omits the more proximate code, not the less
+proximate code.
