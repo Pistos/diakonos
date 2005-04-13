@@ -2055,7 +2055,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.5"
-    LAST_MODIFIED = "March 30, 2005"
+    LAST_MODIFIED = "April 13, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2122,6 +2122,7 @@ class Diakonos
         "deleteLine",
         "deleteToEOL",
         "evaluate",
+        "execute",
         "find",
         "findAgain",
         "findAndReplace",
@@ -2904,7 +2905,22 @@ class Diakonos
 
         retval = string
         retval = retval.subHome
+        
+        # Current buffer filename
         retval.gsub!( /\$f/, ( $1 or "" ) + ( @current_buffer.name or "" ) )
+        
+        # space-separated list of all buffer filenames
+        name_array = Array.new
+        @buffers.each_value do |b|
+            name_array.push b.name
+        end
+        retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )
+        
+        # Get user input, sub it in
+        if retval =~ /\$i/
+            user_input = getUserInput( "Argument: " )
+            retval.gsub!( /\$i/, user_input )
+        end
         return retval
     end
 
@@ -3739,6 +3755,32 @@ class Diakonos
                 refreshAll
             end
             openFile result_file
+        end
+    end
+    
+    def execute( command_ = nil )
+        if command_ == nil
+            command = getUserInput "Command: "
+        else
+            command = command_
+        end
+
+        if command != nil
+            command = subShellVariables( command )
+
+            close_screen
+
+            success = system( command )
+            if not success
+                result = "Could not execute: #{command}"
+            else
+                result = "Return code: #{$?}"
+            end
+
+            init_screen
+            refreshAll
+            
+            setILine result
         end
     end
     

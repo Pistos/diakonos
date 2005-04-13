@@ -5,6 +5,12 @@ Diakonos Changelog
 
 - Fixed bug which stopped Diakonos from completing refresh operations when
 the context line is disabled.
+- Added execute command, which executes a command in a subshell, but only
+displays the return code (ignores stdout).
+- Added a $F parameter for shell and execute commands.  Space-separated list
+of all current buffer filenames.
+- Added a $i parameter for shell and execute commands.  Substitute a string
+obtained from user.
 
 0.7.4
 
