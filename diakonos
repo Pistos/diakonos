@@ -457,6 +457,17 @@ class Bookmark
     def > (other)
         return ( ( self <=> other ) > 0 )
     end
+    
+    def incRow( increment )
+        row += increment
+    end
+    def incCol( increment )
+        col += increment
+    end
+    def shift( row_inc, col_inc )
+        row += row_inc
+        col += col_inc
+    end
 
     def to_s
         return "[#{@name}|#{@buffer.name}:#{@row+1},#{@col+1}]"
@@ -2253,12 +2264,20 @@ class Diakonos
 
         existent = 0
         @global_diakonos_conf = "/usr/local/share/diakonos/diakonos.conf"
+        if FileTest.exists? @global_diakonos_conf
+            existent += 1
+        else
+            @global_diakonos_conf = "/usr/share/diakonos/diakonos.conf"
+            existent += 1 if FileTest.exists? @global_diakonos_conf
+        end
         @diakonos_conf = ( @config_filename or ( @diakonos_home + "/diakonos.conf" ) )
-        existent += 1 if FileTest.exists? @global_diakonos_conf
         existent += 1 if FileTest.exists? @diakonos_conf
 
         if existent < 1
-            puts "diakonos.conf not found in either /usr/local/share/diakonos/ or ~/.diakonos/ ."
+            puts "diakonos.conf not found in any of:"
+            puts "   /usr/local/share/diakonos/"
+            puts "   /usr/share/diakonos/"
+            puts "   ~/.diakonos/"
             puts "At least one configuration file must exist."
             puts "Download a sample configuration file from http://purepistos.net/diakonos ."
             exit( 1 )

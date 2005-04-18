@@ -11,6 +11,8 @@ displays the return code (ignores stdout).
 of all current buffer filenames.
 - Added a $i parameter for shell and execute commands.  Substitute a string
 obtained from user.
+- /usr/share/diakonos is now checked for a config file, if
+/usr/local/share/diakonos is not found.
 
 0.7.4
 
