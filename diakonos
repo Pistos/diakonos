@@ -2066,7 +2066,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.5"
-    LAST_MODIFIED = "April 13, 2005"
+    LAST_MODIFIED = "April 18, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
