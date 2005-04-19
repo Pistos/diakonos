@@ -13,6 +13,7 @@ of all current buffer filenames.
 obtained from user.
 - /usr/share/diakonos is now checked for a config file, if
 /usr/local/share/diakonos is not found.
+- findAgain command now also retains memory across buffers, if needed.
 
 0.7.4
 
