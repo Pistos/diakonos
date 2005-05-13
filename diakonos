@@ -92,7 +92,6 @@ class String
             when "delete", "del"
                 retval = KEY_DC
             when "backspace"
-                #retval = KEY_BACKSPACE
                 retval = Diakonos::BACKSPACE
             when "tab"
                 retval = 9
@@ -101,7 +100,6 @@ class String
             when "pagedown", "page-down"
                 retval = KEY_NPAGE
             when "enter", "return"
-                #retval = KEY_ENTER
                 retval = Diakonos::ENTER
             when "numpad7", "keypad7", "kp-7"
                 retval = KEY_A1
@@ -1827,11 +1825,9 @@ class Buffer
         end
         
         if found_text != nil
-            #removeSelection( DONT_DISPLAY )
             @last_found_row = found_row
             @last_found_col = found_col
             cursorTo( found_row, found_col )
-            #@changing_selection = false
             
             display
         end
@@ -1993,7 +1989,6 @@ class Buffer
                 word = match_text
                 break
             end
-            #$diakonos.debugLog "'#{last_match}' [#{last_match.begin( 0 )}, #{last_match.end( 0 )}] #{@last_col} outside"
         end
         
         return word
@@ -2020,7 +2015,6 @@ class Curses::Window
         x2 = curx + string.length
         
         if y < 0 or x < 0 or y > lines or x > cols or x2 < 0 or x2 > cols
-            #$diakonos.debugLog "addstr: x = #{x}, x2 = #{x2}, y = #{y}, lines = #{lines}, cols = #{cols}, string = '#{string}'"
             begin
                 raise Exception
             rescue Exception => e
@@ -2068,8 +2062,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
-    VERSION = "0.7.5"
-    LAST_MODIFIED = "April 19, 2005"
+    VERSION = "0.7.6"
+    LAST_MODIFIED = "May 13, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2207,7 +2201,6 @@ class Diakonos
         @x = 0
         @y = 0
 
-        #@buffers = Hash.new
         @buffers = BufferHash.new
         @current_buffer = nil
         @bookmarks = Hash.new
@@ -2320,7 +2313,6 @@ class Diakonos
 
             init_screen
             nonl
-            #cbreak
             raw
             noecho
 
@@ -2512,7 +2504,6 @@ class Diakonos
     end
 
     def redraw
-        #resizeterm( lines, cols )
         loadConfiguration
         updateStatusLine
         updateContextLine
@@ -2643,13 +2634,11 @@ class Diakonos
 
                 if not found
                     iline = ""
-                    #if keychain_pressed != nil and keychain_pressed.length > 0
-                        chain_str = ""
-                        keychain_pressed.each do |key|
-                            chain_str << ( key.keyString or "(keycode #{c})" ) + " "
-                        end
-                        iline << chain_str
-                    #end
+                    chain_str = ""
+                    keychain_pressed.each do |key|
+                        chain_str << ( key.keyString or "(keycode #{c})" ) + " "
+                    end
+                    iline << chain_str
                     
                     setILine "Nothing assigned to #{iline}"
                 end
@@ -2783,7 +2772,6 @@ class Diakonos
                         ( @settings[ "context.max_segment_width" ] or cols )
                     ].min
                     line = nil
-                    #context_subset = context[ ( (-1) * truncation )..-1 ]
                     context_subset = context[ 0...truncation ]
                     context_subset = context_subset.collect do |line|
                         line.strip[ 0...max_length ]
@@ -2805,8 +2793,6 @@ class Diakonos
                     @win_context.refresh
                 end
                 @display_mutex.synchronize do
-                    #y = @current_buffer.rowToY( @current_buffer.last_row )
-                    #x = @current_buffer.columnToX( @current_buffer.last_col )
                     @win_main.setpos( @current_buffer.last_screen_y, @current_buffer.last_screen_x )
                     @win_main.refresh
                 end
@@ -3754,13 +3740,9 @@ class Diakonos
             File.open( result_file , "w" ) do |f|
                 f.puts command
                 f.puts
-                #def_prog_mode
                 close_screen
 
-                #f.puts `#{command}`
-
                 stdin, stdout, stderr = Open3.popen3( command )
-                #stdin.close
                 t1 = Thread.new do
                     stdout.each_line do |line|
                         f.puts line
@@ -3775,7 +3757,6 @@ class Diakonos
                 t1.join
                 t2.join
 
-                #reset_prog_mode
                 init_screen
                 refreshAll
             end
@@ -3811,10 +3792,8 @@ class Diakonos
     
     # Send the Diakonos job to background, as if with Ctrl-Z
     def suspend
-        #def_prog_mode
         close_screen
         Process.kill( "SIGSTOP", $PID )
-        #reset_prog_mode
         init_screen
         refreshAll
     end
