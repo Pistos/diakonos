@@ -3885,10 +3885,11 @@ class Diakonos::Readline
                     end
                     @input_cursor += 1
                 when Diakonos::BACKSPACE, Diakonos::CTRL_H
-                    if @input.length > 0
+                    if @input.length > 0 and @input_cursor > 0
                         @window.setpos( @window.cury, @window.curx - 1 )
                         @window.delch
-                        @input = @input[ 0..-2 ]
+                        @input = @input[ 0..@input_cursor - 2 ] + @input[ @input_cursor..-1 ]
+                        #@input = @input[ 0..-2 ]
                         @input_cursor += -1
                     end
                 when Diakonos::ENTER
