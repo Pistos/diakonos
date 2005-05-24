@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.7.6
+
+- Added some crontab highlighting to the default configuration file.
+
 0.7.5
 
 - Fixed bug which stopped Diakonos from completing refresh operations when
