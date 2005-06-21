@@ -2063,7 +2063,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.6"
-    LAST_MODIFIED = "May 13, 2005"
+    LAST_MODIFIED = "June 21, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3884,13 +3884,22 @@ class Diakonos::Readline
                         redrawInput
                     end
                     @input_cursor += 1
-                when Diakonos::BACKSPACE, Diakonos::CTRL_H
-                    if @input.length > 0 and @input_cursor > 0
-                        @window.setpos( @window.cury, @window.curx - 1 )
+                when KEY_DC
+                    if @input_cursor < @input.length
                         @window.delch
-                        @input = @input[ 0..@input_cursor - 2 ] + @input[ @input_cursor..-1 ]
-                        #@input = @input[ 0..-2 ]
+                        @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+                    end
+                when Diakonos::BACKSPACE, Diakonos::CTRL_H
+                    # KEY_LEFT
+                    if @input_cursor > 0
                         @input_cursor += -1
+                        @window.setpos( @window.cury, @window.curx - 1 )
+                        
+                        # KEY_DC
+                        if @input_cursor < @input.length
+                            @window.delch
+                            @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+                        end
                     end
                 when Diakonos::ENTER
                     break
