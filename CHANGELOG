@@ -4,6 +4,8 @@ Diakonos Changelog
 0.7.6
 
 - Added some crontab highlighting to the default configuration file.
+- Added "delete character" functionality to input line.
+- Fixed backspace functionality of input line.
 
 0.7.5
 
