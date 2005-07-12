@@ -1,10 +1,19 @@
 #!/usr/bin/env ruby
 
+class String
+    def brightRed
+        return "\033[1;31m" + self + "\033[0m"
+    end
+    def brightGreen
+        return "\033[1;32m" + self + "\033[0m"
+    end
+end
+
 def doCommand( command )
-    puts command
+    puts command.brightGreen
     puts `#{command}`
-    if $?
-        puts "'#{command}' failed with exit code #{$?}"
+    if not $?.nil? and $?.exitstatus > 0
+        puts "'#{command}' failed with exit code #{$?}".brightRed
         exit $?
     end
 end
@@ -18,7 +27,8 @@ version = ARGV[ 0 ]
 
 Dir.chdir
 Dir.chdir( "src" )
-doCommand( "svn cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
+puts "Changed to #{Dir.pwd}".brightGreen
+doCommand( "svn -m 'Tagging Diakonos version #{version}.' -q cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
 doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
 doCommand( "rm -f diakonos-#{version}/make-release.rb" )
 doCommand( "tar cjvf diakonos-#{version}.tar.bz2 diakonos-#{version}" )
