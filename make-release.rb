@@ -28,7 +28,7 @@ version = ARGV[ 0 ]
 Dir.chdir
 Dir.chdir( "src" )
 puts "Changed to #{Dir.pwd}".brightGreen
-doCommand( "svn -m 'Tagging Diakonos version #{version}.' -q cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
+doCommand( "svn -m 'Tagging Diakonos version #{version}.' cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
 doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
 doCommand( "rm -f diakonos-#{version}/make-release.rb" )
 doCommand( "tar cjvf diakonos-#{version}.tar.bz2 diakonos-#{version}" )
