@@ -16,7 +16,8 @@ end
 
 version = ARGV[ 0 ]
 
-doCommand( "cd ~/src" )
+Dir.chdir
+Dir.chdir( "src" )
 doCommand( "svn cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
 doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
 doCommand( "rm -f diakonos-#{version}/make-release.rb" )
