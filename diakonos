@@ -1487,6 +1487,7 @@ class Buffer
     def removeSelection( do_display = DO_DISPLAY )
         @mark_anchor = nil
         @changing_selection = false
+        @last_finding = nil
         display if do_display
     end
 
@@ -1579,6 +1580,12 @@ class Buffer
             if direction == SEARCH_DOWN
                 # Check the current row first.
                 
+                #$diakonos.debugLog "@last_row: #{@last_row}"
+                #$diakonos.debugLog "@lines[ @last_row ]: #{@lines[ @last_row ]}"
+                #$diakonos.debugLog "@last_finding.start_col: " + ( @last_finding ? @last_finding.start_col : "nil" ).to_s
+                #$diakonos.debugLog "@last_col: #{@last_col}"
+                #$diakonos.debugLog "index: " + ( @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) + 1 ) || "" ).to_s
+                
                 if index = @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) + 1 )
                     found_text = Regexp.last_match[ 0 ]
                     finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
@@ -1621,21 +1628,29 @@ class Buffer
                 
                 # And finally, the other side of the current row.
                 
-                if index = @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) - 1 )
-                    found_text = Regexp.last_match[ 0 ]
-                    finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
-                    if finding.match( regexps, @lines )
-                        throw :found
-                    else
-                        finding = nil
+                #if index = @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) - 1 )
+                if index = @lines[ @last_row ].index( regexp )
+                    if index <= ( @last_finding ? @last_finding.start_col : @last_col )
+                        found_text = Regexp.last_match[ 0 ]
+                        finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
+                        if finding.match( regexps, @lines )
+                            throw :found
+                        else
+                            finding = nil
+                        end
                     end
                 end
                 
             elsif direction == SEARCH_UP
                 # Check the current row first.
                 
-                col_to_check = ( @last_finding ? @last_finding.start_col : @last_col ) - 1
-                if ( col_to_check >= 0 ) and ( index = @lines[ @last_row ].rindex( regexp, col_to_check ) )
+                #$diakonos.debugLog "@last_row: #{@last_row}"
+                #$diakonos.debugLog "@lines[ @last_row ]: #{@lines[ @last_row ]}"
+                #$diakonos.debugLog "@last_col: #{@last_col}"
+                #$diakonos.debugLog "index: " + ( index = @lines[ @last_row ][ 0...@last_col ].rindex( regexp ) ).to_s
+                
+                col_to_check = ( @last_finding ? @last_finding.end_col : @last_col ) - 1
+                if ( col_to_check >= 0 ) and ( index = @lines[ @last_row ][ 0...col_to_check ].rindex( regexp ) )
                     found_text = Regexp.last_match[ 0 ]
                     finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
                     if finding.match( regexps, @lines )
@@ -1677,13 +1692,16 @@ class Buffer
                 
                 # And finally, the other side of the current row.
                 
-                if index = @lines[ @last_row ].rindex( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) + 1 )
-                    found_text = Regexp.last_match[ 0 ]
-                    finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
-                    if finding.match( regexps, @lines )
-                        throw :found
-                    else
-                        finding = nil
+                search_col = ( @last_finding ? @last_finding.start_col : @last_col ) + 1
+                if index = @lines[ @last_row ].rindex( regexp )
+                    if index > search_col
+                        found_text = Regexp.last_match[ 0 ]
+                        finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
+                        if finding.match( regexps, @lines )
+                            throw :found
+                        else
+                            finding = nil
+                        end
                     end
                 end
             end
@@ -2062,8 +2080,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
-    VERSION = "0.7.6"
-    LAST_MODIFIED = "June 21, 2005"
+    VERSION = "0.7.7"
+    LAST_MODIFIED = "August 17, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
