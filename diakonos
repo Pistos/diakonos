@@ -2074,6 +2074,19 @@ class Clipboard
             yield clip
         end
     end
+    
+    # text is an array of Strings (lines)
+    # Appends the lines to the current clip.
+    # If no current clip, then a new clip is created.
+    # Returns true iff the text was successfully appended.
+    def appendToClip( text )
+        return false if text.nil?
+        return addClip( text ) if @clips.length == 0
+        last_clip = @clips[ 0 ]
+        last_clip.pop if last_clip[ -1 ] == ""
+        @clips[ 0 ] = last_clip + text.to_a
+        return true
+    end
 end
 
 class Diakonos
@@ -2081,7 +2094,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.7"
-    LAST_MODIFIED = "August 17, 2005"
+    LAST_MODIFIED = "September 19, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2145,6 +2158,7 @@ class Diakonos
         "cursorUp",
         "cutSelection",
         "delete",
+        "deleteAndStoreLine",
         "deleteLine",
         "deleteToEOL",
         "evaluate",
@@ -3230,6 +3244,17 @@ class Diakonos
 
     def delete
         @current_buffer.delete
+    end
+
+    def deleteAndStoreLine
+        removed_text = @current_buffer.deleteLine
+        if removed_text
+            if @last_command =~ /^deleteAndStoreLine/
+                @clipboard.appendToClip( [ removed_text, "" ] )
+            else
+                @clipboard.addClip( [ removed_text, "" ] )
+            end
+        end
     end
 
     def deleteLine

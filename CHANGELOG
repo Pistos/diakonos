@@ -4,6 +4,8 @@ Diakonos Changelog
 0.7.7
 
 - Fixed various find-related bugs.
+- Added the command deleteAndStoreLine, which accumulates cut lines into
+the same clipboard clip.
 
 0.7.6
 
