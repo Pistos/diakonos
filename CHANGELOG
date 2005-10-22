@@ -1,6 +1,12 @@
 Diakonos Changelog
 ------------------
 
+0.7.8
+
+- Included package.rb and setup.rb for installation.
+- Now looks for conf in more directories.
+- Updated README.
+
 0.7.7
 
 - Fixed various find-related bugs.

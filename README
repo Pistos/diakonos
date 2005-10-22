@@ -1,8 +1,30 @@
 Diakonos
 --------
 
-Place the diakonos.conf file in /usr/local/share/diakonos/ or ~/.diakonos/.
-The diakonos program can be run from anywhere, such as ~/bin/ or /usr/local/bin/.
+To install, run
+
+./setup.rb
+
+or run
+
+./setup.rb --help
+
+if you want to set options like the installation directories.
+The installer only copies two files, diakonos (the executable) and diakonos.conf.
+By default, it places them into
+
+PREFIX/bin/diakonos
+PREFIX/etc/diakonos.conf
+
+where PREFIX is distro-dependent, but is usually /usr or /usr/local.
+
+----------------------------------------------------------------
+
+If you want to manually install, place the diakonos.conf file in
+/usr/local/etc/diakonos/ or ~/.diakonos/.  The diakonos program can be run from
+anywhere, such as ~/bin/ or /usr/local/bin/.
+
+----------------------------------------------------------------
 
 Send comments, feedback and tech support requests to irc.freenode.net:6667#mathetes
 or http://purepistos.net/forums .

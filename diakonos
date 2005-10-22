@@ -2093,8 +2093,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
-    VERSION = "0.7.7"
-    LAST_MODIFIED = "September 19, 2005"
+    VERSION = "0.7.8"
+    LAST_MODIFIED = "October 22, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2292,13 +2292,22 @@ class Diakonos
         # Set defaults first
 
         existent = 0
-        @global_diakonos_conf = "/usr/local/share/diakonos/diakonos.conf"
-        if FileTest.exists? @global_diakonos_conf
-            existent += 1
-        else
-            @global_diakonos_conf = "/usr/share/diakonos/diakonos.conf"
-            existent += 1 if FileTest.exists? @global_diakonos_conf
+        conf_dirs = [
+            "/usr/local/etc/diakonos.conf",
+            "/usr/etc/diakonos.conf",
+            "/etc/diakonos.conf",
+            "/usr/local/share/diakonos/diakonos.conf",
+            "/usr/share/diakonos/diakonos.conf"
+        ]
+        
+        conf_dirs.each do |conf_dir|
+            @global_diakonos_conf = conf_dir
+            if FileTest.exists? @global_diakonos_conf
+                existent += 1
+                break
+            end
         end
+        
         @diakonos_conf = ( @config_filename or ( @diakonos_home + "/diakonos.conf" ) )
         existent += 1 if FileTest.exists? @diakonos_conf
 
