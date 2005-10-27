@@ -6,6 +6,9 @@ Diakonos Changelog
 - Included package.rb and setup.rb for installation.
 - Now looks for conf in more directories.
 - Updated README.
+- Added pasteShellResult function.
+- Added $c shell variable: file containing clipboard contents.
+- Added $s shell variable: file containing selected text.
 
 0.7.7
 

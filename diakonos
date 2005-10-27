@@ -1492,6 +1492,9 @@ class Buffer
     end
 
     def copySelection
+        return selected_text
+    end
+    def selected_text
         selection = @text_marks[ SELECTION ]
         if @mark_anchor == nil
             text = nil
@@ -2094,7 +2097,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.8"
-    LAST_MODIFIED = "October 22, 2005"
+    LAST_MODIFIED = "October 27, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2186,6 +2189,7 @@ class Diakonos
         "pageUp",
         "parsedIndent",
         "paste",
+        "pasteShellResult",
         "playMacro",
         "popTag",
         "quit",
@@ -2971,6 +2975,31 @@ class Diakonos
             user_input = getUserInput( "Argument: " )
             retval.gsub!( /\$i/, user_input )
         end
+        
+        # Current clipboard text
+        if retval =~ /\$c/
+            clip_filename = @diakonos_home + "/clip.txt"
+            File.open( clip_filename, "w" ) do |clipfile|
+                if @clipboard.clip != nil
+                    clipfile.puts( @clipboard.clip.join( "\n" ) )
+                end
+            end
+            retval.gsub!( /\$c/, clip_filename )
+        end
+        
+        # Currently selected text
+        if retval =~ /\$s/
+            text_filename = @diakonos_home + "/selected.txt"
+            
+            File.open( text_filename, "w" ) do |textfile|
+                selected_text = @current_buffer.selected_text
+                if selected_text != nil
+                    textfile.puts( selected_text.join( "\n" ) )
+                end
+            end
+            retval.gsub!( /\$s/, text_filename )
+        end
+        
         return retval
     end
 
@@ -3839,6 +3868,31 @@ class Diakonos
             refreshAll
             
             setILine result
+        end
+    end
+    
+    def pasteShellResult( command_ = nil )
+        if command_ == nil
+            command = getUserInput "Command: "
+        else
+            command = command_
+        end
+
+        if command != nil
+            command = subShellVariables( command )
+
+            close_screen
+            
+            begin
+                @current_buffer.paste( `#{command}`.split( /\n/, -1 ) )
+            rescue Exception => e
+                debugLog e.message
+                debugLog e.backtrace.join( "\n\t" )
+                showException e
+            end
+            
+            init_screen
+            refreshAll
         end
     end
     
