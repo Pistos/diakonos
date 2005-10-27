@@ -3884,7 +3884,7 @@ class Diakonos
             close_screen
             
             begin
-                @current_buffer.paste( `#{command}`.split( /\n/, -1 ) )
+                @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
             rescue Exception => e
                 debugLog e.message
                 debugLog e.backtrace.join( "\n\t" )
