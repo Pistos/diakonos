@@ -9,6 +9,7 @@ Diakonos Changelog
 - Added pasteShellResult function.
 - Added $c shell variable: file containing clipboard contents.
 - Added $s shell variable: file containing selected text.
+- Fixed buffer switching to use a proper stack.
 
 0.7.7
 
