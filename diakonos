@@ -2253,7 +2253,10 @@ class Diakonos
         @last_search_regexps = nil
         
         # Readline histories
-        @readline_history = Array.new
+        @rlh_general = Array.new
+        @rlh_files = Array.new
+        @rlh_search = Array.new
+        @rlh_shell = Array.new
 
         setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure"
     end
@@ -2856,13 +2859,13 @@ class Diakonos
     end
 
     # completion_array is the array of strings that tab completion can use
-    def getUserInput( prompt, initial_text = "", completion_array = nil )
+    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil )
         if @playing_macro
             retval = @macro_input_history.shift
         else
             pos = setILine prompt
             @win_interaction.setpos( 0, pos )
-            retval = Diakonos::Readline.new( self, @win_interaction, initial_text, completion_array, @readline_history ).readline
+            retval = Diakonos::Readline.new( self, @win_interaction, initial_text, completion_array, history ).readline
             if @macro_history != nil
                 @macro_input_history.push retval
             end
@@ -2979,7 +2982,7 @@ class Diakonos
         
         # Get user input, sub it in
         if retval =~ /\$i/
-            user_input = getUserInput( "Argument: " )
+            user_input = getUserInput( "Argument: ", @rlh_shell )
             retval.gsub!( /\$i/, user_input )
         end
         
@@ -3312,7 +3315,7 @@ class Diakonos
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
-            code = getUserInput( "Ruby code: ", ( selected_text or "" ), FUNCTIONS )
+            code = getUserInput( "Ruby code: ", @rlh_general, ( selected_text or "" ), FUNCTIONS )
         else
             code = code_
         end
@@ -3339,7 +3342,7 @@ class Diakonos
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
-            regexp_source = getUserInput( "Search regexp: ", ( selected_text or "" ) )
+            regexp_source = getUserInput( "Search regexp: ", @rlh_search, ( selected_text or "" ) )
         else
             regexp_source = regexp_source_
         end
@@ -3359,7 +3362,7 @@ class Diakonos
                 end
             end
             if replacement == ASK_REPLACEMENT
-                replacement = getUserInput( "Replace with: " )
+                replacement = getUserInput( "Replace with: ", @rlh_search )
             end
             
             setILine( "Searching literally; #{e.message}" ) if exception_thrown
@@ -3387,7 +3390,7 @@ class Diakonos
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
-            search_term = getUserInput( "Search for: ", ( selected_text or "" ) )
+            search_term = getUserInput( "Search for: ", @rlh_search, ( selected_text or "" ) )
         else
             search_term = search_term_
         end
@@ -3438,7 +3441,7 @@ class Diakonos
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
-            tag_name = getUserInput( "Tag name: ", ( selected_text or "" ), @tags.keys )
+            tag_name = getUserInput( "Tag name: ", @rlh_general, ( selected_text or "" ), @tags.keys )
         else
             tag_name = tag_
         end
@@ -3519,7 +3522,7 @@ class Diakonos
 
     def loadScript( name_ = nil )
         if name_ == nil
-            name = getUserInput( "File to load as script: " )
+            name = getUserInput( "File to load as script: ", @rlh_files )
         else
             name = name_
         end
@@ -3623,9 +3626,9 @@ class Diakonos
     def openFileAsk
         if @current_buffer != nil and @current_buffer.name != nil
             path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-            file = getUserInput( "Filename: ", path )
+            file = getUserInput( "Filename: ", @rlh_files, path )
         else
-            file = getUserInput( "Filename: " )
+            file = getUserInput( "Filename: ", @rlh_files )
         end
         if file != nil
             openFile file
@@ -3746,9 +3749,9 @@ class Diakonos
     def saveFileAs
         if @current_buffer != nil and @current_buffer.name != nil
             path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-            file = getUserInput( "Filename: ", path )
+            file = getUserInput( "Filename: ", @rlh_files, path )
         else
-            file = getUserInput( "Filename: " )
+            file = getUserInput( "Filename: ", @rlh_files )
         end
         if file != nil
             @current_buffer.save( file, PROMPT_OVERWRITE )
@@ -3811,7 +3814,7 @@ class Diakonos
 
     def shell( command_ = nil )
         if command_ == nil
-            command = getUserInput "Command: "
+            command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
         end
@@ -3849,7 +3852,7 @@ class Diakonos
     
     def execute( command_ = nil )
         if command_ == nil
-            command = getUserInput "Command: "
+            command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
         end
@@ -3875,7 +3878,7 @@ class Diakonos
     
     def pasteShellResult( command_ = nil )
         if command_ == nil
-            command = getUserInput "Command: "
+            command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
         end
@@ -4066,7 +4069,12 @@ class Diakonos::Readline
         
         @diakonos.closeListBuffer
 
-        @history[ @history_index ] = @input
+        if @input.nil?
+            @history.pop
+        else
+            @history[ @history_index ] = @input
+        end
+        
         return @input
     end
 
