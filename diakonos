@@ -651,6 +651,11 @@ class Buffer
     def [] ( arg )
         return @lines[ arg ]
     end
+    
+    def == (other)
+        return false if other == nil
+        return ( name == other.name )
+    end
 
     def length
         return @lines.length
@@ -3204,9 +3209,16 @@ class Diakonos
                     end
                     previous_buffer = buf
                 end
-                    
-                if not @buffer_stack.empty?
-                    to_switch_to = @buffer_stack.pop
+                
+                buf = nil
+                while(
+                    ( not @buffer_stack.empty? ) and
+                    ( not @buffers.values.include?( buf ) )
+                ) do
+                    buf = @buffer_stack.pop
+                end
+                if @buffers.values.include?( buf )
+                    to_switch_to = buf
                 end
 
                 if to_switch_to != nil
@@ -3974,8 +3986,6 @@ class Diakonos::Readline
         @history = history
         @history << initial_text
         @history_index = @history.length - 1
-        
-        $diakonos.debugLog "history: #{history.join( ',' )}"
     end
 
     # Returns nil on cancel.
