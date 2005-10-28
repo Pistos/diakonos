@@ -2097,7 +2097,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.8"
-    LAST_MODIFIED = "October 27, 2005"
+    LAST_MODIFIED = "October 28, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2111,6 +2111,7 @@ class Diakonos
     BACKSPACE = 127
     CTRL_C = 3
     CTRL_D = 4
+    CTRL_K = 11
     CTRL_Q = 17
     CTRL_H = 263
     RESIZE2 = 4294967295
@@ -2250,6 +2251,9 @@ class Diakonos
         @iline_mutex = Mutex.new
         @tag_stack = Array.new
         @last_search_regexps = nil
+        
+        # Readline histories
+        @readline_history = Array.new
 
         setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure"
     end
@@ -2720,7 +2724,6 @@ class Diakonos
         if buffer != nil
             @buffer_stack -= [ @current_buffer ]
             @buffer_stack.push @current_buffer if @current_buffer != nil
-            debugLog( ( @buffer_stack.collect { |b| b.name } ).join( ";" ) )
             @current_buffer = buffer
             updateStatusLine
             updateContextLine
@@ -2859,7 +2862,7 @@ class Diakonos
         else
             pos = setILine prompt
             @win_interaction.setpos( 0, pos )
-            retval = Diakonos::Readline.new( self, @win_interaction, initial_text, completion_array ).readline
+            retval = Diakonos::Readline.new( self, @win_interaction, initial_text, completion_array, @readline_history ).readline
             if @macro_history != nil
                 @macro_input_history.push retval
             end
@@ -3958,12 +3961,18 @@ end
 class Diakonos::Readline
 
     # completion_array is the array of strings that tab completion can use
-    def initialize( diakonos, window, initial_text = "", completion_array = nil )
+    def initialize( diakonos, window, initial_text = "", completion_array = nil, history = [] )
         @window = window
         @diakonos = diakonos
         @initial_text = initial_text
         @completion_array = completion_array
         @list_filename = @diakonos.list_filename
+        
+        @history = history
+        @history << initial_text
+        @history_index = @history.length - 1
+        
+        $diakonos.debugLog "history: #{history.join( ',' )}"
     end
 
     # Returns nil on cancel.
@@ -4033,6 +4042,23 @@ class Diakonos::Readline
                     @diakonos.pageDown
                 when KEY_PPAGE
                     @diakonos.pageUp
+                when KEY_UP
+                    if @history_index > 0
+                        @history[ @history_index ] = @input
+                        @history_index -= 1
+                        @input = @history[ @history_index ]
+                        cursorWriteInput
+                    end
+                when KEY_DOWN
+                    if @history_index < @history.length - 1
+                        @history[ @history_index ] = @input
+                        @history_index += 1
+                        @input = @history[ @history_index ]
+                        cursorWriteInput
+                    end
+                when Diakonos::CTRL_K
+                    @input = ""
+                    cursorWriteInput
                 else
                     @diakonos.log "Other input: #{c}"
             end
@@ -4040,6 +4066,7 @@ class Diakonos::Readline
         
         @diakonos.closeListBuffer
 
+        @history[ @history_index ] = @input
         return @input
     end
 
