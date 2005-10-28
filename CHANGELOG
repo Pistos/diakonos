@@ -10,6 +10,8 @@ Diakonos Changelog
 - Added $c shell variable: file containing clipboard contents.
 - Added $s shell variable: file containing selected text.
 - Fixed buffer switching to use a proper stack.
+- Added input line history.
+- Added Ctrl-K to clear input line.
 
 0.7.7
 
