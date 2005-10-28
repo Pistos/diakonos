@@ -2238,6 +2238,7 @@ class Diakonos
         @y = 0
 
         @buffers = BufferHash.new
+        @buffer_stack = Array.new
         @current_buffer = nil
         @bookmarks = Hash.new
         @macro_history = nil
@@ -2717,6 +2718,9 @@ class Diakonos
     def switchTo( buffer )
         switched = false
         if buffer != nil
+            @buffer_stack -= [ @current_buffer ]
+            @buffer_stack.push @current_buffer if @current_buffer != nil
+            debugLog( ( @buffer_stack.collect { |b| b.name } ).join( ";" ) )
             @current_buffer = buffer
             updateStatusLine
             updateContextLine
@@ -3097,9 +3101,6 @@ class Diakonos
     end
     
     def openListBuffer
-        if @previous_to_list_buffer == nil
-            @previous_to_list_buffer = @current_buffer
-        end
         @list_buffer = openFile( @list_filename )
     end
     
@@ -3181,27 +3182,25 @@ class Diakonos
                 del_buffer_key = nil
                 previous_buffer = nil
                 to_switch_to = nil
-                if @previous_to_list_buffer == nil
-                    switching = false
-
-                    # Search the buffer hash for the buffer we want to delete,
-                    # and mark the one we will switch to after deletion.
-                    @buffers.each do |buffer_key,buf|
-                        if switching
-                            to_switch_to = buf
-                            break
-                        end
-                        if buf == buffer
-                            del_buffer_key = buffer_key
-                            switching = true
-                            next
-                        end
-                        previous_buffer = buf
+                switching = false
+                
+                # Search the buffer hash for the buffer we want to delete,
+                # and mark the one we will switch to after deletion.
+                @buffers.each do |buffer_key,buf|
+                    if switching
+                        to_switch_to = buf
+                        break
                     end
-                else
-                    del_buffer_key = @list_filename
-                    to_switch_to = @previous_to_list_buffer
-                    @previous_to_list_buffer = nil
+                    if buf == buffer
+                        del_buffer_key = buffer_key
+                        switching = true
+                        next
+                    end
+                    previous_buffer = buf
+                end
+                    
+                if not @buffer_stack.empty?
+                    to_switch_to = @buffer_stack.pop
                 end
 
                 if to_switch_to != nil
