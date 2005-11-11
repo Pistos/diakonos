@@ -1808,7 +1808,8 @@ class Buffer
             if direction == SEARCH_DOWN
                 # Check the current row first.
                 
-                if index = @lines[ @last_row ].index( regexp, ( @last_found_col or @last_col ) + 1 )
+                #if index = @lines[ @last_row ].index( regexp, ( @last_found_col or @last_col ) + 1 )
+                if index = @lines[ @last_row ].index( regexp, @last_col + 1 )
                     found_row = @last_row
                     found_col = index
                     found_text = ( Regexp.last_match[ 1 ] or Regexp.last_match[ 0 ] )
@@ -1829,7 +1830,8 @@ class Buffer
             else
                 # Check the current row first.
                 
-                col_to_check = ( @last_found_col or @last_col ) - 1
+                #col_to_check = ( @last_found_col or @last_col ) - 1
+                col_to_check = @last_col - 1
                 if ( col_to_check >= 0 ) and ( index = @lines[ @last_row ].rindex( regexp, col_to_check ) )
                     found_row = @last_row
                     found_col = index
@@ -1851,8 +1853,8 @@ class Buffer
         end
         
         if found_text != nil
-            @last_found_row = found_row
-            @last_found_col = found_col
+            #@last_found_row = found_row
+            #@last_found_col = found_col
             cursorTo( found_row, found_col )
             
             display
@@ -2101,8 +2103,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
-    VERSION = "0.7.8"
-    LAST_MODIFIED = "October 28, 2005"
+    VERSION = "0.7.9"
+    LAST_MODIFIED = "November 11, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
