@@ -555,6 +555,7 @@ class Buffer
         @diakonos = diakonos
         @name = name
         @modified = false
+        @last_modification_check = Time.now
 
         @buffer_states = Array.new
         @cursor_states = Array.new
@@ -1059,6 +1060,11 @@ class Buffer
                         when Diakonos::CHOICE_NO
                             proceed = false
                     end
+                end
+                
+                reverted = false
+                if file_modified
+                    proceed = ! @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
                 end
                 
                 if proceed
@@ -1866,12 +1872,38 @@ class Buffer
             @diakonos.setILine "Warning: Modifying a read-only file."
         end
 
-        @modified = true
-        clearMatches
-        if do_display
-            @diakonos.updateStatusLine
-            display
+        fmod = false
+        if not @modified
+            @modified = true
+            fmod = file_modified
         end
+        
+        reverted = false
+        if fmod
+            reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+        end
+        
+        if not reverted
+            clearMatches
+            if do_display
+                @diakonos.updateStatusLine
+                display
+            end
+        end
+    end
+    
+    # Check if the file which is being edited has been modified since
+    # the last time we checked it; return true if so, false otherwise.
+    def file_modified
+        modified = false
+        mtime = File.mtime( @name )
+        
+        if mtime > @last_modification_check
+            modified = true
+            @last_modification_check = mtime
+        end
+        
+        return modified
     end
 
     def takeSnapshot( typing = false )
@@ -2104,7 +2136,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.9"
-    LAST_MODIFIED = "November 11, 2005"
+    LAST_MODIFIED = "November 15, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3752,8 +3784,25 @@ class Diakonos
         eval @last_command if @last_command != nil
     end
 
-    def revert
-        openFile( @current_buffer.name, Buffer::READ_WRITE, FORCE_REVERT )
+    # If the prompt is non-nil, ask the user yes or no question first.
+    def revert( prompt = nil )
+        do_revert = true
+        
+        if prompt != nil
+            choice = getChoice(
+                prompt,
+                [ CHOICE_YES, CHOICE_NO ],
+                CHOICE_NO
+            )
+            case choice
+                when CHOICE_NO
+                    do_revert = false
+            end
+        end
+        
+        if do_revert
+            openFile( @current_buffer.name, Buffer::READ_WRITE, FORCE_REVERT )
+        end
     end
 
     def saveFile( buffer = @current_buffer )

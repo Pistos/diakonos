@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - Changed seek behaviour to not remember last position, but use current cursor
 position instead.
+- File is now checked for external modifications, prompting for load.
 
 0.7.8
 
