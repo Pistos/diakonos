@@ -1078,12 +1078,14 @@ class Buffer
                             f.print "\n" if @settings[ "eof_newline" ]
                         end
                     end
+                    @last_modification_check = File.mtime( @name )
                         
                     if @name == @diakonos.diakonos_conf
                         @diakonos.loadConfiguration
                     end
                     
                     @modified = false
+                    
                     display
                     @diakonos.updateStatusLine
                 end
@@ -1896,11 +1898,16 @@ class Buffer
     # the last time we checked it; return true if so, false otherwise.
     def file_modified
         modified = false
-        mtime = File.mtime( @name )
         
-        if mtime > @last_modification_check
-            modified = true
-            @last_modification_check = mtime
+        begin
+            mtime = File.mtime( @name )
+            
+            if mtime > @last_modification_check
+                modified = true
+                @last_modification_check = mtime
+            end
+        rescue Errno::ENOENT
+            # Ignore if file doesn't exist
         end
         
         return modified
