@@ -3256,14 +3256,15 @@ class Diakonos
                 buf = nil
                 while(
                     ( not @buffer_stack.empty? ) and
-                    ( not @buffers.values.include?( buf ) )
+                    ( not @buffers.values.include?( buf ) ) or
+                    ( @buffers.index( buf ) == del_buffer_key )
                 ) do
                     buf = @buffer_stack.pop
                 end
                 if @buffers.values.include?( buf )
                     to_switch_to = buf
                 end
-
+                
                 if to_switch_to != nil
                     switchTo( to_switch_to )
                 elsif previous_buffer != nil
