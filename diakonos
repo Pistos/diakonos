@@ -1899,15 +1899,17 @@ class Buffer
     def file_modified
         modified = false
         
-        begin
-            mtime = File.mtime( @name )
-            
-            if mtime > @last_modification_check
-                modified = true
-                @last_modification_check = mtime
+        if @name != nil
+            begin
+                mtime = File.mtime( @name )
+                
+                if mtime > @last_modification_check
+                    modified = true
+                    @last_modification_check = mtime
+                end
+            rescue Errno::ENOENT
+                # Ignore if file doesn't exist
             end
-        rescue Errno::ENOENT
-            # Ignore if file doesn't exist
         end
         
         return modified
@@ -4137,11 +4139,7 @@ class Diakonos::Readline
         
         @diakonos.closeListBuffer
 
-        if @input.nil?
-            @history.pop
-        else
-            @history[ @history_index ] = @input
-        end
+        @history[ -1 ] = @input
         
         return @input
     end
