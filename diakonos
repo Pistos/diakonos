@@ -2145,7 +2145,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.9"
-    LAST_MODIFIED = "November 15, 2005"
+    LAST_MODIFIED = "November 29, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2332,6 +2332,14 @@ class Diakonos
                     else
                         @config_filename = config_filename
                     end
+                when "-e", "--execute"
+                    post_load_script = argv.shift
+                    if post_load_script == nil
+                        printUsage
+                        exit 1
+                    else
+                        @post_load_script = post_load_script
+                    end                        
                 else
                     # a name of a file to open
                     @files.push arg
@@ -2345,6 +2353,7 @@ class Diakonos
         puts "\t--help\tDisplay usage"
         puts "\t-ro <file>\tLoad file as read-only"
         puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
+        puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
     end
     protected :printUsage
 
@@ -2656,6 +2665,11 @@ class Diakonos
             
             updateStatusLine
             updateContextLine
+            
+            if @post_load_script != nil
+                eval @post_load_script
+            end
+            
             # Main keyboard loop.
             while not @quitting
                 getKeystroke
