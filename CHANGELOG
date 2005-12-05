@@ -7,6 +7,7 @@ Diakonos Changelog
 position instead.
 - File is now checked for external modifications, prompting for load.
 - Added -e, --execute option which eval's Ruby code (including Diakonos commands) after startup.
+- Paging up and down now respects the y cursor margin.
 
 0.7.8
 
