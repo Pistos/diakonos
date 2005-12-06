@@ -2204,6 +2204,7 @@ class Diakonos
         "anchorSelection",
         "backspace",
         "carriageReturn",
+        "changeSessionSetting",
         "clearMatches",
         "closeFile",
         "copySelection",
@@ -2271,6 +2272,7 @@ class Diakonos
         "switchToPreviousBuffer",
         "toggleBookmark",
         "toggleMacroRecording",
+        "toggleSessionSetting",
         "undo",
         "unindent",
         "unundo"
@@ -2288,6 +2290,7 @@ class Diakonos
         @files = Array.new
         @read_only_files = Array.new
         parseOptions argv
+        @session_settings = Hash.new
         loadConfiguration
         @quitting = false
         @untitled_id = 0
@@ -2449,6 +2452,12 @@ class Diakonos
 
             parseConfigurationFile( @global_diakonos_conf )
             parseConfigurationFile( @diakonos_conf )
+            
+            # Session settings override config file settings.
+            
+            @session_settings.each do |key,value|
+                @settings[ key ] = value
+            end
 
             @win_main = Window.new( main_window_height, cols, 0, 0 )
             @win_main.keypad( true )
@@ -2457,6 +2466,7 @@ class Diakonos
             @win_status.attrset @settings[ "status.format" ]
             @win_interaction = Window.new( 1, cols, lines - 1, 0 )
             @win_interaction.keypad( true )
+            
             if @settings[ "context.visible" ]
                 if @settings[ "context.combined" ]
                     pos = 1
@@ -3214,6 +3224,12 @@ class Diakonos
     def carriageReturn
         @current_buffer.carriageReturn
         @current_buffer.deleteSelection
+    end
+    
+    def changeSessionSetting( key, value = nil )
+        @session_settings[ key ] = value
+        redraw
+        setILine "#{key} = #{value}"
     end
 
     def clearMatches
@@ -4036,6 +4052,17 @@ class Diakonos
         @current_buffer.toggleBookmark
     end
 
+    def toggleSessionSetting( key )
+        if @session_settings[ key ].class == TrueClass or @session_settings[ key ].class == FalseClass
+            value = ! @session_settings[ key ]
+        elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
+            value = ! @settings[ key ]
+        end
+        @session_settings[ key ] = value
+        redraw
+        setILine "#{key} = #{value}"
+    end
+    
     def undo( buffer = @current_buffer )
         buffer.undo
     end
