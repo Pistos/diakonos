@@ -2154,12 +2154,14 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.9"
-    LAST_MODIFIED = "December 5, 2005"
+    LAST_MODIFIED = "December 7, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
     PROMPT_OVERWRITE = true
     DONT_PROMPT_OVERWRITE = false
+    DO_REDRAW = true
+    DONT_REDRAW = false
 
     PRINTABLE_CHARACTERS = 32..126
     TAB = 9
@@ -2252,6 +2254,7 @@ class Diakonos
         "playMacro",
         "popTag",
         "quit",
+        "redraw",
         "removeNamedBookmark",
         "removeSelection",
         "repeatLast",
@@ -3226,10 +3229,29 @@ class Diakonos
         @current_buffer.deleteSelection
     end
     
-    def changeSessionSetting( key, value = nil )
-        @session_settings[ key ] = value
-        redraw
-        setILine "#{key} = #{value}"
+    def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
+        if key_ == nil
+            key = getUserInput( "Setting: " )
+        else
+            key = key_
+        end
+
+        if key != nil
+            if value == nil
+                value = getUserInput( "Value: " )
+            end
+            case @settings[ key ]
+                when String
+                    value = value.to_s
+                when Fixnum
+                    value = value.to_i
+                when TrueClass, FalseClass
+                    value = value.to_b
+            end
+            @session_settings[ key ] = value
+            redraw if do_redraw
+            setILine "#{key} = #{value}"
+        end
     end
 
     def clearMatches
@@ -4052,15 +4074,26 @@ class Diakonos
         @current_buffer.toggleBookmark
     end
 
-    def toggleSessionSetting( key )
-        if @session_settings[ key ].class == TrueClass or @session_settings[ key ].class == FalseClass
-            value = ! @session_settings[ key ]
-        elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
-            value = ! @settings[ key ]
+    def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
+        if key_ == nil
+            key = getUserInput( "Setting: " )
+        else
+            key = key_
         end
-        @session_settings[ key ] = value
-        redraw
-        setILine "#{key} = #{value}"
+
+        if key != nil
+            value = nil
+            if @session_settings[ key ].class == TrueClass or @session_settings[ key ].class == FalseClass
+                value = ! @session_settings[ key ]
+            elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
+                value = ! @settings[ key ]
+            end
+            if value != nil
+                @session_settings[ key ] = value
+                redraw if do_redraw
+                setILine "#{key} = #{value}"
+            end
+        end
     end
     
     def undo( buffer = @current_buffer )
