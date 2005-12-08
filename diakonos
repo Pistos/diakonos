@@ -549,6 +549,8 @@ class Buffer
     MATCH_CLOSE = true
     MATCH_ANY = false
     START_FROM_BEGINNING = -1
+    DO_PITCH_CURSOR = true
+    DONT_PITCH_CURSOR = false
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, read_only = false )
@@ -1247,7 +1249,7 @@ class Buffer
     end
 
     # Returns the amount the view was actually pitched.
-    def pitchView( y = 1, do_display = DO_DISPLAY )
+    def pitchView( y = 1, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )
         old_top_line = @top_line
         new_top_line = @top_line + y
 
@@ -1257,6 +1259,11 @@ class Buffer
             @top_line = [ @lines.length - @diakonos.main_window_height, 0 ].max
         else
             @top_line = new_top_line
+        end
+        
+        changed = ( @top_line - old_top_line )
+        if changed != 0 and do_pitch_cursor
+            @last_row += changed
         end
         
         height = [ @diakonos.main_window_height, @lines.length ].min
@@ -1273,8 +1280,7 @@ class Buffer
         @last_screen_y = @last_row - @top_line
         @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
         
-        changed = ( @top_line - old_top_line )
-        highlightMatches if changed
+        highlightMatches if changed != 0
 
         display if do_display
 
@@ -1409,11 +1415,11 @@ class Buffer
 
         while row < @top_line + @settings[ "view.margin.y" ]
             amount = (-1) * @settings[ "view.jump.y" ]
-            break if( pitchView( amount, DONT_DISPLAY ) != amount )
+            break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
         end
         while row > @top_line + @diakonos.main_window_height - 1 - @settings[ "view.margin.y" ]
             amount = @settings[ "view.jump.y" ]
-            break if( pitchView( amount, DONT_DISPLAY ) != amount )
+            break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
         end
 
         while col < @left_column + @settings[ "view.margin.x" ]
@@ -2154,7 +2160,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.9"
-    LAST_MODIFIED = "December 7, 2005"
+    LAST_MODIFIED = "December 8, 2005"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3755,7 +3761,7 @@ class Diakonos
     end
 
     def pageUp
-        if @current_buffer.pitchView( -main_window_height ) == 0
+        if @current_buffer.pitchView( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
             cursorBOF
         end
         updateStatusLine
@@ -3763,7 +3769,7 @@ class Diakonos
     end
 
     def pageDown
-        if @current_buffer.pitchView( main_window_height ) == 0
+        if @current_buffer.pitchView( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
             @current_buffer.cursorToEOF
         end
         updateStatusLine

@@ -8,6 +8,7 @@ position instead.
 - File is now checked for external modifications, prompting for load.
 - Added -e, --execute option which eval's Ruby code (including Diakonos commands) after startup.
 - Paging up and down now respects the y cursor margin.
+- Paging up and down now keeps cursor at same screen coordinates.
 - Settings can now be altered for the duration of the editing session.
 (new commands: changeSessionSetting, toggleSessionSetting)
 
