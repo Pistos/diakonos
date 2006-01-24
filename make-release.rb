@@ -38,7 +38,7 @@ doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-
 puts "Release complete."
 puts "Announcement sites:"
 puts "1) freshmeat.net"
-puts "2) rubyforge.org"
+puts "2) ebuild, ebuildexchange"
 puts "3) purepistos.net site"
 puts "4) purepistos.net forums"
 puts "5) RAA"

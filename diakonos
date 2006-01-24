@@ -284,6 +284,89 @@ class String
         end
         return retval
     end
+    
+    # Works like normal String#index except returns the index
+    # of the first matching regexp group if one or more groups are specified
+    # in the regexp. Both the index and the matched text are returned.
+    def group_index( regexp, offset = 0 )
+        if regexp.class != Regexp
+            return index( regexp, offset )
+        end
+        
+        i = nil
+        match_text = nil
+        working_offset = 0
+        loop do
+            index( regexp, working_offset )
+            match = Regexp.last_match
+            if match
+                i = match.begin( 0 )
+                match_text = match[ 0 ]
+                if match.length > 1
+                    # Find first matching group
+                    1.upto( match.length - 1 ) do |match_item_index|
+                        if match[ match_item_index ] != nil
+                            i = match.begin( match_item_index )
+                            match_text = match[ match_item_index ]
+                            break
+                        end
+                    end
+                end
+                
+                break if i >= offset
+            else
+                i = nil
+                break
+            end
+            working_offset += 1
+        end
+        
+        return i, match_text
+    end
+    
+    # Works like normal String#index except returns the index
+    # of the first matching regexp group if one or more groups are specified
+    # in the regexp. Both the index and the matched text are returned.
+    def group_rindex( regexp, offset = length )
+        if regexp.class != Regexp
+            return rindex( regexp, offset )
+        end
+        
+        i = nil
+        match_text = nil
+        working_offset = length
+        loop do
+            rindex( regexp, working_offset )
+            match = Regexp.last_match
+            if match
+                i = match.end( 0 ) - 1
+                match_text = match[ 0 ]
+                if match.length > 1
+                    # Find first matching group
+                    1.upto( match.length - 1 ) do |match_item_index|
+                        if match[ match_item_index ] != nil
+                            i = match.end( match_item_index ) - 1
+                            match_text = match[ match_item_index ]
+                            break
+                        end
+                    end
+                end
+                
+                if match_text == ""
+                    # Assume that an empty string means that it matched $
+                    i += 1
+                end
+                
+                break if i <= offset
+            else
+                i = nil
+                break
+            end
+            working_offset -= 1
+        end
+        
+        return i, match_text
+    end
 end
 
 module KeyCode
@@ -1831,21 +1914,22 @@ class Buffer
             if direction == SEARCH_DOWN
                 # Check the current row first.
                 
-                #if index = @lines[ @last_row ].index( regexp, ( @last_found_col or @last_col ) + 1 )
-                if index = @lines[ @last_row ].index( regexp, @last_col + 1 )
+                index, match_text = @lines[ @last_row ].group_index( regexp, @last_col + 1 )
+                if index != nil
                     found_row = @last_row
                     found_col = index
-                    found_text = ( Regexp.last_match[ 1 ] or Regexp.last_match[ 0 ] )
+                    found_text = match_text
                     throw :found
                 end
                 
                 # Check below the cursor.
                 
                 ( (@last_row + 1)...@lines.length ).each do |i|
-                    if index = @lines[ i ].index( regexp )
+                    index, match_text = @lines[ i ].group_index( regexp )
+                    if index != nil
                         found_row = i
                         found_col = index
-                        found_text = ( Regexp.last_match[ 1 ] or Regexp.last_match[ 0 ] )
+                        found_text = match_text
                         throw :found
                     end
                 end
@@ -1855,20 +1939,24 @@ class Buffer
                 
                 #col_to_check = ( @last_found_col or @last_col ) - 1
                 col_to_check = @last_col - 1
-                if ( col_to_check >= 0 ) and ( index = @lines[ @last_row ].rindex( regexp, col_to_check ) )
-                    found_row = @last_row
-                    found_col = index
-                    found_text = ( Regexp.last_match[ 1 ] or Regexp.last_match[ 0 ] )
-                    throw :found
+                if col_to_check >= 0
+                    index, match_text = @lines[ @last_row ].group_rindex( regexp, col_to_check )
+                    if index != nil
+                        found_row = @last_row
+                        found_col = index
+                        found_text = match_text
+                        throw :found
+                    end
                 end
                 
                 # Check above the cursor.
                 
                 (@last_row - 1).downto( 0 ) do |i|
-                    if index = @lines[ i ].rindex( regexp )
+                    index, match_text = @lines[ i ].group_rindex( regexp )
+                    if index != nil
                         found_row = i
                         found_col = index
-                        found_text = ( Regexp.last_match[ 1 ] or Regexp.last_match[ 0 ] )
+                        found_text = match_text
                         throw :found
                     end
                 end
@@ -2159,8 +2247,8 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
-    VERSION = "0.7.9"
-    LAST_MODIFIED = "December 8, 2005"
+    VERSION = "0.7.10"
+    LAST_MODIFIED = "January 24, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true

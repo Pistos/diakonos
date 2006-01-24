@@ -1,6 +1,11 @@
 Diakonos Changelog
 ------------------
 
+0.7.10
+
+- Changed seek behaviour to use regexp group indexes.
+- Changed "word seek" in configuration file to seek both word beginnings and word endings.
+
 0.7.9
 
 - Changed seek behaviour to not remember last position, but use current cursor
