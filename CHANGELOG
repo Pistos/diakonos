@@ -5,6 +5,11 @@ Diakonos Changelog
 
 - Changed seek behaviour to use regexp group indexes.
 - Changed "word seek" in configuration file to seek both word beginnings and word endings.
+- Added settings interaction.blink_string, interaction.blink_duration, interaction.choice_delay.
+- Choice prompt no longer coerces invalid choices.
+- Choice prompt now requires correct choice if no default given.
+- Default choice removed from critical choices.
+- Critical choices now ignore user input for interaction.choice_delay seconds.
 
 0.7.9
 

@@ -2248,7 +2248,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.10"
-    LAST_MODIFIED = "January 24, 2006"
+    LAST_MODIFIED = "January 26, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2684,7 +2684,8 @@ class Diakonos
                 when "context.separator", "status.left", "status.right", "status.filler",
                         "status.modified_str", "status.unnamed_str", "status.selecting_str",
                         "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
-                        /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/, "view.nonfilelines.character"
+                        /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/, "view.nonfilelines.character",
+                        'interaction.blink_string'
                     @settings[ command ] = arg
                 when "status.vars"
                     @settings[ command ] = arg.split( /\s+/ )
@@ -2710,7 +2711,7 @@ class Diakonos
                         else # default
                             @settings[ "bol_behaviour" ] = BOL_ALT_FIRST_CHAR
                     end
-                when "context.delay"
+                when "context.delay", 'interaction.blink_duration', 'interaction.choice_delay'
                     @settings[ command ] = arg.to_f
             end
         end
@@ -3190,11 +3191,49 @@ class Diakonos
         
         return retval
     end
+    
+    def showMessage( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
+        terminateMessage
+        
+        @message_expiry = Time.now + non_interaction_duration
+        @message_thread = Thread.new do
+            time_left = @message_expiry - Time.now
+            while time_left > 0
+                @iline_mutex.synchronize do
+                    setILine "(#{time_left.round}) #{message}"
+                end
+                sleep 1
+                time_left = @message_expiry - Time.now
+            end
+            @iline_mutex.synchronize do
+                setILine message
+            end
+        end
+    end
+    
+    def terminateMessage
+        if @message_thread != nil and @message_thread.alive?
+            @message_thread.terminate
+            @message_thread = nil
+        end
+        @iline_mutex.synchronize do
+            setILine
+        end
+    end
+    
+    def interactionBlink( message = nil )
+        terminateMessage
+        @iline_mutex.synchronize do
+            setILine @settings[ 'interaction.blink_string' ]
+            sleep @settings[ 'interaction.blink_duration' ]
+            setILine message if message != nil
+        end
+    end
 
     # choices should be an array of CHOICE_* constants.
     # default is what is returned when Enter is pressed.
-    def getChoice( prompt, choices, default = nil, initial = CHOICE_NO )
-        retval = initial
+    def getChoice( prompt, choices, default = nil )
+        retval = nil
         
         cx = @win_main.curx
         cy = @win_main.cury
@@ -3204,24 +3243,42 @@ class Diakonos
             CHOICE_STRINGS[ choice ]
         end
         msg << choice_strings.join( ", " )
+        
+        if default.nil?
+            delay = @settings[ 'interaction.choice_delay' ]
+        else
+            delay = 0
+        end
+        showMessage( msg, delay )
+        
         c = nil
-        @iline_mutex.synchronize do
-            setILine msg
+        while retval.nil?
             @win_main.setpos( cy, cx )
             c = @win_interaction.getch
-            setILine
-        end
-
-        if c == Diakonos::ENTER
-            retval = default
-        else
-            choices.each do |choice|
-                if CHOICE_KEYS[ choice ].include? c
-                    retval = choice
-                    break
+    
+            if Time.now < @message_expiry
+                interactionBlink
+                showMessage( msg, delay )
+            else
+                if c == Diakonos::ENTER
+                    retval = default
+                else
+                    choices.each do |choice|
+                        if CHOICE_KEYS[ choice ].include? c
+                            retval = choice
+                            break
+                        end
+                    end
+                end
+                
+                if retval.nil?
+                    interactionBlink( msg )
                 end
             end
+            
         end
+        
+        terminateMessage
 
         return retval
     end
@@ -3786,8 +3843,7 @@ class Diakonos
                 switchTo( existing_buffer )
                 choice = getChoice(
                     "Revert to on-disk version of #{existing_buffer.nice_name}?",
-                    [ CHOICE_YES, CHOICE_NO ],
-                    CHOICE_NO
+                    [ CHOICE_YES, CHOICE_NO ]
                 )
                 case choice
                     when CHOICE_NO
@@ -3956,8 +4012,7 @@ class Diakonos
         if prompt != nil
             choice = getChoice(
                 prompt,
-                [ CHOICE_YES, CHOICE_NO ],
-                CHOICE_NO
+                [ CHOICE_YES, CHOICE_NO ]
             )
             case choice
                 when CHOICE_NO
