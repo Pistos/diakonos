@@ -2248,7 +2248,7 @@ class Diakonos
     attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
 
     VERSION = "0.7.10"
-    LAST_MODIFIED = "January 26, 2006"
+    LAST_MODIFIED = "January 27, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3199,15 +3199,13 @@ class Diakonos
         @message_thread = Thread.new do
             time_left = @message_expiry - Time.now
             while time_left > 0
-                @iline_mutex.synchronize do
-                    setILine "(#{time_left.round}) #{message}"
-                end
+                setILine "(#{time_left.round}) #{message}"
+                @win_main.setpos( @saved_main_y, @saved_main_x )
                 sleep 1
                 time_left = @message_expiry - Time.now
             end
-            @iline_mutex.synchronize do
-                setILine message
-            end
+            setILine message
+            @win_main.setpos( @saved_main_y, @saved_main_x )
         end
     end
     
@@ -3216,18 +3214,13 @@ class Diakonos
             @message_thread.terminate
             @message_thread = nil
         end
-        @iline_mutex.synchronize do
-            setILine
-        end
     end
     
     def interactionBlink( message = nil )
         terminateMessage
-        @iline_mutex.synchronize do
-            setILine @settings[ 'interaction.blink_string' ]
-            sleep @settings[ 'interaction.blink_duration' ]
-            setILine message if message != nil
-        end
+        setILine @settings[ 'interaction.blink_string' ]
+        sleep @settings[ 'interaction.blink_duration' ]
+        setILine message if message != nil
     end
 
     # choices should be an array of CHOICE_* constants.
@@ -3235,8 +3228,8 @@ class Diakonos
     def getChoice( prompt, choices, default = nil )
         retval = nil
         
-        cx = @win_main.curx
-        cy = @win_main.cury
+        @saved_main_x = @win_main.curx
+        @saved_main_y = @win_main.cury
 
         msg = prompt + " "
         choice_strings = choices.collect do |choice|
@@ -3245,20 +3238,18 @@ class Diakonos
         msg << choice_strings.join( ", " )
         
         if default.nil?
-            delay = @settings[ 'interaction.choice_delay' ]
+            showMessage msg
         else
-            delay = 0
+            setILine msg
         end
-        showMessage( msg, delay )
         
         c = nil
         while retval.nil?
-            @win_main.setpos( cy, cx )
             c = @win_interaction.getch
     
-            if Time.now < @message_expiry
+            if @message_expiry != nil and Time.now < @message_expiry
                 interactionBlink
-                showMessage( msg, delay )
+                showMessage msg
             else
                 if c == Diakonos::ENTER
                     retval = default
@@ -3279,6 +3270,7 @@ class Diakonos
         end
         
         terminateMessage
+        setILine
 
         return retval
     end
