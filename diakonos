@@ -2754,7 +2754,6 @@ class Diakonos
     end
     
     def registerProc( proc, hook_name, priority = 0 )
-        @hooks[ hook_name ] ||= Array.new
         @hooks[ hook_name ] << { :proc => proc, :priority => priority }
     end
 
@@ -2776,9 +2775,22 @@ class Diakonos
     end
 
     def start
-        @hooks = Hash.new
+        @hooks = {
+            :after_save => [],
+            :after_startup => [],
+        }
         Dir[ "#{@script_dir}/*" ].each do |script|
-            require script
+            begin
+                require script
+            rescue Exception => e
+                showException(
+                    e,
+                    [
+                        "There is a syntax error in the script.",
+                        "An invalid hook name was used."
+                    ]
+                )
+            end
         end
         @hooks.each do |hook_name, hook|
             hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
@@ -2805,6 +2817,8 @@ class Diakonos
             if @post_load_script != nil
                 eval @post_load_script
             end
+            
+            runHookProcs( :after_startup )
             
             # Main keyboard loop.
             while not @quitting
@@ -3104,7 +3118,7 @@ class Diakonos
                 f.puts "Probable Causes:"
                 f.puts
                 probable_causes.each do |pc|
-                    f.puts pc
+                    f.puts "- #{pc}"
                 end
                 f.puts
                 f.puts "----------------------------------------------------"
@@ -3358,6 +3372,12 @@ class Diakonos
     
     def closeListBuffer
         closeFile( @list_buffer )
+    end
+    
+    def runHookProcs( hook_id, *args )
+        @hooks[ hook_id ].each do |hook_proc|
+            hook_proc[ :proc ].call( *args )
+        end
     end
     
     # --------------------------------------------------------------------
@@ -4038,11 +4058,7 @@ class Diakonos
 
     def saveFile( buffer = @current_buffer )
         buffer.save
-        if @hooks[ :after_save ] != nil
-            @hooks[ :after_save ].each do |hook_proc|
-                hook_proc[ :proc ].call( buffer.name )
-            end
-        end
+        runHookProcs( :after_save, buffer )
     end
 
     def saveFileAs
