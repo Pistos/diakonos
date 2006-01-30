@@ -2244,11 +2244,13 @@ class Clipboard
 end
 
 class Diakonos
-    attr_reader :win_main, :settings, :token_regexps, :close_token_regexps, :token_formats, :diakonos_home, :diakonos_conf, :display_mutex
-    attr_reader :indenters, :unindenters, :clipboard, :current_buffer, :list_filename
+    attr_reader :win_main, :settings, :token_regexps, :close_token_regexps
+    attr_reader :token_formats, :diakonos_home, :script_dir, :diakonos_conf
+    attr_reader :display_mutex, :indenters, :unindenters, :clipboard
+    attr_reader :current_buffer, :list_filename, :hooks
 
-    VERSION = "0.7.10"
-    LAST_MODIFIED = "January 27, 2006"
+    VERSION = "0.8.0"
+    LAST_MODIFIED = "January 30, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2381,6 +2383,10 @@ class Diakonos
         if not FileTest.exists? @diakonos_home
             Dir.mkdir @diakonos_home
         end
+        @script_dir = "#{@diakonos_home}/scripts"
+        if not FileTest.exists? @script_dir
+            Dir.mkdir @script_dir
+        end
         @debug = File.new( "#{@diakonos_home}/debug.log", "w" )
         @list_filename = @diakonos_home + "/listing.txt"
 
@@ -2414,7 +2420,7 @@ class Diakonos
         @rlh_files = Array.new
         @rlh_search = Array.new
         @rlh_shell = Array.new
-
+        
         setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure"
     end
 
@@ -2746,6 +2752,11 @@ class Diakonos
         @debug.puts( Time.now.strftime( "[%a %H:%M:%S] #{string}" ) )
         @debug.flush
     end
+    
+    def registerProc( proc, hook_name, priority = 0 )
+        @hooks[ hook_name ] ||= Array.new
+        @hooks[ hook_name ] << { :proc => proc, :priority => priority }
+    end
 
     # -----------------------------------------------------------------------
 
@@ -2765,6 +2776,14 @@ class Diakonos
     end
 
     def start
+        @hooks = Hash.new
+        Dir[ "#{@script_dir}/*" ].each do |script|
+            require script
+        end
+        @hooks.each do |hook_name, hook|
+            hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
+        end
+        
         num_opened = 0
         if @files.length == 0 and @read_only_files.length == 0
             num_opened += 1 if openFile
@@ -4019,6 +4038,11 @@ class Diakonos
 
     def saveFile( buffer = @current_buffer )
         buffer.save
+        if @hooks[ :after_save ] != nil
+            @hooks[ :after_save ].each do |hook_proc|
+                hook_proc[ :proc ].call( buffer.name )
+            end
+        end
     end
 
     def saveFileAs
