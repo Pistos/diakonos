@@ -236,9 +236,10 @@ class String
     def indentation_level( indent_size, indent_roundup, indent_ignore_charset = nil )
         if indent_ignore_charset == nil
             level = 0
-            if self =~ /^([\s#{indent_ignore_charset}]+)/
-                level = $1.length / indent_size
-                if indent_roundup and ( $1.length % indent_size > 0 )
+            if self =~ /^([\s]+)/
+                whitespace = $1.gsub( /\t/, ' ' * $diakonos.current_buffer.tab_size )
+                level = whitespace.length / indent_size
+                if indent_roundup and ( whitespace.length % indent_size > 0 )
                     level += 1
                 end
             end
@@ -246,8 +247,9 @@ class String
             if self =~ /^[\s#{indent_ignore_charset}]*$/ or self == ""
                 level = -1
             elsif self =~ /^([\s#{indent_ignore_charset}]+)/
-                level = $1.length / indent_size
-                if indent_roundup and ( $1.length % indent_size > 0 )
+                whitespace = $1.gsub( /\t/, ' ' * $diakonos.current_buffer.tab_size )
+                level = whitespace.length / indent_size
+                if indent_roundup and ( whitespace.length % indent_size > 0 )
                     level += 1
                 end
             else
@@ -1519,13 +1521,22 @@ class Buffer
 
     def setIndent( row, level, do_display = DO_DISPLAY )
         @lines[ row ] =~ /^([\s#{@indent_ignore_charset}]*)(.*)$/
-        indent_text = ( $1 or "" )
+        current_indent_text = ( $1 or "" )
         rest = ( $2 or "" )
+        current_indent_text.gsub!( /\t/, ' ' * @tab_size )
         indentation = @indent_size * [ level, 0 ].max
-        if indent_text.length >= indentation
-            indent_text = indent_text[ 0...indentation ]
+        if current_indent_text.length >= indentation
+            indent_text = current_indent_text[ 0...indentation ]
         else
-            indent_text << " " * ( indentation - indent_text.length )
+            indent_text = current_indent_text + " " * ( indentation - current_indent_text.length )
+        end
+        if @settings[ "lang.#{@language}.indent.using_tabs" ]
+            num_tabs = 0
+            indent_text.gsub!( / {#{@tab_size}}/ ) { |match|
+                num_tabs += 1
+                "\t"
+            }
+            indentation -= num_tabs * ( @tab_size - 1 )
         end
 
         takeSnapshot( TYPING ) if do_display
@@ -2689,7 +2700,7 @@ class Diakonos
                 when /^lang\.(.+?)\.bangmask$/
                     @bangmasks[ $1 ] = Regexp.new arg
                 when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
-                        /^lang\.(.+?)\.indent\.auto$/, /^lang\.(.+?)\.indent\.roundup$/,
+                        /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs)$/,
                         "found_cursor_start", "convert_tabs"
                     @settings[ command ] = arg.to_b
                 when "context.format", "context.separator.format", "status.format"

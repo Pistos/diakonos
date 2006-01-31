@@ -12,6 +12,8 @@ Diakonos Changelog
 - Critical choices now ignore user input for interaction.choice_delay seconds.
 - Added hooks.
 - Added toggleSelection command.
+- Added lang.*.indent.using_tabs.
+- Fixed some indentation and tab-related bugs.
 
 0.7.9
 
