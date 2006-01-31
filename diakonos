@@ -1601,6 +1601,14 @@ class Buffer
         @last_finding = nil
         display if do_display
     end
+    
+    def toggleSelection
+        if @changing_selection
+            removeSelection
+        else
+            anchorSelection
+        end
+    end
 
     def copySelection
         return selected_text
@@ -2250,7 +2258,7 @@ class Diakonos
     attr_reader :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "January 30, 2006"
+    LAST_MODIFIED = "January 31, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2371,6 +2379,7 @@ class Diakonos
         "switchToPreviousBuffer",
         "toggleBookmark",
         "toggleMacroRecording",
+        "toggleSelection",
         "toggleSessionSetting",
         "undo",
         "unindent",
@@ -4253,6 +4262,11 @@ class Diakonos
 
     def toggleBookmark
         @current_buffer.toggleBookmark
+    end
+    
+    def toggleSelection
+        @current_buffer.toggleSelection
+        updateStatusLine
     end
 
     def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )

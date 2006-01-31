@@ -11,6 +11,7 @@ Diakonos Changelog
 - Default choice removed from critical choices.
 - Critical choices now ignore user input for interaction.choice_delay seconds.
 - Added hooks.
+- Added toggleSelection command.
 
 0.7.9
 
