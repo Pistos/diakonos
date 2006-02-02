@@ -4,5 +4,7 @@ require 'test/unit'
 require 'diakonos'
 
 class TC_Diakonos < Test::Unit::TestCase
-    def test_
+    def test_true
+        assert true
+    end
 end

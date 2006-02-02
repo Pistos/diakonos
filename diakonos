@@ -69,7 +69,7 @@ end
 
 class String
     def subHome
-        return self.gsub( /~/, ENV[ "HOME" ] )
+        return gsub( /~/, ENV[ "HOME" ] )
     end
 
     def keyCode
@@ -1708,7 +1708,7 @@ class Buffer
         finding = nil
         wrapped = false
         
-        catch (:found) do
+        catch :found do
         
             if direction == SEARCH_DOWN
                 # Check the current row first.
@@ -1929,7 +1929,7 @@ class Buffer
         found_text = nil
         wrapped = false
         
-        catch (:found) do
+        catch :found do
             if direction == SEARCH_DOWN
                 # Check the current row first.
                 
