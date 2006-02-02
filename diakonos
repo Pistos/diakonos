@@ -44,7 +44,7 @@ module Enumerable
 end
 
 class Regexp
-    def usesBOS
+    def uses_bos
         return ( /^\^/.match( source ) != nil )
     end
 end
@@ -855,7 +855,7 @@ class Buffer
                     whole_match_index = index = match.begin( 0 )
                     match_text = match[ 0 ]
                 end
-                if ( not regexp.usesBOS ) or ( bos_allowed and ( whole_match_index == 0 ) )
+                if ( not regexp.uses_bos ) or ( bos_allowed and ( whole_match_index == 0 ) )
                     if index < open_index
                         if ( ( not match_close ) or @close_token_regexps[ token_class ] != nil )
                             open_index = index
@@ -887,7 +887,7 @@ class Buffer
                 index = match.begin 0
                 match_text = match[ 0 ]
             end
-            if ( not regexp.usesBOS ) or ( bos_allowed and ( index == 0 ) )
+            if ( not regexp.uses_bos ) or ( bos_allowed and ( index == 0 ) )
                 close_index = index
                 close_match_text = match_text
                 break
