@@ -74,7 +74,7 @@ class String
 
     def keyCode
         retval = nil
-        case self.downcase
+        case downcase
             when "down"
                 retval = KEY_DOWN
             when "up"
@@ -126,13 +126,13 @@ class String
             when /^f(\d\d?)$/
                 retval = KEY_F0 + $1.to_i
             when /^ctrl\+[a-gi-z]$/
-                retval = self.downcase[ -1 ] - 96
+                retval = downcase[ -1 ] - 96
             when /^ctrl\+h$/
                 retval = Diakonos::CTRL_H
             when /^alt\+(.)$/
                 retval = [ Diakonos::ESCAPE, $1[ 0 ] ]
             when /^ctrl\+alt\+(.)$/, /^alt\+ctrl\+(.)$/
-                retval = [ Diakonos::ESCAPE, self.downcase[ -1 ] - 96 ]
+                retval = [ Diakonos::ESCAPE, downcase[ -1 ] - 96 ]
             when /^keycode(\d+)$/
                 retval = $1.to_i
             when /^.$/
@@ -144,7 +144,7 @@ class String
 
     def toFormatting
         formatting = A_NORMAL
-        self.split( /\s+/ ).each do |format|
+        split( /\s+/ ).each do |format|
             case format.downcase
                 when "normal"
                     formatting = A_NORMAL
@@ -187,7 +187,7 @@ class String
 
     def toColourConstant
         retval = COLOR_WHITE
-        case self.downcase
+        case downcase
             when "black", "0"
                 retval = COLOR_BLACK
             when "red", "1"
@@ -220,13 +220,9 @@ class String
         return direction
     end
 
-    def to_a
-        return [self]
-    end
-
     def to_b
         retval = false
-        case self.downcase
+        case downcase
             when "true", "t", "1", "yes", "y", "on", "+"
                 retval = true
         end
@@ -2398,7 +2394,7 @@ class Diakonos
     ]
     LANG_TEXT = "text"
 
-    def initialize( argv )
+    def initialize( argv = [] )
         @diakonos_home = ( ( ENV[ "HOME" ] or "" ) + "/.diakonos" ).subHome
         if not FileTest.exists? @diakonos_home
             Dir.mkdir @diakonos_home
@@ -2412,6 +2408,7 @@ class Diakonos
 
         @files = Array.new
         @read_only_files = Array.new
+        @config_filename = nil
         parseOptions argv
         @session_settings = Hash.new
         loadConfiguration
@@ -2440,8 +2437,6 @@ class Diakonos
         @rlh_files = Array.new
         @rlh_search = Array.new
         @rlh_shell = Array.new
-        
-        setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure"
     end
 
     def parseOptions( argv )
@@ -2460,12 +2455,10 @@ class Diakonos
                         @read_only_files.push filename
                     end
                 when "-c", "--config"
-                    config_filename = argv.shift
-                    if config_filename == nil
+                    @config_filename = argv.shift
+                    if @config_filename == nil
                         printUsage
                         exit 1
-                    else
-                        @config_filename = config_filename
                     end
                 when "-e", "--execute"
                     post_load_script = argv.shift
@@ -2543,9 +2536,6 @@ class Diakonos
         @keychains[ [ RESIZE2 ] ] = [ "redraw", nil ]
 
         begin
-            if @win_main != nil
-                @win_main.close
-            end
             if @win_status != nil
                 @win_status.close
             end
@@ -2556,21 +2546,24 @@ class Diakonos
                 @win_context.close
             end
 
-            init_screen
-            nonl
-            raw
-            noecho
+            if @win_main != nil
+                @win_main.close
+                init_screen
+                nonl
+                raw
+                noecho
 
-            if has_colors?
-                start_color
-                init_pair( COLOR_BLACK, COLOR_BLACK, COLOR_BLACK )
-                init_pair( COLOR_RED, COLOR_RED, COLOR_BLACK )
-                init_pair( COLOR_GREEN, COLOR_GREEN, COLOR_BLACK )
-                init_pair( COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK )
-                init_pair( COLOR_BLUE, COLOR_BLUE, COLOR_BLACK )
-                init_pair( COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK )
-                init_pair( COLOR_CYAN, COLOR_CYAN, COLOR_BLACK )
-                init_pair( COLOR_WHITE, COLOR_WHITE, COLOR_BLACK )
+                if has_colors?
+                    start_color
+                    init_pair( COLOR_BLACK, COLOR_BLACK, COLOR_BLACK )
+                    init_pair( COLOR_RED, COLOR_RED, COLOR_BLACK )
+                    init_pair( COLOR_GREEN, COLOR_GREEN, COLOR_BLACK )
+                    init_pair( COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK )
+                    init_pair( COLOR_BLUE, COLOR_BLUE, COLOR_BLACK )
+                    init_pair( COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK )
+                    init_pair( COLOR_CYAN, COLOR_CYAN, COLOR_BLACK )
+                    init_pair( COLOR_WHITE, COLOR_WHITE, COLOR_BLACK )
+                end
             end
 
             parseConfigurationFile( @global_diakonos_conf )
@@ -2581,29 +2574,6 @@ class Diakonos
             @session_settings.each do |key,value|
                 @settings[ key ] = value
             end
-
-            @win_main = Window.new( main_window_height, cols, 0, 0 )
-            @win_main.keypad( true )
-            @win_status = Window.new( 1, cols, lines - 2, 0 )
-            @win_status.keypad( true )
-            @win_status.attrset @settings[ "status.format" ]
-            @win_interaction = Window.new( 1, cols, lines - 1, 0 )
-            @win_interaction.keypad( true )
-            
-            if @settings[ "context.visible" ]
-                if @settings[ "context.combined" ]
-                    pos = 1
-                else
-                    pos = 3
-                end
-                @win_context = Window.new( 1, cols, lines - pos, 0 )
-                @win_context.keypad( true )
-            else
-                @win_context = nil
-            end
-
-            @win_interaction.refresh
-            @win_main.refresh
 
             @clipboard = Clipboard.new @settings[ "max_clips" ]
             @log = File.open( @logfilename, "a" )
@@ -2795,6 +2765,29 @@ class Diakonos
     end
 
     def start
+        @win_main = Window.new( main_window_height, cols, 0, 0 )
+        @win_main.keypad( true )
+        @win_status = Window.new( 1, cols, lines - 2, 0 )
+        @win_status.keypad( true )
+        @win_status.attrset @settings[ "status.format" ]
+        @win_interaction = Window.new( 1, cols, lines - 1, 0 )
+        @win_interaction.keypad( true )
+        
+        if @settings[ "context.visible" ]
+            if @settings[ "context.combined" ]
+                pos = 1
+            else
+                pos = 3
+            end
+            @win_context = Window.new( 1, cols, lines - pos, 0 )
+            @win_context.keypad( true )
+        else
+            @win_context = nil
+        end
+
+        @win_interaction.refresh
+        @win_main.refresh
+        
         @hooks = {
             :after_save => [],
             :after_startup => [],
@@ -2815,6 +2808,8 @@ class Diakonos
         @hooks.each do |hook_name, hook|
             hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
         end
+
+        setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure"
         
         num_opened = 0
         if @files.length == 0 and @read_only_files.length == 0
