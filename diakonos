@@ -45,7 +45,7 @@ end
 
 class Regexp
     def usesBOS
-        return ( source =~ /^\^/ )
+        return ( /^\^/.match( source ) != nil )
     end
 end
 
@@ -4508,5 +4508,7 @@ class Diakonos::Readline
     end
 end
 
-$diakonos = Diakonos.new( ARGV )
-$diakonos.start
+if __FILE__ == $0
+    $diakonos = Diakonos.new( ARGV )
+    $diakonos.start
+end
