@@ -15,6 +15,7 @@ Diakonos Changelog
 - Added lang.*.indent.using_tabs.
 - Fixed some indentation and tab-related bugs.
 - Added YAML syntax highlighting.
+- Refactored lots of code and began using unit tests.
 
 0.7.9
 
