@@ -324,7 +324,7 @@ class String
         return i, match_text
     end
     
-    # Works like normal String#index except returns the index
+    # Works like normal String#rindex except returns the index
     # of the first matching regexp group if one or more groups are specified
     # in the regexp. Both the index and the matched text are returned.
     def group_rindex( regexp, offset = length )
@@ -757,15 +757,8 @@ class Buffer
     end
 
     def display
-        if @display_thread != nil and @display_thread.alive?
-            @display_thread.exit
-            if @language != @original_language
-                setLanguage( @original_language )
-            end
-        end
-        
-        @display_thread = Thread.new do ||
-            @diakonos.display_mutex.synchronize do
+        if @diakonos.display_mutex.try_lock
+            loop do
                 begin
                     curs_set 0
                     
@@ -831,6 +824,16 @@ class Buffer
                     end
                     
                     curs_set 1
+                    
+                    done = false
+                    @diakonos.redisplay_mutex.synchronize do
+                        if @redisplay
+                            @redisplay = false
+                        else
+                            done = true
+                        end
+                    end
+                    break if done
                 rescue Exception => e
                     $diakonos.log( "Display Exception:" )
                     $diakonos.log( e.message )
@@ -838,8 +841,12 @@ class Buffer
                     showException e
                 end
             end
+            @diakonos.display_mutex.unlock
+        else
+            @diakonos.redisplay_mutex.synchronize do
+                @redisplay = true
+            end
         end
-        
     end
 
     def findOpeningMatch( line, match_close = true, bos_allowed = true )
@@ -1378,10 +1385,6 @@ class Buffer
 
     # Returns true iff the cursor changed positions in the buffer.
     def cursorTo( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = Diakonos::ADJUST_ROW )
-        @diakonos.display_mutex.synchronize do
-            # Wait for display to finish...
-        end
-    
         old_last_row = @last_row
         old_last_col = @last_col
         
@@ -1424,7 +1427,6 @@ class Buffer
         view_changed = showCharacter( row, new_col )
         @last_screen_y = row - @top_line
         @last_screen_x = new_col - @left_column
-        @win_main.setpos( @last_screen_y, @last_screen_x )
         
         @typing = false if stopped_typing
         @last_row = row
@@ -1439,6 +1441,8 @@ class Buffer
             end
             if removed or ( do_display and ( @mark_anchor != nil or view_changed ) )
                 display
+            else
+                @win_main.setpos( @last_screen_y, @last_screen_x )
             end
             @diakonos.updateStatusLine
             @diakonos.updateContextLine
@@ -2267,10 +2271,10 @@ class Clipboard
 end
 
 class Diakonos
-    attr_reader :win_main, :settings, :token_regexps, :close_token_regexps
-    attr_reader :token_formats, :diakonos_home, :script_dir, :diakonos_conf
-    attr_reader :display_mutex, :indenters, :unindenters, :clipboard
-    attr_reader :current_buffer, :list_filename, :hooks
+    attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
+        :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
+        :redisplay_mutex, :redisplay, :indenters, :unindenters, :clipboard,
+        :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
     LAST_MODIFIED = "February 3, 2006"
@@ -2446,6 +2450,8 @@ class Diakonos
         @last_command = nil
         @playing_macro = false
         @display_mutex = Mutex.new
+        @redisplay_mutex = Mutex.new
+        @redisplay = false
         @iline_mutex = Mutex.new
         @tag_stack = Array.new
         @last_search_regexps = nil
@@ -2532,6 +2538,9 @@ class Diakonos
             init_pair( COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK )
             init_pair( COLOR_CYAN, COLOR_CYAN, COLOR_BLACK )
             init_pair( COLOR_WHITE, COLOR_WHITE, COLOR_BLACK )
+            @colour_pairs.each do |cp|
+                init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
+            end
         end
         
         @win_main = Window.new( main_window_height, cols, 0, 0 )
@@ -2611,6 +2620,8 @@ class Diakonos
         
         @keychains[ [ KEY_RESIZE ] ] = [ "redraw", nil ]
         @keychains[ [ RESIZE2 ] ] = [ "redraw", nil ]
+        
+        @colour_pairs = Array.new
 
         begin
             parseConfigurationFile( @global_diakonos_conf )
@@ -2688,7 +2699,11 @@ class Diakonos
                     number = number.to_i
                     fg = fg.toColourConstant
                     bg = bg.toColourConstant
-                    init_pair( number, fg, bg )
+                    @colour_pairs << {
+                        :number => number,
+                        :fg => fg,
+                        :bg => bg
+                    }
                 when /^lang\.(.+?)\.indent\.indenters(\.case_insensitive)?$/
                     case_insensitive = ( $2 != nil )
                     if case_insensitive

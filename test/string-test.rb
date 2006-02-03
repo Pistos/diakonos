@@ -129,4 +129,32 @@ class TC_String < Test::Unit::TestCase
         s = "\t         \t"
         assert_equal( " " * 8*3, s.expandTabs( 8 ) )
     end
+    
+    def test_group_index
+        s = "abc def ghi"
+        assert_equal(
+            [ 0, "abc" ],
+            s.group_index( /abc/ )
+        )
+        assert_equal(
+            [ 4, "def" ],
+            s.group_index( /def/ )
+        )
+        assert_equal(
+            [ 1, "b" ],
+            s.group_index( /a(b)c/ )
+        )
+        assert_equal(
+            [ 1, "b" ],
+            s.group_index( /a(b)c d(e)f/ )
+        )
+        assert_equal(
+            [ nil, nil ],
+            s.group_index( /q/ )
+        )
+        assert_equal(
+            [ 3, '' ],
+            s.group_index( /abc(q?)/ )
+        )
+    end
 end
