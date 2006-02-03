@@ -233,7 +233,8 @@ class String
         if indent_ignore_charset == nil
             level = 0
             if self =~ /^([\s]+)/
-                whitespace = $1.gsub( /\t/, ' ' * tab_size )
+                #whitespace = $1.gsub( /\t/, ' ' * tab_size )
+                whitespace = $1.expandTabs( tab_size )
                 level = whitespace.length / indent_size
                 if indent_roundup and ( whitespace.length % indent_size > 0 )
                     level += 1
@@ -243,7 +244,8 @@ class String
             if self =~ /^[\s#{indent_ignore_charset}]*$/ or self == ""
                 level = -1
             elsif self =~ /^([\s#{indent_ignore_charset}]+)/
-                whitespace = $1.gsub( /\t/, ' ' * tab_size )
+                #whitespace = $1.gsub( /\t/, ' ' * tab_size )
+                whitespace = $1.expandTabs( tab_size )
                 level = whitespace.length / indent_size
                 if indent_roundup and ( whitespace.length % indent_size > 0 )
                     level += 1
@@ -256,7 +258,7 @@ class String
         return level
     end
     
-    def expandTabs( tab_size = $diakonos.current_buffer.tab_size )
+    def expandTabs( tab_size = Diakonos::DEFAULT_TAB_SIZE )
         s = dup
         while s.sub!( /\t/ ) { |match_text|
                 match = Regexp.last_match
@@ -798,7 +800,7 @@ class Buffer
                     y = 0
                     @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
                         @win_main.setpos( y, 0 )
-                        printLine line.expandTabs
+                        printLine line.expandTabs( @tab_size )
                         @win_main.setpos( y, 0 )
                         paintMarks @top_line + row
                         y += 1
@@ -976,7 +978,7 @@ class Buffer
     def paintMarks( row )
         string = @lines[ row ][ @left_column ... @left_column + cols ]
         return if string == nil or string == ""
-        string = string.expandTabs
+        string = string.expandTabs( @tab_size )
         cury = @win_main.cury
         curx = @win_main.curx
         
@@ -1165,6 +1167,7 @@ class Buffer
                         
                     if @name == @diakonos.diakonos_conf
                         @diakonos.loadConfiguration
+                        initializeDisplay
                     end
                     
                     @modified = false
@@ -2411,6 +2414,7 @@ class Diakonos
         @files = Array.new
         @read_only_files = Array.new
         @config_filename = nil
+        
         parseOptions argv
         
         @session_settings = Hash.new
@@ -2419,7 +2423,9 @@ class Diakonos
         @win_status = nil
         @win_interaction = nil
         @buffers = BufferHash.new
+        
         loadConfiguration
+        
         @quitting = false
         @untitled_id = 0
 
@@ -2491,6 +2497,39 @@ class Diakonos
         puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
     end
     protected :printUsage
+    
+    def initializeDisplay
+        if @win_status != nil
+            @win_status.close
+        end
+        if @win_interaction != nil
+            @win_interaction.close
+        end
+        if @win_context != nil
+            @win_context.close
+        end
+
+        if @win_main != nil
+            @win_main.close
+        end
+        
+        init_screen
+        nonl
+        raw
+        noecho
+
+        if has_colors?
+            start_color
+            init_pair( COLOR_BLACK, COLOR_BLACK, COLOR_BLACK )
+            init_pair( COLOR_RED, COLOR_RED, COLOR_BLACK )
+            init_pair( COLOR_GREEN, COLOR_GREEN, COLOR_BLACK )
+            init_pair( COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK )
+            init_pair( COLOR_BLUE, COLOR_BLUE, COLOR_BLACK )
+            init_pair( COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK )
+            init_pair( COLOR_CYAN, COLOR_CYAN, COLOR_BLACK )
+            init_pair( COLOR_WHITE, COLOR_WHITE, COLOR_BLACK )
+        end
+    end
 
     def loadConfiguration
         # Set defaults first
@@ -2543,36 +2582,6 @@ class Diakonos
         @keychains[ [ RESIZE2 ] ] = [ "redraw", nil ]
 
         begin
-            if @win_status != nil
-                @win_status.close
-            end
-            if @win_interaction != nil
-                @win_interaction.close
-            end
-            if @win_context != nil
-                @win_context.close
-            end
-
-            if @win_main != nil
-                @win_main.close
-                init_screen
-                nonl
-                raw
-                noecho
-
-                if has_colors?
-                    start_color
-                    init_pair( COLOR_BLACK, COLOR_BLACK, COLOR_BLACK )
-                    init_pair( COLOR_RED, COLOR_RED, COLOR_BLACK )
-                    init_pair( COLOR_GREEN, COLOR_GREEN, COLOR_BLACK )
-                    init_pair( COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK )
-                    init_pair( COLOR_BLUE, COLOR_BLUE, COLOR_BLACK )
-                    init_pair( COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK )
-                    init_pair( COLOR_CYAN, COLOR_CYAN, COLOR_BLACK )
-                    init_pair( COLOR_WHITE, COLOR_WHITE, COLOR_BLACK )
-                end
-            end
-
             parseConfigurationFile( @global_diakonos_conf )
             parseConfigurationFile( @diakonos_conf )
             
@@ -2735,6 +2744,7 @@ class Diakonos
 
     def redraw
         loadConfiguration
+        initializeDisplay
         updateStatusLine
         updateContextLine
         @current_buffer.display
@@ -2772,6 +2782,8 @@ class Diakonos
     end
 
     def start
+        initializeDisplay
+        
         @win_main = Window.new( main_window_height, cols, 0, 0 )
         @win_main.keypad( true )
         @win_status = Window.new( 1, cols, lines - 2, 0 )
