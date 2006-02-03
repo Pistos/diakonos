@@ -757,6 +757,7 @@ class Buffer
     end
 
     def display
+        Thread.new do
         if @diakonos.display_mutex.try_lock
             loop do
                 begin
@@ -846,6 +847,7 @@ class Buffer
             @diakonos.redisplay_mutex.synchronize do
                 @redisplay = true
             end
+        end
         end
     end
 
@@ -1442,7 +1444,9 @@ class Buffer
             if removed or ( do_display and ( @mark_anchor != nil or view_changed ) )
                 display
             else
-                @win_main.setpos( @last_screen_y, @last_screen_x )
+                @diakonos.display_mutex.synchronize do
+                    @win_main.setpos( @last_screen_y, @last_screen_x )
+                end
             end
             @diakonos.updateStatusLine
             @diakonos.updateContextLine
