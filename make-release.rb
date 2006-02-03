@@ -25,14 +25,24 @@ end
 
 version = ARGV[ 0 ]
 
+release_files = [
+    'CHANGELOG',
+    'diakonos',
+    'diakonos.conf',
+    'home-on-save.rb',
+    'package.rb',
+    'README',
+    'setup.rb',
+]
+
 Dir.chdir
 Dir.chdir( "src" )
 puts "Changed to #{Dir.pwd}".brightGreen
 doCommand( "svn -m 'Tagging Diakonos version #{version}.' cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
 doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
 doCommand( "rm -f diakonos-#{version}/make-release.rb" )
-doCommand( "tar cjvf diakonos-#{version}.tar.bz2 diakonos-#{version}" )
-doCommand( "tar czvf diakonos-#{version}.tar.gz diakonos-#{version}" )
+doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + release_files.collect { |f| "diakonos-#{version}/#{f}" } )
+doCommand( "tar czvf diakonos-#{version}.tar.gz " + release_files.collect { |f| "diakonos-#{version}/#{f}" } )
 doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}/CHANGELOG diakonos-#{version}/README pistos@purepistos.net:/home/pistos/www/diakonos" )
 
 puts "Release complete."
