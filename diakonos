@@ -610,7 +610,8 @@ class Finding
 end
 
 class Buffer
-    attr_reader :name, :modified, :original_language, :changing_selection, :read_only, :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col
+    attr_reader :name, :modified, :original_language, :changing_selection, :read_only,
+        :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col
     attr_writer :desired_column, :read_only
 
     SELECTION = 0
@@ -710,9 +711,13 @@ class Buffer
                 Diakonos::LANG_TEXT
             )
         )
-        @win_main = @diakonos.win_main
+        reset_win_main
         setLanguage language
         @original_language = @language
+    end
+    
+    def reset_win_main
+        @win_main = @diakonos.win_main
     end
 
     def setLanguage( language )
@@ -1167,7 +1172,7 @@ class Buffer
                         
                     if @name == @diakonos.diakonos_conf
                         @diakonos.loadConfiguration
-                        initializeDisplay
+                        @diakonos.initializeDisplay
                     end
                     
                     @modified = false
@@ -2268,7 +2273,7 @@ class Diakonos
     attr_reader :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "January 31, 2006"
+    LAST_MODIFIED = "February 3, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2499,6 +2504,9 @@ class Diakonos
     protected :printUsage
     
     def initializeDisplay
+        if @win_main != nil
+            @win_main.close
+        end
         if @win_status != nil
             @win_status.close
         end
@@ -2509,10 +2517,6 @@ class Diakonos
             @win_context.close
         end
 
-        if @win_main != nil
-            @win_main.close
-        end
-        
         init_screen
         nonl
         raw
@@ -2529,8 +2533,35 @@ class Diakonos
             init_pair( COLOR_CYAN, COLOR_CYAN, COLOR_BLACK )
             init_pair( COLOR_WHITE, COLOR_WHITE, COLOR_BLACK )
         end
-    end
+        
+        @win_main = Window.new( main_window_height, cols, 0, 0 )
+        @win_main.keypad( true )
+        @win_status = Window.new( 1, cols, lines - 2, 0 )
+        @win_status.keypad( true )
+        @win_status.attrset @settings[ "status.format" ]
+        @win_interaction = Window.new( 1, cols, lines - 1, 0 )
+        @win_interaction.keypad( true )
+        
+        if @settings[ "context.visible" ]
+            if @settings[ "context.combined" ]
+                pos = 1
+            else
+                pos = 3
+            end
+            @win_context = Window.new( 1, cols, lines - pos, 0 )
+            @win_context.keypad( true )
+        else
+            @win_context = nil
+        end
 
+        @win_interaction.refresh
+        @win_main.refresh
+        
+        @buffers.each_value do |buffer|
+            buffer.reset_win_main
+        end
+    end
+    
     def loadConfiguration
         # Set defaults first
 
@@ -2590,7 +2621,7 @@ class Diakonos
             @session_settings.each do |key,value|
                 @settings[ key ] = value
             end
-
+            
             @clipboard = Clipboard.new @settings[ "max_clips" ]
             @log = File.open( @logfilename, "a" )
 
@@ -2783,29 +2814,6 @@ class Diakonos
 
     def start
         initializeDisplay
-        
-        @win_main = Window.new( main_window_height, cols, 0, 0 )
-        @win_main.keypad( true )
-        @win_status = Window.new( 1, cols, lines - 2, 0 )
-        @win_status.keypad( true )
-        @win_status.attrset @settings[ "status.format" ]
-        @win_interaction = Window.new( 1, cols, lines - 1, 0 )
-        @win_interaction.keypad( true )
-        
-        if @settings[ "context.visible" ]
-            if @settings[ "context.combined" ]
-                pos = 1
-            else
-                pos = 3
-            end
-            @win_context = Window.new( 1, cols, lines - pos, 0 )
-            @win_context.keypad( true )
-        else
-            @win_context = nil
-        end
-
-        @win_interaction.refresh
-        @win_main.refresh
         
         @hooks = {
             :after_save => [],
