@@ -229,11 +229,11 @@ class String
         return retval
     end
 
-    def indentation_level( indent_size, indent_roundup, indent_ignore_charset = nil )
+    def indentation_level( indent_size, indent_roundup, tab_size = Diakonos::DEFAULT_TAB_SIZE, indent_ignore_charset = nil )
         if indent_ignore_charset == nil
             level = 0
             if self =~ /^([\s]+)/
-                whitespace = $1.gsub( /\t/, ' ' * $diakonos.current_buffer.tab_size )
+                whitespace = $1.gsub( /\t/, ' ' * tab_size )
                 level = whitespace.length / indent_size
                 if indent_roundup and ( whitespace.length % indent_size > 0 )
                     level += 1
@@ -243,7 +243,7 @@ class String
             if self =~ /^[\s#{indent_ignore_charset}]*$/ or self == ""
                 level = -1
             elsif self =~ /^([\s#{indent_ignore_charset}]+)/
-                whitespace = $1.gsub( /\t/, ' ' * $diakonos.current_buffer.tab_size )
+                whitespace = $1.gsub( /\t/, ' ' * tab_size )
                 level = whitespace.length / indent_size
                 if indent_roundup and ( whitespace.length % indent_size > 0 )
                     level += 1
@@ -728,7 +728,7 @@ class Buffer
         @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or A_NORMAL )
         @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or A_REVERSE )
         @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
-        @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or 8 )
+        @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or Diakonos::DEFAULT_TAB_SIZE )
     end
     protected :setLanguage
 
@@ -1556,7 +1556,7 @@ class Buffer
                 level = 0
             else
                 prev_line = @lines[ row - i ]
-                level = prev_line.indentation_level( @indent_size, @indent_roundup, @indent_ignore_charset )
+                level = prev_line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
 
                 if @preventers != nil
                     prev_line2 = prev_line.gsub( @preventers, "" )
@@ -1585,12 +1585,12 @@ class Buffer
     end
 
     def indent( row = @last_row, do_display = DO_DISPLAY )
-        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup )
+        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size )
         setIndent( row, level + 1, do_display )
     end
 
     def unindent( row = @last_row, do_display = DO_DISPLAY )
-        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup )
+        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size )
         setIndent( row, level - 1, do_display )
     end
 
@@ -2136,17 +2136,17 @@ class Buffer
     def context
         retval = Array.new
         row = @last_row
-        clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @indent_ignore_charset )
+        clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
         while row > 0 and clevel < 0
             row = row - 1
-            clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @indent_ignore_charset )
+            clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
         end
         clevel = 0 if clevel < 0
         while row > 0
             row = row - 1
             line = @lines[ row ]
             if line !~ @settings[ "lang.#{@language}.context.ignore" ]
-                level = line.indentation_level( @indent_size, @indent_roundup, @indent_ignore_charset )
+                level = line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
                 if level < clevel and level > -1
                     retval.unshift line
                     clevel = level
@@ -2285,6 +2285,8 @@ class Diakonos
     CTRL_Q = 17
     CTRL_H = 263
     RESIZE2 = 4294967295
+    
+    DEFAULT_TAB_SIZE = 8
 
     CHOICE_NO = 0
     CHOICE_YES = 1
@@ -2410,7 +2412,13 @@ class Diakonos
         @read_only_files = Array.new
         @config_filename = nil
         parseOptions argv
+        
         @session_settings = Hash.new
+        @win_main = nil
+        @win_context = nil
+        @win_status = nil
+        @win_interaction = nil
+        @buffers = BufferHash.new
         loadConfiguration
         @quitting = false
         @untitled_id = 0
@@ -2418,7 +2426,6 @@ class Diakonos
         @x = 0
         @y = 0
 
-        @buffers = BufferHash.new
         @buffer_stack = Array.new
         @current_buffer = nil
         @bookmarks = Hash.new
