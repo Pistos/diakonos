@@ -25,8 +25,15 @@ require "curses"
 require "open3"
 require "thread"
 require "English"
+require 'set'
 
 include Curses
+
+class Object
+    def deep_clone
+        Marshal::load( Marshal.dump( self ) )
+    end
+end
 
 module Enumerable
     # Returns [array-index, string-index, string-index] triples for each match.
@@ -49,6 +56,104 @@ class Regexp
     end
 end
 
+class Hash
+    # path is an array of hash keys
+    # This method deletes a path of hash keys, with each step in the path
+    # being a recursively deeper key in a hash tree.
+    # Returns the possibly modified hash.
+    def deleteKeyPath( path )
+        if path.length > 1
+            subtree = self[ path[ 0 ] ]
+            if subtree.respond_to?( :deleteKeyPath )
+                subtree.deleteKeyPath( path[ 1..-1 ] )
+                if subtree.empty?
+                    delete( path[ 0 ] )
+                end
+            end
+        elsif path.length == 1
+            delete( path[ 0 ] )
+        end
+        
+        return self
+    end
+    
+    def setKeyPath( path, leaf )
+        if path.length > 1
+            self[ path[ 0 ] ] ||= Hash.new
+            self[ path[ 0 ] ].setKeyPath( path[ 1..-1 ], leaf )
+        elsif path.length == 1
+            self[ path[ 0 ] ] = leaf
+        end
+        
+        return self
+    end
+    
+    def getNode( path )
+        node = self[ path[ 0 ] ]
+        if path.length > 1
+            if node != nil and node.respond_to?( :getNode )
+                return node.getNode( path[ 1..-1 ] )
+            end
+        elsif path.length == 1
+            return node
+        end
+        
+        return nil
+    end
+    
+    def getLeaf( path )
+        node = getNode( path )
+        if node.respond_to?( :getNode )
+            # Only want a leaf node
+            return nil
+        else
+            return node
+        end
+    end
+    
+    def leaves( _leaves = Set.new )
+        each_value do |value|
+            if value.respond_to?( :leaves )
+                _leaves.merge value.leaves( _leaves )
+            else
+                _leaves << value
+            end
+        end
+        
+        return _leaves
+    end
+    
+    def paths_and_leaves( path_so_far = [], _paths_and_leaves = Set.new )
+        each do |key, value|
+            if value.respond_to?( :paths_and_leaves )
+                _paths_and_leaves.merge(
+                    value.paths_and_leaves(
+                        path_so_far + [ key ],
+                        _paths_and_leaves
+                    )
+                )
+            else
+                _paths_and_leaves << {
+                    :path => path_so_far + [ key ],
+                    :leaf => value
+                }
+            end
+        end
+        
+        return _paths_and_leaves
+    end
+    
+    def each_path_and_leaf( path_so_far = [] )
+        each do |key, value|
+            if value.respond_to?( :each_path_and_leaf )
+                value.each_path_and_leaf( path_so_far + [ key ] ) { |path, leaf| yield( path, leaf ) }
+            else
+                yield( path_so_far + [ key ], value )
+            end
+        end
+    end
+end
+
 class BufferHash < Hash
     def [] ( key )
         case key
@@ -64,6 +169,16 @@ class BufferHash < Hash
                 key = File.expand_path( key )
         end
         super
+    end
+end
+
+class Array
+    def to_keychain_s
+        chain_str = ""
+        each do |key|
+            chain_str << key.keyString + " "
+        end
+        return chain_str
     end
 end
 
@@ -468,6 +583,9 @@ module KeyCode
                 when Diakonos::RESIZE2
                     retval = "resize2"
             end
+        end
+        if retval == nil and self.class == Fixnum
+            retval = "(keycode #{self})"
         end
         return retval
     end
@@ -1725,12 +1843,6 @@ class Buffer
             if direction == SEARCH_DOWN
                 # Check the current row first.
                 
-                #$diakonos.debugLog "@last_row: #{@last_row}"
-                #$diakonos.debugLog "@lines[ @last_row ]: #{@lines[ @last_row ]}"
-                #$diakonos.debugLog "@last_finding.start_col: " + ( @last_finding ? @last_finding.start_col : "nil" ).to_s
-                #$diakonos.debugLog "@last_col: #{@last_col}"
-                #$diakonos.debugLog "index: " + ( @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) + 1 ) || "" ).to_s
-                
                 if index = @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) + 1 )
                     found_text = Regexp.last_match[ 0 ]
                     finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
@@ -1788,11 +1900,6 @@ class Buffer
                 
             elsif direction == SEARCH_UP
                 # Check the current row first.
-                
-                #$diakonos.debugLog "@last_row: #{@last_row}"
-                #$diakonos.debugLog "@lines[ @last_row ]: #{@lines[ @last_row ]}"
-                #$diakonos.debugLog "@last_col: #{@last_col}"
-                #$diakonos.debugLog "index: " + ( index = @lines[ @last_row ][ 0...@last_col ].rindex( regexp ) ).to_s
                 
                 col_to_check = ( @last_finding ? @last_finding.end_col : @last_col ) - 1
                 if ( col_to_check >= 0 ) and ( index = @lines[ @last_row ][ 0...col_to_check ].rindex( regexp ) )
@@ -2074,10 +2181,10 @@ class Buffer
                 undo_size = undo_size - popped_state.length
             end
             if @current_buffer_state > 0
-                @buffer_states.unshift @lines.dup
+                @buffer_states.unshift @lines.deep_clone
                 @cursor_states.unshift [ @last_row, @last_col ]
             end
-            @buffer_states.unshift @lines.dup
+            @buffer_states.unshift @lines.deep_clone
             @cursor_states.unshift [ @last_row, @last_col ]
             @current_buffer_state = 0
             @lines = @buffer_states[ @current_buffer_state ]
@@ -2281,7 +2388,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "February 3, 2006"
+    LAST_MODIFIED = "February 7, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2622,8 +2729,8 @@ class Diakonos
         # Setup some defaults
         @settings[ "context.format" ] = A_REVERSE
         
-        @keychains[ [ KEY_RESIZE ] ] = [ "redraw", nil ]
-        @keychains[ [ RESIZE2 ] ] = [ "redraw", nil ]
+        @keychains[ KEY_RESIZE ] = [ "redraw", nil ]
+        @keychains[ RESIZE2 ] = [ "redraw", nil ]
         
         @colour_pairs = Array.new
 
@@ -2649,7 +2756,7 @@ class Diakonos
             # No config file found or readable
         end
     end
-
+    
     def parseConfigurationFile( filename )
         return if not FileTest.exists? filename
 
@@ -2677,11 +2784,14 @@ class Diakonos
                             end
                         end
                         if function_and_args == nil
-                            @keychains.delete keystrokes
+                            @keychains.deleteKeyPath( keystrokes )
                         else
                             function, function_args = function_and_args.split( /\s+/, 2 )
                             if FUNCTIONS.include? function
-                                @keychains[ keystrokes ] = [ function, function_args ]
+                                @keychains.setKeyPath(
+                                    keystrokes,
+                                    [ function, function_args ]
+                                )
                             end
                         end
                     end
@@ -2889,85 +2999,57 @@ class Diakonos
             @debug.close
         end
     end
-
+    
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def getKeystroke( context = nil )
         c = @win_main.getch
 
-        found = false
         if context == nil
+            case c
+                when PRINTABLE_CHARACTERS
+                    if @macro_history != nil
+                        @macro_history.push "typeCharacter #{c}"
+                    end
+                    typeCharacter c
+                    return
+            end
             keychain_pressed = [ c ]
         else
             keychain_pressed = context.concat [ c ]
         end
-
-        @keychains.each do |keychain, function_and_args|
-            if keychain_pressed == keychain
-                function = function_and_args[ 0 ]
-                args = function_and_args[ 1 ]
-                begin
-                    # A valid keychain was pressed.
-                    
-                    setILine if not @settings[ "context.combined" ]
-                    if args != nil
-                        to_eval = "#{function}( #{args} )"
-                    else
-                        to_eval = function
-                    end
-                    if @macro_history != nil
-                        @macro_history.push to_eval
-                    end
-                    eval to_eval, nil, "eval"
-                    @last_command = to_eval unless to_eval == "repeatLast"
-                rescue Exception => e
-                    debugLog e.message
-                    debugLog e.backtrace.join( "\n\t" )
-                    showException e
-                end
-                found = true
-                break
+        
+        function_and_args = @keychains.getLeaf( keychain_pressed )
+        
+        if function_and_args != nil
+            function, args = function_and_args
+            setILine if not @settings[ "context.combined" ]
+            
+            if args != nil
+                to_eval = "#{function}( #{args} )"
+            else
+                to_eval = function
             end
-        end
-
-        if not found
-            kclen = keychain_pressed.length
-            keychain_found = false
-            @keychains.each_key do |keychain|
-                if keychain[ 0...kclen ] == keychain_pressed
-                    keychain_found = true
-                    break
-                end
+            
+            if @macro_history != nil
+                @macro_history.push to_eval
             end
-            if keychain_found
-                chain_str = ""
-                keychain_pressed.each do |key|
-                    chain_str << key.keyString + " "
-                end
-                setILine chain_str + "..."
+            
+            begin
+                eval to_eval, nil, "eval"
+                @last_command = to_eval unless to_eval == "repeatLast"
+            rescue Exception => e
+                debugLog e.message
+                debugLog e.backtrace.join( "\n\t" )
+                showException e
+            end
+        else
+            partial_keychain = @keychains.getNode( keychain_pressed )
+            if partial_keychain != nil
+                setILine( keychain_pressed.to_keychain_s + "..." )
                 getKeystroke( keychain_pressed )
             else
-                if context == nil
-                    case c
-                        when PRINTABLE_CHARACTERS
-                            if @macro_history != nil
-                                @macro_history.push "typeCharacter #{c}"
-                            end
-                            typeCharacter c
-                            found = true
-                    end
-                end
-
-                if not found
-                    iline = ""
-                    chain_str = ""
-                    keychain_pressed.each do |key|
-                        chain_str << ( key.keyString or "(keycode #{c})" ) + " "
-                    end
-                    iline << chain_str
-                    
-                    setILine "Nothing assigned to #{iline}"
-                end
+                setILine "Nothing assigned to #{keychain_pressed.to_keychain_s}"
             end
         end
     end
@@ -3838,19 +3920,23 @@ class Diakonos
     def help
         help_filename = @diakonos_home + "/diakonos.help"
         File.open( help_filename, "w" ) do |help_file|
-            sorted_keychains = @keychains.sort { |a,b| a[ 1 ][ 0 ] <=> b[ 1 ][ 0 ] }
-            sorted_keychains.each do |keystrokes,function_and_args|
-                function, args = function_and_args
-                keychain_string = ""
-                keystrokes.each do |keystroke|
-                    keychain_string << keystroke.keyString + " "
-                end
-                function_string = function.dup
+            sorted_keychains = @keychains.paths_and_leaves.sort { |a,b|
+                a[ :leaf ][ 0 ] <=> b[ :leaf ][ 0 ]
+            }
+            sorted_keychains.each do |keystrokes_and_function_and_args|
+                keystrokes = keystrokes_and_function_and_args[ :path ]
+                function, args = keystrokes_and_function_and_args[ :leaf ]
+                function_string = function.deep_clone
                 if args != nil and args.length > 0
                     function_string << "( #{args} )"
                 end
                 keychain_width = [ cols - function_string.length - 2, cols / 2 ].min
-                help_file.puts( "%-#{keychain_width}s%s" % [ keychain_string, function_string ] )
+                help_file.puts(
+                    "%-#{keychain_width}s%s" % [
+                        keystrokes.to_keychain_s,
+                        function_string
+                    ]
+                )
             end
         end
         openFile help_filename
@@ -4033,7 +4119,7 @@ class Diakonos
     def playMacro( name = nil )
         macro, input_history = @macros[ name ]
         if input_history != nil
-            @macro_input_history = input_history.dup
+            @macro_input_history = input_history.deep_clone
             if macro != nil
                 @playing_macro = true
                 macro.each do |command|
