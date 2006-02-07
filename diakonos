@@ -2993,7 +2993,7 @@ class Diakonos
             
             # Main keyboard loop.
             while not @quitting
-                getKeystroke
+                processKeystroke
                 @win_main.refresh
             end
             @debug.close
@@ -3002,9 +3002,9 @@ class Diakonos
     
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
-    def getKeystroke( context = nil )
+    def processKeystroke( context = nil )
         c = @win_main.getch
-
+        
         if context == nil
             case c
                 when PRINTABLE_CHARACTERS
@@ -3047,13 +3047,13 @@ class Diakonos
             partial_keychain = @keychains.getNode( keychain_pressed )
             if partial_keychain != nil
                 setILine( keychain_pressed.to_keychain_s + "..." )
-                getKeystroke( keychain_pressed )
+                processKeystroke( keychain_pressed )
             else
                 setILine "Nothing assigned to #{keychain_pressed.to_keychain_s}"
             end
         end
     end
-    protected :getKeystroke
+    protected :processKeystroke
 
     # Display text on the interaction line.
     def setILine( string = "" )
@@ -3470,7 +3470,7 @@ class Diakonos
     protected :stopRecordingMacro
 
     def typeCharacter( c )
-        @current_buffer.deleteSelection
+        @current_buffer.deleteSelection( Buffer::DONT_DISPLAY )
         @current_buffer.insertChar c
         cursorRight( Buffer::STILL_TYPING )
     end
