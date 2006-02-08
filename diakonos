@@ -79,8 +79,11 @@ class Hash
     
     def setKeyPath( path, leaf )
         if path.length > 1
-            self[ path[ 0 ] ] ||= Hash.new
-            self[ path[ 0 ] ].setKeyPath( path[ 1..-1 ], leaf )
+            node = self[ path[ 0 ] ]
+            if not node.respond_to?( :setKeyPath )
+                node = self[ path[ 0 ] ] = Hash.new
+            end
+            node.setKeyPath( path[ 1..-1 ], leaf )
         elsif path.length == 1
             self[ path[ 0 ] ] = leaf
         end
