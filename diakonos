@@ -256,7 +256,7 @@ class String
             when /^.$/
                 retval = self[ 0 ]
         end
-        retval = retval.to_a if retval != nil
+        retval = [ retval ] if retval != nil
         return retval
     end
 
@@ -602,9 +602,6 @@ class Fixnum
         return min if self < min
         return max if self > max
         return self
-    end
-    def to_a
-        return [self]
     end
 end
 
@@ -1764,9 +1761,9 @@ class Buffer
         elsif selection.start_row == selection.end_row
             text = [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
         else
-            text = @lines[ selection.start_row ][ selection.start_col..-1 ].to_a +
+            text = [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
                 ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
-                @lines[ selection.end_row ][ 0...selection.end_col ].to_a
+                [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
         end
 
         return text
@@ -2359,7 +2356,7 @@ class Clipboard
     # and only non-nil text can be added.
     def addClip( text )
         return false if text == nil
-        @clips.unshift text.to_a
+        @clips.unshift text
         @clips.pop if @clips.length > @max_clips
         return true
     end
@@ -2379,7 +2376,7 @@ class Clipboard
         return addClip( text ) if @clips.length == 0
         last_clip = @clips[ 0 ]
         last_clip.pop if last_clip[ -1 ] == ""
-        @clips[ 0 ] = last_clip + text.to_a
+        @clips[ 0 ] = last_clip + text
         return true
     end
 end
