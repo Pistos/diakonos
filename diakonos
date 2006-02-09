@@ -256,7 +256,9 @@ class String
             when /^.$/
                 retval = self[ 0 ]
         end
-        retval = [ retval ] if retval != nil
+        if retval.class != Array
+            retval = [ retval ]
+        end
         return retval
     end
 
@@ -336,6 +338,10 @@ class String
                 direction = Buffer::SEARCH_DOWN
         end
         return direction
+    end
+    
+    def to_a
+        return [ self ]
     end
 
     def to_b
@@ -2388,7 +2394,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "February 7, 2006"
+    LAST_MODIFIED = "February 9, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
