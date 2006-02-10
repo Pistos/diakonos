@@ -1394,7 +1394,7 @@ class Buffer
         row = @last_row
         col = @last_col
         takeSnapshot
-        retval = @lines[ row ][ col..-1 ]
+        retval = [ @lines[ row ][ col..-1 ] ]
         @lines[ row ] = @lines[ row ][ 0...col ]
         setModified
 
@@ -4227,7 +4227,14 @@ class Diakonos
             file = getUserInput( "Filename: ", @rlh_files )
         end
         if file != nil
+            #old_name = @current_buffer.name
             @current_buffer.save( file, PROMPT_OVERWRITE )
+            #if not @current_buffer.modified
+                # Save was okay.
+                #@buffers.delete old_name
+                #@buffers[ @current_buffer.name ] = @current_buffer
+                #switchTo( @current_buffer )
+            #end
         end
     end
 
