@@ -1,0 +1,2 @@
+script -c 'rake 2> test.err; reset' test.out
+cat test.out | sed -r 's/\r//g' | sed -n -r '/^Finished in/,/error/p'
