@@ -18,6 +18,8 @@ Diakonos Changelog
 - Refactored lots of code and began using unit tests.
 - Minor default conf additions and modifications.
 - Added fstab definitions to default conf.
+- Diff now shown before revert prompt.
+- Bang line must start with #! to be considered as a bang line (re: bangmasks).
 
 0.7.9
 

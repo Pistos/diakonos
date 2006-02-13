@@ -1285,7 +1285,6 @@ class Buffer
                     end
                 end
                 
-                reverted = false
                 if file_modified
                     proceed = ! @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
                 end
@@ -1315,6 +1314,26 @@ class Buffer
                 end
             end
         end
+    end
+
+    # Returns true on successful write.
+    def saveCopy( filename )
+        return false if filename.nil?
+        
+        name = filename.subHome
+        
+        File.open( name, "w" ) do |f|
+            @lines[ 0..-2 ].each do |line|
+                f.puts line
+            end
+            if @lines[ -1 ] != ""
+                # No final newline character
+                f.print @lines[ -1 ]
+                f.print "\n" if @settings[ "eof_newline" ]
+            end
+        end
+        
+        return true
     end
 
     def replaceChar( c )
@@ -2394,7 +2413,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "February 9, 2006"
+    LAST_MODIFIED = "February 13, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2536,6 +2555,7 @@ class Diakonos
         end
         @debug = File.new( "#{@diakonos_home}/debug.log", "w" )
         @list_filename = @diakonos_home + "/listing.txt"
+        @diff_filename = @diakonos_home + "/text.diff"
 
         @files = Array.new
         @read_only_files = Array.new
@@ -2863,7 +2883,7 @@ class Diakonos
                         "status.modified_str", "status.unnamed_str", "status.selecting_str",
                         "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
                         /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/, "view.nonfilelines.character",
-                        'interaction.blink_string'
+                        'interaction.blink_string', 'diff_command'
                     @settings[ command ] = arg
                 when "status.vars"
                     @settings[ command ] = arg.split( /\s+/ )
@@ -3254,7 +3274,7 @@ class Diakonos
     def getLanguageFromShaBang( first_line )
         retval = nil
         @bangmasks.each do |language,bangmask|
-            if first_line =~ bangmask
+            if first_line =~ /^#!/ and first_line =~ bangmask
                 retval = language
                 break
             end
@@ -4198,6 +4218,11 @@ class Diakonos
     def revert( prompt = nil )
         do_revert = true
         
+        current_text_file = @diakonos_home + '/current-buffer'
+        @current_buffer.saveCopy( current_text_file )
+        `#{@settings[ 'diff_command' ]} #{@current_buffer.name} #{current_text_file} > #{@diff_filename}`
+        diff_buffer = openFile( @diff_filename )
+        
         if prompt != nil
             choice = getChoice(
                 prompt,
@@ -4208,6 +4233,8 @@ class Diakonos
                     do_revert = false
             end
         end
+        
+        closeFile( diff_buffer )
         
         if do_revert
             openFile( @current_buffer.name, Buffer::READ_WRITE, FORCE_REVERT )
