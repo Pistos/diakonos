@@ -2413,7 +2413,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "February 13, 2006"
+    LAST_MODIFIED = "February 16, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -3453,27 +3453,33 @@ class Diakonos
         c = nil
         while retval.nil?
             c = @win_interaction.getch
-    
-            if @message_expiry != nil and Time.now < @message_expiry
-                interactionBlink
-                showMessage msg
-            else
-                if c == Diakonos::ENTER
-                    retval = default
+            
+            case c
+                when KEY_NPAGE
+                    pageDown
+                when KEY_PPAGE
+                    pageUp
                 else
-                    choices.each do |choice|
-                        if CHOICE_KEYS[ choice ].include? c
-                            retval = choice
-                            break
+                    if @message_expiry != nil and Time.now < @message_expiry
+                        interactionBlink
+                        showMessage msg
+                    else
+                        if c == Diakonos::ENTER
+                            retval = default
+                        else
+                            choices.each do |choice|
+                                if CHOICE_KEYS[ choice ].include? c
+                                    retval = choice
+                                    break
+                                end
+                            end
+                        end
+                        
+                        if retval.nil?
+                            interactionBlink( msg )
                         end
                     end
-                end
-                
-                if retval.nil?
-                    interactionBlink( msg )
-                end
             end
-            
         end
         
         terminateMessage
