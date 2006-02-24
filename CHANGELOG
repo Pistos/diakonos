@@ -20,6 +20,7 @@ Diakonos Changelog
 - Added fstab definitions to default conf.
 - Diff now shown before revert prompt.
 - Bang line must start with #! to be considered as a bang line (re: bangmasks).
+- Added a collapseWhitespace command.
 
 0.7.9
 

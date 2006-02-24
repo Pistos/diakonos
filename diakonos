@@ -1387,6 +1387,22 @@ class Buffer
             end
         end
     end
+    
+    def collapseWhitespace
+        removeSelection( DONT_DISPLAY ) if @mark_anchor != nil
+        
+        line = @lines[ @last_row ]
+        head = line[ 0...@last_col ]
+        tail = line[ @last_col..-1 ]
+        new_head = head.sub( /\s+$/, '' )
+        new_line = new_head + tail.sub( /^\s+/, ' ' )
+        if new_line != line
+            takeSnapshot( TYPING )
+            @lines[ @last_row ] = new_line
+            cursorTo( @last_row, @last_col - ( head.length - new_head.length ) )
+            setModified
+        end
+    end
 
     def deleteLine
         removeSelection( DONT_DISPLAY ) if @mark_anchor != nil
@@ -2413,7 +2429,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "February 16, 2006"
+    LAST_MODIFIED = "February 24, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2470,6 +2486,7 @@ class Diakonos
         "changeSessionSetting",
         "clearMatches",
         "closeFile",
+        "collapseWhitespace",
         "copySelection",
         "cursorBOF",
         "cursorBOL",
@@ -3707,6 +3724,10 @@ class Diakonos
         end
 
         return choice
+    end
+    
+    def collapseWhitespace
+        @current_buffer.collapseWhitespace
     end
 
     def copySelection
