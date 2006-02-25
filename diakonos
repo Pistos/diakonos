@@ -883,94 +883,81 @@ class Buffer
     def display
         Thread.new do
         if @diakonos.display_mutex.try_lock
-            loop do
-                begin
-                    curs_set 0
+            begin
+                curs_set 0
+                
+                recordMarkStartAndEnd
+                
+                @continued_format_class = nil
+                
+                @pen_down = true
+                
+                # First, we have to "draw" off-screen, in order to check for opening of
+                # multi-line highlights.
+                
+                # So, first look backwards from the @top_line to find the first opening
+                # regexp match, if any.
+                index = @top_line - 1
+                @lines[ [ 0, @top_line - @settings[ "view.lookback" ] ].max...@top_line ].reverse_each do |line|
+                    open_index = -1
+                    open_token_class = nil
+                    open_match_text = nil
                     
-                    recordMarkStartAndEnd
+                    open_index, open_token_class, open_match_text = findOpeningMatch( line )
                     
-                    @continued_format_class = nil
-                    
-                    @pen_down = true
-                    
-                    # First, we have to "draw" off-screen, in order to check for opening of
-                    # multi-line highlights.
-                    
-                    # So, first look backwards from the @top_line to find the first opening
-                    # regexp match, if any.
-                    index = @top_line - 1
-                    @lines[ [ 0, @top_line - @settings[ "view.lookback" ] ].max...@top_line ].reverse_each do |line|
-                        open_index = -1
-                        open_token_class = nil
-                        open_match_text = nil
-                        
-                        open_index, open_token_class, open_match_text = findOpeningMatch( line )
-                        
-                        if open_token_class != nil
-                            @pen_down = false
-                            @lines[ index...@top_line ].each do |line|
-                                printLine line
-                            end
-                            @pen_down = true
-                            
-                            break
+                    if open_token_class != nil
+                        @pen_down = false
+                        @lines[ index...@top_line ].each do |line|
+                            printLine line
                         end
+                        @pen_down = true
                         
-                        index = index - 1
+                        break
                     end
                     
-                    # Draw each on-screen line.
-                    y = 0
-                    @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
-                        @win_main.setpos( y, 0 )
-                        printLine line.expandTabs( @tab_size )
-                        @win_main.setpos( y, 0 )
-                        paintMarks @top_line + row
-                        y += 1
-                    end
-                    
-                    # Paint the empty space below the file if the file is too short to fit in one screen.
-                    ( y...@diakonos.main_window_height ).each do |y|
-                        @win_main.setpos( y, 0 )
-                        @win_main.attrset @default_formatting
-                        linestr = " " * cols
-                        if @settings[ "view.nonfilelines.visible" ]
-                            linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
-                        end
-                        
-                        @win_main.addstr_ linestr
-                    end
-                    
-                    @win_main.setpos( @last_screen_y , @last_screen_x )
-                    @win_main.refresh
-                    
-                    if @language != @original_language
-                        setLanguage( @original_language )
-                    end
-                    
-                    curs_set 1
-                    
-                    done = false
-                    @diakonos.redisplay_mutex.synchronize do
-                        if @redisplay
-                            @redisplay = false
-                        else
-                            done = true
-                        end
-                    end
-                    break if done
-                rescue Exception => e
-                    $diakonos.log( "Display Exception:" )
-                    $diakonos.log( e.message )
-                    $diakonos.log( e.backtrace.join( "\n" ) )
-                    showException e
+                    index = index - 1
                 end
+                
+                # Draw each on-screen line.
+                y = 0
+                @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
+                    @win_main.setpos( y, 0 )
+                    printLine line.expandTabs( @tab_size )
+                    @win_main.setpos( y, 0 )
+                    paintMarks @top_line + row
+                    y += 1
+                end
+                
+                # Paint the empty space below the file if the file is too short to fit in one screen.
+                ( y...@diakonos.main_window_height ).each do |y|
+                    @win_main.setpos( y, 0 )
+                    @win_main.attrset @default_formatting
+                    linestr = " " * cols
+                    if @settings[ "view.nonfilelines.visible" ]
+                        linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
+                    end
+                    
+                    @win_main.addstr_ linestr
+                end
+                
+                @win_main.setpos( @last_screen_y , @last_screen_x )
+                @win_main.refresh
+                
+                if @language != @original_language
+                    setLanguage( @original_language )
+                end
+                
+                curs_set 1
+            rescue Exception => e
+                $diakonos.log( "Display Exception:" )
+                $diakonos.log( e.message )
+                $diakonos.log( e.backtrace.join( "\n" ) )
+                showException e
             end
             @diakonos.display_mutex.unlock
+            @diakonos.displayDequeue
         else
-            @diakonos.redisplay_mutex.synchronize do
-                @redisplay = true
-            end
+            @diakonos.displayEnqueue( self )
         end
         end
     end
@@ -2425,11 +2412,11 @@ end
 class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
         :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
-        :redisplay_mutex, :redisplay, :indenters, :unindenters, :clipboard,
+        :indenters, :unindenters, :clipboard,
         :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "February 24, 2006"
+    LAST_MODIFIED = "February 25, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2604,8 +2591,8 @@ class Diakonos
         @last_command = nil
         @playing_macro = false
         @display_mutex = Mutex.new
-        @redisplay_mutex = Mutex.new
-        @redisplay = false
+        @display_queue_mutex = Mutex.new
+        @display_queue = nil
         @iline_mutex = Mutex.new
         @tag_stack = Array.new
         @last_search_regexps = nil
@@ -3258,6 +3245,25 @@ class Diakonos
             end
             
             @context_thread.priority = -2
+        end
+    end
+    
+    def displayEnqueue( buffer )
+        @display_queue_mutex.synchronize do
+            @display_queue = buffer
+        end
+    end
+    
+    def displayDequeue
+        @display_queue_mutex.synchronize do
+            if @display_queue != nil
+                Thread.new( @display_queue ) do |b|
+                    @display_mutex.lock
+                    @display_mutex.unlock
+                    b.display
+                end
+                @display_queue = nil
+            end
         end
     end
 
