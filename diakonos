@@ -52,7 +52,7 @@ end
 
 class Regexp
     def uses_bos
-        return ( /^\^/.match( source ) != nil )
+        return ( source[ 0 ] == ?^ )
     end
 end
 
@@ -2416,7 +2416,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks
 
     VERSION = "0.8.0"
-    LAST_MODIFIED = "February 25, 2006"
+    LAST_MODIFIED = "February 28, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
