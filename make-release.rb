@@ -11,10 +11,28 @@ end
 
 def doCommand( command )
     puts command.brightGreen
-    puts `#{command}`
-    if not $?.nil? and $?.exitstatus > 0
-        puts "'#{command}' failed with exit code #{$?}".brightRed
-        exit $?
+    if $step
+        do_it = false
+        print "Execute? [y]es, [n]o, yes to [a]ll "; $stdout.flush
+        input = $stdin.gets.strip.downcase
+        case input
+            when 'y'
+                do_it = true
+            when 'a'
+                do_it = true
+                $step = false
+        end
+    else
+        do_it = true
+    end
+    if do_it
+        puts `#{command}`
+        if not $?.nil? and $?.exitstatus > 0
+            puts "'#{command}' failed with exit code #{$?}".brightRed
+            exit $?
+        end
+    else
+        puts "(skipping)"
     end
 end
 
@@ -24,6 +42,7 @@ if ARGV.length < 1
 end
 
 version = ARGV[ 0 ]
+$step = ! ARGV[ 1 ].nil?
 
 release_files = [
     'CHANGELOG',
@@ -40,10 +59,13 @@ Dir.chdir( "src" )
 puts "Changed to #{Dir.pwd}".brightGreen
 doCommand( "svn -m 'Tagging Diakonos version #{version}.' cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
 doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
-doCommand( "rm -f diakonos-#{version}/make-release.rb" )
-doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + release_files.collect { |f| "diakonos-#{version}/#{f}" } )
-doCommand( "tar czvf diakonos-#{version}.tar.gz " + release_files.collect { |f| "diakonos-#{version}/#{f}" } )
-doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}/CHANGELOG diakonos-#{version}/README pistos@purepistos.net:/home/pistos/www/diakonos" )
+doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + ( release_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
+doCommand( "tar czvf diakonos-#{version}.tar.gz " + ( release_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
+doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}/CHANGELOG diakonos-#{version}/README diakonos-#{version}/ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/www/diakonos/" )
+
+puts "MD5 sums:"
+doCommand( "md5sum diakonos-#{version}.tar.gz" )
+doCommand( "md5sum diakonos-#{version}.tar.bz2" )
 
 puts "Release complete."
 puts "Announcement sites:"
@@ -52,4 +74,5 @@ puts "2) ebuild, ebuildexchange"
 puts "3) purepistos.net site"
 puts "4) purepistos.net forums"
 puts "5) RAA"
-puts "6) http://en.wikipedia.org/wiki/Diakonos"
+puts "6) openusability.org"
+puts "7) http://en.wikipedia.org/wiki/Diakonos"
