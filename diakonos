@@ -881,12 +881,11 @@ class Buffer
     end
 
     def display
+        return if not @diakonos.do_display
         Thread.new do
         if @diakonos.display_mutex.try_lock
             begin
                 curs_set 0
-                
-                recordMarkStartAndEnd
                 
                 @continued_format_class = nil
                 
@@ -1054,13 +1053,12 @@ class Buffer
                     @selection_formatting
                 )
             end
-            
         else
             @text_marks[ SELECTION ] = nil
         end
     end
     
-    def getSelectionMark
+    def selection_mark
         return @text_marks[ SELECTION ]
     end
 
@@ -1351,7 +1349,7 @@ class Buffer
 
     # x and y are given window-relative, not buffer-relative.
     def delete
-        if @mark_anchor != nil
+        if selection_mark != nil
             deleteSelection
         else
             row = @last_row
@@ -1376,7 +1374,7 @@ class Buffer
     end
     
     def collapseWhitespace
-        removeSelection( DONT_DISPLAY ) if @mark_anchor != nil
+        removeSelection( DONT_DISPLAY ) if selection_mark != nil
         
         line = @lines[ @last_row ]
         head = line[ 0...@last_col ]
@@ -1392,7 +1390,7 @@ class Buffer
     end
 
     def deleteLine
-        removeSelection( DONT_DISPLAY ) if @mark_anchor != nil
+        removeSelection( DONT_DISPLAY ) if selection_mark != nil
 
         row = @last_row
         takeSnapshot
@@ -1411,7 +1409,7 @@ class Buffer
     end
 
     def deleteToEOL
-        removeSelection( DONT_DISPLAY ) if @mark_anchor != nil
+        removeSelection( DONT_DISPLAY ) if selection_mark != nil
 
         row = @last_row
         col = @last_col
@@ -1488,6 +1486,7 @@ class Buffer
     def panView( x = 1, do_display = DO_DISPLAY )
         old_left_column = @left_column
         @left_column = [ @left_column + x, 0 ].max
+        recordMarkStartAndEnd
         display if do_display
         return ( @left_column - old_left_column )
     end
@@ -1523,6 +1522,8 @@ class Buffer
         @last_col = @last_col.fit( @left_column, [ @left_column + cols - 1, @lines[ @last_row ].length ].min )
         @last_screen_y = @last_row - @top_line
         @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
+        
+        recordMarkStartAndEnd
         
         highlightMatches if changed != 0
 
@@ -1582,12 +1583,14 @@ class Buffer
         @last_screen_col = new_col
         changed = ( @last_row != old_last_row or @last_col != old_last_col )
         if changed
+            recordMarkStartAndEnd
+            
             removed = false
-            if not @changing_selection and @mark_anchor != nil
+            if not @changing_selection and selection_mark != nil
                 removeSelection( DONT_DISPLAY )
                 removed = true
             end
-            if removed or ( do_display and ( @mark_anchor != nil or view_changed ) )
+            if removed or ( do_display and ( selection_mark != nil or view_changed ) )
                 display
             else
                 @diakonos.display_mutex.synchronize do
@@ -1760,12 +1763,15 @@ class Buffer
         @mark_anchor = ( @mark_anchor or Hash.new )
         @mark_anchor[ "row" ] = row
         @mark_anchor[ "col" ] = col
+        recordMarkStartAndEnd
         @changing_selection = true
         display if do_display
     end
 
     def removeSelection( do_display = DO_DISPLAY )
+        return if selection_mark.nil?
         @mark_anchor = nil
+        recordMarkStartAndEnd
         @changing_selection = false
         @last_finding = nil
         display if do_display
@@ -1783,8 +1789,8 @@ class Buffer
         return selected_text
     end
     def selected_text
-        selection = @text_marks[ SELECTION ]
-        if @mark_anchor == nil
+        selection = selection_mark
+        if selection == nil
             text = nil
         elsif selection.start_row == selection.end_row
             text = [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
@@ -1798,11 +1804,11 @@ class Buffer
     end
 
     def deleteSelection( do_display = DO_DISPLAY )
-        return if @mark_anchor == nil
+        return if @text_marks[ SELECTION ] == nil
 
         takeSnapshot
 
-        selection = @text_marks[ 0 ]
+        selection = @text_marks[ SELECTION ]
         start_row = selection.start_row
         start_col = selection.start_col
         start_line = @lines[ start_row ]
@@ -1999,6 +2005,7 @@ class Buffer
                 anchorSelection( finding.start_row, finding.start_col, DONT_DISPLAY )
                 cursorTo( finding.end_row, finding.end_col )
             end
+
             @changing_selection = false
             
             if regexps.length == 1
@@ -2049,14 +2056,15 @@ class Buffer
             found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
                 TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
             end
-            @text_marks = [ nil ] + found_marks
+            #@text_marks = [ nil ] + found_marks
+            @text_marks = [ @text_marks[ 0 ] ] + found_marks
         end
     end
 
     def clearMatches( do_display = DONT_DISPLAY )
-        selection = @text_marks[ 0 ]
+        selection = @text_marks[ SELECTION ]
         @text_marks = Array.new
-        @text_marks[ 0 ] = selection
+        @text_marks[ SELECTION ] = selection
         @highlight_regexp = nil
         display if do_display
     end
@@ -2412,11 +2420,11 @@ end
 class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
         :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
-        :indenters, :unindenters, :clipboard,
+        :indenters, :unindenters, :clipboard, :do_display,
         :current_buffer, :list_filename, :hooks
 
-    VERSION = "0.8.0"
-    LAST_MODIFIED = "February 28, 2006"
+    VERSION = "0.8.1"
+    LAST_MODIFIED = "March 8, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2593,9 +2601,12 @@ class Diakonos
         @display_mutex = Mutex.new
         @display_queue_mutex = Mutex.new
         @display_queue = nil
+        @do_display = true
         @iline_mutex = Mutex.new
         @tag_stack = Array.new
         @last_search_regexps = nil
+        @iterated_choice = nil
+        @choice_iterations = 0
         
         # Readline histories
         @rlh_general = Array.new
@@ -3320,7 +3331,7 @@ class Diakonos
                 f.puts
                 f.puts "----------------------------------------------------"
                 f.puts "If you can reproduce this error, please report it at"
-                f.puts "http://purepistos.net/forums !"
+                f.puts "http://rome.purepistos.net/issues/diakonos/newticket !"
                 f.puts "----------------------------------------------------"
                 f.puts e.backtrace
             end
@@ -3452,11 +3463,19 @@ class Diakonos
         sleep @settings[ 'interaction.blink_duration' ]
         setILine message if message != nil
     end
-
+    
     # choices should be an array of CHOICE_* constants.
     # default is what is returned when Enter is pressed.
     def getChoice( prompt, choices, default = nil )
-        retval = nil
+        retval = @iterated_choice
+        if retval != nil
+            @choice_iterations -= 1
+            if @choice_iterations < 1
+                @iterated_choice = nil
+                @do_display = true
+            end
+            return retval 
+        end
         
         @saved_main_x = @win_main.curx
         @saved_main_y = @win_main.cury
@@ -3487,15 +3506,22 @@ class Diakonos
                         interactionBlink
                         showMessage msg
                     else
-                        if c == Diakonos::ENTER
-                            retval = default
-                        else
-                            choices.each do |choice|
-                                if CHOICE_KEYS[ choice ].include? c
-                                    retval = choice
-                                    break
+                        case c
+                            when Diakonos::ENTER
+                                retval = default
+                            when ?0..?9
+                                if @choice_iterations < 1
+                                    @choice_iterations = ( c - ?0 )
+                                else
+                                    @choice_iterations = @choice_iterations * 10 + ( c - ?0 )
                                 end
-                            end
+                            else
+                                choices.each do |choice|
+                                    if CHOICE_KEYS[ choice ].include? c
+                                        retval = choice
+                                        break
+                                    end
+                                end
                         end
                         
                         if retval.nil?
@@ -3508,6 +3534,12 @@ class Diakonos
         terminateMessage
         setILine
 
+        if @choice_iterations > 0
+            @choice_iterations -= 1
+            @iterated_choice = retval
+            @do_display = false
+        end
+        
         return retval
     end
 
@@ -4008,7 +4040,7 @@ class Diakonos
 
     def indent
         if( @current_buffer.changing_selection )
-            mark = @current_buffer.getSelectionMark
+            mark = @current_buffer.selection_mark
             (mark.start_row...mark.end_row).each do |row|
                 @current_buffer.indent row, Buffer::DONT_DISPLAY
             end
@@ -4164,7 +4196,7 @@ class Diakonos
 
     def parsedIndent
         if( @current_buffer.changing_selection )
-            mark = @current_buffer.getSelectionMark
+            mark = @current_buffer.selection_mark
             (mark.start_row...mark.end_row).each do |row|
                 @current_buffer.parsedIndent row, Buffer::DONT_DISPLAY
             end
@@ -4513,7 +4545,7 @@ class Diakonos
 
     def unindent
         if( @current_buffer.changing_selection )
-            mark = @current_buffer.getSelectionMark
+            mark = @current_buffer.selection_mark
             (mark.start_row...mark.end_row).each do |row|
                 @current_buffer.unindent row, Buffer::DONT_DISPLAY
             end
