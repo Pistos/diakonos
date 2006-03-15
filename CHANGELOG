@@ -1,6 +1,11 @@
 Diakonos Changelog
 ------------------
 
+0.8.1
+
+- Added a cursor stack for jumping back and forth between recently visited locations in the file.
+- Introduced cursorReturn command (to move through the cursor stack).
+
 0.8.0
 
 - Changed seek behaviour to use regexp group indexes.
