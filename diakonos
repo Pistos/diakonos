@@ -2152,9 +2152,10 @@ class Buffer
     def replaceAll( regexp, replacement )
         return if( regexp == nil or replacement == nil )
 
-        @lines = @lines.collect do |line|
+        @lines = @lines.collect { |line|
             line.gsub( regexp, replacement )
-        end
+        }
+        setModified
 
         clearMatches
 

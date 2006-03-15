@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - Added a cursor stack for jumping back and forth between recently visited locations in the file.
 - Introduced cursorReturn command (to move through the cursor stack).
+- replaceAll now sets modified flag.
 
 0.8.0
 
