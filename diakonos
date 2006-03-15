@@ -56,6 +56,54 @@ class Regexp
     end
 end
 
+class SizedArray < Array
+    attr_reader :capacity
+    
+    def initialize( capacity = 10, *args )
+        @capacity = capacity
+        super( *args )
+    end
+    
+    def resize
+        if size > @capacity
+            slice!( (0...-@capacity) )
+        end
+    end
+    private :resize
+    
+    def concat( other_array )
+        super( other_array )
+        resize
+        return self
+    end
+    
+    def fill( *args )
+        retval = super( *args )
+        resize
+        return self
+    end
+    
+    def <<( item )
+        retval = super( item )
+        if size > @capacity
+            retval = shift
+        end
+        return retval
+    end
+    
+    def push( item )
+        self << item
+    end
+    
+    def unshift( item )
+        retval = super( item )
+        if size > @capacity
+            retval = pop
+        end
+        return retval
+    end
+end
+
 class Hash
     # path is an array of hash keys
     # This method deletes a path of hash keys, with each step in the path
@@ -327,15 +375,21 @@ class String
         end
     end
     
-    def toDirection
-        direction = Buffer::SEARCH_DOWN
+    def toDirection( default = :down )
+        direction = nil
         case self
             when "up"
-                direction = Buffer::SEARCH_UP
+                direction = :up
             when /other/
-                direction = Buffer::SEARCH_OPPOSITE
+                direction = :opposite
+            when "down"
+                direction = :down
+            when "forward"
+                direction = :forward
+            when "backward"
+                direction = :backward
             else
-                direction = Buffer::SEARCH_DOWN
+                direction = default
         end
         return direction
     end
@@ -490,6 +544,10 @@ class String
         end
         
         return i, match_text
+    end
+    
+    def is_movement?
+        return ( ( self =~ /^(cursor|page|scroll)(Up|Down|Left|Right)/ ) != nil )
     end
 end
 
@@ -749,9 +807,6 @@ class Buffer
     READ_WRITE = false
     ROUND_DOWN = false
     ROUND_UP = true
-    SEARCH_DOWN = 0
-    SEARCH_UP = 1
-    SEARCH_OPPOSITE = 2
     PAD_END = true
     DONT_PAD_END = false
     MATCH_CLOSE = true
@@ -759,6 +814,8 @@ class Buffer
     START_FROM_BEGINNING = -1
     DO_PITCH_CURSOR = true
     DONT_PITCH_CURSOR = false
+    CLEAR_STACK_POINTER = true
+    DONT_CLEAR_STACK_POINTER = false
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, read_only = false )
@@ -807,6 +864,8 @@ class Buffer
         @read_only = read_only
         @bookmarks = Array.new
         @lang_stack = Array.new
+        @cursor_stack = Array.new
+        @cursor_stack_pointer = nil
 
         configure
 
@@ -1504,6 +1563,9 @@ class Buffer
             @top_line = new_top_line
         end
         
+        old_row = @last_row
+        old_col = @last_col
+        
         changed = ( @top_line - old_top_line )
         if changed != 0 and do_pitch_cursor
             @last_row += changed
@@ -1525,11 +1587,32 @@ class Buffer
         
         recordMarkStartAndEnd
         
-        highlightMatches if changed != 0
+        if changed != 0
+            highlightMatches
+            if @diakonos.there_was_non_movement
+                pushCursorState( old_top_line, old_row, old_col )
+            end
+        end
 
         display if do_display
 
         return changed
+    end
+    
+    def pushCursorState( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
+        new_state = {
+            :top_line => top_line,
+            :row => row,
+            :col => col
+        }
+        if not @cursor_stack.include? new_state
+            @diakonos.debugLog "stacking"
+            @cursor_stack << new_state
+            if clear_stack_pointer
+                @cursor_stack_pointer = nil
+            end
+            @diakonos.clearNonMovementFlag
+        end
     end
 
     # Returns true iff the cursor changed positions in the buffer.
@@ -1602,6 +1685,33 @@ class Buffer
         end
         
         return changed
+    end
+    
+    def cursorReturn( direction )
+        delta = 0
+        if @cursor_stack_pointer.nil?
+            pushCursorState( @top_line, @last_row, @last_col, DONT_CLEAR_STACK_POINTER )
+            delta = 1
+        end
+        case direction
+            when :backward
+                @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
+            when :forward
+                @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
+        end
+        
+        if @cursor_stack_pointer < 0
+            @cursor_stack_pointer = 0
+        elsif @cursor_stack_pointer >= @cursor_stack.length
+            @cursor_stack_pointer = @cursor_stack.length - 1
+        else
+            cursor_state = @cursor_stack[ @cursor_stack_pointer ]
+            if cursor_state != nil
+                pitchView( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
+                cursorTo( cursor_state[ :row ], cursor_state[ :col ] )
+                @diakonos.updateStatusLine
+            end
+        end
     end
     
     def tabExpandedColumn( col, row )
@@ -1854,16 +1964,16 @@ class Buffer
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
     # element.
-    def find( regexps, direction = SEARCH_DOWN, replacement = nil )
+    def find( regexps, direction = :down, replacement = nil )
         regexp = regexps[ 0 ]
         return if regexp == nil or regexp == //
         
-        if direction == SEARCH_OPPOSITE
+        if direction == :opposite
             case @last_search_direction
-                when SEARCH_UP
-                    direction = SEARCH_DOWN
+                when :up
+                    direction = :down
                 else
-                    direction = SEARCH_UP
+                    direction = :up
             end
         end
         @last_search_regexps = regexps
@@ -1874,7 +1984,7 @@ class Buffer
         
         catch :found do
         
-            if direction == SEARCH_DOWN
+            if direction == :down
                 # Check the current row first.
                 
                 if index = @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) + 1 )
@@ -1932,7 +2042,7 @@ class Buffer
                     end
                 end
                 
-            elsif direction == SEARCH_UP
+            elsif direction == :up
                 # Check the current row first.
                 
                 col_to_check = ( @last_finding ? @last_finding.end_col : @last_col ) - 1
@@ -2076,7 +2186,7 @@ class Buffer
         find( @last_search_regexps, direction ) if( @last_search_regexps != nil )
     end
     
-    def seek( regexp, direction = SEARCH_DOWN )
+    def seek( regexp, direction = :down )
         return if regexp == nil or regexp == //
         
         found_row = nil
@@ -2085,7 +2195,7 @@ class Buffer
         wrapped = false
         
         catch :found do
-            if direction == SEARCH_DOWN
+            if direction == :down
                 # Check the current row first.
                 
                 index, match_text = @lines[ @last_row ].group_index( regexp, @last_col + 1 )
@@ -2421,10 +2531,10 @@ class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
         :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
         :indenters, :unindenters, :clipboard, :do_display,
-        :current_buffer, :list_filename, :hooks
+        :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.1"
-    LAST_MODIFIED = "March 8, 2006"
+    LAST_MODIFIED = "March 15, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2491,6 +2601,7 @@ class Diakonos
         "cursorBOV",
         "cursorTOV",
         "cursorLeft",
+        "cursorReturn",
         "cursorRight",
         "cursorUp",
         "cutSelection",
@@ -2555,6 +2666,8 @@ class Diakonos
         "unundo"
     ]
     LANG_TEXT = "text"
+    
+    NUM_LAST_COMMANDS = 2
 
     def initialize( argv = [] )
         @diakonos_home = ( ( ENV[ "HOME" ] or "" ) + "/.diakonos" ).subHome
@@ -2596,7 +2709,7 @@ class Diakonos
         @macro_history = nil
         @macro_input_history = nil
         @macros = Hash.new
-        @last_command = nil
+        @last_commands = SizedArray.new( NUM_LAST_COMMANDS )
         @playing_macro = false
         @display_mutex = Mutex.new
         @display_queue_mutex = Mutex.new
@@ -2607,6 +2720,7 @@ class Diakonos
         @last_search_regexps = nil
         @iterated_choice = nil
         @choice_iterations = 0
+        @there_was_non_movement = true
         
         # Readline histories
         @rlh_general = Array.new
@@ -2964,7 +3078,11 @@ class Diakonos
     def registerProc( proc, hook_name, priority = 0 )
         @hooks[ hook_name ] << { :proc => proc, :priority => priority }
     end
-
+    
+    def clearNonMovementFlag
+        @there_was_non_movement = false
+    end
+    
     # -----------------------------------------------------------------------
 
     def main_window_height
@@ -3057,6 +3175,9 @@ class Diakonos
                     if @macro_history != nil
                         @macro_history.push "typeCharacter #{c}"
                     end
+                    if not @there_was_non_movement
+                        @there_was_non_movement = true
+                    end
                     typeCharacter c
                     return
             end
@@ -3083,7 +3204,10 @@ class Diakonos
             
             begin
                 eval to_eval, nil, "eval"
-                @last_command = to_eval unless to_eval == "repeatLast"
+                @last_commands << to_eval unless to_eval == "repeatLast"
+                if not @there_was_non_movement
+                    @there_was_non_movement = ( not to_eval.is_movement? )
+                end
             rescue Exception => e
                 debugLog e.message
                 debugLog e.backtrace.join( "\n\t" )
@@ -3818,6 +3942,10 @@ class Diakonos
     def cursorBOV
         @current_buffer.cursorToBOV
     end
+    
+    def cursorReturn( dir_str = "backward" )
+        @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
+    end
 
     def cutSelection
         delete if @clipboard.addClip( @current_buffer.copySelection )
@@ -3830,7 +3958,7 @@ class Diakonos
     def deleteAndStoreLine
         removed_text = @current_buffer.deleteLine
         if removed_text
-            if @last_command =~ /^deleteAndStoreLine/
+            if @last_commands[ -1 ] =~ /^deleteAndStoreLine/
                 @clipboard.appendToClip( [ removed_text, "" ] )
             else
                 @clipboard.addClip( [ removed_text, "" ] )
@@ -4276,7 +4404,7 @@ class Diakonos
     end
 
     def repeatLast
-        eval @last_command if @last_command != nil
+        eval @last_commands[ -1 ] if not @last_commands.empty?
     end
 
     # If the prompt is non-nil, ask the user yes or no question first.
