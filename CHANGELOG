@@ -8,6 +8,7 @@ Diakonos Changelog
 - Introduced cursorReturn command (to move through the cursor stack).
 - replaceAll now sets modified flag.
 - Speed of parsedIndent on multiple lines improved.
+- Fixed parsedIndent logic in cases of adjacent indenter and unindenter.
 
 0.8.0
 

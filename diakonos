@@ -1841,15 +1841,14 @@ class Buffer
                     line2 = line
                 end
 
-                indenter_index = nil
-                if indenter_index = ( prev_line2 =~ @indenters )
+                indenter_index = ( prev_line2 =~ @indenters )
+                if indenter_index != nil
                     level += 1
                     unindenter_index = (prev_line2 =~ @unindenters)
                     if unindenter_index != nil and unindenter_index != indenter_index
                         level += -1
                     end
-                end
-                if line2 =~ @unindenters
+                elsif line2 =~ @unindenters
                     level += -1
                 end
             end
