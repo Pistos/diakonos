@@ -3,6 +3,7 @@ Diakonos Changelog
 
 0.8.1
 
+- Added choice prompt iteration.
 - Added a cursor stack for jumping back and forth between recently visited locations in the file.
 - Introduced cursorReturn command (to move through the cursor stack).
 - replaceAll now sets modified flag.
