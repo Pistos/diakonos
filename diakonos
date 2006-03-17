@@ -4889,7 +4889,7 @@ class Diakonos::Readline
     end
 end
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
     $diakonos = Diakonos.new( ARGV )
     $diakonos.start
 end
