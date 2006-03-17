@@ -1819,14 +1819,13 @@ class Buffer
     end
 
     def parsedIndent( row = @last_row, do_display = DO_DISPLAY )
-        line = @lines[ row ]
-
         if row == 0
             level = 0
         else
             # Look upwards for the nearest line on which to base this line's indentation.
             i = 1
-            while ( @lines[ row - i ] =~ /^[\s#{@indent_ignore_charset}]*$/ ) or ( @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.ignore" ] )
+            while ( @lines[ row - i ] =~ /^[\s#{@indent_ignore_charset}]*$/ ) or
+                  ( @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.ignore" ] )
                 i += 1
             end
             if row - i < 0
@@ -1835,22 +1834,20 @@ class Buffer
                 prev_line = @lines[ row - i ]
                 level = prev_line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
 
+                line = @lines[ row ]
                 if @preventers != nil
-                    prev_line2 = prev_line.gsub( @preventers, "" )
-                    line2 = line.gsub( @preventers, "" )
-                else
-                    prev_line2 = prev_line
-                    line2 = line
+                    prev_line = prev_line.gsub( @preventers, "" )
+                    line = line.gsub( @preventers, "" )
                 end
 
-                indenter_index = ( prev_line2 =~ @indenters )
+                indenter_index = ( prev_line =~ @indenters )
                 if indenter_index != nil
                     level += 1
-                    unindenter_index = (prev_line2 =~ @unindenters)
+                    unindenter_index = (prev_line =~ @unindenters)
                     if unindenter_index != nil and unindenter_index != indenter_index
                         level += -1
                     end
-                elsif line2 =~ @unindenters
+                elsif line =~ @unindenters
                     level += -1
                 end
             end
