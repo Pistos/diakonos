@@ -1712,6 +1712,8 @@ class Buffer
                 @diakonos.updateStatusLine
             end
         end
+        
+        return @cursor_stack_pointer, @cursor_stack.size
     end
     
     def tabExpandedColumn( col, row )
@@ -2720,7 +2722,7 @@ class Diakonos
         @last_search_regexps = nil
         @iterated_choice = nil
         @choice_iterations = 0
-        @there_was_non_movement = true
+        @there_was_non_movement = false
         
         # Readline histories
         @rlh_general = Array.new
@@ -3944,7 +3946,8 @@ class Diakonos
     end
     
     def cursorReturn( dir_str = "backward" )
-        @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
+        stack_pointer, stack_size = @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
+        setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
     def cutSelection
