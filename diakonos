@@ -1694,16 +1694,19 @@ class Buffer
             delta = 1
         end
         case direction
-            when :backward
-                @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
             when :forward
                 @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
+            #when :backward
+            else
+                @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
         end
         
+        return_pointer = @cursor_stack_pointer
+        
         if @cursor_stack_pointer < 0
-            @cursor_stack_pointer = 0
+            return_pointer = @cursor_stack_pointer = 0
         elsif @cursor_stack_pointer >= @cursor_stack.length
-            @cursor_stack_pointer = @cursor_stack.length - 1
+            return_pointer = @cursor_stack_pointer = @cursor_stack.length - 1
         else
             cursor_state = @cursor_stack[ @cursor_stack_pointer ]
             if cursor_state != nil
@@ -1713,7 +1716,7 @@ class Buffer
             end
         end
         
-        return @cursor_stack_pointer, @cursor_stack.size
+        return return_pointer, @cursor_stack.size
     end
     
     def tabExpandedColumn( col, row )
@@ -4827,9 +4830,11 @@ class Diakonos::Readline
     # Redisplays the input text starting at the start of the user input area,
     # positioning the cursor at the end of the text.
     def cursorWriteInput
-        @input_cursor = @input.length
-        @window.setpos( @window.cury, @icurx + @input.length )
-        redrawInput
+        if @input != nil
+            @input_cursor = @input.length
+            @window.setpos( @window.cury, @icurx + @input.length )
+            redrawInput
+        end
     end
 
     def completeInput
