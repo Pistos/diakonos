@@ -2360,8 +2360,8 @@ class Buffer
         end
     end
 
-    def goToLine( line )
-        cursorTo( line, 0, DO_DISPLAY )
+    def goToLine( line = nil, column = nil )
+        cursorTo( line || @last_row, column || 0, DO_DISPLAY )
     end
 
     def goToNextBookmark
@@ -2536,7 +2536,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.1"
-    LAST_MODIFIED = "March 16, 2006"
+    LAST_MODIFIED = "March 27, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -4072,7 +4072,21 @@ class Diakonos
     end
 
     def goToLineAsk
-        @current_buffer.goToLine( getUserInput( "Line number: " ).to_i - 1 )
+        input = getUserInput( "Line number and/or column number: " )
+        if input != nil
+            input = input.split( /\D+/ ).collect { |n| n.to_i }
+            if input.size > 0
+                if input[ 0 ] == 0
+                    input[ 0 ] = nil
+                else
+                    input[ 0 ] -= 1
+                end
+                if input[ 1 ] != nil
+                    input[ 1 ] -= 1
+                end
+                @current_buffer.goToLine( input[ 0 ], input[ 1 ] )
+            end
+        end
     end
 
     def goToNamedBookmark( name_ = nil )
