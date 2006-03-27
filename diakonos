@@ -546,8 +546,8 @@ class String
         return i, match_text
     end
     
-    def is_movement?
-        return ( ( self =~ /^(cursor|page|scroll)(Up|Down|Left|Right)/ ) != nil )
+    def movement?
+        return ( ( self =~ /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ ) != nil )
     end
 end
 
@@ -3208,7 +3208,7 @@ class Diakonos
                 eval to_eval, nil, "eval"
                 @last_commands << to_eval unless to_eval == "repeatLast"
                 if not @there_was_non_movement
-                    @there_was_non_movement = ( not to_eval.is_movement? )
+                    @there_was_non_movement = ( not to_eval.movement? )
                 end
             rescue Exception => e
                 debugLog e.message
@@ -4072,7 +4072,7 @@ class Diakonos
     end
 
     def goToLineAsk
-        input = getUserInput( "Line number and/or column number: " )
+        input = getUserInput( "Go to [line number][,column number]: " )
         if input != nil
             input = input.split( /\D+/ ).collect { |n| n.to_i }
             if input.size > 0
