@@ -1606,7 +1606,6 @@ class Buffer
             :col => col
         }
         if not @cursor_stack.include? new_state
-            @diakonos.debugLog "stacking"
             @cursor_stack << new_state
             if clear_stack_pointer
                 @cursor_stack_pointer = nil
@@ -1844,7 +1843,7 @@ class Buffer
                 end
 
                 indenter_index = ( prev_line =~ @indenters )
-                if indenter_index != nil
+                if indenter_index != nil and indenter_index != false
                     level += 1
                     unindenter_index = (prev_line =~ @unindenters)
                     if unindenter_index != nil and unindenter_index != indenter_index
