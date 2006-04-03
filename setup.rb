@@ -4,8 +4,8 @@ require 'package'
 
 Package.setup( "1.0" ) {
     name "Diakonos"
-    version "0.8.0"
+    version "0.8.1"
     author "Pistos"
     bin "diakonos"
-    conf "diakonos.conf"
+    conf "etc/diakonos.conf"
 }
