@@ -1846,10 +1846,11 @@ class Buffer
                 if indenter_index
                     level += 1
                     unindenter_index = (prev_line =~ @unindenters)
-                    if unindenter_index != nil and unindenter_index != indenter_index
+                    if unindenter_index and unindenter_index != indenter_index
                         level += -1
                     end
-                elsif line =~ @unindenters
+                end
+                if line =~ @unindenters
                     level += -1
                 end
             end
@@ -2535,7 +2536,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.1"
-    LAST_MODIFIED = "March 27, 2006"
+    LAST_MODIFIED = "April 3, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
