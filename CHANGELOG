@@ -11,6 +11,7 @@ Diakonos Changelog
 - Fixed parsedIndent logic in cases of adjacent indenter and unindenter.
 - goToLine command now supports a column argument.
 - goToLine command's line and column argument are now both optional.
+- goToLine also takes a +/- number of lines argument.
 
 0.8.0
 

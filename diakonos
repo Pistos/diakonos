@@ -2536,7 +2536,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.1"
-    LAST_MODIFIED = "April 3, 2006"
+    LAST_MODIFIED = "April 12, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -4072,19 +4072,29 @@ class Diakonos
     end
 
     def goToLineAsk
-        input = getUserInput( "Go to [line number][,column number]: " )
+        input = getUserInput( "Go to [line number|+lines][,column number]: " )
         if input != nil
-            input = input.split( /\D+/ ).collect { |n| n.to_i }
-            if input.size > 0
-                if input[ 0 ] == 0
-                    input[ 0 ] = nil
-                else
-                    input[ 0 ] -= 1
+            row = nil
+            
+            if input =~ /([+-]\d+)/
+                row = @current_buffer.last_row + $1.to_i
+                col = @current_buffer.last_col
+            else
+                input = input.split( /\D+/ ).collect { |n| n.to_i }
+                if input.size > 0
+                    if input[ 0 ] == 0
+                        row = nil
+                    else
+                        row = input[ 0 ] - 1
+                    end
+                    if input[ 1 ] != nil
+                        col = input[ 1 ] - 1
+                    end
                 end
-                if input[ 1 ] != nil
-                    input[ 1 ] -= 1
-                end
-                @current_buffer.goToLine( input[ 0 ], input[ 1 ] )
+            end
+            
+            if row
+                @current_buffer.goToLine( row, col )
             end
         end
     end
@@ -4439,7 +4449,7 @@ class Diakonos
         
         current_text_file = @diakonos_home + '/current-buffer'
         @current_buffer.saveCopy( current_text_file )
-        `#{@settings[ 'diff_command' ]} #{@current_buffer.name} #{current_text_file} > #{@diff_filename}`
+        `#{@settings[ 'diff_command' ]} #{current_text_file} #{@current_buffer.name} > #{@diff_filename}`
         diff_buffer = openFile( @diff_filename )
         
         if prompt != nil
