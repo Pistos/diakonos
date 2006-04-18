@@ -12,6 +12,7 @@ Diakonos Changelog
 - goToLine command now supports a column argument.
 - goToLine command's line and column argument are now both optional.
 - goToLine also takes a +/- number of lines argument.
+- Added case sensitivity parameter to find command; defaults to case-insensitive.
 
 0.8.0
 
