@@ -7,5 +7,5 @@ Package.setup( "1.0" ) {
     version "0.8.1"
     author "Pistos"
     bin "diakonos"
-    conf "etc/diakonos.conf"
+    conf "diakonos.conf"
 }
