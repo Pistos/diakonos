@@ -1913,6 +1913,14 @@ class Buffer
 
         return text
     end
+    def selected_string
+        lines = selected_text
+        if lines
+            lines.join( "\n" )
+        else
+            nil
+        end
+    end
 
     def deleteSelection( do_display = DO_DISPLAY )
         return if @text_marks[ SELECTION ] == nil
@@ -1940,6 +1948,15 @@ class Buffer
     # text is an array of Strings
     def paste( text )
         return if text == nil
+        
+        if not text.kind_of? Array
+            s = text.to_s
+            if s.include?( "\n" )
+                text = s.split( "\n", -1 )
+            else
+                text = [ s ]
+            end
+        end
 
         takeSnapshot
 
@@ -2536,7 +2553,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.1"
-    LAST_MODIFIED = "April 18, 2006"
+    LAST_MODIFIED = "April 27, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2635,6 +2652,9 @@ class Diakonos
         "newFile",
         "openFile",
         "openFileAsk",
+        "operateOnEachLine",
+        "operateOnLines",
+        "operateOnString",
         "pageDown",
         "pageUp",
         "parsedIndent",
@@ -4348,6 +4368,55 @@ class Diakonos
             openFile file
             updateStatusLine
             updateContextLine
+        end
+    end
+    
+    def operateOnString(
+        ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'str.' )
+    )
+        if ruby_code != nil
+            str = @current_buffer.selected_string
+            if str != nil and not str.empty?
+                @current_buffer.paste eval( ruby_code )
+            end
+        end
+    end
+
+    def operateOnLines(
+        ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'lines.collect { |l| l }' )
+    )
+        if ruby_code != nil
+            lines = @current_buffer.selected_text
+            if lines != nil and not lines.empty?
+                if lines[ -1 ].empty?
+                    lines.pop
+                    popped = true
+                end
+                new_lines = eval( ruby_code )
+                if popped
+                    new_lines << ''
+                end
+                @current_buffer.paste new_lines
+            end
+        end
+    end
+
+    def operateOnEachLine(
+        ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'line.' )
+    )
+        if ruby_code != nil
+            lines = @current_buffer.selected_text
+            if lines != nil and not lines.empty?
+                if lines[ -1 ].empty?
+                    lines.pop
+                    popped = true
+                end
+                new_lines = eval( "lines.collect { |line| #{ruby_code} }" )
+                if popped
+                    new_lines << ''
+                end
+                @current_buffer.paste new_lines
+            end
         end
     end
 
