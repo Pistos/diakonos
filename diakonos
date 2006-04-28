@@ -4926,7 +4926,7 @@ class Diakonos::Readline
         curx = @window.curx
         cury = @window.cury
         @window.setpos( @icury, @icurx )
-        @window.addstr "%-#{ cols - curx }s" % @input
+        @window.addstr "%-#{ cols - curx }s%s" % [ @input, " " * ( cols - @input.length ) ]
         @window.setpos( cury, curx )
         @window.refresh
     end
