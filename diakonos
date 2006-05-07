@@ -2553,7 +2553,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.1"
-    LAST_MODIFIED = "April 27, 2006"
+    LAST_MODIFIED = "May 7, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2792,7 +2792,7 @@ class Diakonos
     protected :parseOptions
 
     def printUsage
-        puts "Usage: "
+        puts "Usage: #{$0} [options] [file] [file...]"
         puts "\t--help\tDisplay usage"
         puts "\t-ro <file>\tLoad file as read-only"
         puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
