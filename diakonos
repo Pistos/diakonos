@@ -1311,6 +1311,9 @@ class Buffer
             @read_only = false
             if @name == nil
                 @diakonos.saveFileAs
+            elsif name.empty?
+                @diakonos.setILine "(file not saved)"
+                @name = nil
             else
                 proceed = true
                 
@@ -2553,7 +2556,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.1"
-    LAST_MODIFIED = "May 7, 2006"
+    LAST_MODIFIED = "May 13, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
