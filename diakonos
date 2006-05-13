@@ -1311,9 +1311,9 @@ class Buffer
             @read_only = false
             if @name == nil
                 @diakonos.saveFileAs
-            elsif name.empty?
-                @diakonos.setILine "(file not saved)"
-                @name = nil
+            #elsif name.empty?
+                #@diakonos.setILine "(file not saved)"
+                #@name = nil
             else
                 proceed = true
                 
