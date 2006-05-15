@@ -2555,8 +2555,8 @@ class Diakonos
         :indenters, :unindenters, :clipboard, :do_display,
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
-    VERSION = "0.8.1"
-    LAST_MODIFIED = "May 13, 2006"
+    VERSION = "0.8.2"
+    LAST_MODIFIED = "May 15, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
