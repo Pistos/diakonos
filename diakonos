@@ -1986,6 +1986,7 @@ class Buffer
     # each successive element must match against lines following the first
     # element.
     def find( regexps, direction = :down, replacement = nil )
+        return if regexps.nil?
         regexp = regexps[ 0 ]
         return if regexp == nil or regexp == //
         
@@ -2556,7 +2557,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.2"
-    LAST_MODIFIED = "May 15, 2006"
+    LAST_MODIFIED = "June 1, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2956,7 +2957,11 @@ class Diakonos
                     parseConfigurationFile arg.subHome
                 when "key"
                     if arg != nil
-                        keystrings, function_and_args = arg.split( /;/ )
+                        if /  / === arg
+                            keystrings, function_and_args = arg.split( / {2,}/, 2 )
+                        else
+                            keystrings, function_and_args = arg.split( /;/, 2 )
+                        end
                         keystrokes = Array.new
                         keystrings.split( /\s+/ ).each do |ks_str|
                             code = ks_str.keyCode
