@@ -2557,7 +2557,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.2"
-    LAST_MODIFIED = "June 1, 2006"
+    LAST_MODIFIED = "June 16, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2666,6 +2666,7 @@ class Diakonos
         "pasteShellResult",
         "playMacro",
         "popTag",
+        "printKeychain",
         "quit",
         "redraw",
         "removeNamedBookmark",
@@ -3199,60 +3200,85 @@ class Diakonos
     
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
-    def processKeystroke( context = nil )
+    def processKeystroke( context = [] )
         c = @win_main.getch
         
-        if context == nil
-            case c
-                when PRINTABLE_CHARACTERS
-                    if @macro_history != nil
-                        @macro_history.push "typeCharacter #{c}"
-                    end
-                    if not @there_was_non_movement
-                        @there_was_non_movement = true
-                    end
-                    typeCharacter c
-                    return
-            end
-            keychain_pressed = [ c ]
-        else
-            keychain_pressed = context.concat [ c ]
-        end
-        
-        function_and_args = @keychains.getLeaf( keychain_pressed )
-        
-        if function_and_args != nil
-            function, args = function_and_args
-            setILine if not @settings[ "context.combined" ]
-            
-            if args != nil
-                to_eval = "#{function}( #{args} )"
+        if @capturing_keychain
+            if c == ENTER
+                @capturing_keychain = false
+                @current_buffer.deleteSelection
+                str = context.to_keychain_s.strip
+                @current_buffer.insertString str 
+                cursorRight( Buffer::STILL_TYPING, str.length )
             else
-                to_eval = function
-            end
-            
-            if @macro_history != nil
-                @macro_history.push to_eval
-            end
-            
-            begin
-                eval to_eval, nil, "eval"
-                @last_commands << to_eval unless to_eval == "repeatLast"
-                if not @there_was_non_movement
-                    @there_was_non_movement = ( not to_eval.movement? )
+                keychain_pressed = context.concat [ c ]
+                
+                function_and_args = @keychains.getLeaf( keychain_pressed )
+                
+                if function_and_args != nil
+                    function, args = function_and_args
                 end
-            rescue Exception => e
-                debugLog e.message
-                debugLog e.backtrace.join( "\n\t" )
-                showException e
+                
+                partial_keychain = @keychains.getNode( keychain_pressed )
+                if partial_keychain != nil
+                    setILine( "Part of existing keychain: " + keychain_pressed.to_keychain_s + "..." )
+                else
+                    setILine keychain_pressed.to_keychain_s + "..."
+                end
+                processKeystroke( keychain_pressed )
             end
         else
-            partial_keychain = @keychains.getNode( keychain_pressed )
-            if partial_keychain != nil
-                setILine( keychain_pressed.to_keychain_s + "..." )
-                processKeystroke( keychain_pressed )
+        
+            if context.empty?
+                case c
+                    when PRINTABLE_CHARACTERS
+                        if @macro_history != nil
+                            @macro_history.push "typeCharacter #{c}"
+                        end
+                        if not @there_was_non_movement
+                            @there_was_non_movement = true
+                        end
+                        typeCharacter c
+                        return
+                end
+            end
+            keychain_pressed = context.concat [ c ]
+            
+            function_and_args = @keychains.getLeaf( keychain_pressed )
+            
+            if function_and_args != nil
+                function, args = function_and_args
+                setILine if not @settings[ "context.combined" ]
+                
+                if args != nil
+                    to_eval = "#{function}( #{args} )"
+                else
+                    to_eval = function
+                end
+                
+                if @macro_history != nil
+                    @macro_history.push to_eval
+                end
+                
+                begin
+                    eval to_eval, nil, "eval"
+                    @last_commands << to_eval unless to_eval == "repeatLast"
+                    if not @there_was_non_movement
+                        @there_was_non_movement = ( not to_eval.movement? )
+                    end
+                rescue Exception => e
+                    debugLog e.message
+                    debugLog e.backtrace.join( "\n\t" )
+                    showException e
+                end
             else
-                setILine "Nothing assigned to #{keychain_pressed.to_keychain_s}"
+                partial_keychain = @keychains.getNode( keychain_pressed )
+                if partial_keychain != nil
+                    setILine( keychain_pressed.to_keychain_s + "..." )
+                    processKeystroke( keychain_pressed )
+                else
+                    setILine "Nothing assigned to #{keychain_pressed.to_keychain_s}"
+                end
             end
         end
     end
@@ -4489,6 +4515,11 @@ class Diakonos
         else
             setILine "Tag stack empty."
         end
+    end
+    
+    def printKeychain
+        @capturing_keychain = true
+        setILine "Type any chain of keystrokes or key chords, then press Enter..."
     end
 
     def quit
