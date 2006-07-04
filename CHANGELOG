@@ -3,9 +3,10 @@ Diakonos Changelog
 
 0.8.2
 
-- Added ability to use ; in keychains.
+- Added ability to use ';' in keychains.
 - Added the printKeychain command.
 - Augmented default conf to include some KDE 3.5 konsole keychains for common keys.
+- Added use_magic_file setting; default to off.
 
 0.8.1
 
