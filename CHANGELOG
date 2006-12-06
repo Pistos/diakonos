@@ -1,12 +1,18 @@
 Diakonos Changelog
 ------------------
 
+0.8.3
+
+- Extended ASCII characters (127 to 254) are now typeable.
+- Added elsif as a Ruby unindenter.
+
 0.8.2
 
 - Added ability to use ';' in keychains.
 - Added the printKeychain command.
 - Augmented default conf to include some KDE 3.5 konsole keychains for common keys.
 - Added use_magic_file setting; default to off.
+- Added a clipboard/selected diff keybinding.
 
 0.8.1
 

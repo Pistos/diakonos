@@ -2576,8 +2576,8 @@ class Diakonos
         :indenters, :unindenters, :clipboard, :do_display,
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
-    VERSION = "0.8.2"
-    LAST_MODIFIED = "July 4, 2006"
+    VERSION = "0.8.3"
+    LAST_MODIFIED = "August 17, 2006"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -2586,7 +2586,7 @@ class Diakonos
     DO_REDRAW = true
     DONT_REDRAW = false
 
-    PRINTABLE_CHARACTERS = 32..126
+    PRINTABLE_CHARACTERS = 32..254
     TAB = 9
     ENTER = 13
     ESCAPE = 27
