@@ -22,7 +22,7 @@ spec = Gem::Specification.new do |s|
         'README',
         'home-on-save.rb',
         'diakonos.conf',
-        'lib/diakonos',
+        'lib/diakonos.rb',
         'bin/diakonos',
     ]
     s.executables = [ 'diakonos' ]
