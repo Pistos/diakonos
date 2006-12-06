@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'diakonos'
+
+diakonos = Diakonos.new( ARGV )
+diakonos.start
