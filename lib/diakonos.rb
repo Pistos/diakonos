@@ -33,8 +33,6 @@ require 'set'
     #require 'ruby-prof'
 #end
 
-include Curses
-
 class Object
     def deep_clone
         Marshal::load( Marshal.dump( self ) )
@@ -248,41 +246,41 @@ class String
         retval = nil
         case downcase
             when "down"
-                retval = KEY_DOWN
+                retval = Curses::KEY_DOWN
             when "up"
-                retval = KEY_UP
+                retval = Curses::KEY_UP
             when "left"
-                retval = KEY_LEFT
+                retval = Curses::KEY_LEFT
             when "right"
-                retval = KEY_RIGHT
+                retval = Curses::KEY_RIGHT
             when "home"
-                retval = KEY_HOME
+                retval = Curses::KEY_HOME
             when "end"
-                retval = KEY_END
+                retval = Curses::KEY_END
             when "insert", "ins"
-                retval = KEY_IC
+                retval = Curses::KEY_IC
             when "delete", "del"
-                retval = KEY_DC
+                retval = Curses::KEY_DC
             when "backspace"
                 retval = Diakonos::BACKSPACE
             when "tab"
                 retval = 9
             when "pageup", "page-up"
-                retval = KEY_PPAGE
+                retval = Curses::KEY_PPAGE
             when "pagedown", "page-down"
-                retval = KEY_NPAGE
+                retval = Curses::KEY_NPAGE
             when "enter", "return"
                 retval = Diakonos::ENTER
             when "numpad7", "keypad7", "kp-7"
-                retval = KEY_A1
+                retval = Curses::KEY_A1
             when "numpad9", "keypad9", "kp-9"
-                retval = KEY_A3
+                retval = Curses::KEY_A3
             when "numpad5", "keypad5", "kp-5"
-                retval = KEY_B2
+                retval = Curses::KEY_B2
             when "numpad1", "keypad1", "kp-1"
-                retval = KEY_C1
+                retval = Curses::KEY_C1
             when "numpad3", "keypad3", "kp-3"
-                retval = KEY_C3
+                retval = Curses::KEY_C3
             when "escape", "esc"
                 retval = Diakonos::ESCAPE
             when "space"
@@ -290,13 +288,13 @@ class String
             when "ctrl+space"
                 retval = 0
             when "find"
-                retval = KEY_FIND
+                retval = Curses::KEY_FIND
             when "select"
-                retval = KEY_SELECT
+                retval = Curses::KEY_SELECT
             when "suspend"
-                retval = KEY_SUSPEND
+                retval = Curses::KEY_SUSPEND
             when /^f(\d\d?)$/
-                retval = KEY_F0 + $1.to_i
+                retval = Curses::KEY_F0 + $1.to_i
             when /^ctrl\+[a-gi-z]$/
                 retval = downcase[ -1 ] - 96
             when /^ctrl\+h$/
@@ -317,42 +315,42 @@ class String
     end
 
     def toFormatting
-        formatting = A_NORMAL
+        formatting = Curses::A_NORMAL
         split( /\s+/ ).each do |format|
             case format.downcase
                 when "normal"
-                    formatting = A_NORMAL
+                    formatting = Curses::A_NORMAL
                 when "black", "0"
-                    formatting = formatting | color_pair( COLOR_BLACK )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_BLACK )
                 when "red", "1"
-                    formatting = formatting | color_pair( COLOR_RED )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_RED )
                 when "green", "2"
-                    formatting = formatting | color_pair( COLOR_GREEN )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_GREEN )
                 when "yellow", "brown", "3"
-                    formatting = formatting | color_pair( COLOR_YELLOW )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_YELLOW )
                 when "blue", "4"
-                    formatting = formatting | color_pair( COLOR_BLUE )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_BLUE )
                 when "magenta", "purple", "5"
-                    formatting = formatting | color_pair( COLOR_MAGENTA )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_MAGENTA )
                 when "cyan", "6"
-                    formatting = formatting | color_pair( COLOR_CYAN )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_CYAN )
                 when "white", "7"
-                    formatting = formatting | color_pair( COLOR_WHITE )
+                    formatting = formatting | Curses::color_pair( Curses::COLOR_WHITE )
                 when "standout", "s", "so"
-                    formatting = formatting | A_STANDOUT
+                    formatting = formatting | Curses::A_STANDOUT
                 when "underline", "u", "un", "ul"
-                    formatting = formatting | A_UNDERLINE
+                    formatting = formatting | Curses::A_UNDERLINE
                 when "reverse", "r", "rev", "inverse", "i", "inv"
-                    formatting = formatting | A_REVERSE
+                    formatting = formatting | Curses::A_REVERSE
                 when "blink", "bl", "blinking"
-                    formatting = formatting | A_BLINK
+                    formatting = formatting | Curses::A_BLINK
                 when "dim", "d"
-                    formatting = formatting | A_DIM
+                    formatting = formatting | Curses::A_DIM
                 when "bold", "b", "bo"
-                    formatting = formatting | A_BOLD
+                    formatting = formatting | Curses::A_BOLD
                 else
-                    if ( colour_number = format.to_i ) > COLOR_WHITE
-                        formatting = formatting | color_pair( colour_number )
+                    if ( colour_number = format.to_i ) > Curses::COLOR_WHITE
+                        formatting = formatting | Curses::color_pair( colour_number )
                     end
             end
         end
@@ -360,24 +358,24 @@ class String
     end
 
     def toColourConstant
-        retval = COLOR_WHITE
+        retval = Curses::COLOR_WHITE
         case downcase
             when "black", "0"
-                retval = COLOR_BLACK
+                retval = Curses::COLOR_BLACK
             when "red", "1"
-                retval = COLOR_RED
+                retval = Curses::COLOR_RED
             when "green", "2"
-                retval = COLOR_GREEN
+                retval = Curses::COLOR_GREEN
             when "yellow", "brown", "3"
-                retval = COLOR_YELLOW
+                retval = Curses::COLOR_YELLOW
             when "blue", "4"
-                retval = COLOR_BLUE
+                retval = Curses::COLOR_BLUE
             when "magenta", "purple", "5"
-                retval = COLOR_MAGENTA
+                retval = Curses::COLOR_MAGENTA
             when "cyan", "6"
-                retval = COLOR_CYAN
+                retval = Curses::COLOR_CYAN
             when "white", "7"
-                retval = COLOR_WHITE
+                retval = Curses::COLOR_WHITE
         end
     end
     
@@ -611,47 +609,47 @@ module KeyCode
         end
         if retval == nil
             case self
-                when KEY_DOWN
+                when Curses::KEY_DOWN
                     retval = "down"
-                when KEY_UP
+                when Curses::KEY_UP
                     retval = "up"
-                when KEY_LEFT
+                when Curses::KEY_LEFT
                     retval = "left"
-                when KEY_RIGHT
+                when Curses::KEY_RIGHT
                     retval = "right"
-                when KEY_HOME
+                when Curses::KEY_HOME
                     retval = "home"
-                when KEY_END
+                when Curses::KEY_END
                     retval = "end"
-                when KEY_IC
+                when Curses::KEY_IC
                     retval = "insert"
-                when KEY_DC
+                when Curses::KEY_DC
                     retval = "delete"
-                when KEY_PPAGE
+                when Curses::KEY_PPAGE
                     retval = "page-up"
-                when KEY_NPAGE
+                when Curses::KEY_NPAGE
                     retval = "page-down"
-                when KEY_A1
+                when Curses::KEY_A1
                     retval = "numpad7"
-                when KEY_A3
+                when Curses::KEY_A3
                     retval = "numpad9"
-                when KEY_B2
+                when Curses::KEY_B2
                     retval = "numpad5"
-                when KEY_C1
+                when Curses::KEY_C1
                     retval = "numpad1"
-                when KEY_C3
+                when Curses::KEY_C3
                     retval = "numpad3"
-                when KEY_FIND
+                when Curses::KEY_FIND
                     retval = "find"
-                when KEY_SELECT
+                when Curses::KEY_SELECT
                     retval = "select"
-                when KEY_SUSPEND
+                when Curses::KEY_SUSPEND
                     retval = "suspend"
-                when KEY_F0..(KEY_F0 + 24)
-                    retval = "f" + (self - KEY_F0).to_s
+                when Curses::KEY_F0..(Curses::KEY_F0 + 24)
+                    retval = "f" + (self - Curses::KEY_F0).to_s
                 when Diakonos::CTRL_H
                     retval = "ctrl+h"
-                when KEY_RESIZE
+                when Curses::KEY_RESIZE
                     retval = "resize"
                 when Diakonos::RESIZE2
                     retval = "resize2"
@@ -921,8 +919,8 @@ class Buffer
         @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
         @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] or 4 )
         @indent_roundup = ( @settings[ "lang.#{@language}.indent.roundup" ] or true )
-        @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or A_NORMAL )
-        @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or A_REVERSE )
+        @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or Curses::A_NORMAL )
+        @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or Curses::A_REVERSE )
         @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
         @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or Diakonos::DEFAULT_TAB_SIZE )
     end
@@ -955,7 +953,7 @@ class Buffer
                     
             if @diakonos.display_mutex.try_lock
                 begin
-                    curs_set 0
+                    Curses::curs_set 0
                     
                     @continued_format_class = nil
                     
@@ -1001,7 +999,7 @@ class Buffer
                     ( y...@diakonos.main_window_height ).each do |y|
                         @win_main.setpos( y, 0 )
                         @win_main.attrset @default_formatting
-                        linestr = " " * cols
+                        linestr = " " * Curses::cols
                         if @settings[ "view.nonfilelines.visible" ]
                             linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
                         end
@@ -1016,7 +1014,7 @@ class Buffer
                         setLanguage( @original_language )
                     end
                     
-                    curs_set 1
+                    Curses::curs_set 1
                 rescue Exception => e
                     $diakonos.log( "Display Exception:" )
                     $diakonos.log( e.message )
@@ -1155,8 +1153,8 @@ class Buffer
 
         if retval != nil
             # Truncate based on right edge of display area
-            if write_cursor_col + retval.length > @left_column + cols - 1
-                new_length = ( @left_column + cols - write_cursor_col )
+            if write_cursor_col + retval.length > @left_column + Curses::cols - 1
+                new_length = ( @left_column + Curses::cols - write_cursor_col )
                 if new_length <= 0
                     retval = nil
                 else
@@ -1178,7 +1176,7 @@ class Buffer
     end
     
     def paintMarks( row )
-        string = @lines[ row ][ @left_column ... @left_column + cols ]
+        string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
         return if string == nil or string == ""
         string = string.expandTabs( @tab_size )
         cury = @win_main.cury
@@ -1192,7 +1190,7 @@ class Buffer
                     @win_main.addstr_ string
                 elsif row == text_mark.start_row and row == text_mark.end_row
                     expanded_col = tabExpandedColumn( text_mark.start_col, row )
-                    if expanded_col < @left_column + cols
+                    if expanded_col < @left_column + Curses::cols
                         left = [ expanded_col - @left_column, 0 ].max
                         right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
                         if left < right
@@ -1202,7 +1200,7 @@ class Buffer
                     end
                 elsif row == text_mark.start_row
                     expanded_col = tabExpandedColumn( text_mark.start_col, row )
-                    if expanded_col < @left_column + cols
+                    if expanded_col < @left_column + Curses::cols
                         left = [ expanded_col - @left_column, 0 ].max
                         @win_main.setpos( cury, curx + left )
                         @win_main.addstr_ string[ left..-1 ]
@@ -1307,9 +1305,9 @@ class Buffer
         return if not @pen_down
 
         if col < @left_column
-            remainder = cols
+            remainder = Curses::cols
         else
-            remainder = @left_column + cols - col
+            remainder = @left_column + Curses::cols - col
         end
         
         if remainder > 0
@@ -1552,7 +1550,7 @@ class Buffer
     def columnToX( col )
         return nil if col == nil
         x = col - @left_column
-        x = nil if ( x < 0 ) or ( x > @left_column + cols - 1 )
+        x = nil if ( x < 0 ) or ( x > @left_column + Curses::cols - 1 )
         return x
     end
 
@@ -1604,7 +1602,7 @@ class Buffer
             @last_row = @top_line + height - 1 - @settings[ "view.margin.y" ]
             @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
         end
-        @last_col = @last_col.fit( @left_column, [ @left_column + cols - 1, @lines[ @last_row ].length ].min )
+        @last_col = @last_col.fit( @left_column, [ @left_column + Curses::cols - 1, @lines[ @last_row ].length ].min )
         @last_screen_y = @last_row - @top_line
         @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
         
@@ -2503,8 +2501,8 @@ class Curses::Window
     def setpos_( y, x )
         $diakonos.debugLog "setpos: y < 0 (#{y})" if y < 0
         $diakonos.debugLog "setpos: x < 0 (#{x})" if x < 0
-        $diakonos.debugLog "setpos: y > lines (#{y})" if y > lines
-        $diakonos.debugLog "setpos: x > cols (#{x})" if x > cols
+        $diakonos.debugLog "setpos: y > lines (#{y})" if y > Curses::lines
+        $diakonos.debugLog "setpos: x > cols (#{x})" if x > Curses::cols
         setpos( y, x )
     end
     
@@ -2513,7 +2511,7 @@ class Curses::Window
         y = cury
         x2 = curx + string.length
         
-        if y < 0 or x < 0 or y > lines or x > cols or x2 < 0 or x2 > cols
+        if y < 0 or x < 0 or y > Curses::lines or x > Curses::cols or x2 < 0 or x2 > Curses::cols
             begin
                 raise Exception
             rescue Exception => e
@@ -2839,32 +2837,32 @@ class Diakonos
             @win_context.close
         end
 
-        init_screen
-        nonl
-        raw
-        noecho
+        Curses::init_screen
+        Curses::nonl
+        Curses::raw
+        Curses::noecho
 
-        if has_colors?
-            start_color
-            init_pair( COLOR_BLACK, COLOR_BLACK, COLOR_BLACK )
-            init_pair( COLOR_RED, COLOR_RED, COLOR_BLACK )
-            init_pair( COLOR_GREEN, COLOR_GREEN, COLOR_BLACK )
-            init_pair( COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK )
-            init_pair( COLOR_BLUE, COLOR_BLUE, COLOR_BLACK )
-            init_pair( COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK )
-            init_pair( COLOR_CYAN, COLOR_CYAN, COLOR_BLACK )
-            init_pair( COLOR_WHITE, COLOR_WHITE, COLOR_BLACK )
+        if Curses::has_colors?
+            Curses::start_color
+            Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
+            Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
+            Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
+            Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
+            Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
+            Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
+            Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
+            Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
             @colour_pairs.each do |cp|
-                init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
+                Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
             end
         end
         
-        @win_main = Window.new( main_window_height, cols, 0, 0 )
+        @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
         @win_main.keypad( true )
-        @win_status = Window.new( 1, cols, lines - 2, 0 )
+        @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
         @win_status.keypad( true )
         @win_status.attrset @settings[ "status.format" ]
-        @win_interaction = Window.new( 1, cols, lines - 1, 0 )
+        @win_interaction = Curses::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
         @win_interaction.keypad( true )
         
         if @settings[ "context.visible" ]
@@ -2873,7 +2871,7 @@ class Diakonos
             else
                 pos = 3
             end
-            @win_context = Window.new( 1, cols, lines - pos, 0 )
+            @win_context = Curses::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
             @win_context.keypad( true )
         else
             @win_context = nil
@@ -2932,9 +2930,9 @@ class Diakonos
 
         @settings = Hash.new
         # Setup some defaults
-        @settings[ "context.format" ] = A_REVERSE
+        @settings[ "context.format" ] = Curses::A_REVERSE
         
-        @keychains[ KEY_RESIZE ] = [ "redraw", nil ]
+        @keychains[ Curses::KEY_RESIZE ] = [ "redraw", nil ]
         @keychains[ RESIZE2 ] = [ "redraw", nil ]
         
         @colour_pairs = Array.new
@@ -3143,7 +3141,7 @@ class Diakonos
         # One line for the status line
         # One line for the input line
         # One line for the context line
-        retval = lines - 2
+        retval = Curses::lines - 2
         if @settings[ "context.visible" ] and not @settings[ "context.combined" ]
             retval = retval - 1
         end
@@ -3151,7 +3149,7 @@ class Diakonos
     end
 
     def main_window_width
-        return cols
+        return Curses::cols
     end
 
     def start
@@ -3306,11 +3304,11 @@ class Diakonos
 
     # Display text on the interaction line.
     def setILine( string = "" )
-        curs_set 0
+        Curses::curs_set 0
         @win_interaction.setpos( 0, 0 )
-        @win_interaction.addstr( "%-#{cols}s" % string )
+        @win_interaction.addstr( "%-#{Curses::cols}s" % string )
         @win_interaction.refresh
-        curs_set 1
+        Curses::curs_set 1
         return string.length
     end
     
@@ -3388,7 +3386,7 @@ class Diakonos
             status_left = status_left % var_array[ 0...field_count ]
             status_right = @settings[ "status.right" ] % var_array[ field_count..-1 ]
             filler_string = @settings[ "status.filler" ]
-            fill_amount = (cols - status_left.length - status_right.length) / filler_string.length
+            fill_amount = (Curses::cols - status_left.length - status_right.length) / filler_string.length
             if fill_amount > 0
                 filler = filler_string * fill_amount
             else
@@ -3396,7 +3394,7 @@ class Diakonos
             end
             str = status_left + filler + status_right
         rescue ArgumentError => e
-            str = "%-#{cols}s" % "(status line configuration error)"
+            str = "%-#{Curses::cols}s" % "(status line configuration error)"
         end
         return str
     end
@@ -3404,14 +3402,14 @@ class Diakonos
 
     def updateStatusLine
         str = buildStatusLine
-        if str.length > cols
-            str = buildStatusLine( str.length - cols )
+        if str.length > Curses::cols
+            str = buildStatusLine( str.length - Curses::cols )
         end
-        curs_set 0
+        Curses::curs_set 0
         @win_status.setpos( 0, 0 )
         @win_status.addstr str
         @win_status.refresh
-        curs_set 1
+        Curses::curs_set 1
     end
 
     def updateContextLine
@@ -3421,14 +3419,14 @@ class Diakonos
 
                 context = @current_buffer.context
 
-                curs_set 0
+                Curses::curs_set 0
                 @win_context.setpos( 0, 0 )
                 chars_printed = 0
                 if context.length > 0
                     truncation = [ @settings[ "context.max_levels" ], context.length ].min
                     max_length = [
-                        ( cols / truncation ) - @settings[ "context.separator" ].length,
-                        ( @settings[ "context.max_segment_width" ] or cols )
+                        ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
+                        ( @settings[ "context.max_segment_width" ] or Curses::cols )
                     ].min
                     line = nil
                     context_subset = context[ 0...truncation ]
@@ -3448,14 +3446,14 @@ class Diakonos
 
                 @iline_mutex.synchronize do
                     @win_context.attrset @settings[ "context.format" ]
-                    @win_context.addstr( " " * ( cols - chars_printed ) )
+                    @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
                     @win_context.refresh
                 end
                 @display_mutex.synchronize do
                     @win_main.setpos( @current_buffer.last_screen_y, @current_buffer.last_screen_x )
                     @win_main.refresh
                 end
-                curs_set 1
+                Curses::curs_set 1
             end
             
             @context_thread.priority = -2
@@ -3700,9 +3698,9 @@ class Diakonos
             c = @win_interaction.getch
             
             case c
-                when KEY_NPAGE
+                when Curses::KEY_NPAGE
                     pageDown
-                when KEY_PPAGE
+                when Curses::KEY_PPAGE
                     pageUp
                 else
                     if @message_expiry != nil and Time.now < @message_expiry
@@ -4266,7 +4264,7 @@ class Diakonos
                 if args != nil and args.length > 0
                     function_string << "( #{args} )"
                 end
-                keychain_width = [ cols - function_string.length - 2, cols / 2 ].min
+                keychain_width = [ Curses::cols - function_string.length - 2, Curses::cols / 2 ].min
                 help_file.puts(
                     "%-#{keychain_width}s%s" % [
                         keystrokes.to_keychain_s,
@@ -4718,7 +4716,7 @@ class Diakonos
                 t1.join
                 t2.join
 
-                init_screen
+                Curses::init_screen
                 refreshAll
             end
             openFile result_file
@@ -4744,7 +4742,7 @@ class Diakonos
                 result = "Return code: #{$?}"
             end
 
-            init_screen
+            Curses::init_screen
             refreshAll
             
             setILine result
@@ -4771,7 +4769,7 @@ class Diakonos
                 showException e
             end
             
-            init_screen
+            Curses::init_screen
             refreshAll
         end
     end
@@ -4780,7 +4778,7 @@ class Diakonos
     def suspend
         close_screen
         Process.kill( "SIGSTOP", $PID )
-        init_screen
+        Curses::init_screen
         refreshAll
     end
 
@@ -4908,18 +4906,18 @@ class Diakonos::Readline
                         redrawInput
                     end
                     @input_cursor += 1
-                when KEY_DC
+                when Curses::KEY_DC
                     if @input_cursor < @input.length
                         @window.delch
                         @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
                     end
                 when Diakonos::BACKSPACE, Diakonos::CTRL_H
-                    # KEY_LEFT
+                    # Curses::KEY_LEFT
                     if @input_cursor > 0
                         @input_cursor += -1
                         @window.setpos( @window.cury, @window.curx - 1 )
                         
-                        # KEY_DC
+                        # Curses::KEY_DC
                         if @input_cursor < @input.length
                             @window.delch
                             @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
@@ -4930,36 +4928,36 @@ class Diakonos::Readline
                 when Diakonos::ESCAPE, Diakonos::CTRL_C, Diakonos::CTRL_D, Diakonos::CTRL_Q
                     @input = nil
                     break
-                when KEY_LEFT
+                when Curses::KEY_LEFT
                     if @input_cursor > 0
                         @input_cursor += -1
                         @window.setpos( @window.cury, @window.curx - 1 )
                     end
-                when KEY_RIGHT
+                when Curses::KEY_RIGHT
                     if @input_cursor < @input.length
                         @input_cursor += 1
                         @window.setpos( @window.cury, @window.curx + 1 )
                     end
-                when KEY_HOME
+                when Curses::KEY_HOME
                     @input_cursor = 0
                     @window.setpos( @icury, @icurx )
-                when KEY_END
+                when Curses::KEY_END
                     @input_cursor = @input.length
                     @window.setpos( @window.cury, @icurx + @input.length )
                 when Diakonos::TAB
                     completeInput
-                when KEY_NPAGE
+                when Curses::KEY_NPAGE
                     @diakonos.pageDown
-                when KEY_PPAGE
+                when Curses::KEY_PPAGE
                     @diakonos.pageUp
-                when KEY_UP
+                when Curses::KEY_UP
                     if @history_index > 0
                         @history[ @history_index ] = @input
                         @history_index -= 1
                         @input = @history[ @history_index ]
                         cursorWriteInput
                     end
-                when KEY_DOWN
+                when Curses::KEY_DOWN
                     if @history_index < @history.length - 1
                         @history[ @history_index ] = @input
                         @history_index += 1
@@ -4985,7 +4983,7 @@ class Diakonos::Readline
         curx = @window.curx
         cury = @window.cury
         @window.setpos( @icury, @icurx )
-        @window.addstr "%-#{ cols - curx }s%s" % [ @input, " " * ( cols - @input.length ) ]
+        @window.addstr "%-#{ Curses::cols - curx }s%s" % [ @input, " " * ( Curses::cols - @input.length ) ]
         @window.setpos( cury, curx )
         @window.refresh
     end
