@@ -26,18 +26,13 @@ require "open3"
 require "thread"
 require "English"
 require 'set'
+require 'diakonos/object'
 
 #$profiling = true
 
 #if $profiling
     #require 'ruby-prof'
 #end
-
-class Object
-    def deep_clone
-        Marshal::load( Marshal.dump( self ) )
-    end
-end
 
 module Enumerable
     # Returns [array-index, string-index, string-index] triples for each match.
@@ -4383,7 +4378,7 @@ class Diakonos
             # Is file readable?
             
             # Does the "file" utility exist?
-            if @settings[ 'use_magic_file' ] and FileTest.exist?( "/usr/bin/file" ) and filename != nil and FileTest.exist?( filename )
+            if @settings[ 'use_magic_file' ] and FileTest.exist?( "/usr/bin/file" ) and filename != nil and FileTest.exist?( filename ) and /\blisting\.txt\b/ !~ filename
                 file_type = `/usr/bin/file -L #{filename}`
                 if file_type !~ /text/ and file_type !~ /empty$/
                     choice = getChoice(
