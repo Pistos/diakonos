@@ -2570,7 +2570,7 @@ class Diakonos
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     VERSION = "0.8.3"
-    LAST_MODIFIED = "August 17, 2006"
+    LAST_MODIFIED = "January 15, 2007"
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
