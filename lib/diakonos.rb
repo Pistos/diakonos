@@ -21,10 +21,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-require "curses"
-require "open3"
-require "thread"
-require "English"
+require 'curses'
+require 'open3'
+require 'thread'
+require 'English'
 require 'set'
 
 require 'diakonos/object'
@@ -55,8 +55,8 @@ require 'diakonos/readline'
 
 module Diakonos
 
-    VERSION = "0.8.3"
-    LAST_MODIFIED = "February 3, 2007"
+    VERSION = '0.8.3'
+    LAST_MODIFIED = 'February 3, 2007'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -93,7 +93,7 @@ module Diakonos
         [ ?e ],
         [ ?o ]
     ]
-    CHOICE_STRINGS = [ "(n)o", "(y)es", "(a)ll", "(c)ancel", "y(e)s to all", "n(o) to all" ]
+    CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all' ]
 
     BOL_ZERO = 0
     BOL_FIRST_CHAR = 1
@@ -109,92 +109,92 @@ module Diakonos
     CASE_INSENSITIVE = false
 
     FUNCTIONS = [
-        "addNamedBookmark",
-        "anchorSelection",
-        "backspace",
-        "carriageReturn",
-        "changeSessionSetting",
-        "clearMatches",
-        "closeFile",
-        "collapseWhitespace",
-        "copySelection",
-        "cursorBOF",
-        "cursorBOL",
-        "cursorDown",
-        "cursorEOF",
-        "cursorEOL",
-        "cursorBOV",
-        "cursorTOV",
-        "cursorLeft",
-        "cursorReturn",
-        "cursorRight",
-        "cursorUp",
-        "cutSelection",
-        "delete",
-        "deleteAndStoreLine",
-        "deleteLine",
-        "deleteToEOL",
-        "evaluate",
-        "execute",
-        "find",
-        "findAgain",
-        "findAndReplace",
-        "findExact",
-        "goToLineAsk",
-        "goToNamedBookmark",
-        "goToNextBookmark",
-        "goToPreviousBookmark",
-        "goToTag",
-        "goToTagUnderCursor",
-        "help",
-        "indent",
-        "insertSpaces",
-        "insertTab",
-        "loadConfiguration",
-        "loadScript",
-        "newFile",
-        "openFile",
-        "openFileAsk",
-        "operateOnEachLine",
-        "operateOnLines",
-        "operateOnString",
-        "pageDown",
-        "pageUp",
-        "parsedIndent",
-        "paste",
-        "pasteShellResult",
-        "playMacro",
-        "popTag",
-        "printKeychain",
-        "quit",
-        "redraw",
-        "removeNamedBookmark",
-        "removeSelection",
-        "repeatLast",
-        "revert",
-        "saveFile",
-        "saveFileAs",
-        "scrollDown",
-        "scrollUp",
-        "searchAndReplace",
-        "seek",
-        "setBufferType",
-        "setReadOnly",
-        "shell",
-        "showClips",
-        "suspend",
-        "switchToBufferNumber",
-        "switchToNextBuffer",
-        "switchToPreviousBuffer",
-        "toggleBookmark",
-        "toggleMacroRecording",
-        "toggleSelection",
-        "toggleSessionSetting",
-        "undo",
-        "unindent",
-        "unundo"
+        'addNamedBookmark',
+        'anchorSelection',
+        'backspace',
+        'carriageReturn',
+        'changeSessionSetting',
+        'clearMatches',
+        'closeFile',
+        'collapseWhitespace',
+        'copySelection',
+        'cursorBOF',
+        'cursorBOL',
+        'cursorDown',
+        'cursorEOF',
+        'cursorEOL',
+        'cursorBOV',
+        'cursorTOV',
+        'cursorLeft',
+        'cursorReturn',
+        'cursorRight',
+        'cursorUp',
+        'cutSelection',
+        'delete',
+        'deleteAndStoreLine',
+        'deleteLine',
+        'deleteToEOL',
+        'evaluate',
+        'execute',
+        'find',
+        'findAgain',
+        'findAndReplace',
+        'findExact',
+        'goToLineAsk',
+        'goToNamedBookmark',
+        'goToNextBookmark',
+        'goToPreviousBookmark',
+        'goToTag',
+        'goToTagUnderCursor',
+        'help',
+        'indent',
+        'insertSpaces',
+        'insertTab',
+        'loadConfiguration',
+        'loadScript',
+        'newFile',
+        'openFile',
+        'openFileAsk',
+        'operateOnEachLine',
+        'operateOnLines',
+        'operateOnString',
+        'pageDown',
+        'pageUp',
+        'parsedIndent',
+        'paste',
+        'pasteShellResult',
+        'playMacro',
+        'popTag',
+        'printKeychain',
+        'quit',
+        'redraw',
+        'removeNamedBookmark',
+        'removeSelection',
+        'repeatLast',
+        'revert',
+        'saveFile',
+        'saveFileAs',
+        'scrollDown',
+        'scrollUp',
+        'searchAndReplace',
+        'seek',
+        'setBufferType',
+        'setReadOnly',
+        'shell',
+        'showClips',
+        'suspend',
+        'switchToBufferNumber',
+        'switchToNextBuffer',
+        'switchToPreviousBuffer',
+        'toggleBookmark',
+        'toggleMacroRecording',
+        'toggleSelection',
+        'toggleSessionSetting',
+        'undo',
+        'unindent',
+        'unundo'
     ]
-    LANG_TEXT = "text"
+    LANG_TEXT = 'text'
     
     NUM_LAST_COMMANDS = 2
     
@@ -206,7 +206,7 @@ class Diakonos
 
 
     def initialize( argv = [] )
-        @diakonos_home = ( ( ENV[ "HOME" ] or "" ) + "/.diakonos" ).subHome
+        @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
         if not FileTest.exists? @diakonos_home
             Dir.mkdir @diakonos_home
         end
@@ -214,9 +214,9 @@ class Diakonos
         if not FileTest.exists? @script_dir
             Dir.mkdir @script_dir
         end
-        @debug = File.new( "#{@diakonos_home}/debug.log", "w" )
-        @list_filename = @diakonos_home + "/listing.txt"
-        @diff_filename = @diakonos_home + "/text.diff"
+        @debug = File.new( "#{@diakonos_home}/debug.log", 'w' )
+        @list_filename = @diakonos_home + '/listing.txt'
+        @diff_filename = @diakonos_home + '/text.diff'
 
         @files = Array.new
         @read_only_files = Array.new
@@ -269,10 +269,10 @@ class Diakonos
         while argv.length > 0
             arg = argv.shift
             case arg
-                when "--help"
+                when '--help'
                     printUsage
                     exit 1
-                when "-ro"
+                when '-ro'
                     filename = argv.shift
                     if filename == nil
                         printUsage
@@ -280,13 +280,13 @@ class Diakonos
                     else
                         @read_only_files.push filename
                     end
-                when "-c", "--config"
+                when '-c', '--config'
                     @config_filename = argv.shift
                     if @config_filename == nil
                         printUsage
                         exit 1
                     end
-                when "-e", "--execute"
+                when '-e', '--execute'
                     post_load_script = argv.shift
                     if post_load_script == nil
                         printUsage
@@ -349,12 +349,12 @@ class Diakonos
         @win_main.keypad( true )
         @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
         @win_status.keypad( true )
-        @win_status.attrset @settings[ "status.format" ]
+        @win_status.attrset @settings[ 'status.format' ]
         @win_interaction = Curses::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
         @win_interaction.keypad( true )
         
-        if @settings[ "context.visible" ]
-            if @settings[ "context.combined" ]
+        if @settings[ 'context.visible' ]
+            if @settings[ 'context.combined' ]
                 pos = 1
             else
                 pos = 3
@@ -378,11 +378,11 @@ class Diakonos
 
         existent = 0
         conf_dirs = [
-            "/usr/local/etc/diakonos.conf",
-            "/usr/etc/diakonos.conf",
-            "/etc/diakonos.conf",
-            "/usr/local/share/diakonos/diakonos.conf",
-            "/usr/share/diakonos/diakonos.conf"
+            '/usr/local/etc/diakonos.conf',
+            '/usr/etc/diakonos.conf',
+            '/etc/diakonos.conf',
+            '/usr/local/share/diakonos/diakonos.conf',
+            '/usr/share/diakonos/diakonos.conf'
         ]
         
         conf_dirs.each do |conf_dir|
@@ -393,13 +393,14 @@ class Diakonos
             end
         end
         
-        @diakonos_conf = ( @config_filename or ( @diakonos_home + "/diakonos.conf" ) )
+        @diakonos_conf = ( @config_filename or ( @diakonos_home + '/diakonos.conf' ) )
         existent += 1 if FileTest.exists? @diakonos_conf
 
         if existent < 1
             puts "diakonos.conf not found in any of:"
-            puts "   /usr/local/share/diakonos/"
-            puts "   /usr/share/diakonos/"
+            conf_dirs.each do |conf_dir|
+                puts "   #{conf_dir}"
+            end
             puts "   ~/.diakonos/"
             puts "At least one configuration file must exist."
             puts "Download a sample configuration file from http://purepistos.net/diakonos ."
