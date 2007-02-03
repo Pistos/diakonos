@@ -1,5 +1,7 @@
+require 'diakonos/keycode'
+
 class Fixnum
-    include KeyCode
+    include Diakonos::KeyCode
 
     def fit( min, max )
         return self if max < min

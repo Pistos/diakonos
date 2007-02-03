@@ -28,7 +28,7 @@ class Readline
             c = @window.getch
 
             case c
-                when Diakonos::PRINTABLE_CHARACTERS
+                when PRINTABLE_CHARACTERS
                     if @input_cursor == @input.length
                         @input << c
                         @window.addch c
@@ -43,7 +43,7 @@ class Readline
                         @window.delch
                         @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
                     end
-                when Diakonos::BACKSPACE, Diakonos::CTRL_H
+                when BACKSPACE, CTRL_H
                     # Curses::KEY_LEFT
                     if @input_cursor > 0
                         @input_cursor += -1
@@ -55,9 +55,9 @@ class Readline
                             @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
                         end
                     end
-                when Diakonos::ENTER
+                when ENTER
                     break
-                when Diakonos::ESCAPE, Diakonos::CTRL_C, Diakonos::CTRL_D, Diakonos::CTRL_Q
+                when ESCAPE, CTRL_C, CTRL_D, CTRL_Q
                     @input = nil
                     break
                 when Curses::KEY_LEFT
@@ -76,7 +76,7 @@ class Readline
                 when Curses::KEY_END
                     @input_cursor = @input.length
                     @window.setpos( @window.cury, @icurx + @input.length )
-                when Diakonos::TAB
+                when TAB
                     completeInput
                 when Curses::KEY_NPAGE
                     @diakonos.pageDown
@@ -96,7 +96,7 @@ class Readline
                         @input = @history[ @history_index ]
                         cursorWriteInput
                     end
-                when Diakonos::CTRL_K
+                when CTRL_K
                     @input = ""
                     cursorWriteInput
                 else

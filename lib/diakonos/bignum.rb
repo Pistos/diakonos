@@ -1,6 +1,6 @@
 require 'diakonos/keycode'
 
 class Bignum
-    include KeyCode
+    include Diakonos::KeyCode
 end
 

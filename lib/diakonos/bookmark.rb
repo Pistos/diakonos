@@ -1,3 +1,5 @@
+module Diakonos
+
 class Bookmark
     attr_reader :buffer, :row, :col, :name
 
@@ -46,3 +48,4 @@ class Bookmark
     end
 end
 
+end

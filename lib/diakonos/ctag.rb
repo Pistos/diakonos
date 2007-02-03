@@ -1,3 +1,5 @@
+module Diakonos
+
 class CTag
     attr_reader :file, :command, :kind, :rest
     
@@ -23,3 +25,4 @@ class CTag
     end
 end
 
+end

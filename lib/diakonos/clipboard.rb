@@ -1,3 +1,5 @@
+module Diakonos
+
 class Clipboard
     def initialize( max_clips )
         @clips = Array.new
@@ -42,3 +44,4 @@ class Clipboard
     end
 end
 
+end

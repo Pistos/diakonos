@@ -1,3 +1,5 @@
+module Diakonos
+
 class Buffer
     attr_reader :name, :modified, :original_language, :changing_selection, :read_only,
         :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col
@@ -98,7 +100,7 @@ class Buffer
             language = (
                 @diakonos.getLanguageFromShaBang( @lines[ 0 ] ) or
                 @diakonos.getLanguageFromName( @name ) or
-                Diakonos::LANG_TEXT
+                LANG_TEXT
             )
         )
         reset_win_main
@@ -125,7 +127,7 @@ class Buffer
         @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or Curses::A_NORMAL )
         @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or Curses::A_REVERSE )
         @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
-        @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or Diakonos::DEFAULT_TAB_SIZE )
+        @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or DEFAULT_TAB_SIZE )
     end
     protected :setLanguage
 
@@ -518,7 +520,7 @@ class Buffer
         end
     end
 
-    def save( filename = nil, prompt_overwrite = Diakonos::DONT_PROMPT_OVERWRITE )
+    def save( filename = nil, prompt_overwrite = DONT_PROMPT_OVERWRITE )
         if filename != nil
             name = filename.subHome
         else
@@ -542,13 +544,13 @@ class Buffer
                     proceed = false
                     choice = @diakonos.getChoice(
                         "Overwrite existing '#{@name}'?",
-                        [ Diakonos::CHOICE_YES, Diakonos::CHOICE_NO ],
-                        Diakonos::CHOICE_NO
+                        [ CHOICE_YES, CHOICE_NO ],
+                        CHOICE_NO
                     )
                     case choice
-                        when Diakonos::CHOICE_YES
+                        when CHOICE_YES
                             proceed = true
-                        when Diakonos::CHOICE_NO
+                        when CHOICE_NO
                             proceed = false
                     end
                 end
@@ -839,7 +841,7 @@ class Buffer
     end
 
     # Returns true iff the cursor changed positions in the buffer.
-    def cursorTo( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = Diakonos::ADJUST_ROW )
+    def cursorTo( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = ADJUST_ROW )
         old_last_row = @last_row
         old_last_col = @last_col
         
@@ -946,7 +948,7 @@ class Buffer
         delta = 0
         line = @lines[ row ]
         for i in 0...col
-            if line[ i ] == Diakonos::TAB
+            if line[ i ] == TAB
                 delta += ( @tab_size - ( (i+delta) % @tab_size ) ) - 1
             end
         end
@@ -960,17 +962,17 @@ class Buffer
     def cursorToBOL
         row = @last_row
         case @settings[ "bol_behaviour" ]
-            when Diakonos::BOL_ZERO
+            when BOL_ZERO
                 col = 0
-            when Diakonos::BOL_FIRST_CHAR
+            when BOL_FIRST_CHAR
                 col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
-            when Diakonos::BOL_ALT_ZERO
+            when BOL_ALT_ZERO
                 if @last_col == 0
                     col = ( @lines[ row ] =~ /\S/ )
                 else
                     col = 0
                 end
-            #when Diakonos::BOL_ALT_FIRST_CHAR
+            #when BOL_ALT_FIRST_CHAR
             else
                 first_char_col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
                 if @last_col == first_char_col
@@ -1372,18 +1374,18 @@ class Buffer
             if replacement != nil
                 choice = @diakonos.getChoice(
                     "Replace?",
-                    [ Diakonos::CHOICE_YES, Diakonos::CHOICE_NO, Diakonos::CHOICE_ALL, Diakonos::CHOICE_CANCEL ],
-                    Diakonos::CHOICE_YES
+                    [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL ],
+                    CHOICE_YES
                 )
                 case choice
-                    when Diakonos::CHOICE_YES
+                    when CHOICE_YES
                         paste [ replacement ]
                         find( regexps, direction, replacement )
-                    when Diakonos::CHOICE_ALL
+                    when CHOICE_ALL
                         replaceAll( regexp, replacement )
-                    when Diakonos::CHOICE_NO
+                    when CHOICE_NO
                         find( regexps, direction, replacement )
-                    when Diakonos::CHOICE_CANCEL
+                    when CHOICE_CANCEL
                         # Do nothing further.
                 end
             end
@@ -1693,4 +1695,6 @@ class Buffer
         
         return word
     end
+end
+
 end

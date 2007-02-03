@@ -1,3 +1,5 @@
+module Diakonos
+
 class Finding
     attr_reader :start_row, :start_col, :end_row, :end_col
     attr_writer :end_row, :end_col
@@ -27,3 +29,4 @@ class Finding
     end
 end
 
+end

@@ -1,3 +1,5 @@
+module Diakonos
+
 module KeyCode
     KEYSTRINGS = [
         "ctrl+space",   # 0
@@ -90,11 +92,11 @@ module KeyCode
                     retval = "suspend"
                 when Curses::KEY_F0..(Curses::KEY_F0 + 24)
                     retval = "f" + (self - Curses::KEY_F0).to_s
-                when Diakonos::CTRL_H
+                when CTRL_H
                     retval = "ctrl+h"
                 when Curses::KEY_RESIZE
                     retval = "resize"
-                when Diakonos::RESIZE2
+                when RESIZE2
                     retval = "resize2"
             end
         end
@@ -105,3 +107,4 @@ module KeyCode
     end
 end
 
+end

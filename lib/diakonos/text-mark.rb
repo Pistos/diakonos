@@ -1,3 +1,5 @@
+module Diakonos
+
 class TextMark
     attr_reader :formatting, :start_row, :start_col, :end_row, :end_col
 
@@ -14,3 +16,4 @@ class TextMark
     end
 end
 
+end
