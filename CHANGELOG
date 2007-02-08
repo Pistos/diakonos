@@ -3,8 +3,10 @@ Diakonos Changelog
 
 0.8.3
 
-- Extended ASCII characters (127 to 254) are now typeable.
+- Extended ASCII characters (128 to 254) are now typeable.
 - Added elsif as a Ruby unindenter.
+- Significant internal refactoring.
+- First working rubygem.
 
 0.8.2
 
