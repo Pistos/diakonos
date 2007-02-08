@@ -2,5 +2,5 @@
 
 require 'diakonos'
 
-diakonos = Diakonos::Diakonos.new( ARGV )
-diakonos.start
+$diakonos = Diakonos::Diakonos.new( ARGV )
+$diakonos.start
