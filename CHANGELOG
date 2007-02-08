@@ -8,6 +8,7 @@ Diakonos Changelog
 - Significant internal refactoring.
 - First working rubygem.
 - Added HAML syntax highlighting.
+- Configuration can now be downloaded from the Internet if missing.
 
 0.8.2
 

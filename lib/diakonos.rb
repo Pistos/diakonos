@@ -372,6 +372,28 @@ class Diakonos
         end
     end
     
+    def fetch_conf( location = "tags/v#{VERSION}" )
+        require 'open-uri'
+        found = false
+        puts "Fetching configuration from #{location}..."
+        
+        begin
+            open( "http://rome.purepistos.net/issues/diakonos/browser/#{location}/diakonos.conf?format=raw" ) do |http|
+                text = http.read
+                if Regexp.new( "No node /#{location}/diakonos.conf" ) !~ text
+                    found = true
+                    File.open( @diakonos_conf, 'w' ) do |f|
+                        f.puts text
+                    end
+                end
+            end
+        rescue OpenURI::HTTPError => e
+            $stderr.puts "Failed to fetch from #{location}."
+        end
+            
+        return found
+    end
+    
     def loadConfiguration
         # Set defaults first
 
@@ -402,8 +424,19 @@ class Diakonos
             end
             puts "   ~/.diakonos/"
             puts "At least one configuration file must exist."
-            puts "Download a sample configuration file from http://purepistos.net/diakonos ."
-            exit( 1 )
+            $stdout.puts "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
+            answer = $stdin.gets
+            case answer
+                when /^y/i
+                    if not fetch_conf
+                        fetch_conf 'trunk'
+                    end
+            end
+            
+            if not FileTest.exists?( @diakonos_conf )
+                puts "Terminating..."
+                exit 1
+            end
         end
 
         @logfilename = @diakonos_home + "/diakonos.log"
