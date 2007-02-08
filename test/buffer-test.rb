@@ -4,10 +4,10 @@ require 'test/unit'
 require 'diakonos'
 
 class TC_Buffer < Test::Unit::TestCase
-    SAMPLE_FILE = 'sample-file.rb'
+    SAMPLE_FILE = File.dirname( File.expand_path( __FILE__ ) ) + '/sample-file.rb'
     
     def setup
-        @d = Diakonos.new [ '-e', 'quit' ]
+        @d = Diakonos::Diakonos.new [ '-e', 'quit' ]
         @d.start
     end
     
@@ -16,8 +16,8 @@ class TC_Buffer < Test::Unit::TestCase
     end
     
     def test_selected_text
-        @d.openFile( 'sample-file.rb' )
-        b = Buffer.new( @d, 'sample-file.rb' )
+        @d.openFile( SAMPLE_FILE )
+        b = Diakonos::Buffer.new( @d, SAMPLE_FILE )
         @d.anchorSelection
         @d.cursorDown
         @d.cursorDown

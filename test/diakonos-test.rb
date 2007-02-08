@@ -5,7 +5,7 @@ require 'diakonos'
 
 class TC_Diakonos < Test::Unit::TestCase
     def setup
-        $diakonos = Diakonos.new
+        $diakonos = Diakonos::Diakonos.new
     end
     
     def test_true
