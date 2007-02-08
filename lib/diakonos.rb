@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.3'
-    LAST_MODIFIED = 'February 3, 2007'
+    LAST_MODIFIED = 'February 7, 2007'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -65,7 +65,7 @@ module Diakonos
     DO_REDRAW = true
     DONT_REDRAW = false
 
-    PRINTABLE_CHARACTERS = 32..254
+    PRINTABLE_CHARACTERS = [ *(32..126) ] + [ (128..254) ]
     TAB = 9
     ENTER = 13
     ESCAPE = 27
@@ -737,16 +737,16 @@ class Diakonos
         else
         
             if context.empty?
-                case c
-                    when PRINTABLE_CHARACTERS
-                        if @macro_history != nil
-                            @macro_history.push "typeCharacter #{c}"
-                        end
-                        if not @there_was_non_movement
-                            @there_was_non_movement = true
-                        end
-                        typeCharacter c
-                        return
+                if PRINTABLE_CHARACTERS.include?( c )
+                    debugLog "char: #{c}"
+                    if @macro_history != nil
+                        @macro_history.push "typeCharacter #{c}"
+                    end
+                    if not @there_was_non_movement
+                        @there_was_non_movement = true
+                    end
+                    typeCharacter c
+                    return
                 end
             end
             keychain_pressed = context.concat [ c ]

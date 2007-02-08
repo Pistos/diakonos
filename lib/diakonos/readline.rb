@@ -28,16 +28,6 @@ class Readline
             c = @window.getch
 
             case c
-                when PRINTABLE_CHARACTERS
-                    if @input_cursor == @input.length
-                        @input << c
-                        @window.addch c
-                    else
-                        @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
-                        @window.setpos( @window.cury, @window.curx + 1 )
-                        redrawInput
-                    end
-                    @input_cursor += 1
                 when Curses::KEY_DC
                     if @input_cursor < @input.length
                         @window.delch
@@ -100,7 +90,19 @@ class Readline
                     @input = ""
                     cursorWriteInput
                 else
-                    @diakonos.log "Other input: #{c}"
+                    if PRINTABLE_CHARACTERS.include?( c )
+                        if @input_cursor == @input.length
+                            @input << c
+                            @window.addch c
+                        else
+                            @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
+                            @window.setpos( @window.cury, @window.curx + 1 )
+                            redrawInput
+                        end
+                        @input_cursor += 1
+                    else
+                        @diakonos.log "Other input: #{c}"
+                    end
             end
         end
         
