@@ -975,7 +975,7 @@ class Diakonos
         else
             pos = setILine prompt
             @win_interaction.setpos( 0, pos )
-            retval = Diakonos::Readline.new( self, @win_interaction, initial_text, completion_array, history ).readline
+            retval = Readline.new( self, @win_interaction, initial_text, completion_array, history ).readline
             if @macro_history != nil
                 @macro_input_history.push retval
             end
