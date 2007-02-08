@@ -90,7 +90,7 @@ class Readline
                     @input = ""
                     cursorWriteInput
                 else
-                    if PRINTABLE_CHARACTERS.include?( c )
+                    if c > 31 and c < 255 and c != BACKSPACE
                         if @input_cursor == @input.length
                             @input << c
                             @window.addch c

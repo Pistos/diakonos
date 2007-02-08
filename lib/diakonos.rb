@@ -65,7 +65,6 @@ module Diakonos
     DO_REDRAW = true
     DONT_REDRAW = false
 
-    PRINTABLE_CHARACTERS = [ *(32..126) ] + [ (128..254) ]
     TAB = 9
     ENTER = 13
     ESCAPE = 27
@@ -737,7 +736,7 @@ class Diakonos
         else
         
             if context.empty?
-                if PRINTABLE_CHARACTERS.include?( c )
+                if c > 31 and c < 255 and c != BACKSPACE
                     debugLog "char: #{c}"
                     if @macro_history != nil
                         @macro_history.push "typeCharacter #{c}"
@@ -2188,7 +2187,7 @@ class Diakonos
             File.open( result_file , "w" ) do |f|
                 f.puts command
                 f.puts
-                close_screen
+                Curses::close_screen
 
                 stdin, stdout, stderr = Open3.popen3( command )
                 t1 = Thread.new do
@@ -2222,7 +2221,7 @@ class Diakonos
         if command != nil
             command = subShellVariables( command )
 
-            close_screen
+            Curses::close_screen
 
             success = system( command )
             if not success
@@ -2248,7 +2247,7 @@ class Diakonos
         if command != nil
             command = subShellVariables( command )
 
-            close_screen
+            Curses::close_screen
             
             begin
                 @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
@@ -2265,7 +2264,7 @@ class Diakonos
     
     # Send the Diakonos job to background, as if with Ctrl-Z
     def suspend
-        close_screen
+        Curses::close_screen
         Process.kill( "SIGSTOP", $PID )
         Curses::init_screen
         refreshAll
