@@ -35,8 +35,10 @@ class TC_Clipboard < Test::Unit::TestCase
         9.downto( 0 ) do |i|
             c.addClip( [ i.to_s ] )
         end
-        0.upto( 9 ) do |i|
-            assert_equal( [ i.to_s ], c[ i ] )
+        i = 0
+        c.each do |clip|
+            assert_equal( [ i.to_s ], clip )
+            i += 1
         end
     end
     
