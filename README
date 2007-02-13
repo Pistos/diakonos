@@ -60,9 +60,9 @@ or
 
   diakonos <filename> [filename...]
 
-or
+or, for other options and arguments,
 
-  diakonos --help for other options and arguments
+  diakonos --help 
 
 For a quick introduction, see
 

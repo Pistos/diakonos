@@ -24,25 +24,7 @@ spec = Gem::Specification.new do |s|
         'diakonos.conf',
         'bin/diakonos',
         'lib/diakonos.rb',
-        'lib/diakonos/array.rb',
-        'lib/diakonos/bignum.rb',
-        'lib/diakonos/bookmark.rb',
-        'lib/diakonos/buffer.rb',
-        'lib/diakonos/buffer-hash.rb',
-        'lib/diakonos/clipboard.rb',
-        'lib/diakonos/ctag.rb',
-        'lib/diakonos/enumerable.rb',
-        'lib/diakonos/finding.rb',
-        'lib/diakonos/fixnum.rb',
-        'lib/diakonos/hash.rb',
-        'lib/diakonos/keycode.rb',
-        'lib/diakonos/object.rb',
-        'lib/diakonos/readline.rb',
-        'lib/diakonos/regexp.rb',
-        'lib/diakonos/sized-array.rb',
-        'lib/diakonos/string.rb',
-        'lib/diakonos/text-mark.rb',
-        'lib/diakonos/window.rb',
+        *( Dir[ 'lib/diakonos/*.rb' ] )
     ]
     s.executables = [ 'diakonos' ]
     #s.conf_files = [ 'diakonos.conf' ]
