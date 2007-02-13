@@ -36,38 +36,74 @@ def doCommand( command )
     end
 end
 
+def printUsage
+    puts "#{$0} <version number> [--work-dir <dir>] [--step]"
+end
+
+# ---------------
+
 if ARGV.length < 1
-    puts "#{$0} <version number>"
+    printUsage
     exit 1
 end
 
-version = ARGV[ 0 ]
-$step = ! ARGV[ 1 ].nil?
+version = nil
+work_dir = '/misc/pistos/unpack'
+$step = false
 
-release_files = [
-    'CHANGELOG',
-    'diakonos',
-    'diakonos.conf',
-    'home-on-save.rb',
-    'package.rb',
+args = ARGV.dup
+while args.length > 0
+    arg = args.shift
+    case arg
+        when '-h', '--help'
+            printUsage
+            exit 1
+        when '--step'
+            $step = true
+        when '--work-dir'
+            work_dir = args.shift
+        else
+            version = arg
+    end
+end
+
+tarball_files = [
+    'lib',
+    'bin',
+    'test',
     'README',
+    'CHANGELOG',
     'setup.rb',
+    'diakonos.conf',
+    'Rakefile',
+    'home-on-save.rb',
 ]
 
 Dir.chdir
 Dir.chdir( "src" )
 puts "Changed to #{Dir.pwd}".brightGreen
+
+puts "svn tag and export..."
 doCommand( "svn -m 'Tagging Diakonos version #{version}.' cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
 doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
-doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + ( release_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
-doCommand( "tar czvf diakonos-#{version}.tar.gz " + ( release_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
-doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}/CHANGELOG diakonos-#{version}/README diakonos-#{version}/ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/www/diakonos/" )
+
+puts "Building gem..."
+doCommand( "gem build gemspecs/diakonos-#{version}.gemspec -v" )
+
+puts "Creating tarballs..."
+doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
+doCommand( "tar czvf diakonos-#{version}.tar.gz " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
+
+puts "Copying files to website..."
+doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}.gem diakonos-#{version}/CHANGELOG diakonos-#{version}/README diakonos-#{version}/ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/svn/purepistos.net/public/diakonos/" )
 
 puts "MD5 sums:"
+doCommand( "md5sum diakonos-#{version}.gem" )
 doCommand( "md5sum diakonos-#{version}.tar.gz" )
 doCommand( "md5sum diakonos-#{version}.tar.bz2" )
 
 puts "Release complete."
+puts
 puts "Announcement sites:"
 puts "1) freshmeat.net"
 puts "2) ebuild, ebuildexchange"
