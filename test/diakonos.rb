@@ -1,1 +1,1 @@
-../diakonos
+../bin/diakonos

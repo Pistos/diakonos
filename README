@@ -1,37 +1,75 @@
 Diakonos
---------
+
+========
+
+
+INSTALLATION
+============
+
+There are three ways to install Ruby:
+- by rubygems (recommended)
+- by setup.rb
+- manual file copy
+
+Installing via Rubygems
+-----------------------
+
+Since version 0.8.3, this is the recommended way of installing Diakonos.
+Run the following command as a user with appropriate permissions:
+
+  gem install diakonos
+  
+Intalling using setup.rb
+------------------------
+
+First obtain the diakonos tarball.  This can be found at
+http://purepistos.net/diakonos .  Unpack the tarball somewhere.
+cd into the unpacked directory.
 
 To install, run
 
-./setup.rb
+  ruby setup.rb
 
-or run
+If you want to set options like the installation directories:
 
-./setup.rb --help
+  ruby setup.rb --help
 
-if you want to set options like the installation directories.
-The installer only copies two files, diakonos (the executable) and diakonos.conf.
-By default, it places them into
+By default, the installer copies bin/diakonos into a system-wide bin directory,
+such as /usr/bin; and copies lib/* into the system-wide ruby library path,
+such as /usr/lib/ruby/site_ruby/1.8 .  You may need root priveleges on the
+system in order to install to system-wide places like /usr/bin .
 
-PREFIX/bin/diakonos
-PREFIX/etc/diakonos.conf
+Installing by Manual Copy
+-------------------------
 
-where PREFIX is distro-dependent, but is usually /usr or /usr/local.
+First obtain the diakonos tarball.  This can be found at
+http://purepistos.net/diakonos .
 
-----------------------------------------------------------------
-
-If you want to manually install, place the diakonos.conf file in
-/usr/local/etc/diakonos/ or ~/.diakonos/.  The diakonos program can be run from
+To manually install, copy the contents of the lib directory into some place
+where Ruby searches for libraries.  The bin/diakonos program can be run from
 anywhere, such as ~/bin/ or /usr/local/bin/.
 
 ----------------------------------------------------------------
+
+USAGE
+=====
+
+  diakonos
+
+or
+
+  diakonos <filename> [filename...]
+
+or
+
+  diakonos --help for other options and arguments
 
 For a quick introduction, see
 
 http://wiki.purepistos.net/doku.php?id=Diakonos:Getting-Started
 
-Send comments, feedback and tech support requests to irc.freenode.net:6667#mathetes
-or http://purepistos.net/forums .
+Send comments, feedback and tech support requests to
+irc.freenode.net:6667#mathetes or http://purepistos.net/forums .
 
 Pistos
 http://purepistos.net/diakonos

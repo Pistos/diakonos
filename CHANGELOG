@@ -9,6 +9,7 @@ Diakonos Changelog
 - First working rubygem.
 - Added HAML syntax highlighting.
 - Configuration can now be downloaded from the Internet if missing.
+- Updated README and changed setup.rb installation method.
 
 0.8.2
 
