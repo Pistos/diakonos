@@ -7,20 +7,18 @@ INSTALLATION
 ============
 
 There are three ways to install Ruby:
-- by rubygems (recommended)
-- by setup.rb
-- manual file copy
+  * by rubygems (recommended)
+  * from the tarball using setup.rb
+  * manual file copy
 
-Installing via Rubygems
------------------------
+=== Installing via Rubygems ===
 
 Since version 0.8.3, this is the recommended way of installing Diakonos.
 Run the following command as a user with appropriate permissions:
 
   gem install diakonos
-  
-Intalling using setup.rb
-------------------------
+
+=== Installing from tarball using setup.rb ===
 
 First obtain the diakonos tarball.  This can be found at
 http://purepistos.net/diakonos .  Unpack the tarball somewhere.
@@ -39,8 +37,7 @@ such as /usr/bin; and copies lib/* into the system-wide ruby library path,
 such as /usr/lib/ruby/site_ruby/1.8 .  You may need root priveleges on the
 system in order to install to system-wide places like /usr/bin .
 
-Installing by Manual Copy
--------------------------
+=== Installing from tarball by manual copy ===
 
 First obtain the diakonos tarball.  This can be found at
 http://purepistos.net/diakonos .

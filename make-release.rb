@@ -79,8 +79,7 @@ tarball_files = [
     'home-on-save.rb',
 ]
 
-Dir.chdir
-Dir.chdir( "src" )
+Dir.chdir( work_dir )
 puts "Changed to #{Dir.pwd}".brightGreen
 
 puts "svn tag and export..."
@@ -88,23 +87,29 @@ doCommand( "svn -m 'Tagging Diakonos version #{version}.' cp http://rome.purepis
 doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
 
 puts "Building gem..."
+Dir.chdir "diakonos-#{version}"
 doCommand( "gem build gemspecs/diakonos-#{version}.gemspec -v" )
 
 puts "Creating tarballs..."
+Dir.chdir ".."
 doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
 doCommand( "tar czvf diakonos-#{version}.tar.gz " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
 
 puts "Copying files to website..."
-doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}.gem diakonos-#{version}/CHANGELOG diakonos-#{version}/README diakonos-#{version}/ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/svn/purepistos.net/public/diakonos/" )
+doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}/diakonos-#{version}.gem diakonos-#{version}/CHANGELOG diakonos-#{version}/README diakonos-#{version}/ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/svn/purepistos.net/ramaze/public/diakonos/" )
 
 puts "MD5 sums:"
-doCommand( "md5sum diakonos-#{version}.gem" )
+doCommand( "md5sum diakonos-#{version}/diakonos-#{version}.gem" )
 doCommand( "md5sum diakonos-#{version}.tar.gz" )
 doCommand( "md5sum diakonos-#{version}.tar.bz2" )
+
+puts "GPG signing:"
+doCommand( "gpg --detach-sign diakonos-#{version}/diakonos-#{version}.gem diakonos-#{version}.tar.gz diakonos-#{version}.tar.bz2" )
 
 puts "Release complete."
 puts
 puts "Announcement sites:"
+puts "0) rubyforge.org"
 puts "1) freshmeat.net"
 puts "2) ebuild, ebuildexchange"
 puts "3) purepistos.net site"
