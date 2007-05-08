@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.8.4
+
+- Added joinLines function.
+
 0.8.3
 
 - Extended ASCII characters (128 to 254) are now typeable.

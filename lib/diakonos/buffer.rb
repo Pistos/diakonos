@@ -25,6 +25,8 @@ class Buffer
     DONT_PITCH_CURSOR = false
     CLEAR_STACK_POINTER = true
     DONT_CLEAR_STACK_POINTER = false
+    STRIP_LINE = true
+    DONT_STRIP_LINE = false
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, read_only = false )
@@ -644,10 +646,8 @@ class Buffer
                 if col == line.length
                     if row < @lines.length - 1
                         # Delete newline, and concat next line
-                        takeSnapshot( TYPING )
-                        @lines[ row ] << @lines.delete_at( row + 1 )
+                        joinLines( row )
                         cursorTo( @last_row, @last_col )
-                        setModified
                     end
                 else
                     takeSnapshot( TYPING )
@@ -656,6 +656,16 @@ class Buffer
                 end
             end
         end
+    end
+    
+    def joinLines( row = @last_row, strip = DONT_STRIP_LINE )
+        takeSnapshot( TYPING )
+        next_line = @lines.delete_at( row + 1 )
+        if strip
+            next_line = ' ' + next_line.strip
+        end
+        @lines[ row ] << next_line
+        setModified
     end
     
     def collapseWhitespace

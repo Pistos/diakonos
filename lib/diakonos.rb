@@ -55,8 +55,8 @@ require 'diakonos/readline'
 
 module Diakonos
 
-    VERSION = '0.8.3'
-    LAST_MODIFIED = 'February 7, 2007'
+    VERSION = '0.8.4'
+    LAST_MODIFIED = 'May 8, 2007'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -149,6 +149,7 @@ module Diakonos
         'indent',
         'insertSpaces',
         'insertTab',
+        'joinLines',
         'loadConfiguration',
         'loadScript',
         'newFile',
@@ -1826,6 +1827,10 @@ class Diakonos
     
     def insertTab
         typeCharacter( TAB )
+    end
+    
+    def joinLines
+        @current_buffer.joinLines( @current_buffer.currentRow, Buffer::STRIP_LINE )
     end
 
     def loadScript( name_ = nil )
