@@ -700,7 +700,7 @@ class Diakonos
             hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
         end
 
-        setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure"
+        setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure   Ctrl-Q to quit"
         
         num_opened = 0
         if @files.length == 0 and @read_only_files.length == 0
