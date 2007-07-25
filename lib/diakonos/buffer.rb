@@ -1384,7 +1384,7 @@ class Buffer
             if replacement != nil
                 choice = @diakonos.getChoice(
                     "Replace?",
-                    [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL ],
+                    [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
                     CHOICE_YES
                 )
                 case choice
@@ -1396,6 +1396,9 @@ class Buffer
                     when CHOICE_NO
                         find( regexps, direction, replacement )
                     when CHOICE_CANCEL
+                        # Do nothing further.
+                    when CHOICE_YES_AND_STOP
+                        paste [ replacement ]
                         # Do nothing further.
                 end
             end

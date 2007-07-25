@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.4'
-    LAST_MODIFIED = 'May 8, 2007'
+    LAST_MODIFIED = 'July 25, 2007'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -84,15 +84,17 @@ module Diakonos
     CHOICE_CANCEL = 3
     CHOICE_YES_TO_ALL = 4
     CHOICE_NO_TO_ALL = 5
+    CHOICE_YES_AND_STOP = 6
     CHOICE_KEYS = [
         [ ?n, ?N ],
         [ ?y, ?Y ],
         [ ?a, ?A ],
         [ ?c, ?C, ESCAPE, CTRL_C, CTRL_D, CTRL_Q ],
         [ ?e ],
-        [ ?o ]
+        [ ?o ],
+        [ ?s ],
     ]
-    CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all' ]
+    CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top' ]
 
     BOL_ZERO = 0
     BOL_FIRST_CHAR = 1
@@ -269,7 +271,7 @@ class Diakonos
         while argv.length > 0
             arg = argv.shift
             case arg
-                when '--help'
+                when '-h', '--help'
                     printUsage
                     exit 1
                 when '-ro'

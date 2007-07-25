@@ -4,6 +4,8 @@ Diakonos Changelog
 0.8.4
 
 - Added joinLines function.
+- Added "yes and (s)top" as a find-and-replace option.
+- Added '-h' to be synonymous with '--help'.
 
 0.8.3
 
