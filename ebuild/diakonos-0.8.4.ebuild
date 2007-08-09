@@ -7,7 +7,6 @@ inherit ruby gems
 DESCRIPTION="A usable console text editor."
 HOMEPAGE="http://purepistos.net/diakonos"
 SRC_URI="http://purepistos.net/diakonos/${P}.gem"
-#SRC_URI="http://gems.rubyforge.org/gems/${P}.gem"
 
 LICENSE="GPL-2"
 SLOT="0"
