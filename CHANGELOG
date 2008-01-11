@@ -7,6 +7,7 @@ Diakonos Changelog
 - Added "yes and (s)top" as a find-and-replace option.
 - Added '-h' to be synonymous with '--help'.
 - Added "Ctrl-Q to quit" to opening message.
+- Added close_code feature.
 
 0.8.3
 

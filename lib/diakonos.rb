@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.4'
-    LAST_MODIFIED = 'July 25, 2007'
+    LAST_MODIFIED = 'January 11, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -118,6 +118,7 @@ module Diakonos
         'clearMatches',
         'closeFile',
         'collapseWhitespace',
+        'close_code',
         'copySelection',
         'cursorBOF',
         'cursorBOL',
@@ -203,7 +204,7 @@ module Diakonos
 class Diakonos
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
         :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
-        :indenters, :unindenters, :clipboard, :do_display,
+        :indenters, :unindenters, :closers, :clipboard, :do_display,
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
 
@@ -451,6 +452,7 @@ class Diakonos
         @unindenters = Hash.new
         @filemasks = Hash.new
         @bangmasks = Hash.new
+        @closers = Hash.new
 
         @settings = Hash.new
         # Setup some defaults
@@ -576,6 +578,24 @@ class Diakonos
                     @filemasks[ $1 ] = Regexp.new arg
                 when /^lang\.(.+?)\.bangmask$/
                     @bangmasks[ $1 ] = Regexp.new arg
+                when /^lang\.(.+?)\.closers\.(.+?)\.(.+?)$/
+                    @closers[ $1 ] ||= Hash.new
+                    @closers[ $1 ][ $2 ] ||= Hash.new
+                    @closers[ $1 ][ $2 ][ $3.to_sym ] = case $3
+                        when 'regexp'
+                            Regexp.new arg
+                        when 'closer'
+                            begin
+                                eval( "Proc.new " + arg )
+                            rescue Exception => e
+                                showException(
+                                    e,
+                                    [
+                                        "Failed to process Proc for #{command}.",
+                                    ]
+                                )
+                            end
+                    end
                 when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
                         /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs)$/,
                         "found_cursor_start", "convert_tabs"
@@ -1398,6 +1418,10 @@ class Diakonos
 
     def clearMatches
         @current_buffer.clearMatches Buffer::DO_DISPLAY
+    end
+    
+    def close_code
+        @current_buffer.close_code
     end
 
     # Returns the choice the user made, or nil if the user was not prompted to choose.

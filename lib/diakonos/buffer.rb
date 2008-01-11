@@ -123,6 +123,7 @@ class Buffer
         @indenters = @diakonos.indenters[ @language ]
         @unindenters = @diakonos.unindenters[ @language ]
         @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
+        @closers = @diakonos.closers[ @language ] || Hash.new
         @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
         @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] or 4 )
         @indent_roundup = ( @settings[ "lang.#{@language}.indent.roundup" ] or true )
@@ -666,6 +667,20 @@ class Buffer
         end
         @lines[ row ] << next_line
         setModified
+    end
+    
+    def close_code
+        line = @lines[ @last_row ]
+        $diakonos.log @closers.inspect
+        @closers.each_value do |h|
+            h[ :regexp ] =~ line
+            lm = Regexp.last_match
+            if lm
+                insertString h[ :closer ].call( lm ).to_s
+            else
+                $diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
+            end
+        end
     end
     
     def collapseWhitespace
