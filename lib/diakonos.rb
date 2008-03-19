@@ -1854,11 +1854,11 @@ class Diakonos
             else
                 end_row = mark.end_row - 1
             end
-            (mark.start_row...end_row).each do |row|
+            (mark.start_row..end_row).each do |row|
                 @current_buffer.indent row, Buffer::DONT_DISPLAY
             end
             @do_display = true
-            @current_buffer.indent( end_row ) 
+            @current_buffer.display
         else
             @current_buffer.indent
         end
@@ -2438,11 +2438,11 @@ class Diakonos
             else
                 end_row = mark.end_row - 1
             end
-            (mark.start_row...end_row).each do |row|
+            (mark.start_row..end_row).each do |row|
                 @current_buffer.unindent row, Buffer::DONT_DISPLAY
             end
             @do_display = true
-            @current_buffer.unindent( end_row ) 
+            @current_buffer.display
         else
             @current_buffer.unindent
         end
