@@ -346,6 +346,17 @@ class Buffer
     def selection_mark
         return @text_marks[ SELECTION ]
     end
+    
+    def select_current_line
+      @text_marks[ SELECTION ] = TextMark.new(
+        @last_row,
+        0,
+        @last_row,
+        @lines[ @last_row ].size,
+        @selection_formatting
+      )      
+      @lines[ @last_row ]
+    end
 
     # Prints text to the screen, truncating where necessary.
     # Returns nil if the string is completely off-screen.

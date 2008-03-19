@@ -1354,6 +1354,25 @@ class Diakonos
     def showing_list?
       @list_buffer
     end
+    def select_list_item
+      if @list_buffer
+        line = @list_buffer.select_current_line
+        @list_buffer.display
+        line
+      end
+    end
+    def previous_list_item
+      if @list_buffer
+        cursorUp
+        @list_buffer[ @list_buffer.currentRow ]
+      end
+    end
+    def next_list_item
+      if @list_buffer
+        cursorDown
+        @list_buffer[ @list_buffer.currentRow ]
+      end
+    end
     
     def runHookProcs( hook_id, *args )
         @hooks[ hook_id ].each do |hook_proc|

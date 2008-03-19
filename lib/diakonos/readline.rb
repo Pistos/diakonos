@@ -70,22 +70,38 @@ class Readline
                     completeInput
                 when Curses::KEY_NPAGE
                     @diakonos.pageDown
+                    line = @diakonos.select_list_item
+                    if line
+                      @input = line
+                      cursorWriteInput
+                    end
                 when Curses::KEY_PPAGE
                     @diakonos.pageUp
+                    line = @diakonos.select_list_item
+                    if line
+                      @input = line
+                      cursorWriteInput
+                    end
                 when Curses::KEY_UP
-                    if @history_index > 0
-                        @history[ @history_index ] = @input
-                        @history_index -= 1
-                        @input = @history[ @history_index ]
-                        cursorWriteInput
-                    end
+                  if @diakonos.showing_list?
+                    @input = @diakonos.previous_list_item
+                    @diakonos.select_list_item
+                  elsif @history_index > 0
+                    @history[ @history_index ] = @input
+                    @history_index -= 1
+                    @input = @history[ @history_index ]
+                  end
+                  cursorWriteInput
                 when Curses::KEY_DOWN
-                    if @history_index < @history.length - 1
-                        @history[ @history_index ] = @input
-                        @history_index += 1
-                        @input = @history[ @history_index ]
-                        cursorWriteInput
-                    end
+                  if @diakonos.showing_list?
+                    @input = @diakonos.next_list_item
+                    @diakonos.select_list_item
+                  elsif @history_index < @history.length - 1
+                    @history[ @history_index ] = @input
+                    @history_index += 1
+                    @input = @history[ @history_index ]
+                  end
+                  cursorWriteInput
                 when CTRL_K
                     @input = ""
                     cursorWriteInput
