@@ -153,6 +153,7 @@ module Diakonos
         'insertSpaces',
         'insertTab',
         'joinLines',
+        'list_buffers',
         'loadConfiguration',
         'loadScript',
         'newFile',
@@ -1879,6 +1880,18 @@ class Diakonos
         @current_buffer.joinLines( @current_buffer.currentRow, Buffer::STRIP_LINE )
     end
 
+    def list_buffers
+      File.open( @list_filename, "w" ) do |f|
+        f.puts @buffers.keys.map { |name| "#{name}\n" }
+      end
+      openListBuffer
+      filename = getUserInput( "Switch to buffer: " )
+      buffer = @buffers[ filename ]
+      if buffer
+        switchTo buffer
+      end
+    end
+    
     def loadScript( name_ = nil )
         if name_ == nil
             name = getUserInput( "File to load as script: ", @rlh_files )
