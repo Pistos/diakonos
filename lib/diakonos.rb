@@ -2077,11 +2077,11 @@ class Diakonos
         if( @current_buffer.changing_selection )
             @do_display = false
             mark = @current_buffer.selection_mark
-            (mark.start_row...mark.end_row).each do |row|
+            (mark.start_row..mark.end_row).each do |row|
                 @current_buffer.parsedIndent row, Buffer::DONT_DISPLAY
             end
             @do_display = true
-            @current_buffer.parsedIndent mark.end_row
+            @current_buffer.display
         else
             @current_buffer.parsedIndent
         end
