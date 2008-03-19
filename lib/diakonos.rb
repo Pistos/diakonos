@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.4'
-    LAST_MODIFIED = 'January 11, 2008'
+    LAST_MODIFIED = 'March 19, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -793,7 +793,6 @@ class Diakonos
         
             if context.empty?
                 if c > 31 and c < 255 and c != BACKSPACE
-                    debugLog "char: #{c}"
                     if @macro_history != nil
                         @macro_history.push "typeCharacter #{c}"
                     end
@@ -860,7 +859,6 @@ class Diakonos
         clip_filename = @diakonos_home + "/clips.txt"
         File.open( clip_filename, "w" ) do |f|
             @clipboard.each do |clip|
-                log clip
                 f.puts clip
                 f.puts "---------------------------"
             end
@@ -1352,6 +1350,9 @@ class Diakonos
     
     def closeListBuffer
         closeFile( @list_buffer )
+    end
+    def showing_list?
+      @list_buffer
     end
     
     def runHookProcs( hook_id, *args )
