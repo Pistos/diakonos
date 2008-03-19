@@ -10,6 +10,7 @@ Diakonos Changelog
 - Added close_code feature.
 - Added list selection.
 - Added buffer selection.
+- Added delete_newline_on_delete_to_eol option.
 
 0.8.3
 
