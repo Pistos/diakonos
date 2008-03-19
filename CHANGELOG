@@ -8,6 +8,8 @@ Diakonos Changelog
 - Added '-h' to be synonymous with '--help'.
 - Added "Ctrl-Q to quit" to opening message.
 - Added close_code feature.
+- Added list selection.
+- Added buffer selection.
 
 0.8.3
 
