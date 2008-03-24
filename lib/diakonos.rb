@@ -1353,7 +1353,7 @@ class Diakonos
         closeFile( @list_buffer )
     end
     def showing_list?
-      @list_buffer
+      @buffers.include? @list_buffer
     end
     def select_list_item
       if @list_buffer
