@@ -1351,9 +1351,10 @@ class Diakonos
     
     def closeListBuffer
         closeFile( @list_buffer )
+        @list_buffer = nil
     end
     def showing_list?
-      @buffers.include? @list_buffer
+      @list_buffer
     end
     def select_list_item
       if @list_buffer
