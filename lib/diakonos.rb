@@ -1356,6 +1356,11 @@ class Diakonos
     def showing_list?
       @list_buffer
     end
+    def current_list_item
+      if @list_buffer
+        @list_buffer.select_current_line
+      end
+    end
     def select_list_item
       if @list_buffer
         line = @list_buffer.select_current_line

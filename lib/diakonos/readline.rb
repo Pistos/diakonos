@@ -46,7 +46,12 @@ class Readline
                         end
                     end
                 when ENTER
+                  item = @diakonos.current_list_item
+                  if item and File.directory? item
+                    completeInput
+                  else
                     break
+                  end
                 when ESCAPE, CTRL_C, CTRL_D, CTRL_Q
                     @input = nil
                     break
@@ -172,7 +177,13 @@ class Readline
             File.open( @list_filename, "w" ) do |f|
                 i = nil
                 matches.each do |match|
-                    f.puts match
+                    f.print match
+                    if FileTest.directory?( match )
+                      f.print '/'
+                    else
+                      @diakonos.log "'#{match}' is not a directory"
+                    end
+                    f.puts
                     
                     if match[ 0 ] != common[ 0 ]
                         common = nil
