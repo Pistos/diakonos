@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.4'
-    LAST_MODIFIED = 'March 27, 2008'
+    LAST_MODIFIED = 'April 4, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -1888,7 +1888,7 @@ class Diakonos
 
     def list_buffers
       File.open( @list_filename, "w" ) do |f|
-        f.puts @buffers.keys.map { |name| "#{name}\n" }
+        f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
       end
       openListBuffer
       filename = getUserInput( "Switch to buffer: " )
