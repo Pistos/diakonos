@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.4'
-    LAST_MODIFIED = 'April 4, 2008'
+    LAST_MODIFIED = 'April 9, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -178,6 +178,7 @@ module Diakonos
         'revert',
         'saveFile',
         'saveFileAs',
+        'select_block',
         'scrollDown',
         'scrollUp',
         'searchAndReplace',
@@ -2220,6 +2221,16 @@ class Diakonos
                 #switchTo( @current_buffer )
             #end
         end
+    end
+    
+    def select_block( beginning = nil, ending = nil, including_ending = true )
+      if beginning.nil?
+        beginning = Regexp.new( getUserInput( "Start at regexp: " ) )
+      end
+      if ending.nil?
+        ending = Regexp.new( getUserInput( "End before regexp: " ) )
+      end
+      @current_buffer.select( beginning, ending, including_ending )
     end
 
     def scrollDown

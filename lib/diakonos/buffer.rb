@@ -354,8 +354,36 @@ class Buffer
         @last_row,
         @lines[ @last_row ].size,
         @selection_formatting
-      )      
+      )
       @lines[ @last_row ]
+    end
+    
+    def select( from_regexp, to_regexp, include_ending = true )
+      start_row = nil
+      
+      @lines[ 0..@last_row ].reverse.each_with_index do |line,index|
+        if line =~ from_regexp
+          start_row = @last_row - index
+          break
+        end
+      end
+      if start_row
+        end_row = nil
+        @lines[ start_row..-1 ].each_with_index do |line,index|
+          if line =~ to_regexp
+            end_row = start_row + index
+            break
+          end
+        end
+        if end_row
+          if include_ending
+            end_row += 1
+          end
+          anchorSelection( start_row, 0, DONT_DISPLAY )
+          cursorTo( end_row, 0 )
+          display
+        end
+      end
     end
 
     # Prints text to the screen, truncating where necessary.
