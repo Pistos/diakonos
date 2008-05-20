@@ -12,6 +12,8 @@ Diakonos Changelog
 - Added buffer selection.
 - Added delete_newline_on_delete_to_eol option.
 - Added select_block command.
+- Slight (8%) display performance improvement.
+- Moved source code from svn to github.com.
 
 0.8.3
 
