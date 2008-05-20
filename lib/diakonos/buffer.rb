@@ -212,7 +212,7 @@ class Buffer
                             linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
                         end
                         
-                        @win_main.addstr_ linestr
+                        @win_main.addstr linestr
                     end
                     
                     @win_main.setpos( @last_screen_y , @last_screen_x )
@@ -224,9 +224,9 @@ class Buffer
                     
                     Curses::curs_set 1
                 rescue Exception => e
-                    $diakonos.log( "Display Exception:" )
-                    $diakonos.log( e.message )
-                    $diakonos.log( e.backtrace.join( "\n" ) )
+                    @diakonos.log( "Display Exception:" )
+                    @diakonos.log( e.message )
+                    @diakonos.log( e.backtrace.join( "\n" ) )
                     showException e
                 end
                 @diakonos.display_mutex.unlock
@@ -434,7 +434,7 @@ class Buffer
                 @win_main.attrset text_mark.formatting
                 if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
                     @win_main.setpos( cury, curx )
-                    @win_main.addstr_ string
+                    @win_main.addstr string
                 elsif row == text_mark.start_row and row == text_mark.end_row
                     expanded_col = tabExpandedColumn( text_mark.start_col, row )
                     if expanded_col < @left_column + Curses::cols
@@ -442,7 +442,7 @@ class Buffer
                         right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
                         if left < right
                             @win_main.setpos( cury, curx + left )
-                            @win_main.addstr_ string[ left...right ]
+                            @win_main.addstr string[ left...right ]
                         end
                     end
                 elsif row == text_mark.start_row
@@ -450,12 +450,12 @@ class Buffer
                     if expanded_col < @left_column + Curses::cols
                         left = [ expanded_col - @left_column, 0 ].max
                         @win_main.setpos( cury, curx + left )
-                        @win_main.addstr_ string[ left..-1 ]
+                        @win_main.addstr string[ left..-1 ]
                     end
                 elsif row == text_mark.end_row
                     right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
                     @win_main.setpos( cury, curx )
-                    @win_main.addstr_ string[ 0...right ]
+                    @win_main.addstr string[ 0...right ]
                 else
                     # This row not in selection.
                 end
@@ -468,7 +468,7 @@ class Buffer
         return if string == nil
 
         @win_main.attrset formatting
-        @win_main.addstr_ string
+        @win_main.addstr string
     end
 
     # This method assumes that the cursor has been setup already at
@@ -710,14 +710,13 @@ class Buffer
     
     def close_code
         line = @lines[ @last_row ]
-        $diakonos.log @closers.inspect
         @closers.each_value do |h|
             h[ :regexp ] =~ line
             lm = Regexp.last_match
             if lm
                 insertString h[ :closer ].call( lm ).to_s
             else
-                $diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
+                @diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
             end
         end
     end
