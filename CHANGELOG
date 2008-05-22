@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.8.5
+
+- Added 256 colour support.
+
 0.8.4
 
 - Added joinLines function.

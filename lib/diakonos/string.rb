@@ -119,25 +119,26 @@ class String
     end
 
     def toColourConstant
-        retval = Curses::COLOR_WHITE
-        case downcase
-            when "black", "0"
-                retval = Curses::COLOR_BLACK
-            when "red", "1"
-                retval = Curses::COLOR_RED
-            when "green", "2"
-                retval = Curses::COLOR_GREEN
-            when "yellow", "brown", "3"
-                retval = Curses::COLOR_YELLOW
-            when "blue", "4"
-                retval = Curses::COLOR_BLUE
-            when "magenta", "purple", "5"
-                retval = Curses::COLOR_MAGENTA
-            when "cyan", "6"
-                retval = Curses::COLOR_CYAN
-            when "white", "7"
-                retval = Curses::COLOR_WHITE
-        end
+      case downcase
+        when "black", "0"
+          Curses::COLOR_BLACK
+        when "red", "1"
+          Curses::COLOR_RED
+        when "green", "2"
+          Curses::COLOR_GREEN
+        when "yellow", "brown", "3"
+          Curses::COLOR_YELLOW
+        when "blue", "4"
+          Curses::COLOR_BLUE
+        when "magenta", "purple", "5"
+          Curses::COLOR_MAGENTA
+        when "cyan", "6"
+          Curses::COLOR_CYAN
+        when "white", "7"
+          Curses::COLOR_WHITE
+        else
+          to_i
+      end
     end
     
     def toDirection( default = :down )
