@@ -378,7 +378,7 @@ class Diakonos
         end
     end
     
-    def fetch_conf( location = "tags/v#{VERSION}" )
+    def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
       found = false
       puts "Fetching configuration from #{location}..."
