@@ -55,8 +55,8 @@ require 'diakonos/readline'
 
 module Diakonos
 
-    VERSION = '0.8.5'
-    LAST_MODIFIED = 'May 22, 2008'
+    VERSION = '0.8.4'
+    LAST_MODIFIED = 'May 23, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -378,26 +378,26 @@ class Diakonos
         end
     end
     
-    def fetch_conf( location = "tags/v#{VERSION}" )
-        require 'open-uri'
-        found = false
-        puts "Fetching configuration from #{location}..."
-        
-        begin
-            open( "http://rome.purepistos.net/issues/diakonos/browser/#{location}/diakonos.conf?format=raw" ) do |http|
-                text = http.read
-                if Regexp.new( "No node /#{location}/diakonos.conf" ) !~ text
-                    found = true
-                    File.open( @diakonos_conf, 'w' ) do |f|
-                        f.puts text
-                    end
-                end
+    def fetch_conf( location = "v#{VERSION}" )
+      require 'open-uri'
+      found = false
+      puts "Fetching configuration from #{location}..."
+      
+      begin
+        open( "http://github.com/Pistos/diakonos/tree/#{location}/diakonos.conf?raw=true" ) do |http|
+          text = http.read
+          if text =~ /key/ and text =~ /colour/ and text =~ /lang/
+            found = true
+            File.open( @diakonos_conf, 'w' ) do |f|
+              f.puts text
             end
-        rescue OpenURI::HTTPError => e
-            $stderr.puts "Failed to fetch from #{location}."
+          end
         end
-            
-        return found
+      rescue OpenURI::HTTPError => e
+        $stderr.puts "Failed to fetch from #{location}."
+      end
+      
+      return found
     end
     
     def loadConfiguration
@@ -435,7 +435,7 @@ class Diakonos
             case answer
                 when /^y/i
                     if not fetch_conf
-                        fetch_conf 'trunk'
+                        fetch_conf 'master'
                     end
             end
             
@@ -1076,7 +1076,7 @@ class Diakonos
                 f.puts
                 f.puts "----------------------------------------------------"
                 f.puts "If you can reproduce this error, please report it at"
-                f.puts "http://rome.purepistos.net/issues/diakonos/newticket !"
+                f.puts "http://linis.purepistos.net/ticket/list/Diakonos !"
                 f.puts "----------------------------------------------------"
                 f.puts e.backtrace
             end
