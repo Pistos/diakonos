@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
 class String
-    def brightRed
-        return "\033[1;31m" + self + "\033[0m"
-    end
-    def brightGreen
-        return "\033[1;32m" + self + "\033[0m"
-    end
+  def brightRed
+    return "\033[1;31m" + self + "\033[0m"
+  end
+  def brightGreen
+    return "\033[1;32m" + self + "\033[0m"
+  end
 end
 
 def doCommand( command )
@@ -79,42 +79,35 @@ tarball_files = [
     'home-on-save.rb',
 ]
 
-Dir.chdir( work_dir )
-puts "Changed to #{Dir.pwd}".brightGreen
-
-puts "svn tag and export..."
-doCommand( "svn -m 'Tagging Diakonos version #{version}.' cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
-doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
+puts "git tag and export..."
+doCommand "git tag -a v#{version}"
+doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | bzip2 > diakonos-#{version}.tar.bz2"
+doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | gzip > diakonos-#{version}.tar.gz"
 
 puts "Building gem..."
-Dir.chdir "diakonos-#{version}"
 doCommand( "gem build gemspecs/diakonos-#{version}.gemspec -v" )
 
-puts "Creating tarballs..."
-Dir.chdir ".."
-doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
-doCommand( "tar czvf diakonos-#{version}.tar.gz " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
-
-puts "Copying files to website..."
-doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}/diakonos-#{version}.gem diakonos-#{version}/CHANGELOG diakonos-#{version}/README diakonos-#{version}/ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/svn/purepistos.net/ramaze/public/diakonos/" )
-
 puts "MD5 sums:"
-doCommand( "md5sum diakonos-#{version}/diakonos-#{version}.gem" )
+doCommand( "md5sum diakonos-#{version}.gem" )
 doCommand( "md5sum diakonos-#{version}.tar.gz" )
 doCommand( "md5sum diakonos-#{version}.tar.bz2" )
 
 puts "GPG signing:"
-doCommand( "gpg --detach-sign diakonos-#{version}/diakonos-#{version}.gem diakonos-#{version}.tar.gz diakonos-#{version}.tar.bz2" )
+doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.gem"
+doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.tar.gz"
+doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.tar.bz2"
+
+puts "Copying files to website..."
+doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}.gem diakonos-#{version}.tar.bz2.sig diakonos-#{version}.tar.gz.sig diakonos-#{version}.gem.sig CHANGELOG README ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/svn/purepistos.net/public/diakonos/" )
+doCommand( "scp diakonos-#{version}.gem pistos@purepistos.net:/home/pistos/svn/purepistos.net/public/gems/" )
 
 puts "Release complete."
 puts
 puts "Announcement sites:"
-puts "0) rubyforge.org"
-puts "1) freshmeat.net"
-puts "2) ebuild, ebuildexchange"
-puts "3) purepistos.net site"
-puts "4) http://rome.purepistos.net/issues/diakonos/roadmap"
-puts "5) purepistos.net forums"
+puts "1) rubyforge.org"
+puts "2) freshmeat.net"
+puts "3) ebuild"
+puts "4) purepistos.net site"
+puts "5) blog.purepistos.net"
 puts "6) RAA"
-puts "7) openusability.org"
-puts "8) http://en.wikipedia.org/wiki/Diakonos"
+puts "7) http://en.wikipedia.org/wiki/Diakonos"
