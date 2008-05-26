@@ -80,7 +80,7 @@ tarball_files = [
 ]
 
 puts "git tag and export..."
-#doCommand "git tag -a v#{version}"
+doCommand "git tag -a v#{version}"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | bzip2 > diakonos-#{version}.tar.bz2"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | gzip > diakonos-#{version}.tar.gz"
 
