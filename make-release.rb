@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
 class String
-    def brightRed
-        return "\033[1;31m" + self + "\033[0m"
-    end
-    def brightGreen
-        return "\033[1;32m" + self + "\033[0m"
-    end
+  def brightRed
+    return "\033[1;31m" + self + "\033[0m"
+  end
+  def brightGreen
+    return "\033[1;32m" + self + "\033[0m"
+  end
 end
 
 def doCommand( command )
@@ -82,20 +82,17 @@ tarball_files = [
 Dir.chdir( work_dir )
 puts "Changed to #{Dir.pwd}".brightGreen
 
-puts "svn tag and export..."
-doCommand( "svn -m 'Tagging Diakonos version #{version}.' cp http://rome.purepistos.net/svn/diakonos/trunk http://rome.purepistos.net/svn/diakonos/tags/v#{version}" )
-doCommand( "svn export http://rome.purepistos.net/svn/diakonos/tags/v#{version} diakonos-#{version}" )
+puts "git tag and export..."
+#doCommand "git tag -a v#{version}"
+doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | bzip2 > diakonos-#{version}.tar.bz2"
+doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | gzip > diakonos-#{version}.tar.gz"
 
 puts "Building gem..."
 Dir.chdir "diakonos-#{version}"
 doCommand( "gem build gemspecs/diakonos-#{version}.gemspec -v" )
 
-puts "Creating tarballs..."
-Dir.chdir ".."
-doCommand( "tar cjvf diakonos-#{version}.tar.bz2 " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
-doCommand( "tar czvf diakonos-#{version}.tar.gz " + ( tarball_files.collect { |f| "diakonos-#{version}/#{f}" } ).join( ' ' ) )
-
 puts "Copying files to website..."
+Dir.chdir ".."
 doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}/diakonos-#{version}.gem diakonos-#{version}/CHANGELOG diakonos-#{version}/README diakonos-#{version}/ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/svn/purepistos.net/ramaze/public/diakonos/" )
 
 puts "MD5 sums:"
