@@ -4,6 +4,7 @@ Diakonos Changelog
 0.8.5
 
 - Added 256 colour support.
+- Added support for opening files with "filepath:linenumber" syntax.
 
 0.8.4
 
