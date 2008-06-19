@@ -55,8 +55,8 @@ require 'diakonos/readline'
 
 module Diakonos
 
-    VERSION = '0.8.4'
-    LAST_MODIFIED = 'May 23, 2008'
+    VERSION = '0.8.5'
+    LAST_MODIFIED = 'June 19, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -880,7 +880,7 @@ class Diakonos
             switched = true
         end
         
-        return switched
+        switched
     end
     protected :switchTo
 
@@ -1942,65 +1942,76 @@ class Diakonos
 
     # Returns the buffer of the opened file, or nil.
     def openFile( filename = nil, read_only = false, force_revert = ASK_REVERT )
-        do_open = true
-        buffer = nil
-        if filename != nil
-            buffer_key = filename
-            if(
-                (not force_revert) and
-                    ( (existing_buffer = @buffers[ filename ]) != nil ) and
-                    ( filename !~ /\.diakonos/ )
+      do_open = true
+      buffer = nil
+      if filename
+        if filename =~ /^(.+):(\d+)$/
+          filename, line_number = $1, ( $2.to_i - 1 )
+        end
+        buffer_key = filename
+        if(
+          (not force_revert) and
+          ( (existing_buffer = @buffers[ filename ]) != nil ) and
+          ( filename !~ /\.diakonos/ )
+        )
+          switchTo( existing_buffer )
+          choice = getChoice(
+            "Revert to on-disk version of #{existing_buffer.nice_name}?",
+            [ CHOICE_YES, CHOICE_NO ]
+          )
+          case choice
+          when CHOICE_NO
+            do_open = false
+          end
+        end
+      
+        if FileTest.exist?( filename )
+          # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
+          do_open &&= FileTest.file?( filename )
+        end
+      else
+        buffer_key = @untitled_id
+        @untitled_id += 1
+      end
+      
+      if do_open
+        # Is file readable?
+        
+        # Does the "file" utility exist?
+        if(
+          filename and
+          @settings[ 'use_magic_file' ] and
+          FileTest.exist?( "/usr/bin/file" ) and
+          FileTest.exist?( filename ) and
+          /\blisting\.txt\b/ !~ filename
+        )
+          file_type = `/usr/bin/file -L #{filename}`
+          if file_type !~ /text/ and file_type !~ /empty$/
+            choice = getChoice(
+              "#{filename} does not appear to be readable.  Try to open it anyway?",
+              [ CHOICE_YES, CHOICE_NO ],
+              CHOICE_NO
             )
-                switchTo( existing_buffer )
-                choice = getChoice(
-                    "Revert to on-disk version of #{existing_buffer.nice_name}?",
-                    [ CHOICE_YES, CHOICE_NO ]
-                )
-                case choice
-                    when CHOICE_NO
-                        do_open = false
-                end
+            case choice
+            when CHOICE_NO
+              do_open = false
             end
             
-            if FileTest.exist?( filename )
-                # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
-                do_open &&= FileTest.file?( filename )
-            end
-        else
-            buffer_key = @untitled_id
-            @untitled_id += 1
+          end
         end
         
         if do_open
-            # Is file readable?
-            
-            # Does the "file" utility exist?
-            if @settings[ 'use_magic_file' ] and FileTest.exist?( "/usr/bin/file" ) and filename != nil and FileTest.exist?( filename ) and /\blisting\.txt\b/ !~ filename
-                file_type = `/usr/bin/file -L #{filename}`
-                if file_type !~ /text/ and file_type !~ /empty$/
-                    choice = getChoice(
-                        "#{filename} does not appear to be readable.  Try to open it anyway?",
-                        [ CHOICE_YES, CHOICE_NO ],
-                        CHOICE_NO
-                    )
-                    case choice
-                        when CHOICE_NO
-                            do_open = false
-                    end
-                    
-                end
-            end
-            
-            if do_open
-                buffer = Buffer.new( self, filename, read_only )
-                @buffers[ buffer_key ] = buffer
-                switchTo( buffer )
-            end
+          buffer = Buffer.new( self, filename, read_only )
+          @buffers[ buffer_key ] = buffer
+          if switchTo( buffer ) and line_number
+            @current_buffer.goToLine( line_number, 0 )
+          end
         end
-        
-        return buffer
+      end
+      
+      buffer
     end
-
+  
     def openFileAsk
         if @current_buffer != nil and @current_buffer.name != nil
             path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
