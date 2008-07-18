@@ -5,6 +5,9 @@ Diakonos Changelog
 
 - Added 256 colour support.
 - Added support for opening files with "filepath:linenumber" syntax.
+- Added ability to put %_ in a code closer as the place to position the cursor.
+- Code closers can now contain newlines.
+- Now closer text is parsed-indented by default.
 
 0.8.4
 
