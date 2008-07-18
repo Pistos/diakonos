@@ -715,13 +715,11 @@ class Buffer
         lm = Regexp.last_match
         if lm
           str = h[ :closer ].call( lm ).to_s
-          cursor_delta = str.index( /%_/ )
-          if cursor_delta
-            str.gsub!( /%_/, '' )
-          end
-          insertString str
-          if cursor_delta
-            cursorTo( @last_row, @last_col + cursor_delta )
+          r, c = @last_row, @last_col
+          paste str
+          cursorTo r, c
+          if /%_/ === str
+            find( [ /%_/ ], :down, '', CHOICE_YES_AND_STOP )
           end
         else
           @diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
@@ -1249,7 +1247,7 @@ class Buffer
         setModified( do_display )
     end
 
-    # text is an array of Strings
+    # text is an array of Strings, or a String with zero or more newlines ("\n")
     def paste( text )
         return if text == nil
         
@@ -1286,7 +1284,7 @@ class Buffer
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
     # element.
-    def find( regexps, direction = :down, replacement = nil )
+    def find( regexps, direction = :down, replacement = nil, auto_choice = nil )
         return if regexps.nil?
         regexp = regexps[ 0 ]
         return if regexp == nil or regexp == //
@@ -1450,7 +1448,7 @@ class Buffer
             display
             
             if replacement != nil
-                choice = @diakonos.getChoice(
+                choice = auto_choice || @diakonos.getChoice(
                     "Replace?",
                     [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
                     CHOICE_YES
