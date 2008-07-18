@@ -709,16 +709,24 @@ class Buffer
     end
     
     def close_code
-        line = @lines[ @last_row ]
-        @closers.each_value do |h|
-            h[ :regexp ] =~ line
-            lm = Regexp.last_match
-            if lm
-                insertString h[ :closer ].call( lm ).to_s
-            else
-                @diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
-            end
+      line = @lines[ @last_row ]
+      @closers.each_value do |h|
+        h[ :regexp ] =~ line
+        lm = Regexp.last_match
+        if lm
+          str = h[ :closer ].call( lm ).to_s
+          cursor_delta = str.index( /%_/ )
+          if cursor_delta
+            str.gsub!( /%_/, '' )
+          end
+          insertString str
+          if cursor_delta
+            cursorTo( @last_row, @last_col + cursor_delta )
+          end
+        else
+          @diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
         end
+      end
     end
     
     def collapseWhitespace
