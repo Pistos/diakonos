@@ -126,7 +126,8 @@ class Buffer
         @closers = @diakonos.closers[ @language ] || Hash.new
         @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
         @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] or 4 )
-        @indent_roundup = ( @settings[ "lang.#{@language}.indent.roundup" ] or true )
+        @indent_roundup = @settings[ "lang.#{@language}.indent.roundup" ].nil? ? true : @settings[ "lang.#{@language}.indent.roundup" ]
+        @indent_closers = @settings[ "lang.#{@language}.indent.closers" ].nil? ? true : @settings[ "lang.#{@language}.indent.closers" ]
         @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or Curses::A_NORMAL )
         @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or Curses::A_REVERSE )
         @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
@@ -716,7 +717,7 @@ class Buffer
         if lm
           str = h[ :closer ].call( lm ).to_s
           r, c = @last_row, @last_col
-          paste str
+          paste str, @indent_closers
           cursorTo r, c
           if /%_/ === str
             find( [ /%_/ ], :down, '', CHOICE_YES_AND_STOP )
@@ -1248,36 +1249,45 @@ class Buffer
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
-    def paste( text )
-        return if text == nil
-        
-        if not text.kind_of? Array
-            s = text.to_s
-            if s.include?( "\n" )
-                text = s.split( "\n", -1 )
-            else
-                text = [ s ]
-            end
+    def paste( text, do_parsed_indent = false )
+      return if text == nil
+      
+      if not text.kind_of? Array
+        s = text.to_s
+        if s.include?( "\n" )
+          text = s.split( "\n", -1 )
+        else
+          text = [ s ]
         end
-
-        takeSnapshot
-
-        deleteSelection( DONT_DISPLAY )
-
-        row = @last_row
-        col = @last_col
-        line = @lines[ row ]
-        if text.length == 1
-            @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col..-1 ]
-            cursorTo( @last_row, @last_col + text[ 0 ].length )
-        elsif text.length > 1
-            @lines[ row ] = line[ 0...col ] + text[ 0 ]
-            @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
-            @lines[ row + 1, 0 ] = text[ 1..-2 ]
-            cursorTo( @last_row + text.length - 1, columnOf( text[ -1 ].length ) )
+      end
+      
+      takeSnapshot
+      
+      deleteSelection( DONT_DISPLAY )
+      
+      row = @last_row
+      col = @last_col
+      line = @lines[ row ]
+      if text.length == 1
+        @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col..-1 ]
+        if do_parsed_indent
+          parsedIndent row, DONT_DISPLAY
         end
-
-        setModified
+        cursorTo( @last_row, @last_col + text[ 0 ].length )
+      elsif text.length > 1
+        @lines[ row ] = line[ 0...col ] + text[ 0 ]
+        @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
+        @lines[ row + 1, 0 ] = text[ 1..-2 ]
+        new_row = @last_row + text.length - 1
+        if do_parsed_indent
+          ( row..new_row ).each do |r|
+            parsedIndent r, DONT_DISPLAY
+          end
+        end
+        cursorTo( new_row, columnOf( text[ -1 ].length ) )
+      end
+      
+      setModified
     end
 
     # Takes an array of Regexps, which represents a user-provided regexp,
