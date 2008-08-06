@@ -1564,7 +1564,7 @@ class Diakonos
       if text
         clip_filename = @diakonos_home + "/clip.txt"
         File.open( clip_filename, "w" ) do |f|
-          f.puts text.join( "\n" )
+          f.print text.join( "\n" )
         end
         # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
         # Thank you to pgas from irc.freenode.net#bash for help with this.
