@@ -132,6 +132,7 @@ module Diakonos
         'cursorReturn',
         'cursorRight',
         'cursorUp',
+        'cut_selection_to_klipper',
         'cutSelection',
         'delete',
         'deleteAndStoreLine',
@@ -1552,12 +1553,22 @@ class Diakonos
     end
 
     def copy_selection_to_klipper
+      if selection_to_klipper
+        removeSelection
+      end
+    end
+    
+    # Returns true iff some text was copied to klipper.
+    def selection_to_klipper
+      text = @current_buffer.selected_text
+      if text
         clip_filename = @diakonos_home + "/clip.txt"
         File.open( clip_filename, "w" ) do |f|
-          f.puts @current_buffer.selected_text
+          f.puts text
         end
         `dcop klipper klipper setClipboardContents "$(cat #{clip_filename})"`
-        removeSelection
+        true
+      end
     end
 
     # Returns true iff the cursor changed positions
@@ -1613,6 +1624,12 @@ class Diakonos
 
     def cutSelection
         delete if @clipboard.addClip( @current_buffer.copySelection )
+    end
+    
+    def cut_selection_to_klipper
+      if selection_to_klipper
+        delete
+      end
     end
 
     def delete
