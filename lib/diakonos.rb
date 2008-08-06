@@ -168,6 +168,7 @@ module Diakonos
         'pageUp',
         'parsedIndent',
         'paste',
+        'paste_from_klipper',
         'pasteShellResult',
         'playMacro',
         'popTag',
@@ -2138,6 +2139,12 @@ class Diakonos
 
     def paste
         @current_buffer.paste @clipboard.clip
+    end
+    
+    def paste_from_klipper
+      text = `dcop klipper klipper getClipboardContents`.split( "\n", -1 )
+      text.pop  # getClipboardContents puts an extra newline on end
+      @current_buffer.paste text
     end
 
     def playMacro( name = nil )
