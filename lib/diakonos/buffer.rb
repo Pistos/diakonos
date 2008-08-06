@@ -1200,29 +1200,27 @@ class Buffer
     end
 
     def copySelection
-        return selected_text
+      selected_text
     end
     def selected_text
-        selection = selection_mark
-        if selection == nil
-            text = nil
-        elsif selection.start_row == selection.end_row
-            text = [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
-        else
-            text = [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
-                ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
-                [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
-        end
-
-        return text
+      selection = selection_mark
+      if selection.nil?
+        nil
+      elsif selection.start_row == selection.end_row
+        [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
+      else
+        [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
+          ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
+          [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
+      end
     end
     def selected_string
-        lines = selected_text
-        if lines
-            lines.join( "\n" )
-        else
-            nil
-        end
+      lines = selected_text
+      if lines
+        lines.join( "\n" )
+      else
+        nil
+      end
     end
 
     def deleteSelection( do_display = DO_DISPLAY )
