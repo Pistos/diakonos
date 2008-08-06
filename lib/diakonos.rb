@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.5'
-    LAST_MODIFIED = 'July 18, 2008'
+    LAST_MODIFIED = 'August 6, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -119,6 +119,7 @@ module Diakonos
         'closeFile',
         'collapseWhitespace',
         'close_code',
+        'copy_selection_to_klipper',
         'copySelection',
         'cursorBOF',
         'cursorBOL',
@@ -1547,6 +1548,15 @@ class Diakonos
 
     def copySelection
         @clipboard.addClip @current_buffer.copySelection
+        removeSelection
+    end
+
+    def copy_selection_to_klipper
+        clip_filename = @diakonos_home + "/clip.txt"
+        File.open( clip_filename, "w" ) do |f|
+          f.puts @current_buffer.selected_text
+        end
+        `dcop klipper klipper setClipboardContents "$(cat #{clip_filename})"`
         removeSelection
     end
 
