@@ -10,6 +10,7 @@ Diakonos Changelog
 - Now closer text is parsed-indented by default.
 - Added copy_selection_to_klipper.
 - Added cut_selection_to_klipper.
+- Added paste_from_klipper.
 
 0.8.4
 
