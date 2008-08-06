@@ -135,6 +135,7 @@ module Diakonos
         'cut_selection_to_klipper',
         'cutSelection',
         'delete',
+        'delete_and_store_line_to_klipper',
         'deleteAndStoreLine',
         'deleteLine',
         'deleteToEOL',
@@ -1554,24 +1555,28 @@ class Diakonos
     end
 
     def copy_selection_to_klipper
-      if selection_to_klipper
+      if send_to_klipper( @current_buffer.selected_text )
         removeSelection
       end
     end
     
-    # Returns true iff some text was copied to klipper.
-    def selection_to_klipper
-      text = @current_buffer.selected_text
-      if text
-        clip_filename = @diakonos_home + "/clip.txt"
-        File.open( clip_filename, "w" ) do |f|
-          f.print text.join( "\n" )
-        end
-        # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
-        # Thank you to pgas from irc.freenode.net#bash for help with this.
-        `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
-        true
+    def write_to_clip_file( text )
+      clip_filename = @diakonos_home + "/clip.txt"
+      File.open( clip_filename, "w" ) do |f|
+        f.print text
       end
+      clip_filename
+    end
+    
+    # Returns true iff some text was copied to klipper.
+    def send_to_klipper( text )
+      return false if text.nil?
+      
+      clip_filename = write_to_clip_file( text.join( "\n" ) )
+      # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
+      # Thank you to pgas from irc.freenode.net#bash for help with this.
+      `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
+      true
     end
 
     # Returns true iff the cursor changed positions
@@ -1630,7 +1635,7 @@ class Diakonos
     end
     
     def cut_selection_to_klipper
-      if selection_to_klipper
+      if send_to_klipper( @current_buffer.selected_text )
         delete
       end
     end
@@ -1639,15 +1644,28 @@ class Diakonos
         @current_buffer.delete
     end
 
-    def deleteAndStoreLine
-        removed_text = @current_buffer.deleteLine
-        if removed_text
-            if @last_commands[ -1 ] =~ /^deleteAndStoreLine/
-                @clipboard.appendToClip( [ removed_text, "" ] )
-            else
-                @clipboard.addClip( [ removed_text, "" ] )
-            end
+    def delete_and_store_line_to_klipper
+      removed_text = @current_buffer.deleteLine
+      if removed_text
+        if @last_commands[ -1 ] =~ /^delete_and_store_line_to_klipper/
+          clip_filename = write_to_clip_file( removed_text << "\n" )
+          `clipping="$(dcop klipper klipper getClipboardContents)\n$(cat #{clip_filename};printf "_")"; dcop klipper klipper setClipboardContents "${clipping%_}"`
+        else
+          send_to_klipper [ removed_text, "" ]
         end
+      end
+    end
+
+    def deleteAndStoreLine
+      removed_text = @current_buffer.deleteLine
+      if removed_text
+        clip = [ removed_text, "" ]
+        if @last_commands[ -1 ] =~ /^deleteAndStoreLine/
+          @clipboard.appendToClip clip
+        else
+          @clipboard.addClip clip
+        end
+      end
     end
 
     def deleteLine
