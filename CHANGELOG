@@ -8,6 +8,8 @@ Diakonos Changelog
 - Added ability to put %_ in a code closer as the place to position the cursor.
 - Code closers can now contain newlines.
 - Now closer text is parsed-indented by default.
+- Added copy_selection_to_klipper.
+- Added cut_selection_to_klipper.
 
 0.8.4
 
