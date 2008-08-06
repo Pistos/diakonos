@@ -117,28 +117,30 @@ module Diakonos
         'changeSessionSetting',
         'clearMatches',
         'closeFile',
-        'collapseWhitespace',
         'close_code',
-        'copy_selection_to_klipper',
+        'collapseWhitespace',
         'copySelection',
+        'copy_selection_to_klipper',
         'cursorBOF',
         'cursorBOL',
+        'cursorBOV',
         'cursorDown',
         'cursorEOF',
         'cursorEOL',
-        'cursorBOV',
-        'cursorTOV',
         'cursorLeft',
         'cursorReturn',
         'cursorRight',
+        'cursorTOV',
         'cursorUp',
-        'cut_selection_to_klipper',
         'cutSelection',
+        'cut_selection_to_klipper',
         'delete',
-        'delete_and_store_line_to_klipper',
         'deleteAndStoreLine',
         'deleteLine',
         'deleteToEOL',
+        'delete_and_store_line_to_klipper',
+        'delete_line_to_klipper',
+        'delete_to_EOL_to_klipper',
         'evaluate',
         'execute',
         'find',
@@ -169,8 +171,8 @@ module Diakonos
         'pageUp',
         'parsedIndent',
         'paste',
-        'paste_from_klipper',
         'pasteShellResult',
+        'paste_from_klipper',
         'playMacro',
         'popTag',
         'printKeychain',
@@ -182,11 +184,11 @@ module Diakonos
         'revert',
         'saveFile',
         'saveFileAs',
-        'select_block',
         'scrollDown',
         'scrollUp',
         'searchAndReplace',
         'seek',
+        'select_block',
         'setBufferType',
         'setReadOnly',
         'shell',
@@ -1668,11 +1670,25 @@ class Diakonos
       end
     end
 
+    def delete_line_to_klipper
+        removed_text = @current_buffer.deleteLine
+        if removed_text
+          send_to_klipper [ removed_text, "" ]
+        end
+    end
+    
     def deleteLine
         removed_text = @current_buffer.deleteLine
         @clipboard.addClip( [ removed_text, "" ] ) if removed_text
     end
 
+    def delete_to_EOL_to_klipper
+        removed_text = @current_buffer.deleteToEOL
+        if removed_text
+          send_to_klipper removed_text
+        end
+    end
+    
     def deleteToEOL
         removed_text = @current_buffer.deleteToEOL
         @clipboard.addClip( removed_text ) if removed_text

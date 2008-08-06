@@ -12,6 +12,8 @@ Diakonos Changelog
 - Added cut_selection_to_klipper.
 - Added paste_from_klipper.
 - Added delete_and_store_line_to_klipper.
+- Added delete_to_EOL_to_klipper.
+- Added delete_line_to_klipper.
 
 0.8.4
 
