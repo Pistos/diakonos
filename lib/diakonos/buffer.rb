@@ -1310,6 +1310,7 @@ class Buffer
         
         finding = nil
         wrapped = false
+        match = nil
         
         catch :found do
         
@@ -1317,26 +1318,28 @@ class Buffer
                 # Check the current row first.
                 
                 if index = @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) + 1 )
-                    found_text = Regexp.last_match[ 0 ]
-                    finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
-                    if finding.match( regexps, @lines )
-                        throw :found
-                    else
-                        finding = nil
-                    end
+                  match = Regexp.last_match
+                  found_text = match[ 0 ]
+                  finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
+                  if finding.match( regexps, @lines )
+                    throw :found
+                  else
+                    finding = nil
+                  end
                 end
                 
                 # Check below the cursor.
                 
                 ( (@last_row + 1)...@lines.length ).each do |i|
                     if index = @lines[ i ].index( regexp )
-                        found_text = Regexp.last_match[ 0 ]
-                        finding = Finding.new( i, index, i, index + found_text.length )
-                        if finding.match( regexps, @lines )
-                            throw :found
-                        else
-                            finding = nil
-                        end
+                      match = Regexp.last_match
+                      found_text = match[ 0 ]
+                      finding = Finding.new( i, index, i, index + found_text.length )
+                      if finding.match( regexps, @lines )
+                        throw :found
+                      else
+                        finding = nil
+                      end
                     end
                 end
                 
@@ -1346,13 +1349,14 @@ class Buffer
                 
                 ( 0...@last_row ).each do |i|
                     if index = @lines[ i ].index( regexp )
-                        found_text = Regexp.last_match[ 0 ]
-                        finding = Finding.new( i, index, i, index + found_text.length )
-                        if finding.match( regexps, @lines )
-                            throw :found
-                        else
-                            finding = nil
-                        end
+                      match = Regexp.last_match
+                      found_text = match[ 0 ]
+                      finding = Finding.new( i, index, i, index + found_text.length )
+                      if finding.match( regexps, @lines )
+                        throw :found
+                      else
+                        finding = nil
+                      end
                     end
                 end
                 
@@ -1361,13 +1365,14 @@ class Buffer
                 #if index = @lines[ @last_row ].index( regexp, ( @last_finding ? @last_finding.start_col : @last_col ) - 1 )
                 if index = @lines[ @last_row ].index( regexp )
                     if index <= ( @last_finding ? @last_finding.start_col : @last_col )
-                        found_text = Regexp.last_match[ 0 ]
-                        finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
-                        if finding.match( regexps, @lines )
-                            throw :found
-                        else
-                            finding = nil
-                        end
+                      match = Regexp.last_match
+                      found_text = match[ 0 ]
+                      finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
+                      if finding.match( regexps, @lines )
+                        throw :found
+                      else
+                        finding = nil
+                      end
                     end
                 end
                 
@@ -1376,26 +1381,28 @@ class Buffer
                 
                 col_to_check = ( @last_finding ? @last_finding.end_col : @last_col ) - 1
                 if ( col_to_check >= 0 ) and ( index = @lines[ @last_row ][ 0...col_to_check ].rindex( regexp ) )
-                    found_text = Regexp.last_match[ 0 ]
-                    finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
-                    if finding.match( regexps, @lines )
-                        throw :found
-                    else
-                        finding = nil
-                    end
+                  match = Regexp.last_match
+                  found_text = match[ 0 ]
+                  finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
+                  if finding.match( regexps, @lines )
+                    throw :found
+                  else
+                    finding = nil
+                  end
                 end
                 
                 # Check above the cursor.
                 
                 (@last_row - 1).downto( 0 ) do |i|
                     if index = @lines[ i ].rindex( regexp )
-                        found_text = Regexp.last_match[ 0 ]
-                        finding = Finding.new( i, index, i, index + found_text.length )
-                        if finding.match( regexps, @lines )
-                            throw :found
-                        else
-                            finding = nil
-                        end
+                      match = Regexp.last_match
+                      found_text = match[ 0 ]
+                      finding = Finding.new( i, index, i, index + found_text.length )
+                      if finding.match( regexps, @lines )
+                        throw :found
+                      else
+                        finding = nil
+                      end
                     end
                 end
                 
@@ -1405,13 +1412,14 @@ class Buffer
                 
                 (@lines.length - 1).downto(@last_row + 1) do |i|
                     if index = @lines[ i ].rindex( regexp )
-                        found_text = Regexp.last_match[ 0 ]
-                        finding = Finding.new( i, index, i, index + found_text.length )
-                        if finding.match( regexps, @lines )
-                            throw :found
-                        else
-                            finding = nil
-                        end
+                      match = Regexp.last_match
+                      found_text = match[ 0 ]
+                      finding = Finding.new( i, index, i, index + found_text.length )
+                      if finding.match( regexps, @lines )
+                        throw :found
+                      else
+                        finding = nil
+                      end
                     end
                 end
                 
@@ -1420,19 +1428,20 @@ class Buffer
                 search_col = ( @last_finding ? @last_finding.start_col : @last_col ) + 1
                 if index = @lines[ @last_row ].rindex( regexp )
                     if index > search_col
-                        found_text = Regexp.last_match[ 0 ]
-                        finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
-                        if finding.match( regexps, @lines )
-                            throw :found
-                        else
-                            finding = nil
-                        end
+                      match = Regexp.last_match
+                      found_text = match[ 0 ]
+                      finding = Finding.new( @last_row, index, @last_row, index + found_text.length )
+                      if finding.match( regexps, @lines )
+                        throw :found
+                      else
+                        finding = nil
+                      end
                     end
                 end
             end
         end
         
-        if finding != nil
+        if finding
             @diakonos.setILine( "(search wrapped around BOF/EOF)" ) if wrapped
             
             removeSelection( DONT_DISPLAY )
@@ -1455,26 +1464,36 @@ class Buffer
             end
             display
             
-            if replacement != nil
-                choice = auto_choice || @diakonos.getChoice(
-                    "Replace?",
-                    [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
-                    CHOICE_YES
-                )
-                case choice
-                    when CHOICE_YES
-                        paste [ replacement ]
-                        find( regexps, direction, replacement )
-                    when CHOICE_ALL
-                        replaceAll( regexp, replacement )
-                    when CHOICE_NO
-                        find( regexps, direction, replacement )
-                    when CHOICE_CANCEL
-                        # Do nothing further.
-                    when CHOICE_YES_AND_STOP
-                        paste [ replacement ]
-                        # Do nothing further.
+            if replacement
+              # Substitute placeholders (e.g. \1) in str for the group matches of the last match.
+              actual_replacement = replacement.dup
+              s = match.size - 1
+              if s > 0
+                s.downto( 1 ) do |i|
+                  actual_replacement.gsub!( /(^|[^\\])\\#{i}/, "\\1#{match[ i ]}" )
                 end
+              end
+              actual_replacement.gsub!( /\\\\/, "\\" )
+              
+              choice = auto_choice || @diakonos.getChoice(
+                "Replace?",
+                [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
+                CHOICE_YES
+              )
+              case choice
+              when CHOICE_YES
+                paste [ actual_replacement ]
+                find( regexps, direction, replacement )
+              when CHOICE_ALL
+                replaceAll( regexp, replacement )
+              when CHOICE_NO
+                find( regexps, direction, replacement )
+              when CHOICE_CANCEL
+                # Do nothing further.
+              when CHOICE_YES_AND_STOP
+                paste [ actual_replacement ]
+                # Do nothing further.
+              end
             end
         else
             @diakonos.setILine "/#{regexp.source}/ not found."

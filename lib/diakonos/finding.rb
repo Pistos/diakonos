@@ -25,7 +25,7 @@ class Finding
             i += 1
         end
         
-        return retval
+        retval
     end
 end
 
