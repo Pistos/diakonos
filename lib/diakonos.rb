@@ -56,7 +56,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.5'
-    LAST_MODIFIED = 'August 11, 2008'
+    LAST_MODIFIED = 'August 20, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -1166,6 +1166,15 @@ class Diakonos
                 end
             end
             retval.gsub!( /\$c/, clip_filename )
+        end
+        
+        # Current klipper (KDE clipboard) text
+        if retval =~ /\$k/
+            clip_filename = @diakonos_home + "/clip.txt"
+            File.open( clip_filename, "w" ) do |clipfile|
+                clipfile.puts( `dcop klipper klipper getClipboardContents` )
+            end
+            retval.gsub!( /\$k/, clip_filename )
         end
         
         # Currently selected text
