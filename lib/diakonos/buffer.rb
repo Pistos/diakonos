@@ -1061,6 +1061,31 @@ class Buffer
         end
         cursorTo( row, col, DO_DISPLAY )
     end
+    
+    def cursorToEOL
+      y = @win_main.cury
+      end_col = lineAt( y ).length
+      last_char_col = lineAt( y ).rstrip.length
+      case @settings[ 'eol_behaviour' ]
+      when EOL_END
+        col = end_col
+      when EOL_LAST_CHAR
+        col = last_char_col
+      when EOL_ALT_LAST_CHAR
+        if @last_col == last_char_col
+          col = end_col
+        else
+          col = last_char_col
+        end
+      else
+        if @last_col == end_col
+          col = last_char_col
+        else
+          col = end_col
+        end
+      end
+      cursorTo( @last_row, col, DO_DISPLAY )
+    end
 
     # Top of view
     def cursorToTOV

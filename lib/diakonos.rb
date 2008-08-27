@@ -101,6 +101,11 @@ module Diakonos
     BOL_ALT_ZERO = 2
     BOL_ALT_FIRST_CHAR = 3
 
+    EOL_END = 0
+    EOL_LAST_CHAR = 1
+    EOL_ALT_END = 2
+    EOL_ALT_LAST_CHAR = 3
+
     FORCE_REVERT = true
     ASK_REVERT = false
     
@@ -641,6 +646,17 @@ class Diakonos
                             @settings[ "bol_behaviour" ] = BOL_ALT_ZERO
                         else # default
                             @settings[ "bol_behaviour" ] = BOL_ALT_FIRST_CHAR
+                    end
+                when "eol_behaviour", "eol_behavior"
+                    case arg.downcase
+                        when "end"
+                            @settings[ "eol_behaviour" ] = EOL_END
+                        when "last-char"
+                            @settings[ "eol_behaviour" ] = EOL_LAST_CHAR
+                        when "alternating-last-char"
+                            @settings[ "eol_behaviour" ] = EOL_ALT_FIRST_CHAR
+                        else # default
+                            @settings[ "eol_behaviour" ] = EOL_ALT_END
                     end
                 when "context.delay", 'interaction.blink_duration', 'interaction.choice_delay'
                     @settings[ command ] = arg.to_f
@@ -1620,8 +1636,7 @@ class Diakonos
     end
 
     def cursorEOL
-        y = @win_main.cury
-        @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.lineAt( y ).length, Buffer::DO_DISPLAY )
+      @current_buffer.cursorToEOL
     end
 
     def cursorEOF
