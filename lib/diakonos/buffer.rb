@@ -1468,13 +1468,14 @@ class Buffer
             if replacement
               # Substitute placeholders (e.g. \1) in str for the group matches of the last match.
               actual_replacement = replacement.dup
-              s = match.size - 1
-              if s > 0
-                s.downto( 1 ) do |i|
-                  actual_replacement.gsub!( /(^|[^\\])\\#{i}/, "\\1#{match[ i ]}" )
+              actual_replacement.gsub!( /\\(\\|\d+)/ ) { |m|
+                ref = $1
+                if ref == "\\"
+                  "\\"
+                else
+                  match[ ref.to_i ]
                 end
-              end
-              actual_replacement.gsub!( /\\\\/, "\\" )
+              }
               
               choice = auto_choice || @diakonos.getChoice(
                 "Replace?",
