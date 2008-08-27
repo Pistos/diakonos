@@ -1,7 +1,7 @@
 module Diakonos
 
 class Buffer
-    attr_reader :name, :modified, :original_language, :changing_selection, :read_only,
+    attr_reader :name, :key, :modified, :original_language, :changing_selection, :read_only,
         :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col
     attr_writer :desired_column, :read_only
 
@@ -29,9 +29,10 @@ class Buffer
     DONT_STRIP_LINE = false
 
     # Set name to nil to create a buffer that is not associated with a file.
-    def initialize( diakonos, name, read_only = false )
+    def initialize( diakonos, name, key, read_only = false )
         @diakonos = diakonos
         @name = name
+        @key = key
         @modified = false
         @last_modification_check = Time.now
 
@@ -140,8 +141,8 @@ class Buffer
     end
     
     def == (other)
-        return false if other == nil
-        return ( name == other.name )
+        return false if other.nil?
+        key == other.key
     end
 
     def length

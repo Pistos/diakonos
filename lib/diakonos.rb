@@ -2076,7 +2076,7 @@ class Diakonos
         end
         
         if do_open
-          buffer = Buffer.new( self, filename, read_only )
+          buffer = Buffer.new( self, filename, buffer_key, read_only )
           @buffers[ buffer_key ] = buffer
           if switchTo( buffer ) and line_number
             @current_buffer.goToLine( line_number, 0 )
@@ -2488,7 +2488,7 @@ class Diakonos
         buffer_number = buffer_number_.to_i
         return if buffer_number < 1
         buffer_name = bufferNumberToName( buffer_number )
-        if buffer_name != nil
+        if buffer_name
             switchTo( @buffers[ buffer_name ] )
         end
     end
