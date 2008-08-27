@@ -37,12 +37,15 @@ class TC_Buffer < Test::Unit::TestCase
   def test_replace
     @d.openFile SAMPLE_FILE
     b = Diakonos::Buffer.new( @d, SAMPLE_FILE, SAMPLE_FILE )
-    b.find(
-      [ /\bx\b/ ],
-      :down,
-      "\\0_",
-      Diakonos::CHOICE_YES_AND_STOP
-    )
+    b.find( [ /\bx\b/ ], :down, "\\0_", Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "        @x_ = 1", b[ 6 ]
+    b.find( [ /\b(y)\b/ ], :down, "\\1_", Diakonos::CHOICE_YES_AND_STOP )
+    assert_equal "        @y_ = 2", b[ 7 ]
+    b.find( [ /puts (\w+)/ ], :down, "print \\1", Diakonos::CHOICE_YES_AND_STOP )
+    assert_equal "        print x", b[ 11 ]
+    b.find( [ /puts (\w+)/ ], :down, "puts \\1, \\1, \\1", Diakonos::CHOICE_YES_AND_STOP )
+    assert_equal "        puts y, y, y", b[ 12 ]
+    b.find( [ /Sample\.(\w+)/ ], :down, "\\1\\1", Diakonos::CHOICE_YES_AND_STOP )
+    assert_equal "s = newnew", b[ 16 ]
   end
 end
