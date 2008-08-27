@@ -45,7 +45,7 @@ class TC_Buffer < Test::Unit::TestCase
     assert_equal "        print x", b[ 11 ]
     b.find( [ /puts (\w+)/ ], :down, "puts \\1, \\1, \\1", Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "        puts y, y, y", b[ 12 ]
-    b.find( [ /Sample\.(\w+)/ ], :down, "\\1\\1", Diakonos::CHOICE_YES_AND_STOP )
-    assert_equal "s = newnew", b[ 16 ]
+    b.find( [ /Sample\.(\w+)/ ], :down, "\\1\\\\\\1", Diakonos::CHOICE_YES_AND_STOP )
+    assert_equal "s = new\\new", b[ 16 ]
   end
 end
