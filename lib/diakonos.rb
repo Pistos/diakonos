@@ -876,9 +876,11 @@ class Diakonos
 
     def switchTo( buffer )
         switched = false
-        if buffer != nil
+        if buffer
             @buffer_stack -= [ @current_buffer ]
-            @buffer_stack.push @current_buffer if @current_buffer != nil
+            if @current_buffer
+              @buffer_stack.push @current_buffer
+            end
             @current_buffer = buffer
             updateStatusLine
             updateContextLine
@@ -1132,7 +1134,7 @@ class Diakonos
             end
             number += 1
         end
-        return buffer_number
+        buffer_number
     end
 
     def subShellVariables( string )
@@ -2017,7 +2019,10 @@ class Diakonos
     def openFile( filename = nil, read_only = false, force_revert = ASK_REVERT )
       do_open = true
       buffer = nil
-      if filename
+      if filename.nil?
+        buffer_key = @untitled_id
+        @untitled_id += 1
+      else
         if filename =~ /^(.+):(\d+)$/
           filename, line_number = $1, ( $2.to_i - 1 )
         end
@@ -2042,9 +2047,6 @@ class Diakonos
           # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
           do_open &&= FileTest.file?( filename )
         end
-      else
-        buffer_key = @untitled_id
-        @untitled_id += 1
       end
       
       if do_open
