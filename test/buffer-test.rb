@@ -17,7 +17,7 @@ class TC_Buffer < Test::Unit::TestCase
     
     def test_selected_text
         @d.openFile( SAMPLE_FILE )
-        b = Diakonos::Buffer.new( @d, SAMPLE_FILE )
+        b = Diakonos::Buffer.new( @d, SAMPLE_FILE, SAMPLE_FILE )
         @d.anchorSelection
         @d.cursorDown
         @d.cursorDown
