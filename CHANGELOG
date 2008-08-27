@@ -16,6 +16,8 @@ Diakonos Changelog
 - Added delete_line_to_klipper.
 - Added support for regexp match placeholders (\1, \2, etc.) in findAndReplace.
 - Added $k shell command variable for klipper contents.
+- Added eol_behaviour setting.
+- Various minor bug fixes.
 
 0.8.4
 
