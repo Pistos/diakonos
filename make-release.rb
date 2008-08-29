@@ -72,6 +72,7 @@ tarball_files = [
     'bin',
     'test',
     'README',
+    'LICENCE',
     'CHANGELOG',
     'setup.rb',
     'diakonos.conf',

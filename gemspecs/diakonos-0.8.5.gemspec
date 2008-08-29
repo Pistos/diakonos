@@ -20,6 +20,7 @@ spec = Gem::Specification.new do |s|
     s.files = [
         'CHANGELOG',
         'README',
+        'LICENCE',
         'home-on-save.rb',
         'diakonos.conf',
         'diakonos-256-colour.conf',
@@ -28,7 +29,7 @@ spec = Gem::Specification.new do |s|
         *( Dir[ 'lib/diakonos/*.rb' ] )
     ]
     s.executables = [ 'diakonos' ]
-    s.extra_rdoc_files = [ 'README', 'CHANGELOG' ]
+    s.extra_rdoc_files = [ 'README', 'CHANGELOG', 'LICENCE', ]
     s.test_files = Dir.glob( 'test/*-test.rb' )
 end
 
