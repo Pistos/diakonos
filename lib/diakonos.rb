@@ -1763,10 +1763,13 @@ class Diakonos
         
         rs_array.each do |source|
           begin
+            saved_verbosity = $VERBOSE
+            $VERBOSE = nil
             regexps << Regexp.new(
               source,
               case_sensitive ? nil : Regexp::IGNORECASE
             )
+            $VERBOSE = saved_verbosity
           rescue RegexpError => e
             if not exception_thrown
               exception_thrown = e
