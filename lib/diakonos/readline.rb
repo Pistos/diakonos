@@ -3,7 +3,7 @@ module Diakonos
   class Readline
     
     # completion_array is the array of strings that tab completion can use
-    def initialize( diakonos, window, initial_text = "", completion_array = nil, history = [] )
+    def initialize( diakonos, window, initial_text = "", completion_array = nil, history = [], &block )
       @window = window
       @diakonos = diakonos
       @initial_text = initial_text
@@ -13,6 +13,8 @@ module Diakonos
       @history = history
       @history << initial_text
       @history_index = @history.length - 1
+      
+      @block = block
     end
     
     # Returns nil on cancel.
@@ -32,6 +34,9 @@ module Diakonos
           if @input_cursor < @input.length
             @window.delch
             @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+            if @block
+              @block.call @input
+            end
           end
         when BACKSPACE, CTRL_H
           # Curses::KEY_LEFT
@@ -43,6 +48,9 @@ module Diakonos
             if @input_cursor < @input.length
               @window.delch
               @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+              if @block
+                @block.call @input
+              end
             end
           end
         when ENTER
@@ -109,6 +117,9 @@ module Diakonos
           cursorWriteInput
         when CTRL_K
           @input = ""
+          if @block
+            @block.call @input
+          end
           cursorWriteInput
         else
           if c > 31 and c < 255 and c != BACKSPACE
@@ -121,6 +132,9 @@ module Diakonos
               redrawInput
             end
             @input_cursor += 1
+            if @block
+              @block.call @input
+            end
           else
             @diakonos.log "Other input: #{c}"
           end
@@ -130,8 +144,6 @@ module Diakonos
       @diakonos.closeListBuffer
       
       @history[ -1 ] = @input
-      
-      return @input
     end
 
     def redrawInput

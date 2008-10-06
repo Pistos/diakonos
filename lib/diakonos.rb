@@ -47,8 +47,8 @@ require 'diakonos/readline'
 
 module Diakonos
 
-    VERSION = '0.8.5'
-    LAST_MODIFIED = 'August 27, 2008'
+    VERSION = '0.8.6'
+    LAST_MODIFIED = 'October 6, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -1040,13 +1040,13 @@ class Diakonos
     end
 
     # completion_array is the array of strings that tab completion can use
-    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil )
+    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, &block )
         if @playing_macro
             retval = @macro_input_history.shift
         else
             pos = setILine prompt
             @win_interaction.setpos( 0, pos )
-            retval = Readline.new( self, @win_interaction, initial_text, completion_array, history ).readline
+            retval = Readline.new( self, @win_interaction, initial_text, completion_array, history, &block ).readline
             if @macro_history != nil
                 @macro_input_history.push retval
             end
@@ -1744,7 +1744,13 @@ class Diakonos
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
-            regexp_source = getUserInput( "Search regexp: ", @rlh_search, ( selected_text or "" ) )
+            regexp_source = getUserInput(
+              "Search regexp: ",
+              @rlh_search,
+              ( selected_text or "" )
+            ) { |input|
+              $diakonos.log "input: #{input}"
+            }
         else
             regexp_source = regexp_source_
         end
