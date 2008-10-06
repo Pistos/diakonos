@@ -37,17 +37,17 @@ class TC_Buffer < Test::Unit::TestCase
   def test_replace
     @d.openFile SAMPLE_FILE
     b = Diakonos::Buffer.new( @d, SAMPLE_FILE, SAMPLE_FILE )
-    b.find( [ /only/ ], :down, "\\2", Diakonos::CHOICE_YES_AND_STOP )
+    b.find( [ /only/ ], :direction => :down, :replacement => "\\2", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "# This is  a sample file used in the tests.", b[ 2 ]
-    b.find( [ /\bx\b/ ], :down, "\\0_", Diakonos::CHOICE_YES_AND_STOP )
+    b.find( [ /\bx\b/ ], :direction => :down, :replacement => "\\0_", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "        @x_ = 1", b[ 6 ]
-    b.find( [ /\b(y)\b/ ], :down, "\\1_", Diakonos::CHOICE_YES_AND_STOP )
+    b.find( [ /\b(y)\b/ ], :direction => :down, :replacement => "\\1_", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "        @y_ = 2", b[ 7 ]
-    b.find( [ /puts (\w+)/ ], :down, "print \\1", Diakonos::CHOICE_YES_AND_STOP )
+    b.find( [ /puts (\w+)/ ], :direction => :down, :replacement => "print \\1", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "        print x", b[ 11 ]
-    b.find( [ /puts (\w+)/ ], :down, "puts \\1, \\1, \\1", Diakonos::CHOICE_YES_AND_STOP )
+    b.find( [ /puts (\w+)/ ], :direction => :down, :replacement => "puts \\1, \\1, \\1", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "        puts y, y, y", b[ 12 ]
-    b.find( [ /Sample\.(\w+)/ ], :down, "\\1\\\\\\1", Diakonos::CHOICE_YES_AND_STOP )
+    b.find( [ /Sample\.(\w+)/ ], :direction => :down, :replacement => "\\1\\\\\\1", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
     assert_equal "s = new\\new", b[ 16 ]
   end
 end

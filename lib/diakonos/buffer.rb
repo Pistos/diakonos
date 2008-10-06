@@ -721,7 +721,7 @@ class Buffer
           paste str, @indent_closers
           cursorTo r, c
           if /%_/ === str
-            find( [ /%_/ ], :down, '', CHOICE_YES_AND_STOP )
+            find( [ /%_/ ], :direction => :down, :replacement => '', :auto_choice => CHOICE_YES_AND_STOP )
           end
         else
           @diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
@@ -1318,10 +1318,15 @@ class Buffer
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
     # element.
-    def find( regexps, direction = :down, replacement = nil, auto_choice = nil )
+    def find( regexps, options = {} )
+      #regexps, direction = :down, replacement = nil, auto_choice = nil )
         return if regexps.nil?
         regexp = regexps[ 0 ]
         return if regexp == nil or regexp == //
+        
+        direction = options[ :direction ]
+        replacement = options[ :replacement ]
+        auto_choice = options[ :auto_choice ]
         
         if direction == :opposite
             case @last_search_direction
@@ -1510,11 +1515,11 @@ class Buffer
               case choice
               when CHOICE_YES
                 paste [ actual_replacement ]
-                find( regexps, direction, replacement )
+                find( regexps, :direction => direction, :replacement => replacement )
               when CHOICE_ALL
                 replaceAll( regexp, replacement )
               when CHOICE_NO
-                find( regexps, direction, replacement )
+                find( regexps, :direction => direction, :replacement => replacement )
               when CHOICE_CANCEL
                 # Do nothing further.
               when CHOICE_YES_AND_STOP
@@ -1559,10 +1564,12 @@ class Buffer
     end
 
     def findAgain( last_search_regexps, direction = @last_search_direction )
-        if @last_search_regexps == nil
-            @last_search_regexps = last_search_regexps
+        if @last_search_regexps.nil?
+          @last_search_regexps = last_search_regexps
         end
-        find( @last_search_regexps, direction ) if( @last_search_regexps != nil )
+        if @last_search_regexps
+          find( @last_search_regexps, :direction => direction )
+        end
     end
     
     def seek( regexp, direction = :down )

@@ -1781,9 +1781,11 @@ class Diakonos
                 replacement = getUserInput( "Replace with: ", @rlh_search )
             end
             
-            setILine( "Searching literally; #{e.message}" ) if exception_thrown
+            if exception_thrown
+              setILine( "Searching literally; #{e.message}" )
+            end
             
-            @current_buffer.find( regexps, direction, replacement )
+            @current_buffer.find( regexps, :direction => direction, :replacement => replacement )
             @last_search_regexps = regexps
         end
     end
@@ -1813,7 +1815,7 @@ class Diakonos
         if search_term != nil
             direction = dir_str.toDirection
             regexp = Regexp.new( Regexp.escape( search_term ) )
-            @current_buffer.find( regexp, direction )
+            @current_buffer.find( regexp, :direction => direction )
             @last_search_regexps = regexp
         end
     end
