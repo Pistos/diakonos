@@ -1319,7 +1319,6 @@ class Buffer
     # each successive element must match against lines following the first
     # element.
     def find( regexps, options = {} )
-      #regexps, direction = :down, replacement = nil, auto_choice = nil )
         return if regexps.nil?
         regexp = regexps[ 0 ]
         return if regexp == nil or regexp == //

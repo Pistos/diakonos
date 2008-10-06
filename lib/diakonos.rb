@@ -1740,54 +1740,55 @@ class Diakonos
     end
     
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
-        if regexp_source_ == nil
-            if @current_buffer.changing_selection
-                selected_text = @current_buffer.copySelection[ 0 ]
-            end
-            regexp_source = getUserInput(
-              "Search regexp: ",
-              @rlh_search,
-              ( selected_text or "" )
-            ) { |input|
-              $diakonos.log "input: #{input}"
-            }
-        else
-            regexp_source = regexp_source_
+      direction = dir_str.toDirection
+      
+      if regexp_source_.nil?
+        if @current_buffer.changing_selection
+          selected_text = @current_buffer.copySelection[ 0 ]
         end
-
-        if regexp_source != nil
-            direction = dir_str.toDirection
-            rs_array = regexp_source.newlineSplit
-            regexps = Array.new
-            begin
-                rs_array.each do |regexp_source|
-                    if not case_sensitive
-                        regexps.push Regexp.new( regexp_source, Regexp::IGNORECASE )
-                    else
-                        regexps.push Regexp.new( regexp_source )
-                    end
-                end
-            rescue Exception => e
-                exception_thrown = true
-                rs_array.each do |regexp_source|
-                    if not case_sensitive
-                        regexps.push Regexp.new( Regexp.escape( regexp_source ), Regexp::IGNORECASE )
-                    else
-                        regexps.push Regexp.new( Regexp.escape( regexp_source ) )
-                    end
-                end
+        regexp_source = getUserInput(
+          "Search regexp: ",
+          @rlh_search,
+          ( selected_text or "" )
+        ) { |input|
+          $diakonos.log "input: #{input}"
+        }
+      else
+        regexp_source = regexp_source_
+      end
+      if regexp_source
+        rs_array = regexp_source.newlineSplit
+        regexps = Array.new
+        exception_thrown = nil
+        
+        rs_array.each do |source|
+          begin
+            regexps << Regexp.new(
+              source,
+              case_sensitive ? nil : Regexp::IGNORECASE
+            )
+          rescue RegexpError => e
+            if not exception_thrown
+              exception_thrown = e
+              source = Regexp.escape( source )
+              retry
+            else
+              raise e
             end
-            if replacement == ASK_REPLACEMENT
-                replacement = getUserInput( "Replace with: ", @rlh_search )
-            end
-            
-            if exception_thrown
-              setILine( "Searching literally; #{e.message}" )
-            end
-            
-            @current_buffer.find( regexps, :direction => direction, :replacement => replacement )
-            @last_search_regexps = regexps
+          end
         end
+          
+        if replacement == ASK_REPLACEMENT
+          replacement = getUserInput( "Replace with: ", @rlh_search )
+        end
+        
+        if exception_thrown
+          setILine( "Searching literally; #{exception_thrown.message}" )
+        end
+        
+        @current_buffer.find( regexps, :direction => direction, :replacement => replacement )
+        @last_search_regexps = regexps
+      end
     end
 
     def findAgain( dir_str = nil )
