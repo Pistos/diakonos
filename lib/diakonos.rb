@@ -1740,26 +1740,31 @@ class Diakonos
     end
     
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
+      direction = dir_str.toDirection
       if regexp_source_.nil?
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copySelection[ 0 ]
         end
+        starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+        
         regexp_source = getUserInput(
           "Search regexp: ",
           @rlh_search,
           ( selected_text or "" )
         ) { |input|
-          $diakonos.log "input: #{input}"
+          if input.length > 1
+            find_ direction, case_sensitive, input, replacement, starting_row, starting_col
+          end
         }
       else
         regexp_source = regexp_source_
       end
       
-      find_ dir_str.toDirection, case_sensitive, regexp_source, replacement
+      find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col
     end
     
     # Worker method for find function.
-    def find_( direction, case_sensitive, regexp_source, replacement )
+    def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col )
       return if( regexp_source.nil? or regexp_source.empty? )
       
       rs_array = regexp_source.newlineSplit
@@ -1794,7 +1799,13 @@ class Diakonos
         setILine( "Searching literally; #{exception_thrown.message}" )
       end
       
-      @current_buffer.find( regexps, :direction => direction, :replacement => replacement )
+      @current_buffer.find(
+        regexps,
+        :direction => direction,
+        :replacement => replacement,
+        :starting_row => starting_row,
+        :starting_col => starting_col
+      )
       @last_search_regexps = regexps
     end
 
