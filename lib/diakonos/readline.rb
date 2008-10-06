@@ -3,9 +3,13 @@ module Diakonos
   class Readline
     
     # completion_array is the array of strings that tab completion can use
-    def initialize( diakonos, window, initial_text = "", completion_array = nil, history = [], &block )
-      @window = window
+    # The block returns true if a refresh is needed?
+    def initialize( diakonos, window, prompt, initial_text = "", completion_array = nil, history = [], &block )
       @diakonos = diakonos
+      @window = window
+      @prompt = prompt
+      pos = redraw_prompt
+      @window.setpos( 0, pos )
       @initial_text = initial_text
       @completion_array = completion_array
       @list_filename = @diakonos.list_filename
@@ -15,6 +19,10 @@ module Diakonos
       @history_index = @history.length - 1
       
       @block = block
+    end
+    
+    def redraw_prompt
+      @diakonos.setILine @prompt
     end
     
     # Returns nil on cancel.

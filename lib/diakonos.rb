@@ -868,7 +868,7 @@ class Diakonos
         @win_interaction.addstr( "%-#{Curses::cols}s" % string )
         @win_interaction.refresh
         Curses::curs_set 1
-        return string.length
+        string.length
     end
     
     def showClips
@@ -1044,9 +1044,7 @@ class Diakonos
         if @playing_macro
             retval = @macro_input_history.shift
         else
-            pos = setILine prompt
-            @win_interaction.setpos( 0, pos )
-            retval = Readline.new( self, @win_interaction, initial_text, completion_array, history, &block ).readline
+            retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
             if @macro_history != nil
                 @macro_input_history.push retval
             end
