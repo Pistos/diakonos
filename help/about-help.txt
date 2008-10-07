@@ -1,0 +1,8 @@
+Diakonos Help
+
+Tags: diakonos help usage support welcome
+
+Welcome to the Diakonos help system!  To learn more about how to use Diakonos,
+type in some keywords as if you were searching the Internet.  Diakonos will
+show the titles of matching help documents.  Use the arrow keys to choose a
+document, and press Enter to read it.

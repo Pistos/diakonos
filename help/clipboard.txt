@@ -1,0 +1,13 @@
+The Clipboard
+
+Tags: clipboard copy cut paste kde klipper
+
+In Diakonos, the clipboard is accessible using the same hotkeys that are used
+in all standard applications:
+
+Ctrl-C to copy
+Ctrl-X to cut
+Ctrl-V to paste
+
+Diakonos also supports synchronization with Klipper, the KDE clipboard
+manager.  This requires DCOP to be installed.
