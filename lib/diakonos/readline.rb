@@ -49,9 +49,7 @@ module Diakonos
           if @input_cursor < @input.length
             @window.delch
             @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
-            if @block
-              @block.call @input
-            end
+            call_block
           end
         when BACKSPACE, CTRL_H
           # Curses::KEY_LEFT

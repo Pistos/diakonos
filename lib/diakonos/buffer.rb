@@ -1531,9 +1531,8 @@ class Buffer
               end
             end
         else
-          removeSelection( DONT_DISPLAY )
-          clearMatches
-          display
+          removeSelection DONT_DISPLAY
+          clearMatches DO_DISPLAY
           if not options[ :quiet ]
             @diakonos.setILine "/#{regexp.source}/ not found."
           end
