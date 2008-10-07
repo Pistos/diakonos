@@ -1959,25 +1959,33 @@ class Diakonos
     def help
       open_help_buffer
       
-      help_file = getUserInput(
+      selected = getUserInput(
         "Search terms: ",
         @rlh_help
-      ) do |input|
+      ) { |input|
         next if input.length < 3
         with_list_file do |list|
           files = `egrep -l '^Tags.*\\b#{input}\\b' #{@diakonos_home}/help/*`
           files.split( /\s+/ ).each do |file|
             File.open( file ) do |f|
               # Write title to list
-              list.puts f.gets
+              list.puts( "%-40s | %s" % [ f.gets.strip, file ] )
             end
           end
         end
         
         openListBuffer
-      end
+      }
+      selected.strip!
       
       close_help_buffer
+      
+      if selected and not selected.empty?
+        help_file = selected.split( "| " )[ -1 ]
+        if File.exist? help_file
+          openFile help_file
+        end
+      end
     end
 
     def indent
