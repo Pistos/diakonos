@@ -56,6 +56,8 @@ module Diakonos
     DONT_PROMPT_OVERWRITE = false
     DO_REDRAW = true
     DONT_REDRAW = false
+    QUIET = true
+    NOISY = false
 
     TAB = 9
     ENTER = 13
@@ -868,7 +870,7 @@ class Diakonos
         @win_interaction.addstr( "%-#{Curses::cols}s" % string )
         @win_interaction.refresh
         Curses::curs_set 1
-        return string.length
+        string.length
     end
     
     def showClips
@@ -1044,9 +1046,7 @@ class Diakonos
         if @playing_macro
             retval = @macro_input_history.shift
         else
-            pos = setILine prompt
-            @win_interaction.setpos( 0, pos )
-            retval = Readline.new( self, @win_interaction, initial_text, completion_array, history, &block ).readline
+            retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
             if @macro_history != nil
                 @macro_input_history.push retval
             end
@@ -1740,52 +1740,77 @@ class Diakonos
     end
     
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
-        if regexp_source_ == nil
-            if @current_buffer.changing_selection
-                selected_text = @current_buffer.copySelection[ 0 ]
-            end
-            regexp_source = getUserInput(
-              "Search regexp: ",
-              @rlh_search,
-              ( selected_text or "" )
-            ) { |input|
-              $diakonos.log "input: #{input}"
-            }
-        else
-            regexp_source = regexp_source_
+      direction = dir_str.toDirection
+      if regexp_source_.nil?
+        if @current_buffer.changing_selection
+          selected_text = @current_buffer.copySelection[ 0 ]
         end
-
-        if regexp_source != nil
-            direction = dir_str.toDirection
-            rs_array = regexp_source.newlineSplit
-            regexps = Array.new
-            begin
-                rs_array.each do |regexp_source|
-                    if not case_sensitive
-                        regexps.push Regexp.new( regexp_source, Regexp::IGNORECASE )
-                    else
-                        regexps.push Regexp.new( regexp_source )
-                    end
-                end
-            rescue Exception => e
-                exception_thrown = true
-                rs_array.each do |regexp_source|
-                    if not case_sensitive
-                        regexps.push Regexp.new( Regexp.escape( regexp_source ), Regexp::IGNORECASE )
-                    else
-                        regexps.push Regexp.new( Regexp.escape( regexp_source ) )
-                    end
-                end
-            end
-            if replacement == ASK_REPLACEMENT
-                replacement = getUserInput( "Replace with: ", @rlh_search )
-            end
-            
-            setILine( "Searching literally; #{e.message}" ) if exception_thrown
-            
-            @current_buffer.find( regexps, direction, replacement )
-            @last_search_regexps = regexps
+        starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+        
+        regexp_source = getUserInput(
+          "Search regexp: ",
+          @rlh_search,
+          ( selected_text or "" )
+        ) { |input|
+          if input.length > 1
+            find_ direction, case_sensitive, input, replacement, starting_row, starting_col, QUIET
+          else
+            @current_buffer.removeSelection Buffer::DONT_DISPLAY
+            @current_buffer.clearMatches Buffer::DO_DISPLAY
+          end
+        }
+      else
+        regexp_source = regexp_source_
+      end
+      
+      find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
+    end
+    
+    # Worker method for find function.
+    def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
+      return if( regexp_source.nil? or regexp_source.empty? )
+      
+      rs_array = regexp_source.newlineSplit
+      regexps = Array.new
+      exception_thrown = nil
+      
+      rs_array.each do |source|
+        begin
+          warning_verbosity = $VERBOSE
+          $VERBOSE = nil
+          regexps << Regexp.new(
+            source,
+            case_sensitive ? nil : Regexp::IGNORECASE
+          )
+          $VERBOSE = warning_verbosity
+        rescue RegexpError => e
+          if not exception_thrown
+            exception_thrown = e
+            source = Regexp.escape( source )
+            retry
+          else
+            raise e
+          end
         end
+      end
+      
+      if replacement == ASK_REPLACEMENT
+        replacement = getUserInput( "Replace with: ", @rlh_search )
+      end
+      
+      if exception_thrown and not quiet
+        setILine( "Searching literally; #{exception_thrown.message}" )
+      end
+      
+      @current_buffer.find(
+        regexps,
+        :direction => direction,
+        :replacement => replacement,
+        :starting_row => starting_row,
+        :starting_col => starting_col,
+        :quiet => quiet
+      )
+      @last_search_regexps = regexps
     end
 
     def findAgain( dir_str = nil )
@@ -1813,7 +1838,7 @@ class Diakonos
         if search_term != nil
             direction = dir_str.toDirection
             regexp = Regexp.new( Regexp.escape( search_term ) )
-            @current_buffer.find( regexp, direction )
+            @current_buffer.find( regexp, :direction => direction )
             @last_search_regexps = regexp
         end
     end

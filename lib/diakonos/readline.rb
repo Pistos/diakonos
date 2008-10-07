@@ -3,9 +3,13 @@ module Diakonos
   class Readline
     
     # completion_array is the array of strings that tab completion can use
-    def initialize( diakonos, window, initial_text = "", completion_array = nil, history = [], &block )
-      @window = window
+    # The block returns true if a refresh is needed?
+    def initialize( diakonos, window, prompt, initial_text = "", completion_array = nil, history = [], &block )
       @diakonos = diakonos
+      @window = window
+      @prompt = prompt
+      pos = redraw_prompt
+      @window.setpos( 0, pos )
       @initial_text = initial_text
       @completion_array = completion_array
       @list_filename = @diakonos.list_filename
@@ -15,6 +19,17 @@ module Diakonos
       @history_index = @history.length - 1
       
       @block = block
+    end
+    
+    def redraw_prompt
+      @diakonos.setILine @prompt
+    end
+    
+    def call_block
+      if @block
+        @block.call( @input )
+        @window.refresh
+      end
     end
     
     # Returns nil on cancel.
@@ -34,9 +49,7 @@ module Diakonos
           if @input_cursor < @input.length
             @window.delch
             @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
-            if @block
-              @block.call @input
-            end
+            call_block
           end
         when BACKSPACE, CTRL_H
           # Curses::KEY_LEFT
@@ -48,12 +61,10 @@ module Diakonos
             if @input_cursor < @input.length
               @window.delch
               @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
-              if @block
-                @block.call @input
-              end
+              call_block
             end
           end
-        when ENTER
+        when ENTER, Curses::KEY_F3
           item = @diakonos.current_list_item
           if item and File.directory? item
             completeInput
@@ -132,9 +143,7 @@ module Diakonos
               redrawInput
             end
             @input_cursor += 1
-            if @block
-              @block.call @input
-            end
+            call_block
           else
             @diakonos.log "Other input: #{c}"
           end
