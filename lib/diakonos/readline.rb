@@ -64,7 +64,7 @@ module Diakonos
               call_block
             end
           end
-        when ENTER
+        when ENTER, Curses::KEY_F3
           item = @diakonos.current_list_item
           if item and File.directory? item
             completeInput
