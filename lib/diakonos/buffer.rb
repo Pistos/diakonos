@@ -1530,8 +1530,13 @@ class Buffer
                 # Do nothing further.
               end
             end
-        elsif not options[ :quiet ]
+        else
+          removeSelection( DONT_DISPLAY )
+          clearMatches
+          display
+          if not options[ :quiet ]
             @diakonos.setILine "/#{regexp.source}/ not found."
+          end
         end
     end
 
