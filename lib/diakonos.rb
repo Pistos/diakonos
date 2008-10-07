@@ -56,6 +56,8 @@ module Diakonos
     DONT_PROMPT_OVERWRITE = false
     DO_REDRAW = true
     DONT_REDRAW = false
+    QUIET = true
+    NOISY = false
 
     TAB = 9
     ENTER = 13
@@ -1751,18 +1753,18 @@ class Diakonos
           ( selected_text or "" )
         ) { |input|
           if input.length > 1
-            find_ direction, case_sensitive, input, replacement, starting_row, starting_col
+            find_ direction, case_sensitive, input, replacement, starting_row, starting_col, QUIET
           end
         }
       else
         regexp_source = regexp_source_
       end
       
-      find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col
+      find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
     end
     
     # Worker method for find function.
-    def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col )
+    def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
       return if( regexp_source.nil? or regexp_source.empty? )
       
       rs_array = regexp_source.newlineSplit
@@ -1771,13 +1773,13 @@ class Diakonos
       
       rs_array.each do |source|
         begin
-          saved_verbosity = $VERBOSE
+          warning_verbosity = $VERBOSE
           $VERBOSE = nil
           regexps << Regexp.new(
             source,
             case_sensitive ? nil : Regexp::IGNORECASE
           )
-          $VERBOSE = saved_verbosity
+          $VERBOSE = warning_verbosity
         rescue RegexpError => e
           if not exception_thrown
             exception_thrown = e
@@ -1793,7 +1795,7 @@ class Diakonos
         replacement = getUserInput( "Replace with: ", @rlh_search )
       end
       
-      if exception_thrown
+      if exception_thrown and not quiet
         setILine( "Searching literally; #{exception_thrown.message}" )
       end
       
@@ -1802,7 +1804,8 @@ class Diakonos
         :direction => direction,
         :replacement => replacement,
         :starting_row => starting_row,
-        :starting_col => starting_col
+        :starting_col => starting_col,
+        :quiet => quiet
       )
       @last_search_regexps = regexps
     end

@@ -1474,7 +1474,9 @@ class Buffer
         end
         
         if finding
-            @diakonos.setILine( "(search wrapped around BOF/EOF)" ) if wrapped
+            if wrapped and not options[ :quiet ]
+              @diakonos.setILine( "(search wrapped around BOF/EOF)" )
+            end
             
             removeSelection( DONT_DISPLAY )
             @last_finding = finding
@@ -1528,7 +1530,7 @@ class Buffer
                 # Do nothing further.
               end
             end
-        else
+        elsif not options[ :quiet ]
             @diakonos.setILine "/#{regexp.source}/ not found."
         end
     end
