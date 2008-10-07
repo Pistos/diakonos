@@ -160,10 +160,12 @@ module Diakonos
     end
 
     def redrawInput
+      input = @input[ 0...Curses::cols ]
+      
       curx = @window.curx
       cury = @window.cury
       @window.setpos( @icury, @icurx )
-      @window.addstr "%-#{ Curses::cols - curx }s%s" % [ @input, " " * ( Curses::cols - @input.length ) ]
+      @window.addstr "%-#{ Curses::cols - curx }s%s" % [ input, " " * ( Curses::cols - input.length ) ]
       @window.setpos( cury, curx )
       @window.refresh
     end

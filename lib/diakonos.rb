@@ -1972,7 +1972,7 @@ class Diakonos
           files.split( /\s+/ ).each do |file|
             File.open( file ) do |f|
               # Write title to list
-              list.puts( "%-40s | %s" % [ f.gets.strip, file ] )
+              list.puts( "%-300s | %s" % [ f.gets.strip, file ] )
             end
           end
         end
