@@ -227,6 +227,7 @@ class Diakonos
         @debug = File.new( "#{@diakonos_home}/debug.log", 'w' )
         @list_filename = @diakonos_home + '/listing.txt'
         @diff_filename = @diakonos_home + '/text.diff'
+        @help_filename = @diakonos_home + '/help/about-help.txt'
 
         @files = Array.new
         @read_only_files = Array.new
@@ -273,6 +274,7 @@ class Diakonos
         @rlh_files = Array.new
         @rlh_search = Array.new
         @rlh_shell = Array.new
+        @rlh_help = Array.new
     end
 
     def parseOptions( argv )
@@ -1407,6 +1409,14 @@ class Diakonos
       end
     end
     
+    def open_help_buffer
+      @help_buffer = openFile( @help_filename )
+    end
+    def close_help_buffer
+      closeFile @help_buffer
+      @help_buffer = nil
+    end
+    
     def runHookProcs( hook_id, *args )
         @hooks[ hook_id ].each do |hook_proc|
             hook_proc[ :proc ].call( *args )
@@ -1940,29 +1950,34 @@ class Diakonos
         goToTag @current_buffer.wordUnderCursor
     end
     
+    def with_list_file
+      File.open( @list_filename, "w" ) do |f|
+        yield f
+      end
+    end
+    
     def help
-        help_filename = @diakonos_home + "/diakonos.help"
-        File.open( help_filename, "w" ) do |help_file|
-            sorted_keychains = @keychains.paths_and_leaves.sort { |a,b|
-                a[ :leaf ][ 0 ] <=> b[ :leaf ][ 0 ]
-            }
-            sorted_keychains.each do |keystrokes_and_function_and_args|
-                keystrokes = keystrokes_and_function_and_args[ :path ]
-                function, args = keystrokes_and_function_and_args[ :leaf ]
-                function_string = function.deep_clone
-                if args != nil and args.length > 0
-                    function_string << "( #{args} )"
-                end
-                keychain_width = [ Curses::cols - function_string.length - 2, Curses::cols / 2 ].min
-                help_file.puts(
-                    "%-#{keychain_width}s%s" % [
-                        keystrokes.to_keychain_s,
-                        function_string
-                    ]
-                )
+      open_help_buffer
+      
+      help_file = getUserInput(
+        "Search terms: ",
+        @rlh_help
+      ) do |input|
+        next if input.length < 3
+        with_list_file do |list|
+          files = `egrep -l '^Tags.*\\b#{input}\\b' #{@diakonos_home}/help/*`
+          files.split( /\s+/ ).each do |file|
+            File.open( file ) do |f|
+              # Write title to list
+              list.puts f.gets
             end
+          end
         end
-        openFile help_filename
+        
+        openListBuffer
+      end
+      
+      close_help_buffer
     end
 
     def indent
@@ -2001,7 +2016,7 @@ class Diakonos
     end
 
     def list_buffers
-      File.open( @list_filename, "w" ) do |f|
+      with_list_file do |f|
         f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
       end
       openListBuffer
