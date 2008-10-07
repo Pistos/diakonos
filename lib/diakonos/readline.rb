@@ -25,6 +25,13 @@ module Diakonos
       @diakonos.setILine @prompt
     end
     
+    def call_block
+      if @block
+        @block.call( @input )
+        @window.refresh
+      end
+    end
+    
     # Returns nil on cancel.
     def readline
       @input = @initial_text
@@ -56,9 +63,7 @@ module Diakonos
             if @input_cursor < @input.length
               @window.delch
               @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
-              if @block
-                @block.call @input
-              end
+              call_block
             end
           end
         when ENTER
@@ -140,9 +145,7 @@ module Diakonos
               redrawInput
             end
             @input_cursor += 1
-            if @block
-              @block.call @input
-            end
+            call_block
           else
             @diakonos.log "Other input: #{c}"
           end
