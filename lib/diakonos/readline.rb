@@ -108,8 +108,10 @@ module Diakonos
           end
         when Curses::KEY_UP
           if @diakonos.showing_list?
-            @input = @diakonos.previous_list_item
-            @diakonos.select_list_item
+            if @diakonos.list_item_selected?
+              @diakonos.previous_list_item
+            end
+            @input = @diakonos.select_list_item
           elsif @history_index > 0
             @history[ @history_index ] = @input
             @history_index -= 1
@@ -118,8 +120,10 @@ module Diakonos
           cursorWriteInput
         when Curses::KEY_DOWN
           if @diakonos.showing_list?
-            @input = @diakonos.next_list_item
-            @diakonos.select_list_item
+            if @diakonos.list_item_selected?
+              @diakonos.next_list_item
+            end
+            @input = @diakonos.select_list_item
           elsif @history_index < @history.length - 1
             @history[ @history_index ] = @input
             @history_index += 1

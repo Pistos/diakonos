@@ -1384,6 +1384,9 @@ class Diakonos
     def showing_list?
       @list_buffer
     end
+    def list_item_selected?
+      @list_buffer and @list_buffer.selecting?
+    end
     def current_list_item
       if @list_buffer
         @list_buffer.select_current_line
@@ -1976,7 +1979,6 @@ class Diakonos
         
         openListBuffer
       }
-      selected.strip!
       
       close_help_buffer
       
