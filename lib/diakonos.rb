@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 6, 2008'
+    LAST_MODIFIED = 'October 8, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -220,8 +220,9 @@ class Diakonos
         mkdir @diakonos_home
         @script_dir = "#{@diakonos_home}/scripts"
         mkdir @script_dir
-        @help_dir = "#{@diakonos_home}/help"
-        mkdir @help_dir
+        
+        init_help
+        
         @debug = File.new( "#{@diakonos_home}/debug.log", 'w' )
         @list_filename = @diakonos_home + '/listing.txt'
         @diff_filename = @diakonos_home + '/text.diff'
@@ -326,6 +327,30 @@ class Diakonos
         puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
     end
     protected :printUsage
+    
+    def init_help
+      base_help_dir = "#{@diakonos_home}/help"
+      mkdir base_help_dir
+      
+      @help_dir = "#{@diakonos_home}/help/#{VERSION}"
+      if not File.exist?( @help_dir )
+        puts "Help files for this Diakonos version were not found (#{@help_dir})."
+        
+        $stdout.puts "Would you like to download the help files right now from the Diakonos website? (y/n)"; $stdout.flush
+        answer = $stdin.gets
+        case answer
+        when /^y/i
+          #if not fetch_help
+            $stderr.puts "Failed to get help for version #{VERSION}."
+          #end
+        end
+        
+        if not FileTest.exists?( @help_dir )
+          $stderr.puts "Terminating..."
+          exit 1
+        end
+      end
+    end
     
     def initializeDisplay
         if @win_main != nil
@@ -1974,7 +1999,7 @@ class Diakonos
         terms = input.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
         
         with_list_file do |list|
-          files = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@diakonos_home}/help/*`
+          files = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
           files.split( /\s+/ ).each do |file|
             File.open( file ) do |f|
               # Write title to list
