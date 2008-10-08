@@ -340,8 +340,8 @@ class Diakonos
         answer = $stdin.gets
         case answer
         when /^y/i
-          #if not fetch_help
-            $stderr.puts "Failed to get help for version #{VERSION}."
+          #if not fetch_help( 'master' )
+            #$stderr.puts "Failed to get help for version #{VERSION}."
           #end
         end
         
@@ -350,6 +350,28 @@ class Diakonos
           exit 1
         end
       end
+    end
+    
+    def fetch_help( location = "v#{VERSION}" )
+      require 'open-uri'
+      found = false
+      puts "Fetching configuration from #{location}..."
+      
+      begin
+        open( "http://github.com/Pistos/diakonos/tree/#{location}/diakonos.conf?raw=true" ) do |http|
+          text = http.read
+          if text =~ /key/ and text =~ /colour/ and text =~ /lang/
+            found = true
+            File.open( @diakonos_conf, 'w' ) do |f|
+              f.puts text
+            end
+          end
+        end
+      rescue OpenURI::HTTPError => e
+        $stderr.puts "Failed to fetch from #{location}."
+      end
+      
+      found
     end
     
     def initializeDisplay
@@ -433,7 +455,7 @@ class Diakonos
         $stderr.puts "Failed to fetch from #{location}."
       end
       
-      return found
+      found
     end
     
     def loadConfiguration
