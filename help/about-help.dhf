@@ -1,7 +1,5 @@
 # Diakonos Help
 
-Tags: diakonos help usage support welcome
-
 Welcome to the Diakonos help system!  To learn more about how to use Diakonos,
 type in some keywords as if you were searching the Internet.  Diakonos will
 show the titles of matching help documents.  Use the arrow keys to choose a
@@ -14,3 +12,5 @@ else, such as a system administrator).
 
 When you are finished reading a document, close it with the close file key
 chord, Ctrl-W.
+
+Tags: diakonos help usage support welcome
