@@ -227,7 +227,7 @@ class Diakonos
         @debug = File.new( "#{@diakonos_home}/debug.log", 'w' )
         @list_filename = @diakonos_home + '/listing.txt'
         @diff_filename = @diakonos_home + '/text.diff'
-        @help_filename = @diakonos_home + '/help/about-help.txt'
+        @help_filename = @diakonos_home + '/help/about-help.dhf'
 
         @files = Array.new
         @read_only_files = Array.new
