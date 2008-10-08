@@ -217,17 +217,15 @@ class Diakonos
 
     def initialize( argv = [] )
         @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
-        if not FileTest.exists? @diakonos_home
-            Dir.mkdir @diakonos_home
-        end
+        mkdir @diakonos_home
         @script_dir = "#{@diakonos_home}/scripts"
-        if not FileTest.exists? @script_dir
-            Dir.mkdir @script_dir
-        end
+        mkdir @script_dir
+        @help_dir = "#{@diakonos_home}/help"
+        mkdir @help_dir
         @debug = File.new( "#{@diakonos_home}/debug.log", 'w' )
         @list_filename = @diakonos_home + '/listing.txt'
         @diff_filename = @diakonos_home + '/text.diff'
-        @help_filename = @diakonos_home + '/help/about-help.dhf'
+        @help_filename = "#{@help_dir}/about-help.dhf"
 
         @files = Array.new
         @read_only_files = Array.new
@@ -275,6 +273,12 @@ class Diakonos
         @rlh_search = Array.new
         @rlh_shell = Array.new
         @rlh_help = Array.new
+    end
+    
+    def mkdir( dir )
+      if not FileTest.exists? dir
+        Dir.mkdir dir
+      end
     end
 
     def parseOptions( argv )
