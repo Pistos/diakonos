@@ -1967,8 +1967,10 @@ class Diakonos
         @rlh_help
       ) { |input|
         next if input.length < 3
+        clean_input = input.gsub( /[^a-zA-Z0-9-]/, ' ' )
+        
         with_list_file do |list|
-          files = `egrep -i -l '^Tags.*\\b#{input}\\b' #{@diakonos_home}/help/*`
+          files = `egrep -i -l '^Tags.*\\b#{clean_input}\\b' #{@diakonos_home}/help/*`
           files.split( /\s+/ ).each do |file|
             File.open( file ) do |f|
               # Write title to list
