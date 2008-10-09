@@ -662,7 +662,8 @@ class Diakonos
                     end
                 when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
                         /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
-                        "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol'
+                        "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
+                        'suppress_welcome'
                     @settings[ command ] = arg.to_b
                 when "context.format", "context.separator.format", "status.format"
                     @settings[ command ] = arg.toFormatting
@@ -810,28 +811,32 @@ class Diakonos
         end
         
         if num_opened > 0
-            switchToBufferNumber 1
-            
-            updateStatusLine
-            updateContextLine
-            
-            if @post_load_script != nil
-                eval @post_load_script
+          switchToBufferNumber 1
+          
+          updateStatusLine
+          updateContextLine
+          
+          if @post_load_script != nil
+            eval @post_load_script
+          end
+          
+          runHookProcs( :after_startup )
+          
+          if not @settings[ 'suppress_welcome' ]
+            openFile "#{@help_dir}/welcome.dhf"
+          end
+          
+          begin
+            # Main keyboard loop.
+            while not @quitting
+              processKeystroke
+              @win_main.refresh
             end
-            
-            runHookProcs( :after_startup )
-            
-            begin
-                # Main keyboard loop.
-                while not @quitting
-                    processKeystroke
-                    @win_main.refresh
-                end
-            rescue SignalException => e
-                debugLog "Terminated by signal (#{e.message})"
-            end
-            
-            @debug.close
+          rescue SignalException => e
+            debugLog "Terminated by signal (#{e.message})"
+          end
+          
+          @debug.close
         end
     end
     
