@@ -2076,16 +2076,13 @@ class Diakonos
           )
           case choice
           when CHOICE_YES
-            require 'open-uri'
-            require 'cgi'
-            query = CGI.escape( selected.strip.split.join( '/' ) )
-            $diakonos.log query
-            begin
-              open( "http://dh.purepistos.net/#{query}" ) { }
-            rescue Exception => e
-              $diakonos.log e.inspect
-              # Ignore
-            end
+            require 'net/http'
+            require 'uri'
+            
+            res = Net::HTTP.post_form(
+              URI.parse( 'http://dh.purepistos.net/' ),
+              { 'q' => selected }
+            )
           # TODO: let them choose "never" and "always"
           end
           
