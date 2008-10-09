@@ -227,6 +227,7 @@ class Diakonos
         @list_filename = @diakonos_home + '/listing.txt'
         @diff_filename = @diakonos_home + '/text.diff'
         @help_filename = "#{@help_dir}/about-help.dhf"
+        @error_filename = "#{@diakonos_home}/diakonos.err"
 
         @files = Array.new
         @read_only_files = Array.new
@@ -1132,7 +1133,7 @@ class Diakonos
     
     def showException( e, probable_causes = [ "Unknown" ] )
         begin
-            File.open( @diakonos_home + "/diakonos.err", "w" ) do |f|
+            File.open( @error_filename, "w" ) do |f|
                 f.puts "Diakonos Error:"
                 f.puts
                 f.puts e.message
@@ -1149,7 +1150,7 @@ class Diakonos
                 f.puts "----------------------------------------------------"
                 f.puts e.backtrace
             end
-            openFile( @diakonos_home + "/diakonos.err" )
+            openFile( @error_filename )
         rescue Exception => e2
             debugLog "EXCEPTION: #{e.message}"
             debugLog "\t#{e.backtrace}"
@@ -2059,8 +2060,36 @@ class Diakonos
         # Do nothing
       else
         # Not a selected help document
-        if @matching_docs.size == 1
+        case @matching_docs.size
+        when 1
           open_help_document @matching_docs[ 0 ]
+        when 0
+          File.open( @error_filename, 'w' ) do |f|
+            f.puts "There were no help documents matching your search."
+            f.puts "(#{selected.strip})"
+          end
+          error_file = openFile @error_filename
+          
+          choice = getChoice(
+            "Send your search terms to purepistos.net to help improve Diakonos?",
+            [ CHOICE_YES, CHOICE_NO ]
+          )
+          case choice
+          when CHOICE_YES
+            require 'open-uri'
+            require 'cgi'
+            query = CGI.escape( selected.strip.split.join( '/' ) )
+            $diakonos.log query
+            begin
+              open( "http://dh.purepistos.net/#{query}" ) { }
+            rescue Exception => e
+              $diakonos.log e.inspect
+              # Ignore
+            end
+          # TODO: let them choose "never" and "always"
+          end
+          
+          closeFile error_file
         end
       end
     end
