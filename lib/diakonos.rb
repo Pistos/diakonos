@@ -2026,6 +2026,13 @@ class Diakonos
       docs
     end
     
+    def open_help_document( selected_string )
+      help_file = selected_string.split( "| " )[ -1 ]
+      if File.exist? help_file
+        openFile help_file
+      end
+    end
+    
     def help
       open_help_buffer
       
@@ -2035,20 +2042,28 @@ class Diakonos
       ) { |input|
         next if input.length < 3
         
-        docs = matching_help_documents( input )
+        @matching_docs = matching_help_documents( input )
         with_list_file do |list|
-          list.puts docs.join( "\n" )
+          list.puts @matching_docs.join( "\n" )
         end
         
         openListBuffer
       }
       
+      $diakonos.log @matching_docs.inspect
+      
       close_help_buffer
       
-      if selected and not selected.empty?
-        help_file = selected.split( "| " )[ -1 ]
-        if File.exist? help_file
-          openFile help_file
+      case selected
+      when /\|/
+        open_help_document selected
+      when nil
+        # Do nothing
+      else
+        # Not a selected help document
+        if @matching_docs.size == 1
+          $diakonos.log 'foo'
+          open_help_document @matching_docs[ 0 ]
         end
       end
     end
