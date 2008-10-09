@@ -2050,8 +2050,6 @@ class Diakonos
         openListBuffer
       }
       
-      $diakonos.log @matching_docs.inspect
-      
       close_help_buffer
       
       case selected
@@ -2062,7 +2060,6 @@ class Diakonos
       else
         # Not a selected help document
         if @matching_docs.size == 1
-          $diakonos.log 'foo'
           open_help_document @matching_docs[ 0 ]
         end
       end
