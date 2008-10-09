@@ -2010,6 +2010,22 @@ class Diakonos
       end
     end
     
+    def matching_help_documents( str )
+      docs = []
+      
+      terms = str.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
+        
+      file_grep = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
+      files = file_grep.split( /\s+/ )
+      files.each do |file|
+        File.open( file ) do |f|
+          docs << ( "%-300s | %s" % [ f.gets.strip, file ] )
+        end
+      end
+      
+      docs
+    end
+    
     def help
       open_help_buffer
       
@@ -2018,16 +2034,10 @@ class Diakonos
         @rlh_help
       ) { |input|
         next if input.length < 3
-        terms = input.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
         
+        docs = matching_help_documents( input )
         with_list_file do |list|
-          files = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
-          files.split( /\s+/ ).each do |file|
-            File.open( file ) do |f|
-              # Write title to list
-              list.puts( "%-300s | %s" % [ f.gets.strip, file ] )
-            end
-          end
+          list.puts docs.join( "\n" )
         end
         
         openListBuffer
