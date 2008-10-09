@@ -1,6 +1,6 @@
 # Configuring Diakonos
 
-Press F12 to open the Diakonos configuration file.  Read the comments in the
+Press <F12> to open the Diakonos configuration file.  Read the comments in the
 file for information on the individual settings.  Edit the file as you like.
 When you save the file, your changes take effect immediately in your current
 session.
