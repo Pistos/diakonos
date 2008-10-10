@@ -840,35 +840,39 @@ class Diakonos
         end
     end
     
+    def capture_keychain( c, context )
+      if c == ENTER
+        @capturing_keychain = false
+        @current_buffer.deleteSelection
+        str = context.to_keychain_s.strip
+        @current_buffer.insertString str 
+        cursorRight( Buffer::STILL_TYPING, str.length )
+      else
+        keychain_pressed = context.concat [ c ]
+        
+        function_and_args = @keychains.getLeaf( keychain_pressed )
+        
+        if function_and_args
+          function, args = function_and_args
+        end
+        
+        partial_keychain = @keychains.getNode( keychain_pressed )
+        if partial_keychain
+          setILine( "Part of existing keychain: " + keychain_pressed.to_keychain_s + "..." )
+        else
+          setILine keychain_pressed.to_keychain_s + "..."
+        end
+        processKeystroke( keychain_pressed )
+      end
+    end
+    
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def processKeystroke( context = [] )
       c = @win_main.getch
         
       if @capturing_keychain
-        if c == ENTER
-          @capturing_keychain = false
-          @current_buffer.deleteSelection
-          str = context.to_keychain_s.strip
-          @current_buffer.insertString str 
-          cursorRight( Buffer::STILL_TYPING, str.length )
-        else
-          keychain_pressed = context.concat [ c ]
-          
-          function_and_args = @keychains.getLeaf( keychain_pressed )
-          
-          if function_and_args
-            function, args = function_and_args
-          end
-          
-          partial_keychain = @keychains.getNode( keychain_pressed )
-          if partial_keychain
-            setILine( "Part of existing keychain: " + keychain_pressed.to_keychain_s + "..." )
-          else
-            setILine keychain_pressed.to_keychain_s + "..."
-          end
-          processKeystroke( keychain_pressed )
-        end
+        capture_keychain c, context
       else
         
         if context.empty?
