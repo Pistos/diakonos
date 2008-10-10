@@ -574,13 +574,13 @@ class Diakonos
                         keystrokes = Array.new
                         keystrings.split( /\s+/ ).each do |ks_str|
                             code = ks_str.keyCode
-                            if code != nil
+                            if code
                                 keystrokes.concat code
                             else
                                 puts "unknown keystring: #{ks_str}"
                             end
                         end
-                        if function_and_args == nil
+                        if function_and_args.nil?
                             @keychains.deleteKeyPath( keystrokes )
                         else
                             function, function_args = function_and_args.split( /\s+/, 2 )
@@ -2556,17 +2556,17 @@ class Diakonos
         updateStatusLine
     end
 
-    def shell( command_ = nil )
+    def shell( command_ = nil, result_filename = 'shell-result.txt' )
         if command_ == nil
             command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
         end
-
-        if command != nil
+        
+        if command
             command = subShellVariables( command )
 
-            result_file = @diakonos_home + "/shell-result.txt"
+            result_file = "#{@diakonos_home}/#{result_filename}"
             File.open( result_file , "w" ) do |f|
                 f.puts command
                 f.puts
