@@ -1,0 +1,13 @@
+# Switching Buffers
+
+To switch between buffers, press Alt-number, with the number corresponding to
+the index of the buffer you wish to change to.  For example, <Alt-1> will
+switch to the first buffer, <Alt-3> will switch to the third buffer, and so on.
+
+You can also browse through the buffers by pressing <Alt-minus> and <Alt-=>.
+
+To bring up a list of the currently open files, press <Ctrl-Alt-B>.  Use the
+<Up> and <Down> arrow keys to select a buffer, and press <Enter> to switch to
+it.
+
+Tags: switch switching buffer buffers file files change between list current currently open
