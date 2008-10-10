@@ -1826,7 +1826,7 @@ class Diakonos
           ( selected_text or "" )
         ) { |input|
           if input.length > 1
-            find_ direction, case_sensitive, input, replacement, starting_row, starting_col, QUIET
+            find_ direction, case_sensitive, input, nil, starting_row, starting_col, QUIET
           else
             @current_buffer.removeSelection Buffer::DONT_DISPLAY
             @current_buffer.clearMatches Buffer::DO_DISPLAY
