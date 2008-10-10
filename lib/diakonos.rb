@@ -1910,7 +1910,7 @@ class Diakonos
         end
         if search_term != nil
             direction = dir_str.toDirection
-            regexp = Regexp.new( Regexp.escape( search_term ) )
+            regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
             @current_buffer.find( regexp, :direction => direction )
             @last_search_regexps = regexp
         end
