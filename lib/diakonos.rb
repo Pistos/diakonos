@@ -174,6 +174,7 @@ module Diakonos
         'paste_from_klipper',
         'playMacro',
         'popTag',
+        'print_mapped_function',
         'printKeychain',
         'quit',
         'redraw',
@@ -866,6 +867,31 @@ class Diakonos
       end
     end
     
+    def capture_mapping( c, context )
+      if c == ENTER
+        @capturing_mapping = false
+        @current_buffer.deleteSelection
+        setILine
+      else
+        keychain_pressed = context.concat [ c ]
+        
+        function_and_args = @keychains.getLeaf( keychain_pressed )
+        
+        if function_and_args
+          function, args = function_and_args
+          setILine "#{keychain_pressed.to_keychain_s.strip}  ->  #{function}( #{args} )"
+        else
+          partial_keychain = @keychains.getNode( keychain_pressed )
+          if partial_keychain
+            setILine( "Several mappings start with: " + keychain_pressed.to_keychain_s + "..." )
+            processKeystroke( keychain_pressed )
+          else
+            setILine "There is no mapping for " + keychain_pressed.to_keychain_s
+          end
+        end
+      end
+    end
+    
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def processKeystroke( context = [] )
@@ -873,6 +899,8 @@ class Diakonos
         
       if @capturing_keychain
         capture_keychain c, context
+      elsif @capturing_mapping
+        capture_mapping c, context
       else
         
         if context.empty?
@@ -2398,9 +2426,14 @@ class Diakonos
         end
     end
     
+    def print_mapped_function
+      @capturing_mapping = true
+      setILine "Type any chain of keystrokes or key chords, or press Enter to stop."
+    end
+    
     def printKeychain
-        @capturing_keychain = true
-        setILine "Type any chain of keystrokes or key chords, then press Enter..."
+      @capturing_keychain = true
+      setILine "Type any chain of keystrokes or key chords, then press Enter..."
     end
 
     def quit
