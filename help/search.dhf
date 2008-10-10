@@ -23,7 +23,8 @@ will search upwards (backwards), and <Shift-F3> will repeat a search upwards.
 The findExact function will perform a search which does not consider the
 search expression to be a regular expression, but rather a literal string.
 There is no default key mapping for findExact; use <F12> to modify your
-configuration.
+configuration.  Alternatively, you can press <Shift-F2> and enter "findExact"
+to execute the function directly.
 
 To clear the highlighting on matches, press <Ctrl-Alt-U>.
 
