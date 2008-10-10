@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 6, 2008'
+    LAST_MODIFIED = 'October 10, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -174,6 +174,7 @@ module Diakonos
         'paste_from_klipper',
         'playMacro',
         'popTag',
+        'print_mapped_function',
         'printKeychain',
         'quit',
         'redraw',
@@ -217,16 +218,17 @@ class Diakonos
 
     def initialize( argv = [] )
         @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
-        if not FileTest.exists? @diakonos_home
-            Dir.mkdir @diakonos_home
-        end
+        mkdir @diakonos_home
         @script_dir = "#{@diakonos_home}/scripts"
-        if not FileTest.exists? @script_dir
-            Dir.mkdir @script_dir
-        end
+        mkdir @script_dir
+        
+        init_help
+        
         @debug = File.new( "#{@diakonos_home}/debug.log", 'w' )
         @list_filename = @diakonos_home + '/listing.txt'
         @diff_filename = @diakonos_home + '/text.diff'
+        @help_filename = "#{@help_dir}/about-help.dhf"
+        @error_filename = "#{@diakonos_home}/diakonos.err"
 
         @files = Array.new
         @read_only_files = Array.new
@@ -273,6 +275,13 @@ class Diakonos
         @rlh_files = Array.new
         @rlh_search = Array.new
         @rlh_shell = Array.new
+        @rlh_help = Array.new
+    end
+    
+    def mkdir( dir )
+      if not FileTest.exists? dir
+        Dir.mkdir dir
+      end
     end
 
     def parseOptions( argv )
@@ -320,6 +329,55 @@ class Diakonos
         puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
     end
     protected :printUsage
+    
+    def init_help
+      @base_help_dir = "#{@diakonos_home}/help"
+      mkdir @base_help_dir
+      
+      @help_dir = "#{@diakonos_home}/help/#{VERSION}"
+      if not File.exist?( @help_dir )
+        puts "Help files for this Diakonos version were not found (#{@help_dir})."
+        
+        $stdout.puts "Would you like to download the help files right now from the Diakonos website? (y/n)"; $stdout.flush
+        answer = $stdin.gets
+        case answer
+        when /^y/i
+          if not fetch_help
+            $stderr.puts "Failed to get help for version #{VERSION}."
+          end
+        end
+        
+        if not FileTest.exists?( @help_dir ) or Dir[ "#{@help_dir}/*" ].size == 0
+          $stderr.puts "Terminating..."
+          exit 1
+        end
+      end
+    end
+    
+    def fetch_help
+      require 'open-uri'
+      success = false
+      puts "Fetching help documents for version #{VERSION}..."
+      
+      filename = "diakonos-help-#{VERSION}.tar.gz"
+      uri = "http://purepistos.net/diakonos/#{filename}"
+      tarball = "#{@base_help_dir}/#{filename}"
+      begin
+        open( uri ) do |http|
+          bytes = http.read
+          File.open( tarball, 'w' ) do |f|
+            f.print bytes
+          end
+        end
+        mkdir @help_dir
+        `tar zxf #{tarball} -C #{@base_help_dir}`
+        success = true
+      rescue OpenURI::HTTPError => e
+        $stderr.puts "Failed to fetch from #{uri} ."
+      end
+      
+      success
+    end
     
     def initializeDisplay
         if @win_main != nil
@@ -402,7 +460,7 @@ class Diakonos
         $stderr.puts "Failed to fetch from #{location}."
       end
       
-      return found
+      found
     end
     
     def loadConfiguration
@@ -517,13 +575,13 @@ class Diakonos
                         keystrokes = Array.new
                         keystrings.split( /\s+/ ).each do |ks_str|
                             code = ks_str.keyCode
-                            if code != nil
+                            if code
                                 keystrokes.concat code
                             else
                                 puts "unknown keystring: #{ks_str}"
                             end
                         end
-                        if function_and_args == nil
+                        if function_and_args.nil?
                             @keychains.deleteKeyPath( keystrokes )
                         else
                             function, function_args = function_and_args.split( /\s+/, 2 )
@@ -605,7 +663,8 @@ class Diakonos
                     end
                 when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
                         /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
-                        "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol'
+                        "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
+                        'suppress_welcome'
                     @settings[ command ] = arg.to_b
                 when "context.format", "context.separator.format", "status.format"
                     @settings[ command ] = arg.toFormatting
@@ -753,113 +812,146 @@ class Diakonos
         end
         
         if num_opened > 0
-            switchToBufferNumber 1
-            
-            updateStatusLine
-            updateContextLine
-            
-            if @post_load_script != nil
-                eval @post_load_script
+          switchToBufferNumber 1
+          
+          updateStatusLine
+          updateContextLine
+          
+          if @post_load_script != nil
+            eval @post_load_script
+          end
+          
+          runHookProcs( :after_startup )
+          
+          if not @settings[ 'suppress_welcome' ]
+            openFile "#{@help_dir}/welcome.dhf"
+          end
+          
+          begin
+            # Main keyboard loop.
+            while not @quitting
+              processKeystroke
+              @win_main.refresh
             end
-            
-            runHookProcs( :after_startup )
-            
-            begin
-                # Main keyboard loop.
-                while not @quitting
-                    processKeystroke
-                    @win_main.refresh
-                end
-            rescue SignalException => e
-                debugLog "Terminated by signal (#{e.message})"
-            end
-            
-            @debug.close
+          rescue SignalException => e
+            debugLog "Terminated by signal (#{e.message})"
+          end
+          
+          @debug.close
         end
+    end
+    
+    def capture_keychain( c, context )
+      if c == ENTER
+        @capturing_keychain = false
+        @current_buffer.deleteSelection
+        str = context.to_keychain_s.strip
+        @current_buffer.insertString str 
+        cursorRight( Buffer::STILL_TYPING, str.length )
+      else
+        keychain_pressed = context.concat [ c ]
+        
+        function_and_args = @keychains.getLeaf( keychain_pressed )
+        
+        if function_and_args
+          function, args = function_and_args
+        end
+        
+        partial_keychain = @keychains.getNode( keychain_pressed )
+        if partial_keychain
+          setILine( "Part of existing keychain: " + keychain_pressed.to_keychain_s + "..." )
+        else
+          setILine keychain_pressed.to_keychain_s + "..."
+        end
+        processKeystroke( keychain_pressed )
+      end
+    end
+    
+    def capture_mapping( c, context )
+      if c == ENTER
+        @capturing_mapping = false
+        @current_buffer.deleteSelection
+        setILine
+      else
+        keychain_pressed = context.concat [ c ]
+        
+        function_and_args = @keychains.getLeaf( keychain_pressed )
+        
+        if function_and_args
+          function, args = function_and_args
+          setILine "#{keychain_pressed.to_keychain_s.strip}  ->  #{function}( #{args} )"
+        else
+          partial_keychain = @keychains.getNode( keychain_pressed )
+          if partial_keychain
+            setILine( "Several mappings start with: " + keychain_pressed.to_keychain_s + "..." )
+            processKeystroke( keychain_pressed )
+          else
+            setILine "There is no mapping for " + keychain_pressed.to_keychain_s
+          end
+        end
+      end
     end
     
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def processKeystroke( context = [] )
-        c = @win_main.getch
+      c = @win_main.getch
         
-        if @capturing_keychain
-            if c == ENTER
-                @capturing_keychain = false
-                @current_buffer.deleteSelection
-                str = context.to_keychain_s.strip
-                @current_buffer.insertString str 
-                cursorRight( Buffer::STILL_TYPING, str.length )
-            else
-                keychain_pressed = context.concat [ c ]
-                
-                function_and_args = @keychains.getLeaf( keychain_pressed )
-                
-                if function_and_args != nil
-                    function, args = function_and_args
-                end
-                
-                partial_keychain = @keychains.getNode( keychain_pressed )
-                if partial_keychain != nil
-                    setILine( "Part of existing keychain: " + keychain_pressed.to_keychain_s + "..." )
-                else
-                    setILine keychain_pressed.to_keychain_s + "..."
-                end
-                processKeystroke( keychain_pressed )
-            end
-        else
+      if @capturing_keychain
+        capture_keychain c, context
+      elsif @capturing_mapping
+        capture_mapping c, context
+      else
         
-            if context.empty?
-                if c > 31 and c < 255 and c != BACKSPACE
-                    if @macro_history != nil
-                        @macro_history.push "typeCharacter #{c}"
-                    end
-                    if not @there_was_non_movement
-                        @there_was_non_movement = true
-                    end
-                    typeCharacter c
-                    return
-                end
+        if context.empty?
+          if c > 31 and c < 255 and c != BACKSPACE
+            if @macro_history
+              @macro_history.push "typeCharacter #{c}"
             end
-            keychain_pressed = context.concat [ c ]
-            
-            function_and_args = @keychains.getLeaf( keychain_pressed )
-            
-            if function_and_args != nil
-                function, args = function_and_args
-                setILine if not @settings[ "context.combined" ]
-                
-                if args != nil
-                    to_eval = "#{function}( #{args} )"
-                else
-                    to_eval = function
-                end
-                
-                if @macro_history != nil
-                    @macro_history.push to_eval
-                end
-                
-                begin
-                    eval to_eval, nil, "eval"
-                    @last_commands << to_eval unless to_eval == "repeatLast"
-                    if not @there_was_non_movement
-                        @there_was_non_movement = ( not to_eval.movement? )
-                    end
-                rescue Exception => e
-                    debugLog e.message
-                    debugLog e.backtrace.join( "\n\t" )
-                    showException e
-                end
-            else
-                partial_keychain = @keychains.getNode( keychain_pressed )
-                if partial_keychain != nil
-                    setILine( keychain_pressed.to_keychain_s + "..." )
-                    processKeystroke( keychain_pressed )
-                else
-                    setILine "Nothing assigned to #{keychain_pressed.to_keychain_s}"
-                end
-            end
+            @there_was_non_movement = true
+            typeCharacter c
+            return
+          end
         end
+        keychain_pressed = context.concat [ c ]
+            
+        function_and_args = @keychains.getLeaf( keychain_pressed )
+        
+        if function_and_args
+          function, args = function_and_args
+          setILine if not @settings[ "context.combined" ]
+          
+          if args
+            to_eval = "#{function}( #{args} )"
+          else
+            to_eval = function
+          end
+          
+          if @macro_history
+            @macro_history.push to_eval
+          end
+          
+          begin
+            eval to_eval, nil, "eval"
+            @last_commands << to_eval unless to_eval == "repeatLast"
+            if not @there_was_non_movement
+              @there_was_non_movement = ( not to_eval.movement? )
+            end
+          rescue Exception => e
+            debugLog e.message
+            debugLog e.backtrace.join( "\n\t" )
+            showException e
+          end
+        else
+          partial_keychain = @keychains.getNode( keychain_pressed )
+          if partial_keychain
+            setILine( keychain_pressed.to_keychain_s + "..." )
+            processKeystroke( keychain_pressed )
+          else
+            setILine "Nothing assigned to #{keychain_pressed.to_keychain_s}"
+          end
+        end
+      end
     end
     protected :processKeystroke
 
@@ -1079,7 +1171,7 @@ class Diakonos
     
     def showException( e, probable_causes = [ "Unknown" ] )
         begin
-            File.open( @diakonos_home + "/diakonos.err", "w" ) do |f|
+            File.open( @error_filename, "w" ) do |f|
                 f.puts "Diakonos Error:"
                 f.puts
                 f.puts e.message
@@ -1096,7 +1188,7 @@ class Diakonos
                 f.puts "----------------------------------------------------"
                 f.puts e.backtrace
             end
-            openFile( @diakonos_home + "/diakonos.err" )
+            openFile( @error_filename )
         rescue Exception => e2
             debugLog "EXCEPTION: #{e.message}"
             debugLog "\t#{e.backtrace}"
@@ -1382,6 +1474,9 @@ class Diakonos
     def showing_list?
       @list_buffer
     end
+    def list_item_selected?
+      @list_buffer and @list_buffer.selecting?
+    end
     def current_list_item
       if @list_buffer
         @list_buffer.select_current_line
@@ -1405,6 +1500,14 @@ class Diakonos
         cursorDown
         @list_buffer[ @list_buffer.currentRow ]
       end
+    end
+    
+    def open_help_buffer
+      @help_buffer = openFile( @help_filename )
+    end
+    def close_help_buffer
+      closeFile @help_buffer
+      @help_buffer = nil
     end
     
     def runHookProcs( hook_id, *args )
@@ -1753,7 +1856,7 @@ class Diakonos
           ( selected_text or "" )
         ) { |input|
           if input.length > 1
-            find_ direction, case_sensitive, input, replacement, starting_row, starting_col, QUIET
+            find_ direction, case_sensitive, input, nil, starting_row, starting_col, QUIET
           else
             @current_buffer.removeSelection Buffer::DONT_DISPLAY
             @current_buffer.clearMatches Buffer::DO_DISPLAY
@@ -1763,7 +1866,12 @@ class Diakonos
         regexp_source = regexp_source_
       end
       
-      find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
+      if regexp_source
+        find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
+      elsif starting_row and starting_col
+        @current_buffer.clearMatches
+        @current_buffer.cursorTo starting_row, starting_col
+      end
     end
     
     # Worker method for find function.
@@ -1837,7 +1945,7 @@ class Diakonos
         end
         if search_term != nil
             direction = dir_str.toDirection
-            regexp = Regexp.new( Regexp.escape( search_term ) )
+            regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
             @current_buffer.find( regexp, :direction => direction )
             @last_search_regexps = regexp
         end
@@ -1940,29 +2048,90 @@ class Diakonos
         goToTag @current_buffer.wordUnderCursor
     end
     
-    def help
-        help_filename = @diakonos_home + "/diakonos.help"
-        File.open( help_filename, "w" ) do |help_file|
-            sorted_keychains = @keychains.paths_and_leaves.sort { |a,b|
-                a[ :leaf ][ 0 ] <=> b[ :leaf ][ 0 ]
-            }
-            sorted_keychains.each do |keystrokes_and_function_and_args|
-                keystrokes = keystrokes_and_function_and_args[ :path ]
-                function, args = keystrokes_and_function_and_args[ :leaf ]
-                function_string = function.deep_clone
-                if args != nil and args.length > 0
-                    function_string << "( #{args} )"
-                end
-                keychain_width = [ Curses::cols - function_string.length - 2, Curses::cols / 2 ].min
-                help_file.puts(
-                    "%-#{keychain_width}s%s" % [
-                        keystrokes.to_keychain_s,
-                        function_string
-                    ]
-                )
-            end
+    def with_list_file
+      File.open( @list_filename, "w" ) do |f|
+        yield f
+      end
+    end
+    
+    def matching_help_documents( str )
+      docs = []
+      
+      terms = str.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
+        
+      file_grep = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
+      files = file_grep.split( /\s+/ )
+      files.each do |file|
+        File.open( file ) do |f|
+          docs << ( "%-300s | %s" % [ f.gets.strip, file ] )
         end
-        openFile help_filename
+      end
+      
+      docs
+    end
+    
+    def open_help_document( selected_string )
+      help_file = selected_string.split( "| " )[ -1 ]
+      if File.exist? help_file
+        openFile help_file
+      end
+    end
+    
+    def help
+      open_help_buffer
+      
+      selected = getUserInput(
+        "Search terms: ",
+        @rlh_help
+      ) { |input|
+        next if input.length < 3
+        
+        @matching_docs = matching_help_documents( input )
+        with_list_file do |list|
+          list.puts @matching_docs.join( "\n" )
+        end
+        
+        openListBuffer
+      }
+      
+      close_help_buffer
+      
+      case selected
+      when /\|/
+        open_help_document selected
+      when nil
+        # Do nothing
+      else
+        # Not a selected help document
+        case @matching_docs.size
+        when 1
+          open_help_document @matching_docs[ 0 ]
+        when 0
+          File.open( @error_filename, 'w' ) do |f|
+            f.puts "There were no help documents matching your search."
+            f.puts "(#{selected.strip})"
+          end
+          error_file = openFile @error_filename
+          
+          choice = getChoice(
+            "Send your search terms to purepistos.net to help improve Diakonos?",
+            [ CHOICE_YES, CHOICE_NO ]
+          )
+          case choice
+          when CHOICE_YES
+            require 'net/http'
+            require 'uri'
+            
+            res = Net::HTTP.post_form(
+              URI.parse( 'http://dh.purepistos.net/' ),
+              { 'q' => selected }
+            )
+          # TODO: let them choose "never" and "always"
+          end
+          
+          closeFile error_file
+        end
+      end
     end
 
     def indent
@@ -2001,7 +2170,7 @@ class Diakonos
     end
 
     def list_buffers
-      File.open( @list_filename, "w" ) do |f|
+      with_list_file do |f|
         f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
       end
       openListBuffer
@@ -2257,9 +2426,14 @@ class Diakonos
         end
     end
     
+    def print_mapped_function
+      @capturing_mapping = true
+      setILine "Type any chain of keystrokes or key chords, or press Enter to stop."
+    end
+    
     def printKeychain
-        @capturing_keychain = true
-        setILine "Type any chain of keystrokes or key chords, then press Enter..."
+      @capturing_keychain = true
+      setILine "Type any chain of keystrokes or key chords, then press Enter..."
     end
 
     def quit
@@ -2417,17 +2591,17 @@ class Diakonos
         updateStatusLine
     end
 
-    def shell( command_ = nil )
+    def shell( command_ = nil, result_filename = 'shell-result.txt' )
         if command_ == nil
             command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
         end
-
-        if command != nil
+        
+        if command
             command = subShellVariables( command )
 
-            result_file = @diakonos_home + "/shell-result.txt"
+            result_file = "#{@diakonos_home}/#{result_filename}"
             File.open( result_file , "w" ) do |f|
                 f.puts command
                 f.puts

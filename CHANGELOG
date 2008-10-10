@@ -1,6 +1,12 @@
 Diakonos Changelog
 ------------------
 
+0.8.6
+
+- Find-as-you-type added.
+- Help system added.
+- Numerous small fixes, adjustments and refactorings.
+
 0.8.5
 
 - Added 256 colour support.

@@ -1,0 +1,18 @@
+# Diakonos Help
+
+Welcome to the Diakonos help system!  To learn more about how to use Diakonos,
+type in some keywords as if you were searching the Internet.  Diakonos will
+show the titles of matching help documents.  Use the arrow keys to choose a
+document, and press Enter to read it.
+
+The documentation is written using the default key chords and sequences.  As
+such, please be aware that the documentation may not correspond to your
+actual setup if the keyboard configuration has been changed (by you, or
+someone else, such as a system administrator).
+
+When you are finished reading a document, close it with the close file key
+chord, <Ctrl-W>.
+
+To abort your search for help and close the help system, press <Esc>.
+
+Tags: diakonos help usage support

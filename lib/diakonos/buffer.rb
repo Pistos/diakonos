@@ -346,7 +346,10 @@ class Buffer
     end
     
     def selection_mark
-        return @text_marks[ SELECTION ]
+      @text_marks[ SELECTION ]
+    end
+    def selecting?
+      !!selection_mark
     end
     
     def select_current_line

@@ -1,0 +1,42 @@
+# Searching for and Replacing Text
+
+## Searching for Text
+
+Press <Ctrl-F> to perform a case-insensitive search for text.  You will be
+prompted for what to search for.  As you type your search expression,
+matching text will be highlighted.  You can try it right now as you read this
+document!  Press <Ctrl-F> and then type the word "text".  Press <Esc> to stop
+searching.
+
+What you type will be interpreted as a regular expression.  (If you don't know
+what a regular expression is, search the Internet, or read the Wikipedia
+article: http://en.wikipedia.org/wiki/Regular_expression )
+
+Press <Enter> to submit your search expression, and Diakonos will keep the
+cursor on the first match it found and select it.  That is, it selects the
+closest match below the point where you initiated the search.  Press <F3> to
+move the cursor to the next match.
+
+Use <Alt-F> to do a case-sensitive regular expression search.  <Ctrl-Alt-F>
+will search upwards (backwards), and <Shift-F3> will repeat a search upwards.
+
+The findExact function will perform a search which does not consider the
+search expression to be a regular expression, but rather a literal string.
+There is no default key mapping for findExact; use <F12> to modify your
+configuration.  Alternatively, you can press <Shift-F2> and enter "findExact"
+to execute the function directly.
+
+To clear the highlighting on matches, press <Ctrl-Alt-U>.
+
+## Replacing Text
+
+Press <Ctrl-R> to replace text.  As with searching, you will be prompted for
+what to search for.  Press <Enter> to submit your search expression, and then
+you will be prompted for the replacement text.  Press <Enter> to submit the
+replacement text.
+
+Diakonos will then highlight each individual match and ask whether or not you
+wish to replace the selected text.  You can also choose to replace all matches
+throughout the file at once.
+
+Tags: search searching replace replacing find finding text string regex regexp regular expression

@@ -1,0 +1,20 @@
+# Configuring Diakonos
+
+Press <F12> to open the Diakonos configuration file.  Read the comments in the
+file for information on the individual settings.  Edit the file as you like.
+When you save the file, your changes take effect immediately in your current
+session.
+
+Each line in the configuration file has a setting identifier and the value of
+the setting, for example:
+
+lang.text.format.default white
+
+The identifier and the value are separated by one or more spaces.
+Previous versions of Diakonos used a semicolon to separate; this is still
+permitted, but may not be in future versions.
+
+Comments can be placed in the file by starting a line with an octothorpe
+character (#).
+
+Tags: diakonos config configure configuration configuring setup setting settings options option preferences

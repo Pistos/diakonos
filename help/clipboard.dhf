@@ -1,0 +1,25 @@
+# The Clipboard
+
+To select text, press <Ctrl-space>.  This marks (or "anchors") one end of the
+text you wish to select.  Use any movement keys (such as the arrow keys) to move the
+cursor to the other end of the text you wish to select.  As you do so, you will see
+the selection grow, being highlighted in a different colour.  To work with the
+selection, press one of the following key chords:
+
+<Ctrl-C>  to copy
+<Ctrl-X>  to cut
+<Ctrl-V>  to paste
+<Alt-U>   to unselect the text
+
+Diakonos also lets you cut one or more lines of text without needing to
+delineate a selection.  Pressing <Ctrl-K> once cuts the current line and
+places it in the clipboard.  You can press <Ctrl-K> more times to cut and add
+more lines.
+
+<Ctrl-Alt-K> will cut from the cursor to the end of the current line.
+
+Diakonos also supports synchronization with Klipper, the KDE clipboard
+manager.  This requires DCOP to be installed.  Uncomment the indicated lines
+in the configuration file.
+
+Tags: clipboard copy cut paste kde klipper dcop select selecting selected unselect unselecting mark marking highlight eol line
