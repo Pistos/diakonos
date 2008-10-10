@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 9, 2008'
+    LAST_MODIFIED = 'October 10, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -1836,7 +1836,12 @@ class Diakonos
         regexp_source = regexp_source_
       end
       
-      find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
+      if regexp_source
+        find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
+      elsif starting_row and starting_col
+        @current_buffer.clearMatches
+        @current_buffer.cursorTo starting_row, starting_col
+      end
     end
     
     # Worker method for find function.
