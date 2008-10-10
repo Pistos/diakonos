@@ -29,4 +29,13 @@ To clear the highlighting on matches, press <Ctrl-Alt-U>.
 
 ## Replacing Text
 
+Press <Ctrl-R> to replace text.  As with searching, you will be prompted for
+what to search for.  Press <Enter> to submit your search expression, and then
+you will be prompted for the replacement text.  Press <Enter> to submit the
+replacement text.
+
+Diakonos will then highlight each individual match and ask whether or not you
+wish to replace the selected text.  You can also choose to replace all matches
+throughout the file at once.
+
 Tags: search searching replace replacing find finding text string regex regexp regular expression
