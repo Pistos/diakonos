@@ -1,0 +1,6 @@
+# Undoing
+
+Use <Ctrl-Z> to undo one or more of the most recent changes you've made to the
+current file.  Each file has its own undo history.
+
+Tags: undo undoing mistake back revert
