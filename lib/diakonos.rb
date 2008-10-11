@@ -352,6 +352,8 @@ class Diakonos
           exit 1
         end
       end
+      
+      @help_tags = `grep -h Tags #{@help_dir}/* | cut -d ' ' -f 2-`.split.uniq
     end
     
     def fetch_help
@@ -2079,16 +2081,19 @@ class Diakonos
     
     def help
       open_help_buffer
+      matching_docs = nil
       
       selected = getUserInput(
         "Search terms: ",
-        @rlh_help
+        @rlh_help,
+        '',
+        @help_tags
       ) { |input|
         next if input.length < 3
         
-        @matching_docs = matching_help_documents( input )
+        matching_docs = matching_help_documents( input )
         with_list_file do |list|
-          list.puts @matching_docs.join( "\n" )
+          list.puts matching_docs.join( "\n" )
         end
         
         openListBuffer
@@ -2103,9 +2108,13 @@ class Diakonos
         # Do nothing
       else
         # Not a selected help document
-        case @matching_docs.size
+        if matching_docs.nil?
+          matching_docs = matching_help_documents( selected )
+        end
+        
+        case matching_docs.size
         when 1
-          open_help_document @matching_docs[ 0 ]
+          open_help_document matching_docs[ 0 ]
         when 0
           File.open( @error_filename, 'w' ) do |f|
             f.puts "There were no help documents matching your search."
