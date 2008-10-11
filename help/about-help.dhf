@@ -3,7 +3,9 @@
 Welcome to the Diakonos help system!  To learn more about how to use Diakonos,
 type in some keywords as if you were searching the Internet.  Diakonos will
 show the titles of matching help documents.  Use the arrow keys to choose a
-document, and press Enter to read it.
+document, and press Enter to read it.  If you're not sure what keywords to
+type, you can type a partial word and press <Tab> to see a list of tags that
+start with what you typed.
 
 The documentation is written using the default key chords and sequences.  As
 such, please be aware that the documentation may not correspond to your

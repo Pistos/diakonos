@@ -35,6 +35,10 @@ module Diakonos
     # Returns nil on cancel.
     def readline
       @input = @initial_text
+      if not @input.empty?
+        call_block
+      end
+      
       @icurx = @window.curx
       @icury = @window.cury
       @window.addstr @initial_text
@@ -181,9 +185,9 @@ module Diakonos
     end
 
     def completeInput
-      if @completion_array != nil and @input.length > 0
+      if @completion_array and @input.length > 0
         len = @input.length
-        matches = @completion_array.find_all { |el| el[ 0...len ] == @input and len < el.length }
+        matches = @completion_array.find_all { |el| el[ 0...len ] == @input and len <= el.length }
       else
         matches = Dir.glob( ( @input.subHome() + "*" ).gsub( /\*\*/, "*" ) )
       end
@@ -192,9 +196,13 @@ module Diakonos
         @input = matches[ 0 ]
         cursorWriteInput
         File.open( @list_filename, "w" ) do |f|
-          f.puts "(unique)"
+          if @completion_array.nil?
+            f.puts "(unique)"
+          else
+            f.puts @input
+          end
         end
-        if @completion_array == nil and FileTest.directory?( @input )
+        if @completion_array.nil? and FileTest.directory?( @input )
           @input << "/"
           cursorWriteInput
           completeInput

@@ -2079,14 +2079,14 @@ class Diakonos
       end
     end
     
-    def help
+    def help( prefill = '' )
       open_help_buffer
       matching_docs = nil
       
       selected = getUserInput(
         "Search terms: ",
         @rlh_help,
-        '',
+        prefill,
         @help_tags
       ) { |input|
         next if input.length < 3
@@ -2108,7 +2108,7 @@ class Diakonos
         # Do nothing
       else
         # Not a selected help document
-        if matching_docs.nil?
+        if matching_docs.nil? or matching_docs.empty?
           matching_docs = matching_help_documents( selected )
         end
         
@@ -2139,6 +2139,8 @@ class Diakonos
           end
           
           closeFile error_file
+        else
+          help selected
         end
       end
     end
