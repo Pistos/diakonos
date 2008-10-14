@@ -1,6 +1,6 @@
 # Closing a File
 
-Press <Ctrl-W> to close the current file.  Even informational files, such as
-help files or error messages are closed with <Ctrl-W>.
+Press <Ctrl-W> to close the current file.  Help documents and error messages
+are also files, and are closed with <Ctrl-W>.
 
 Tags: close closing file files buffer buffers

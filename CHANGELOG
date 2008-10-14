@@ -6,6 +6,7 @@ Diakonos Changelog
 - Find-as-you-type added.
 - Help system added.
 - Numerous small fixes, adjustments and refactorings.
+- print_mapped_function added.
 
 0.8.5
 
