@@ -17,4 +17,21 @@ permitted, but may not be in future versions.
 Comments can be placed in the file by starting a line with an octothorpe
 character (#).
 
+You can create and include custom configuration files which remain distinct
+from the standard default configuration file.  You can place these files
+wherever you like, but it is recommended to put them in ~/.diakonos.  Then,
+place a line like this at the bottom of the default configuration file:
+
+include ~/.diakonos/pistos.conf
+
+If a setting is specified again (whether in the same file, or an included
+file), it overrides the previous setting given higher up in the configuration
+file(s).  Note that editing and saving custom configuration files will not
+cause the changes to be automatically loaded like they are with the default
+configuration file.  To reload all configuration files, press <F11>.
+
+Since configuring Diakonos is nothing but editing and saving the configuration
+file, to stop configuring, simply switch buffers or close the configuration
+file (with <Ctrl-W>).
+
 Tags: diakonos config configure configuration configuring setup setting settings options option preferences
