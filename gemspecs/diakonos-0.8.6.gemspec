@@ -18,7 +18,6 @@ spec = Gem::Specification.new do |s|
         'CHANGELOG',
         'README',
         'LICENCE',
-        'home-on-save.rb',
         'diakonos.conf',
         'diakonos-256-colour.conf',
         'bin/diakonos',
