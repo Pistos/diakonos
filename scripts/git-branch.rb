@@ -1,5 +1,5 @@
 proc = Proc.new do |buffer|
-  if buffer
+  if buffer and buffer.name
     dir = File.dirname( File.expand_path( buffer.name ) )
   else
     dir = '.'
