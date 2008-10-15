@@ -1,0 +1,107 @@
+# Key Mapping
+
+Diakonos' key mapping is extremely customizable.  You can map any Diakonos
+function to nearly any key chord or key sequence (as long as your terminal
+can produce the chord or sequence).
+
+To change the key mapping for a function, or to change the function mapped to
+a key mapping, you need to know what function you want performed, and what key
+chord or sequence you want to press in order to perform that function.
+Diakonos can help you determine these.
+
+## What does this key do?
+
+Press <Alt-Shift-K> and Diakonos will enter a special mode.  In this mode, any
+key chord or sequence you press will make Diakonos report the function (and any
+function arguments) which are mapped to what you pressed.  Try it now!  When you
+are finished exploring, press <Enter> to exit the key mapping exploration mode.
+
+Here is an example of what the key exploration mode might display.  This is
+seen when you query what <Ctrl-S> does:
+
+  ctrl+s  ->  saveFile(  )
+
+This indicates that the keychord (ctrl+s) executes the saveFile function.  The
+empty parentheses tells us that the saveFile function is not given any
+arguments.
+
+It is worth noting that some keys or chords may have strange-looking key
+sequences, depending on your terminal.  For example, the <Home> key may not be
+a single keycode, but rather a sequence, like "esc [ 1 ~".  There's nothing
+wrong with this, but you should be aware of it when customizing your keyboard layout.
+
+## What do I need to press to do _____?
+
+One way to determine the current key mapping for a given feature or function
+is to press <F1> to enter the help system, and then type some search keywords
+to search the help system for documentation describing the feature.  All help
+documents have relevant key mappings described.  Once you determine the key
+mapping for the function you're interested in, use <Alt-Shift-K> to get the
+actual name of the function.
+
+Not all features may be documented at this time, though.  If you can't find
+the key mapping for a function, the alternative is to open the configuration
+file (with <F12>) and move down to the key configuration section.  This
+section has many lines starting with the word "key", such as these lines:
+
+key left;cursorLeft
+key esc [ D;cursorLeft
+key right;cursorRight
+key esc [ C;cursorRight
+
+## How do I specify a keychord or sequence?
+
+Diakonos has another built-in function to help you in mapping keys.  Press
+<Alt-K>, and Diakonos enters a key printing mode.  In this mode, you can
+press any sequence of keystrokes or key chords, and Diakonos will display
+what string to use in the configuration file.  Press Enter when you have
+completed your sequence.
+
+Here are a couple of examples.
+
+If you press <Alt-K> and then <Ctrl-D> and <Enter>, it will print the string
+"ctrl+d" into the current buffer.
+
+If you press <Alt-K> and then <Alt-L> and <Home>, it will print something like
+"esc l esc [ 1 ~" into the current buffer (the exact string may vary depending
+on your terminal).  Use these strings to configure Diakonos' key mapping (see
+below).
+
+## Setting a key mapping
+
+Once you know the name of the function you want performed and the string for
+the key mapping, press <F12> to edit the configuration file.  Add a new key
+mapping line to the key configuration area.  It doesn't matter exactly where,
+but you should try to keep your configuration file organized to make it easier
+to adjust in the future.  A key mapping line looks like this:
+
+key alt+b alt+!     addNamedBookmark 1
+
+It has these components:
+- the "key" configuration command
+- one or more keystrokes or keychords ("alt+b alt+!")
+- two or more spaces
+- the Diakonos function ("addNamedBookmark")
+- any arguments to the function, separated by commas ("1")
+
+For example, suppose you wanted to make the keychord <Alt-L> drop to the shell
+and execute 'ls' and show the results.  You would do this on a new line in the
+configuration file:
+
+Type 'key' and space:
+
+key 
+
+then press <Alt-K>, <Alt-L> and <Enter> to print out the string Diakonos
+expects for <Alt-L>. Your line will then be:
+
+key esc l
+
+Then add a few spaces, and the shell command.  Your final line will be:
+
+key esc l     shell "ls"
+
+Press <Ctrl-S> to save the configuration, and your new key mapping will be
+ready for use.  Try it!
+
+Tags: key keys keyboard map mapping layout change config configure set different alternate function feature command
