@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 10, 2008'
+    LAST_MODIFIED = 'October 14, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -269,6 +269,7 @@ class Diakonos
         @iterated_choice = nil
         @choice_iterations = 0
         @there_was_non_movement = false
+        @status_vars = Hash.new
         
         # Readline histories
         @rlh_general = Array.new
@@ -779,8 +780,10 @@ class Diakonos
         initializeDisplay
         
         @hooks = {
-            :after_save => [],
-            :after_startup => [],
+          :after_buffer_switch => [],
+          :after_open => [],
+          :after_save => [],
+          :after_startup => [],
         }
         Dir[ "#{@script_dir}/*" ].each do |script|
             begin
@@ -823,7 +826,7 @@ class Diakonos
             eval @post_load_script
           end
           
-          runHookProcs( :after_startup )
+          runHookProcs :after_startup
           
           if not @settings[ 'suppress_welcome' ]
             openFile "#{@help_dir}/welcome.dhf"
@@ -979,22 +982,27 @@ class Diakonos
     end
 
     def switchTo( buffer )
-        switched = false
-        if buffer
-            @buffer_stack -= [ @current_buffer ]
-            if @current_buffer
-              @buffer_stack.push @current_buffer
-            end
-            @current_buffer = buffer
-            updateStatusLine
-            updateContextLine
-            buffer.display
-            switched = true
+      switched = false
+      if buffer
+        @buffer_stack -= [ @current_buffer ]
+        if @current_buffer
+          @buffer_stack.push @current_buffer
         end
-        
-        switched
+        @current_buffer = buffer
+        runHookProcs( :after_buffer_switch, buffer )
+        updateStatusLine
+        updateContextLine
+        buffer.display
+        switched = true
+      end
+      
+      switched
     end
     protected :switchTo
+    
+    def set_status_variable( identifier, value )
+      @status_vars[ identifier ] = value
+    end
 
     def buildStatusLine( truncation = 0 )
         var_array = Array.new
@@ -1033,6 +1041,8 @@ class Diakonos
                     end
                 when "type"
                     var_array.push @current_buffer.original_language
+                when /^@/
+                  var_array.push @status_vars[ var ]
             end
         end
         str = nil
@@ -2295,6 +2305,7 @@ class Diakonos
         
         if do_open
           buffer = Buffer.new( self, filename, buffer_key, read_only )
+          runHookProcs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
           if switchTo( buffer ) and line_number
             @current_buffer.goToLine( line_number, 0 )
