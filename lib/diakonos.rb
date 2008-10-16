@@ -770,7 +770,7 @@ class Diakonos
         if @settings[ "context.visible" ] and not @settings[ "context.combined" ]
             retval = retval - 1
         end
-        return retval
+        retval
     end
 
     def main_window_width
@@ -1134,16 +1134,16 @@ class Diakonos
     end
     
     def displayDequeue
-        @display_queue_mutex.synchronize do
-            if @display_queue != nil
-                Thread.new( @display_queue ) do |b|
-                    @display_mutex.lock
-                    @display_mutex.unlock
-                    b.display
-                end
-                @display_queue = nil
-            end
+      @display_queue_mutex.synchronize do
+        if @display_queue
+          Thread.new( @display_queue ) do |b|
+            @display_mutex.lock
+            @display_mutex.unlock
+            b.display
+          end
+          @display_queue = nil
         end
+      end
     end
 
     # completion_array is the array of strings that tab completion can use
@@ -1157,7 +1157,7 @@ class Diakonos
             end
             setILine
         end
-        return retval
+        retval
     end
 
     def getLanguageFromName( name )
@@ -1168,7 +1168,7 @@ class Diakonos
                 break
             end
         end
-        return retval
+        retval
     end
     
     def getLanguageFromShaBang( first_line )
@@ -1179,7 +1179,7 @@ class Diakonos
                 break
             end
         end
-        return retval
+        retval
     end
     
     def showException( e, probable_causes = [ "Unknown" ] )
@@ -1305,7 +1305,7 @@ class Diakonos
             retval.gsub!( /\$s/, text_filename )
         end
         
-        return retval
+        retval
     end
     
     def showMessage( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
@@ -1415,7 +1415,7 @@ class Diakonos
             @do_display = false
         end
         
-        return retval
+        retval
     end
 
     def startRecordingMacro( name = nil )
