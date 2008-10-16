@@ -1,5 +1,17 @@
 # Key Mapping
 
+## Executive Summary
+
+<Alt-Shift-K>       key mapping exploration mode
+<Alt-K>             key printing mode
+<F12>               edit configuration file
+
+Example configuration line:
+
+key alt+b alt+!     addNamedBookmark 1
+
+## Customizing the Diakonos key mapping
+
 Diakonos' key mapping is extremely customizable.  You can map any Diakonos
 function to nearly any key chord or key sequence (as long as your terminal
 can produce the chord or sequence).
@@ -12,9 +24,10 @@ Diakonos can help you determine these.
 ## What does this key do?
 
 Press <Alt-Shift-K> and Diakonos will enter a special mode.  In this mode, any
-key chord or sequence you press will make Diakonos report the function (and any
-function arguments) which are mapped to what you pressed.  Try it now!  When you
-are finished exploring, press <Enter> to exit the key mapping exploration mode.
+key chord or sequence you press will make Diakonos report the function (and
+any function arguments) which are mapped to what you pressed.  Try it now!
+When you are finished exploring, press <Enter> to exit the key mapping
+exploration mode.
 
 Here is an example of what the key exploration mode might display.  This is
 seen when you query what <Ctrl-S> does:
@@ -28,7 +41,8 @@ arguments.
 It is worth noting that some keys or chords may have strange-looking key
 sequences, depending on your terminal.  For example, the <Home> key may not be
 a single keycode, but rather a sequence, like "esc [ 1 ~".  There's nothing
-wrong with this, but you should be aware of it when customizing your keyboard layout.
+wrong with this, but you should be aware of it when customizing your keyboard
+layout.
 
 ## What do I need to press to do _____?
 
@@ -54,7 +68,7 @@ key esc [ C;cursorRight
 Diakonos has another built-in function to help you in mapping keys.  Press
 <Alt-K>, and Diakonos enters a key printing mode.  In this mode, you can
 press any sequence of keystrokes or key chords, and Diakonos will display
-what string to use in the configuration file.  Press Enter when you have
+what string to use in the configuration file.  Press <Enter> when you have
 completed your sequence.
 
 Here are a couple of examples.
