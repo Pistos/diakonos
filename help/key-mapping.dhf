@@ -93,16 +93,14 @@ key alt+b alt+!     addNamedBookmark 1
 
 It has these components:
 - the "key" configuration command
-- one or more keystrokes or keychords ("alt+b alt+!")
+- one or more keystrokes or keychords, in order ("alt+b alt+!")
 - two or more spaces
 - the Diakonos function ("addNamedBookmark")
 - any arguments to the function, separated by commas ("1")
 
 For example, suppose you wanted to make the keychord <Alt-L> drop to the shell
-and execute 'ls' and show the results.  You would do this on a new line in the
-configuration file:
-
-Type 'key' and space:
+and execute 'ls' and show the results.  You would set this up with a new line
+in the configuration file.  Type 'key' and space:
 
 key 
 
