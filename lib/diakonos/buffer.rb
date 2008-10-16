@@ -867,6 +867,10 @@ class Buffer
             @lines[ row ]
         end
     end
+    
+    def current_line
+      @lines[ @last_row ]
+    end
 
     # Returns true iff the given column, x, is less than the length of the given line, y.
     def inLine( x, y )

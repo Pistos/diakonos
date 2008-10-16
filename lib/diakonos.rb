@@ -206,7 +206,8 @@ module Diakonos
         'uncomment',
         'undo',
         'unindent',
-        'unundo'
+        'unundo',
+        'with_match',
     ]
     LANG_TEXT = 'text'
     
@@ -2815,6 +2816,15 @@ class Diakonos
 
     def unundo( buffer = @current_buffer )
         buffer.unundo
+    end
+    
+    def with_match( regexp, function, *args )
+      line = @current_buffer.current_line
+      if line =~ regexp
+        match = $1 || Regexp.last_match[ 0 ]
+        args.unshift "'#{match}'"
+        eval "#{function} #{args.join( ', ' )}"
+      end
     end
 end
 
