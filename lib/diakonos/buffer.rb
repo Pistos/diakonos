@@ -738,19 +738,63 @@ class Buffer
     end
     
     def collapseWhitespace
-        removeSelection( DONT_DISPLAY ) if selection_mark != nil
+      if selection_mark
+        removeSelection DONT_DISPLAY
+      end
         
-        line = @lines[ @last_row ]
-        head = line[ 0...@last_col ]
-        tail = line[ @last_col..-1 ]
-        new_head = head.sub( /\s+$/, '' )
-        new_line = new_head + tail.sub( /^\s+/, ' ' )
-        if new_line != line
-            takeSnapshot( TYPING )
-            @lines[ @last_row ] = new_line
-            cursorTo( @last_row, @last_col - ( head.length - new_head.length ) )
-            setModified
-        end
+      line = @lines[ @last_row ]
+      head = line[ 0...@last_col ]
+      tail = line[ @last_col..-1 ]
+      new_head = head.sub( /\s+$/, '' )
+      new_line = new_head + tail.sub( /^\s+/, ' ' )
+      if new_line != line
+        takeSnapshot( TYPING )
+        @lines[ @last_row ] = new_line
+        cursorTo( @last_row, @last_col - ( head.length - new_head.length ) )
+        setModified
+      end
+    end
+    
+    def comment_out
+      takeSnapshot
+      selection = selection_mark
+      if selection
+        lines = @lines[ selection.start_row..selection.end_row ]
+      else
+        lines = [ @lines[ @last_row ] ]
+      end
+      one_modified = false
+      lines.each do |line|
+        old_line = line.dup
+        line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
+        line << @settings[ "lang.#{@language}.comment_close_string" ].to_s
+        one_modified ||= ( line != old_line )
+      end
+      if one_modified
+        setModified
+      end
+    end
+    
+    def uncomment
+      takeSnapshot
+      selection = selection_mark
+      if selection
+        lines = @lines[ selection.start_row..selection.end_row ]
+      else
+        lines = [ @lines[ @last_row ] ]
+      end
+      comment_string = Regexp.escape( @settings[ "lang.#{@language}.comment_string" ].to_s )
+      comment_close_string = Regexp.escape( @settings[ "lang.#{@language}.comment_close_string" ].to_s )
+      one_modified = false
+      lines.each do |line|
+        old_line = line.dup
+        line.gsub!( /^(\s*)#{comment_string}/, "\\1" )
+        line.gsub!( /#{comment_close_string}$/, '' )
+        one_modified ||= ( line != old_line )
+      end
+      if one_modified
+        setModified
+      end
     end
 
     def deleteLine
@@ -769,7 +813,7 @@ class Buffer
         cursorTo( row, 0 )
         setModified
 
-        return retval
+        retval
     end
 
     def deleteToEOL
