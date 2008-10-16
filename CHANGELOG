@@ -7,6 +7,9 @@ Diakonos Changelog
 - Help system added.
 - Numerous small fixes, adjustments and refactorings.
 - print_mapped_function added.
+- User-definable status line variables added.
+- :after_open and :after_buffer_switch hooks added.
+- Sample script for git branch status variable added.
 
 0.8.5
 

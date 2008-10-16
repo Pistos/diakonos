@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 14, 2008'
+    LAST_MODIFIED = 'October 15, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -188,6 +188,7 @@ module Diakonos
         'scrollUp',
         'searchAndReplace',
         'seek',
+        'select_all',
         'select_block',
         'setBufferType',
         'setReadOnly',
@@ -2547,6 +2548,10 @@ class Diakonos
                 #switchTo( @current_buffer )
             #end
         end
+    end
+    
+    def select_all
+      @current_buffer.select_all
     end
     
     def select_block( beginning = nil, ending = nil, including_ending = true )
