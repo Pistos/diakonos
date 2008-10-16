@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 15, 2008'
+    LAST_MODIFIED = 'October 16, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -118,6 +118,7 @@ module Diakonos
         'closeFile',
         'close_code',
         'collapseWhitespace',
+        'comment_out',
         'copySelection',
         'copy_selection_to_klipper',
         'cursorBOF',
@@ -202,6 +203,7 @@ module Diakonos
         'toggleMacroRecording',
         'toggleSelection',
         'toggleSessionSetting',
+        'uncomment',
         'undo',
         'unindent',
         'unundo'
@@ -680,6 +682,8 @@ class Diakonos
                         /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/, "view.nonfilelines.character",
                         'interaction.blink_string', 'diff_command'
                     @settings[ command ] = arg
+                when /^lang\..+?\.comment_(?:close_)?string$/
+                    @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
                 when "status.vars"
                     @settings[ command ] = arg.split( /\s+/ )
                 when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.tabsize$/
@@ -770,7 +774,7 @@ class Diakonos
         if @settings[ "context.visible" ] and not @settings[ "context.combined" ]
             retval = retval - 1
         end
-        return retval
+        retval
     end
 
     def main_window_width
@@ -1134,16 +1138,16 @@ class Diakonos
     end
     
     def displayDequeue
-        @display_queue_mutex.synchronize do
-            if @display_queue != nil
-                Thread.new( @display_queue ) do |b|
-                    @display_mutex.lock
-                    @display_mutex.unlock
-                    b.display
-                end
-                @display_queue = nil
-            end
+      @display_queue_mutex.synchronize do
+        if @display_queue
+          Thread.new( @display_queue ) do |b|
+            @display_mutex.lock
+            @display_mutex.unlock
+            b.display
+          end
+          @display_queue = nil
         end
+      end
     end
 
     # completion_array is the array of strings that tab completion can use
@@ -1157,7 +1161,7 @@ class Diakonos
             end
             setILine
         end
-        return retval
+        retval
     end
 
     def getLanguageFromName( name )
@@ -1168,7 +1172,7 @@ class Diakonos
                 break
             end
         end
-        return retval
+        retval
     end
     
     def getLanguageFromShaBang( first_line )
@@ -1179,7 +1183,7 @@ class Diakonos
                 break
             end
         end
-        return retval
+        retval
     end
     
     def showException( e, probable_causes = [ "Unknown" ] )
@@ -1305,7 +1309,7 @@ class Diakonos
             retval.gsub!( /\$s/, text_filename )
         end
         
-        return retval
+        retval
     end
     
     def showMessage( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
@@ -1415,7 +1419,7 @@ class Diakonos
             @do_display = false
         end
         
-        return retval
+        retval
     end
 
     def startRecordingMacro( name = nil )
@@ -1684,6 +1688,10 @@ class Diakonos
     
     def collapseWhitespace
         @current_buffer.collapseWhitespace
+    end
+    
+    def comment_out
+      @current_buffer.comment_out
     end
 
     def copySelection
@@ -2318,17 +2326,22 @@ class Diakonos
     end
   
     def openFileAsk
-        if @current_buffer != nil and @current_buffer.name != nil
-            path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-            file = getUserInput( "Filename: ", @rlh_files, path )
-        else
-            file = getUserInput( "Filename: ", @rlh_files )
+      if @current_buffer
+        if @current_buffer.current_line =~ %r{/} and @current_buffer.current_line =~ %r{[/\w.]+}
+          file = getUserInput( "Filename: ", @rlh_files, $& )
+        elsif @current_buffer.name
+          path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+          file = getUserInput( "Filename: ", @rlh_files, path )
         end
-        if file != nil
-            openFile file
-            updateStatusLine
-            updateContextLine
-        end
+      end
+      if file.nil?
+        file = getUserInput( "Filename: ", @rlh_files )
+      end
+      if file
+        openFile file
+        updateStatusLine
+        updateContextLine
+      end
     end
     
     def operateOnString(
@@ -2773,6 +2786,10 @@ class Diakonos
         end
     end
     
+    def uncomment
+      @current_buffer.uncomment
+    end
+
     def undo( buffer = @current_buffer )
         buffer.undo
     end

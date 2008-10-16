@@ -10,6 +10,8 @@ Diakonos Changelog
 - User-definable status line variables added.
 - :after_open and :after_buffer_switch hooks added.
 - Sample script for git branch status variable added.
+- comment_out and uncomment functions added.
+- comment_string and comment_close_string settings added.
 
 0.8.5
 

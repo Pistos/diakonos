@@ -1,0 +1,24 @@
+# File Type
+
+The language (or type) of a file is shown in the status bar between
+parentheses.  For example, the file type of this help document is "dhf".
+
+Diakonos can usually guess a file's language correctly.  To do so, it
+considers the filename and, if present, the "bang" line at the top of the
+file.  The bang line takes precedence over the filename.
+
+If Diakonos was wrong in its automatic determination of the file type, you can
+force it to assume a certain file type by pressing <Alt-Shift-T> and typing in
+the file type (e.g. java, ruby, html, xml, and so on).
+
+The configuration settings (available by pressing <F12>) which affect
+Diakonos' guessing are a language's filemask and bangmask settings.  These
+settings are regular expressions.  For example:
+
+lang.perl.filemask \.(?:pl|pm)$
+lang.perl.bangmask perl
+
+These configuration lines tell Diakonos to think a file is a Perl file if its
+extension is .pl or .pm, or if the bang line has the word "perl" in it.
+
+Tags: file files lang language languages programming type mode types modes
