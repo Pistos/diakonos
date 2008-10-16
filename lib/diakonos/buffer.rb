@@ -363,6 +363,11 @@ class Buffer
       @lines[ @last_row ]
     end
     
+    def select_all
+      anchorSelection( 0, 0, DONT_DISPLAY )
+      cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
+    end
+    
     def select( from_regexp, to_regexp, include_ending = true )
       start_row = nil
       
