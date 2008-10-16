@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 15, 2008'
+    LAST_MODIFIED = 'October 16, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -118,6 +118,7 @@ module Diakonos
         'closeFile',
         'close_code',
         'collapseWhitespace',
+        'comment_out',
         'copySelection',
         'copy_selection_to_klipper',
         'cursorBOF',
@@ -678,7 +679,7 @@ class Diakonos
                         "status.modified_str", "status.unnamed_str", "status.selecting_str",
                         "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
                         /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/, "view.nonfilelines.character",
-                        'interaction.blink_string', 'diff_command'
+                        'interaction.blink_string', 'diff_command', /^lang\..+?\.comment_string$/
                     @settings[ command ] = arg
                 when "status.vars"
                     @settings[ command ] = arg.split( /\s+/ )
@@ -1684,6 +1685,10 @@ class Diakonos
     
     def collapseWhitespace
         @current_buffer.collapseWhitespace
+    end
+    
+    def comment_out
+      @current_buffer.comment_out
     end
 
     def copySelection

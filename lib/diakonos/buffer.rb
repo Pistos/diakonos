@@ -752,6 +752,17 @@ class Buffer
             setModified
         end
     end
+    
+    def comment_out
+      if not selecting?
+        @lines[ @last_row ] = @settings[ "lang.#{@language}.comment_string" ].to_s + @lines[ @last_row ]
+      else
+      end
+      display
+    end
+    
+    def uncomment
+    end
 
     def deleteLine
         removeSelection( DONT_DISPLAY ) if selection_mark != nil
