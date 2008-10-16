@@ -759,7 +759,12 @@ class Buffer
       takeSnapshot
       selection = selection_mark
       if selection
-        lines = @lines[ selection.start_row..selection.end_row ]
+        if selection.end_col == 0
+          end_row = selection.end_row - 1
+        else
+          end_row = selection.end_row
+        end
+        lines = @lines[ selection.start_row..end_row ]
       else
         lines = [ @lines[ @last_row ] ]
       end
@@ -779,7 +784,12 @@ class Buffer
       takeSnapshot
       selection = selection_mark
       if selection
-        lines = @lines[ selection.start_row..selection.end_row ]
+        if selection.end_col == 0
+          end_row = selection.end_row - 1
+        else
+          end_row = selection.end_row
+        end
+        lines = @lines[ selection.start_row..end_row ]
       else
         lines = [ @lines[ @last_row ] ]
       end
