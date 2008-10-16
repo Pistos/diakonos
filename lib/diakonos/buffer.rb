@@ -862,9 +862,9 @@ class Buffer
     def lineAt( y )
         row = @top_line + y
         if row < 0
-            return nil
+            nil
         else
-            return @lines[ row ]
+            @lines[ row ]
         end
     end
 
@@ -900,11 +900,11 @@ class Buffer
     end
 
     def currentRow
-        return @last_row
+        @last_row
     end
 
     def currentColumn
-        return @last_col
+        @last_col
     end
 
     # Returns the amount the view was actually panned.

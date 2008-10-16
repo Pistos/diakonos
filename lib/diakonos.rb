@@ -2326,17 +2326,22 @@ class Diakonos
     end
   
     def openFileAsk
-        if @current_buffer != nil and @current_buffer.name != nil
-            path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-            file = getUserInput( "Filename: ", @rlh_files, path )
-        else
-            file = getUserInput( "Filename: ", @rlh_files )
+      if @current_buffer
+        if @current_buffer.current_line =~ %r{/} and @current_buffer.current_line =~ %r{[/\w.]+}
+          file = getUserInput( "Filename: ", @rlh_files, $& )
+        elsif @current_buffer.name
+          path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+          file = getUserInput( "Filename: ", @rlh_files, path )
         end
-        if file != nil
-            openFile file
-            updateStatusLine
-            updateContextLine
-        end
+      end
+      if file.nil?
+        file = getUserInput( "Filename: ", @rlh_files )
+      end
+      if file
+        openFile file
+        updateStatusLine
+        updateContextLine
+      end
     end
     
     def operateOnString(
