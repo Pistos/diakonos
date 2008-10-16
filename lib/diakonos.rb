@@ -680,7 +680,7 @@ class Diakonos
                         "status.modified_str", "status.unnamed_str", "status.selecting_str",
                         "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
                         /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/, "view.nonfilelines.character",
-                        'interaction.blink_string', 'diff_command', /^lang\..+?\.comment_string$/
+                        'interaction.blink_string', 'diff_command', /^lang\..+?\.comment_(?:close_)?string$/
                     @settings[ command ] = arg
                 when "status.vars"
                     @settings[ command ] = arg.split( /\s+/ )

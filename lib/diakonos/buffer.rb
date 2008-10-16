@@ -767,6 +767,7 @@ class Buffer
       lines.each do |line|
         old_line = line.dup
         line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
+        line << @settings[ "lang.#{@language}.comment_close_string" ].to_s
         one_modified ||= ( line != old_line )
       end
       if one_modified
@@ -782,11 +783,13 @@ class Buffer
       else
         lines = [ @lines[ @last_row ] ]
       end
-      comment_string = @settings[ "lang.#{@language}.comment_string" ].to_s
+      comment_string = Regexp.escape( @settings[ "lang.#{@language}.comment_string" ].to_s )
+      comment_close_string = Regexp.escape( @settings[ "lang.#{@language}.comment_close_string" ].to_s )
       one_modified = false
       lines.each do |line|
         old_line = line.dup
         line.gsub!( /^(\s*)#{comment_string}/, "\\1" )
+        line.gsub!( /#{comment_close_string}$/, '' )
         one_modified ||= ( line != old_line )
       end
       if one_modified
