@@ -763,14 +763,35 @@ class Buffer
       else
         lines = [ @lines[ @last_row ] ]
       end
+      one_modified = false
       lines.each do |line|
+        old_line = line.dup
         line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
+        one_modified ||= ( line != old_line )
       end
-      setModified
-      display
+      if one_modified
+        setModified
+      end
     end
     
     def uncomment
+      takeSnapshot
+      selection = selection_mark
+      if selection
+        lines = @lines[ selection.start_row..selection.end_row ]
+      else
+        lines = [ @lines[ @last_row ] ]
+      end
+      comment_string = @settings[ "lang.#{@language}.comment_string" ].to_s
+      one_modified = false
+      lines.each do |line|
+        old_line = line.dup
+        line.gsub!( /^(\s*)#{comment_string}/, "\\1" )
+        one_modified ||= ( line != old_line )
+      end
+      if one_modified
+        setModified
+      end
     end
 
     def deleteLine

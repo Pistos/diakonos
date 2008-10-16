@@ -203,6 +203,7 @@ module Diakonos
         'toggleMacroRecording',
         'toggleSelection',
         'toggleSessionSetting',
+        'uncomment',
         'undo',
         'unindent',
         'unundo'
@@ -2778,6 +2779,10 @@ class Diakonos
         end
     end
     
+    def uncomment
+      @current_buffer.uncomment
+    end
+
     def undo( buffer = @current_buffer )
         buffer.undo
     end
