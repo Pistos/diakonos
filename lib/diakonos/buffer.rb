@@ -755,7 +755,7 @@ class Buffer
     
     def comment_out
       if not selecting?
-        @lines[ @last_row ] = @settings[ "lang.#{@language}.comment_string" ].to_s + @lines[ @last_row ]
+        @lines[ @last_row ].gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
       else
       end
       display
