@@ -2576,12 +2576,20 @@ class Diakonos
     
     def select_block( beginning = nil, ending = nil, including_ending = true )
       if beginning.nil?
-        beginning = Regexp.new( getUserInput( "Start at regexp: " ) )
+        input = getUserInput( "Start at regexp: " )
+        if input
+          beginning = Regexp.new input
+        end
       end
-      if ending.nil?
-        ending = Regexp.new( getUserInput( "End before regexp: " ) )
+      if beginning and ending.nil?
+        input = getUserInput( "End before regexp: " )
+        if input
+          ending = Regexp.new input
+        end
       end
-      @current_buffer.select( beginning, ending, including_ending )
+      if beginning and ending
+        @current_buffer.select( beginning, ending, including_ending )
+      end
     end
 
     def scrollDown
