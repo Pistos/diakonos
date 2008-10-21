@@ -1156,7 +1156,7 @@ class Diakonos
             retval = @macro_input_history.shift
         else
             retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
-            if @macro_history != nil
+            if @macro_history
                 @macro_input_history.push retval
             end
             setILine
@@ -2095,7 +2095,7 @@ class Diakonos
         end
       end
       
-      docs
+      docs.sort { |a,b| a.gsub( /^# (?:an?|the) */i, '# ' ) <=> b.gsub( /^# (?:an?|the) */i, '# ' ) }
     end
     
     def open_help_document( selected_string )
@@ -2115,7 +2115,7 @@ class Diakonos
         prefill,
         @help_tags
       ) { |input|
-        next if input.length < 3
+        next if input.length < 3 and input[ 0..0 ] != '/'
         
         matching_docs = matching_help_documents( input )
         with_list_file do |list|
@@ -2131,7 +2131,7 @@ class Diakonos
       when /\|/
         open_help_document selected
       when nil
-        # Do nothing
+        # Help search aborted; do nothing
       else
         # Not a selected help document
         if matching_docs.nil? or matching_docs.empty?

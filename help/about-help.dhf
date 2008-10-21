@@ -8,7 +8,8 @@ document, and press Enter to read it.
 If you're not sure what keywords to type, you can type a partial word and
 press <Tab> to see a list of tags that start with what you typed.  Or,
 advanced users can prefix the search with a slash (/) and a full-document,
-regular expression search will be performed.
+regular expression search will be performed.  Type a slash by itself to see a
+list of all help documents.
 
 The documentation is written using the default key chords and sequences.  As
 such, please be aware that the documentation may not correspond to your
