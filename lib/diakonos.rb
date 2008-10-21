@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 16, 2008'
+    LAST_MODIFIED = 'October 18, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -1156,7 +1156,7 @@ class Diakonos
             retval = @macro_input_history.shift
         else
             retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
-            if @macro_history != nil
+            if @macro_history
                 @macro_input_history.push retval
             end
             setILine
@@ -2077,18 +2077,25 @@ class Diakonos
     
     def matching_help_documents( str )
       docs = []
+
+      if str =~ %r{^/(.+)$}
+        regexp = $1
+        files = Dir[ "#{@help_dir}/*" ].select{ |f|
+          File.open( f ) { |io| io.grep( /#{regexp}/i ) }.any?
+        }
+      else
+        terms = str.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
+        file_grep = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
+        files = file_grep.split( /\s+/ )
+      end
       
-      terms = str.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
-        
-      file_grep = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
-      files = file_grep.split( /\s+/ )
       files.each do |file|
         File.open( file ) do |f|
           docs << ( "%-300s | %s" % [ f.gets.strip, file ] )
         end
       end
       
-      docs
+      docs.sort { |a,b| a.gsub( /^# (?:an?|the) */i, '# ' ) <=> b.gsub( /^# (?:an?|the) */i, '# ' ) }
     end
     
     def open_help_document( selected_string )
@@ -2108,7 +2115,7 @@ class Diakonos
         prefill,
         @help_tags
       ) { |input|
-        next if input.length < 3
+        next if input.length < 3 and input[ 0..0 ] != '/'
         
         matching_docs = matching_help_documents( input )
         with_list_file do |list|
@@ -2124,7 +2131,7 @@ class Diakonos
       when /\|/
         open_help_document selected
       when nil
-        # Do nothing
+        # Help search aborted; do nothing
       else
         # Not a selected help document
         if matching_docs.nil? or matching_docs.empty?
@@ -2569,12 +2576,20 @@ class Diakonos
     
     def select_block( beginning = nil, ending = nil, including_ending = true )
       if beginning.nil?
-        beginning = Regexp.new( getUserInput( "Start at regexp: " ) )
+        input = getUserInput( "Start at regexp: " )
+        if input
+          beginning = Regexp.new input
+        end
       end
-      if ending.nil?
-        ending = Regexp.new( getUserInput( "End before regexp: " ) )
+      if beginning and ending.nil?
+        input = getUserInput( "End before regexp: " )
+        if input
+          ending = Regexp.new input
+        end
       end
-      @current_buffer.select( beginning, ending, including_ending )
+      if beginning and ending
+        @current_buffer.select( beginning, ending, including_ending )
+      end
     end
 
     def scrollDown
