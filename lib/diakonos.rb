@@ -2077,11 +2077,18 @@ class Diakonos
     
     def matching_help_documents( str )
       docs = []
+
+      if str =~ %r{^/(.+)$}
+        regexp = $1
+        files = Dir[ "#{@help_dir}/*" ].select{ |f|
+          File.open( f ) { |io| io.grep( /#{regexp}/i ) }.any?
+        }
+      else
+        terms = str.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
+        file_grep = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
+        files = file_grep.split( /\s+/ )
+      end
       
-      terms = str.gsub( /[^a-zA-Z0-9-]/, ' ' ).split.join( '|' )
-        
-      file_grep = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
-      files = file_grep.split( /\s+/ )
       files.each do |file|
         File.open( file ) do |f|
           docs << ( "%-300s | %s" % [ f.gets.strip, file ] )
