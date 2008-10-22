@@ -30,7 +30,8 @@ git_proc = Proc.new do |buffer|
       nil
     )
   end
+  
 end
 
-$diakonos.registerProc( git_proc, :after_open )
-$diakonos.registerProc( git_proc, :after_buffer_switch )
+$diakonos.register_proc( git_proc, :after_open )
+$diakonos.register_proc( git_proc, :after_buffer_switch )

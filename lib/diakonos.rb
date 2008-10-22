@@ -756,8 +756,8 @@ class Diakonos
         @debug.flush
     end
     
-    def registerProc( proc, hook_name, priority = 0 )
-        @hooks[ hook_name ] << { :proc => proc, :priority => priority }
+    def register_proc( the_proc, hook_name, priority = 0 )
+        @hooks[ hook_name ] << { :proc => the_proc, :priority => priority }
     end
     
     def clearNonMovementFlag
@@ -2333,17 +2333,18 @@ class Diakonos
     end
   
     def openFileAsk
+      prefill = ''
+      
       if @current_buffer
         if @current_buffer.current_line =~ %r{/} and @current_buffer.current_line =~ %r{[/\w.]+}
-          file = getUserInput( "Filename: ", @rlh_files, $& )
+          prefill = $&
         elsif @current_buffer.name
-          path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-          file = getUserInput( "Filename: ", @rlh_files, path )
+          prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
         end
       end
-      if file.nil?
-        file = getUserInput( "Filename: ", @rlh_files )
-      end
+      
+      file = getUserInput( "Filename: ", @rlh_files, prefill )
+      
       if file
         openFile file
         updateStatusLine

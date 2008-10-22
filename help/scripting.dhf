@@ -80,9 +80,9 @@ directory.  Example hook code can be seen at
 Your code should create a Proc object (possibly with a block parameter,
 depending on the hook), and then register it with the following syntax:
 
-  $diakonos.registerProc( my_proc, :after_open )
+  $diakonos.register_proc( my_proc, :after_open )
 
-The registerProc method takes an optional third parameter: an integer
+The register_proc method takes an optional third parameter: an integer
 indicating the relative priority for your Proc.  Lower numbers are used for
 greater priority (like the UNIX "niceness" level).  Procs registered for the
 same hook are executed in order of priority.
