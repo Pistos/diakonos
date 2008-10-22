@@ -1,0 +1,17 @@
+# Resizing Diakonos
+
+In most cases, Diakonos can automatically detect when the wrapping terminal or
+console changes size (due to a window resize or font change), and redraw
+itself.
+
+On some systems, however, Diakonos cannot handle a terminal resize.  If your
+system exhibits problems after resizing, try this bash command before starting
+Diakonos:
+
+  shopt -s checkwinsize
+
+Read more about the shopt built-in command here:
+  
+  http://linux.about.com/library/cmd/blcmdl1_shopt.htm
+
+Tags: bash size resize resizing window terminal console change draw redraw problem problems troubleshoot troubleshooting issue issues
