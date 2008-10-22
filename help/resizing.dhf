@@ -14,4 +14,6 @@ Read more about the shopt built-in command here:
   
   http://linux.about.com/library/cmd/blcmdl1_shopt.htm
 
+Pressing <Ctrl-Alt-R> will force Diakonos to redraw itself.
+  
 Tags: bash size resize resizing window terminal console change draw redraw problem problems troubleshoot troubleshooting issue issues
