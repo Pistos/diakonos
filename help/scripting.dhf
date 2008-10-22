@@ -55,6 +55,12 @@ Diakonos starts up.  Any valid Ruby code can be placed there.  Advanced users
 can even manipulate Diakonos itself by referencing the $diakonos global
 variable.
 
+After the startup scripts are require-d, Diakonos evaluates any Ruby code given
+with the -e command line argument.  Here is an example of using the -e argument
+to initiate a search on startup:
+
+  diakonos -e 'find "down", CASE_SENSITIVE, "search expression"' filename
+
 ## Hooks
 
 Diakonos provides a means for you to execute arbitrary Ruby code when certain
