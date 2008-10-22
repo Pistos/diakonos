@@ -756,8 +756,8 @@ class Diakonos
         @debug.flush
     end
     
-    def registerProc( proc, hook_name, priority = 0 )
-        @hooks[ hook_name ] << { :proc => proc, :priority => priority }
+    def register_proc( the_proc, hook_name, priority = 0 )
+        @hooks[ hook_name ] << { :proc => the_proc, :priority => priority }
     end
     
     def clearNonMovementFlag
