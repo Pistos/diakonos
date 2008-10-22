@@ -1,4 +1,4 @@
-proc = Proc.new do |buffer|
+git_proc = Proc.new do |buffer|
   if buffer and buffer.name
     dir = File.dirname( File.expand_path( buffer.name ) )
   else
@@ -32,5 +32,5 @@ proc = Proc.new do |buffer|
   end
 end
 
-$diakonos.registerProc( proc, :after_open )
-$diakonos.registerProc( proc, :after_buffer_switch )
+$diakonos.registerProc( git_proc, :after_open )
+$diakonos.registerProc( git_proc, :after_buffer_switch )
