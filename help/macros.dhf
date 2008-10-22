@@ -1,0 +1,27 @@
+# Macro Recording and Playback
+
+Diakonos has a macro system that allows you to record nearly any series of
+commands and play them back.  At the same time, advanced users may wish to
+consider employing Diakonos' powerful Ruby scripting capabilities to leverage
+their programming knowledge to manipulate text more directly.
+
+## Recording a Macro
+
+If necessary, move the cursor to the desired place before beginning to record.
+Press <Alt-M> to begin recording a macro.  Type any sequence of keystrokes or
+keychords.  When you are finished entering the sequence, press <Alt-M> again
+to stop recording.
+
+## Playing the Recorded Macro
+
+After a macro is recorded, move the cursor to the spot where you wish to begin
+executing the macro.  Press <F4> to play the recorded macro.
+
+## Saving Macros
+
+Diakonos currently has no facility to save macros for future playback.  If you
+want this feature in Diakonos, please visit the Diakonos technical support
+channel and voice your request.
+
+
+Tags: macro macros record recording play playback playing script scripting key keys keystroke keystrokes command commands function functions

@@ -1,0 +1,84 @@
+# Scripting Diakonos
+
+Diakonos has several features and mechanisms that allow you to manipulate it
+using Ruby, a beautiful yet powerful programming language
+(http://www.ruby-lang.org).
+
+## Working with Selected Text
+
+Select the text you wish to operate on (by pressing <Ctrl-space> and moving
+the cursor).  You can then work with the text in one of three ways:
+
+1. as a contiguous string of characters
+2. iterating over each line
+3. as an array of lines
+
+### As a String
+
+Press <Shift-F7> to work with the text as if it were one big string (multiple
+for Ruby code that uses the variable "str".  For example, entering
+
+  str.upcase
+
+will convert the selected text to uppercase.
+
+### Iterating Over Each Line
+
+Press <F7> to iterate over each line of selected text.  You will be prompted
+for Ruby code which will act as the body of a Ruby block which uses the
+variable "line" and evaluates to a String.  For example:
+
+  line.strip.squeeze( ' ' )  
+
+will strip off whitespace from the beginning and end of each line and then
+collapse all consecutive sequences of spaces into single spaces.
+
+### As an Array of Lines
+
+Press <Alt-F7> to work with the text as if it were an Array of lines.  You
+will be prompted for Ruby code which operates on the array variable "lines".
+For example:
+
+  lines.find_all { |l| /foo/ === l }
+  
+will replace the selected lines with the lines that match the regular expression
+/foo/.
+
+  lines.sort
+  
+will sort the selected lines.
+
+## Startup Scripts
+
+Any file placed in ~/.diakonos/scripts/ will be require-d (as Ruby code) when
+Diakonos starts up.  Any valid Ruby code can be placed there.  Advanced users
+can even manipulate Diakonos itself by referencing the $diakonos global
+variable.
+
+## Hooks
+
+Diakonos provides a means for you to execute arbitrary Ruby code when certain
+events occur.  In other words, you can "hook" code onto the events.  At
+present, the following hooks are available:
+
+  :after_buffer_switch
+  :after_open
+  :after_save
+  :after_startup
+
+To hook onto one of these events, place code into the ~/.diakonos/scripts/
+directory.  Example hook code can be seen at
+
+  http://github.com/Pistos/diakonos/tree/master/scripts/git-branch.rb
+
+Your code should create a Proc object (possibly with a block parameter,
+depending on the hook), and then register it with the following syntax:
+
+  $diakonos.registerProc( my_proc, :after_open )
+
+The registerProc method takes an optional third parameter: an integer
+indicating the relative priority for your Proc.  Lower numbers are used for
+greater priority (like the UNIX "niceness" level).  Procs registered for the
+same hook are executed in order of priority.
+
+Tags: script scripts scripting program programming language ruby select selected text manipulate manipulating operate operating change changing work working line lines adjust adjusting hook hooks hooking proc procedure block trigger triggers method function functions start up startup
