@@ -1,0 +1,54 @@
+# Scripting Diakonos
+
+Diakonos has several features and mechanisms that allow you to manipulate it
+using Ruby, a beautiful yet powerful programming language
+(http://www.ruby-lang.org).
+
+## Working with Selected Text
+
+Select the text you wish to operate on (by pressing <Ctrl-space> and moving
+the cursor).  You can then work with the text in one of three ways:
+
+1. as a contiguous string of characters
+2. iterating over each line
+3. as an array of lines
+
+### As a String
+
+Press <Shift-F7> to work with the text as if it were one big string (multiple
+for Ruby code that uses the variable "str".  For example, entering
+
+  str.upcase
+
+will convert the selected text to uppercase.
+
+### Iterating Over Each Line
+
+Press <F7> to iterate over each line of selected text.  You will be prompted
+for Ruby code which will act as the body of a Ruby block which uses the
+variable "line" and evaluates to a String.  For example:
+
+  line.strip.squeeze( ' ' )  
+
+will strip off whitespace from the beginning and end of each line and then
+collapse all consecutive sequences of spaces into single spaces.
+
+### As an Array of Lines
+
+Press <Alt-F7> to work with the text as if it were an Array of lines.  You
+will be prompted for Ruby code which operates on the array variable "lines".
+For example:
+
+  lines.find_all { |l| /foo/ === l }
+  
+will replace the selected lines with the lines that match the regular expression
+/foo/.
+
+  lines.sort
+  
+will sort the selected lines.
+
+## Hooks
+
+
+Tags: script scripts scripting program programming language ruby select selected text manipulate manipulating operate operating change changing work working line lines adjust adjusting
