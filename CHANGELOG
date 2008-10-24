@@ -12,6 +12,7 @@ Diakonos Changelog
 - comment_out and uncomment functions added.
 - comment_string and comment_close_string settings added.
 - Numerous small fixes, adjustments and refactorings.
+- Added -m (--open-matching) command line argument.
 
 0.8.5
 
