@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 22, 2008'
+    LAST_MODIFIED = 'October 24, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -289,37 +289,46 @@ class Diakonos
     end
 
     def parseOptions( argv )
+      @post_load_script = ""
         while argv.length > 0
             arg = argv.shift
             case arg
-                when '-h', '--help'
-                    printUsage
-                    exit 1
-                when '-ro'
-                    filename = argv.shift
-                    if filename == nil
-                        printUsage
-                        exit 1
-                    else
-                        @read_only_files.push filename
-                    end
-                when '-c', '--config'
-                    @config_filename = argv.shift
-                    if @config_filename == nil
-                        printUsage
-                        exit 1
-                    end
-                when '-e', '--execute'
-                    post_load_script = argv.shift
-                    if post_load_script == nil
-                        printUsage
-                        exit 1
-                    else
-                        @post_load_script = post_load_script
-                    end                        
-                else
-                    # a name of a file to open
-                    @files.push arg
+            when '-h', '--help'
+              printUsage
+              exit 1
+            when '-ro'
+              filename = argv.shift
+              if filename == nil
+                printUsage
+                exit 1
+              else
+                @read_only_files.push filename
+              end
+            when '-c', '--config'
+              @config_filename = argv.shift
+              if @config_filename == nil
+                printUsage
+                exit 1
+              end
+            when '-e', '--execute'
+              post_load_script = argv.shift
+              if post_load_script.nil?
+                printUsage
+                exit 1
+              else
+                @post_load_script << "\n#{post_load_script}"
+              end                        
+            when '-m', '--open-matching'
+              regexp = argv.shift
+              files = `egrep -rl '#{regexp}' *`.split( /\n/ )
+              if files.any?
+                @files.concat files
+                script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
+                @post_load_script << script
+              end              
+            else
+              # a name of a file to open
+              @files.push arg
             end
         end
     end
@@ -328,9 +337,10 @@ class Diakonos
     def printUsage
         puts "Usage: #{$0} [options] [file] [file...]"
         puts "\t--help\tDisplay usage"
-        puts "\t-ro <file>\tLoad file as read-only"
         puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
         puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
+        puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
+        puts "\t-ro <file>\tLoad file as read-only"
     end
     protected :printUsage
     
