@@ -1,0 +1,23 @@
+# Speeding Up Diakonos
+
+Diakonos is known to run a little slower on some less-powerful systems.  Here
+are some of the things you can do to speed up Diakonos.  Each one involves a
+tradeoff between editor features and speed.  You don't need to enact them all,
+just do whatever you need or can sacrifice.
+
+- Turn off the context line ("content.visible false" in the config file).
+
+- After a successful find, unhighlight the found items, if you don't need to
+see them any more (Ctrl-Alt-U by default).
+
+- Turn off syntax highlighting by specifying a file type of "text"
+(Alt-Shift-T to specify the type).  Alternatively, just reduce the number or
+complexity of highlight definitions in the language you are using.  More
+highlight definitions means more work for Diakonos during display.
+
+- If you are using a graphical desktop (such as KDE or Gnome), change the size
+of the window to something smaller, since this will mean fewer characters for
+Diakonos to redraw.  Equivalently, for raw console (TTY) users, try a larger
+font size for a similar effect.
+
+Tags: slow diakonos speed speed-up speedup fast faster draw redraw screen font context line quick quicker syntax highlight highlighting
