@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 24, 2008'
+    LAST_MODIFIED = 'October 27, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -206,7 +206,8 @@ module Diakonos
         'uncomment',
         'undo',
         'unindent',
-        'unundo'
+        'unundo',
+        'wrap_paragraph',
     ]
     LANG_TEXT = 'text'
     
@@ -696,7 +697,7 @@ class Diakonos
                     @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
                 when "status.vars"
                     @settings[ command ] = arg.split( /\s+/ )
-                when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.tabsize$/
+                when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/
                     @settings[ command ] = arg.to_i
                 when "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
                         "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback"
@@ -2841,6 +2842,10 @@ class Diakonos
 
     def unundo( buffer = @current_buffer )
         buffer.unundo
+    end
+    
+    def wrap_paragraph
+      @current_buffer.wrap_paragraph
     end
 end
 

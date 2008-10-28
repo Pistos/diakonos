@@ -1797,38 +1797,70 @@ class Buffer
     end
 
     def undo
-        if @current_buffer_state < @buffer_states.length - 1
-            @current_buffer_state += 1
-            @lines = @buffer_states[ @current_buffer_state ]
-            cursorTo( @cursor_states[ @current_buffer_state - 1 ][ 0 ], @cursor_states[ @current_buffer_state - 1 ][ 1 ] )
-            @diakonos.setILine "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-            setModified
-        end
+      if @current_buffer_state < @buffer_states.length - 1
+        @current_buffer_state += 1
+        @lines = @buffer_states[ @current_buffer_state ]
+        cursorTo( @cursor_states[ @current_buffer_state - 1 ][ 0 ], @cursor_states[ @current_buffer_state - 1 ][ 1 ] )
+        @diakonos.setILine "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
+        setModified
+      end
     end
 
     # Since redo is a Ruby keyword...
     def unundo
-        if @current_buffer_state > 0
-            @current_buffer_state += -1
-            @lines = @buffer_states[ @current_buffer_state ]
-            cursorTo( @cursor_states[ @current_buffer_state ][ 0 ], @cursor_states[ @current_buffer_state ][ 1 ] )
-            @diakonos.setILine "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-            setModified
+      if @current_buffer_state > 0
+        @current_buffer_state += -1
+        @lines = @buffer_states[ @current_buffer_state ]
+        cursorTo( @cursor_states[ @current_buffer_state ][ 0 ], @cursor_states[ @current_buffer_state ][ 1 ] )
+        @diakonos.setILine "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
+        setModified
+      end
+    end
+    
+    def wrap_paragraph
+      start_row = end_row = @last_row
+      until start_row == 0 || @lines[ start_row - 1 ].strip == ''
+        start_row -= 1
+      end
+      until end_row == @lines.size || @lines[ end_row ].strip == ''
+        end_row += 1
+      end
+
+      lines = []
+      line = ''
+      words = @lines[ start_row...end_row ].join( ' ' ).scan( /\S+/ )
+      words.each do |word|
+        if word =~ /^[a-z']+[.!?]$/
+          word = "#{word} "
         end
+        if line.length + word.length + 1 > ( @settings[ "lang.#{@language}.wrap_margin" ] || 80 )
+          lines << line.strip
+          line = ''
+        end
+        line << " #{word}"
+      end
+      line.strip!
+      if not line.empty?
+        lines << line
+      end
+      if @lines[ start_row...end_row ] != lines
+        @lines[ start_row...end_row ] = lines
+        setModified
+      end
     end
 
     def goToLine( line = nil, column = nil )
-        cursorTo( line || @last_row, column || 0, DO_DISPLAY )
+      cursorTo( line || @last_row, column || 0, DO_DISPLAY )
     end
 
     def goToNextBookmark
-        cur_pos = Bookmark.new( self, @last_row, @last_col )
-        next_bm = @bookmarks.find do |bm|
-            bm > cur_pos
-        end
-        if next_bm != nil
-            cursorTo( next_bm.row, next_bm.col, DO_DISPLAY )
-        end
+      cur_pos = Bookmark.new( self, @last_row, @last_col )
+      next_bm = @bookmarks.find do |bm|
+        bm > cur_pos
+      end
+      if next_bm
+        cursorTo( next_bm.row, next_bm.col, DO_DISPLAY )
+      end
     end
 
     def goToPreviousBookmark

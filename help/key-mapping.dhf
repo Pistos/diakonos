@@ -35,7 +35,7 @@ seen when you query what <Ctrl-S> does:
   ctrl+s  ->  saveFile(  )
 
 This indicates that the keychord (ctrl+s) executes the saveFile function.  The
-empty parentheses tells us that the saveFile function is not given any
+empty parentheses tell us that the saveFile function is not given any
 arguments.
 
 It is worth noting that some keys or chords may have strange-looking key
@@ -44,7 +44,7 @@ a single keycode, but rather a sequence, like "esc [ 1 ~".  There's nothing
 wrong with this, but you should be aware of it when customizing your keyboard
 layout.
 
-## What do I need to press to do _____?
+## What do I need to press to _____?
 
 One way to determine the current key mapping for a given feature or function
 is to press <F1> to enter the help system, and then type some search keywords
@@ -76,10 +76,10 @@ Here are a couple of examples.
 If you press <Alt-K> and then <Ctrl-D> and <Enter>, it will print the string
 "ctrl+d" into the current buffer.
 
-If you press <Alt-K> and then <Alt-L> and <Home>, it will print something like
-"esc l esc [ 1 ~" into the current buffer (the exact string may vary depending
-on your terminal).  Use these strings to configure Diakonos' key mapping (see
-below).
+If you press <Alt-K> and then <Alt-L> and <Home>, and press <Enter>, it will
+print something like "esc l esc [ 1 ~" into the current buffer (the exact
+string may vary depending on your terminal).  Use these strings to configure
+Diakonos' key mapping (see below).
 
 ## Setting a key mapping
 
