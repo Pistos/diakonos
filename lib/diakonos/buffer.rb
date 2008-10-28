@@ -1830,6 +1830,9 @@ class Buffer
       line = ''
       words = @lines[ start_row...end_row ].join( ' ' ).scan( /\S+/ )
       words.each do |word|
+        if word =~ /^[a-z']+[.!?]$/
+          word = "#{word} "
+        end
         if line.length + word.length + 1 > ( @settings[ "lang.#{@language}.wrap_margin" ] || 80 )
           lines << line.strip
           line = ''

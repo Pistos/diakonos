@@ -1,11 +1,11 @@
 # Opening a File
 
-Press <Ctrl-O> to open a file in Diakonos.  You will be presented with a
-prompt in which you can type in the path to the file you wish to open.  When
-entering a file path, you can use the <Tab> key to complete partial paths,
-just as you can in your shell.  Additionally, if a list of files is presented
-after tab-completion, you can use the <Up> and <Down> arrow keys to select one
-of the listed files, and press <Enter> to open the selected file.
+Press <Ctrl-O> to open a file in Diakonos.  You will be presented with a prompt
+in which you can type in the path to the file you wish to open.  When entering
+a file path, you can use the <Tab> key to complete partial paths, just as you
+can in your shell.  Additionally, if a list of files is presented after
+tab-completion, you can use the <Up> and <Down> arrow keys to select one of the
+listed files, and press <Enter> to open the selected file.
 
 You can also open files by passing one or more filenames as arguments to the
 "diakonos" command.  For example:
