@@ -1,0 +1,19 @@
+# The Cursor Stack
+
+The cursor stack is just like the Back and Forward functionality of your web
+browser.  Diakonos semi-intelligently keeps track of the places in the current
+buffer where you do work.  Using the cursorReturn command (<Ctrl-J>), you can
+return to previous work areas.  Use <Ctrl-L> to go forward through the stack.
+
+Here is an example of a common scenario: 
+
+1. you are editing in some location
+2. you need to examine some other code (such as the definition of a method)
+   elsewhere in the file
+3. you page through the file, or search for text
+4. after examining the code there, possibly copying material to the clipboard,
+5. you press <Ctrl-J> and return to the exact location you were working in prior
+   to your search
+
+
+Tags: cursor stack move movement jump jumping moving remember previous position next back forward browser web bookmark bookmarks bookmarking webbrowser page file search return clipboard
