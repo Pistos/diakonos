@@ -118,7 +118,7 @@ module Diakonos
         'closeFile',
         'close_code',
         'collapseWhitespace',
-        'columnize_selection',
+        'columnize',
         'comment_out',
         'copySelection',
         'copy_selection_to_klipper',
@@ -1702,8 +1702,8 @@ class Diakonos
       @current_buffer.collapseWhitespace
     end
     
-    def columnize_selection
-      @current_buffer.columnize_selection
+    def columnize
+      @current_buffer.columnize
     end
     
     def comment_out
