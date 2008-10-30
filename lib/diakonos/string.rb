@@ -57,22 +57,22 @@ class String
             when /^f(\d\d?)$/
                 retval = Curses::KEY_F0 + $1.to_i
             when /^ctrl\+[a-gi-z]$/
-                retval = downcase[ -1 ] - 96
+                retval = downcase[ -1 ].ord - 96
             when /^ctrl\+h$/
                 retval = Diakonos::CTRL_H
             when /^alt\+(.)$/
-                retval = [ Diakonos::ESCAPE, $1[ 0 ] ]
+                retval = [ Diakonos::ESCAPE, $1[ 0 ].ord ]
             when /^ctrl\+alt\+(.)$/, /^alt\+ctrl\+(.)$/
-                retval = [ Diakonos::ESCAPE, downcase[ -1 ] - 96 ]
+                retval = [ Diakonos::ESCAPE, downcase[ -1 ].ord - 96 ]
             when /^keycode(\d+)$/
                 retval = $1.to_i
             when /^.$/
-                retval = self[ 0 ]
+                retval = self[ 0 ].ord
         end
         if retval.class != Array
             retval = [ retval ]
         end
-        return retval
+        retval
     end
 
     def toFormatting
