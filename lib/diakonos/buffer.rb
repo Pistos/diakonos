@@ -755,6 +755,10 @@ class Buffer
       end
     end
     
+    def columnize_selection
+      
+    end
+    
     def comment_out
       takeSnapshot
       selection = selection_mark

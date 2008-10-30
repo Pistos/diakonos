@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 27, 2008'
+    LAST_MODIFIED = 'October 30, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -118,6 +118,7 @@ module Diakonos
         'closeFile',
         'close_code',
         'collapseWhitespace',
+        'columnize_selection',
         'comment_out',
         'copySelection',
         'copy_selection_to_klipper',
@@ -1698,7 +1699,11 @@ class Diakonos
     end
     
     def collapseWhitespace
-        @current_buffer.collapseWhitespace
+      @current_buffer.collapseWhitespace
+    end
+    
+    def columnize_selection
+      @current_buffer.columnize_selection
     end
     
     def comment_out
@@ -1706,8 +1711,8 @@ class Diakonos
     end
 
     def copySelection
-        @clipboard.addClip @current_buffer.copySelection
-        removeSelection
+      @clipboard.addClip @current_buffer.copySelection
+      removeSelection
     end
 
     def copy_selection_to_klipper
