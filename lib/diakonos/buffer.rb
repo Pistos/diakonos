@@ -784,10 +784,19 @@ class Buffer
       
       lines.each do |line|
         old_line = line.dup
-        if line =~ /^(.+?)((?:#{delimiter.source}).*)$/
-          line.replace(
-            ( "%-#{column_width}s" % $1 ) + $2
-          )
+        if line =~ /^(.+?)(#{delimiter.source})(.*)$/
+          pre = $1
+          del = $2
+          post = $3
+          if pre !~ /\s$/
+            del = " #{del}"
+          end
+          if post !~ /^\s/
+            del = "#{del} "
+          end
+          del.sub!( /^\s+/, ' ' * num_spaces_padding )
+          del.sub!( /\s+$/, ' ' * num_spaces_padding )
+          line.replace( ( "%-#{column_width}s" % pre ) + del + post )
         end
         one_modified ||= ( line != old_line )
       end
