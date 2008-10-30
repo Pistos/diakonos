@@ -772,13 +772,26 @@ class Buffer
     def columnize( delimiter = /=>?|:|,/, num_spaces_padding = 1 )
       takeSnapshot
       
+      lines = selected_lines
+      column_width = 0
+      lines.each do |line|
+        pos = ( line =~ delimiter )
+        column_width = [ pos, column_width ].max
+      end
+      
       padding = ' ' * num_spaces_padding
       one_modified = false
-      selected_lines.each do |line|
+      
+      lines.each do |line|
         old_line = line.dup
-        line.gsub! delimiter, "#{padding}\\0#{padding}"
+        if line =~ /^(.+?)((?:#{delimiter.source}).*)$/
+          line.replace(
+            ( "%-#{column_width}s" % $1 ) + $2
+          )
+        end
         one_modified ||= ( line != old_line )
       end
+      
       if one_modified
         setModified
       end
