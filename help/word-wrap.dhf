@@ -1,0 +1,17 @@
+# Word Wrap
+
+Press <Alt-W> and Diakonos will perform basic word wrapping of the paragraph
+under the cursor.  Paragraphs are considered to be delineated by empty lines
+before and after.
+
+The wrap_margin setting of a language controls the column at which word
+wrapping will occur.  For example, to change the margin for text files, set
+this setting:
+
+lang.text.wrap_margin   80
+
+where 80 is the maximum line length allowed.
+
+Diakonos does not have any facility to do soft wrapping.
+
+Tags: word wrap wrapping hard soft cr carriage return paragraph format formatting margin margins column line length conf config configure configuring set setting settings
