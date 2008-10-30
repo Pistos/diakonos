@@ -14,6 +14,7 @@ Diakonos Changelog
 - Numerous small fixes, adjustments and refactorings.
 - Added -m (--open-matching) command line argument.
 - wrap_paragraph function and wrap_margin setting added for hard wrapping text.
+- columnize function and column_delimiter setting added.
 
 0.8.5
 

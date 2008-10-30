@@ -691,7 +691,9 @@ class Diakonos
                 when "context.separator", "status.left", "status.right", "status.filler",
                         "status.modified_str", "status.unnamed_str", "status.selecting_str",
                         "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
-                        /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/, "view.nonfilelines.character",
+                        /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
+                        /^lang\.(.+?)\.column_delimiters$/,
+                        "view.nonfilelines.character",
                         'interaction.blink_string', 'diff_command'
                     @settings[ command ] = arg
                 when /^lang\..+?\.comment_(?:close_)?string$/
@@ -1702,8 +1704,17 @@ class Diakonos
       @current_buffer.collapseWhitespace
     end
     
-    def columnize
-      @current_buffer.columnize
+    def columnize( delimiter = nil, num_spaces_padding = 1 )
+      if delimiter.nil?
+        delimiter = getUserInput(
+          "Column delimiter (regexp): ",
+          @rlh_general,
+          @settings[ "lang.#{@current_buffer.original_language}.column_delimiters" ] || ''
+        )
+      end
+      if delimiter and num_spaces_padding
+        @current_buffer.columnize Regexp.new( delimiter ), num_spaces_padding
+      end
     end
     
     def comment_out
