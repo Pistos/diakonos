@@ -755,8 +755,7 @@ class Buffer
       end
     end
     
-    def comment_out
-      takeSnapshot
+    def selected_lines
       selection = selection_mark
       if selection
         if selection.end_col == 0
@@ -764,12 +763,53 @@ class Buffer
         else
           end_row = selection.end_row
         end
-        lines = @lines[ selection.start_row..end_row ]
+        @lines[ selection.start_row..end_row ]
       else
-        lines = [ @lines[ @last_row ] ]
+        [ @lines[ @last_row ] ]
       end
-      one_modified = false
+    end
+    
+    def columnize( delimiter = /=>?|:|,/, num_spaces_padding = 1 )
+      takeSnapshot
+      
+      lines = selected_lines
+      column_width = 0
       lines.each do |line|
+        pos = ( line =~ delimiter )
+        column_width = [ pos, column_width ].max
+      end
+      
+      padding = ' ' * num_spaces_padding
+      one_modified = false
+      
+      lines.each do |line|
+        old_line = line.dup
+        if line =~ /^(.+?)(#{delimiter.source})(.*)$/
+          pre = $1
+          del = $2
+          post = $3
+          if pre !~ /\s$/
+            del = " #{del}"
+          end
+          if post !~ /^\s/
+            del = "#{del} "
+          end
+          del.sub!( /^\s+/, ' ' * num_spaces_padding )
+          del.sub!( /\s+$/, ' ' * num_spaces_padding )
+          line.replace( ( "%-#{column_width}s" % pre ) + del + post )
+        end
+        one_modified ||= ( line != old_line )
+      end
+      
+      if one_modified
+        setModified
+      end
+    end
+    
+    def comment_out
+      takeSnapshot
+      one_modified = false
+      selected_lines.each do |line|
         old_line = line.dup
         line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
         line << @settings[ "lang.#{@language}.comment_close_string" ].to_s
@@ -782,21 +822,10 @@ class Buffer
     
     def uncomment
       takeSnapshot
-      selection = selection_mark
-      if selection
-        if selection.end_col == 0
-          end_row = selection.end_row - 1
-        else
-          end_row = selection.end_row
-        end
-        lines = @lines[ selection.start_row..end_row ]
-      else
-        lines = [ @lines[ @last_row ] ]
-      end
       comment_string = Regexp.escape( @settings[ "lang.#{@language}.comment_string" ].to_s )
       comment_close_string = Regexp.escape( @settings[ "lang.#{@language}.comment_close_string" ].to_s )
       one_modified = false
-      lines.each do |line|
+      selected_lines.each do |line|
         old_line = line.dup
         line.gsub!( /^(\s*)#{comment_string}/, "\\1" )
         line.gsub!( /#{comment_close_string}$/, '' )
