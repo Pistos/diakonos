@@ -161,7 +161,7 @@ class String
     end
     
     def to_a
-        return [ self ]
+        [ self ]
     end
 
     def to_b
