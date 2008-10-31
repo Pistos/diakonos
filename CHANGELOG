@@ -11,10 +11,10 @@ Diakonos Changelog
 - Sample script for git branch status variable added.
 - comment_out and uncomment functions added.
 - comment_string and comment_close_string settings added.
-- Numerous small fixes, adjustments and refactorings.
 - Added -m (--open-matching) command line argument.
 - wrap_paragraph function and wrap_margin setting added for hard wrapping text.
 - columnize function and column_delimiter setting added.
+- Numerous small fixes, adjustments and refactorings.
 
 0.8.5
 
