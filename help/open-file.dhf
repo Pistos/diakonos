@@ -12,4 +12,10 @@ You can also open files by passing one or more filenames as arguments to the
 
   diakonos ~/.diakonos/diakonos.conf
 
-Tags: open file new existing dir directory
+Diakonos can also open all files in a directory tree matching a regular
+expression, using the -m command line option:
+
+  cd ~/project
+  diakonos -m some_method_name
+
+Tags: open opening file files new existing dir directory regex regexes regexen regexp regexps regular expression expressions match matching grep
