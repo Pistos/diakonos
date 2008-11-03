@@ -776,7 +776,9 @@ class Buffer
       column_width = 0
       lines.each do |line|
         pos = ( line =~ delimiter )
-        column_width = [ pos, column_width ].max
+        if pos
+          column_width = [ pos, column_width ].max
+        end
       end
       
       padding = ' ' * num_spaces_padding
