@@ -47,8 +47,8 @@ require 'diakonos/readline'
 
 module Diakonos
 
-    VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 31, 2008'
+    VERSION = '0.8.7'
+    LAST_MODIFIED = 'November 2, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
