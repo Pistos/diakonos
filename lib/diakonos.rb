@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.6'
-    LAST_MODIFIED = 'October 30, 2008'
+    LAST_MODIFIED = 'October 31, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -1704,7 +1704,7 @@ class Diakonos
       @current_buffer.collapseWhitespace
     end
     
-    def columnize( delimiter = nil, num_spaces_padding = 1 )
+    def columnize( delimiter = nil, num_spaces_padding = 0 )
       if delimiter.nil?
         delimiter = getUserInput(
           "Column delimiter (regexp): ",
