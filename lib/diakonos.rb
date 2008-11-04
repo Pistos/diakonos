@@ -2377,7 +2377,7 @@ class Diakonos
       prefill = ''
       
       if @current_buffer
-        if @current_buffer.current_line =~ %r{/} and @current_buffer.current_line =~ %r{[/\w.]+}
+        if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
           prefill = $&
         elsif @current_buffer.name
           prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
