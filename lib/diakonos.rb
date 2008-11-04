@@ -165,6 +165,7 @@ module Diakonos
         'newFile',
         'openFile',
         'openFileAsk',
+        'open_matching_files',
         'operateOnEachLine',
         'operateOnLines',
         'operateOnString',
@@ -2391,6 +2392,31 @@ class Diakonos
         updateStatusLine
         updateContextLine
       end
+    end
+    
+    def open_matching_files( regexp = nil, search_root = nil )
+      regexp ||= getUserInput( "Regexp: ", @rlh_search )
+      return if regexp.nil?
+      
+      if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
+        prefill = $&
+      else
+        prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+      end
+      search_root ||= getUserInput( "Search within: ", @rlh_files, prefill )
+      return if search_root.nil?
+      
+      files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
+      if files.any?
+        if files.size > 1
+            choice = getChoice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
+            return if choice == CHOICE_NO
+        end
+        files.each do |f|
+          openFile f
+        end
+        find 'down', CASE_SENSITIVE, regexp
+      end              
     end
     
     def operateOnString(
