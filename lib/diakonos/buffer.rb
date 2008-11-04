@@ -128,7 +128,7 @@ class Buffer
         @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
         @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] or 4 )
         @indent_roundup = @settings[ "lang.#{@language}.indent.roundup" ].nil? ? true : @settings[ "lang.#{@language}.indent.roundup" ]
-        @indent_closers = @settings[ "lang.#{@language}.indent.closers" ].nil? ? true : @settings[ "lang.#{@language}.indent.closers" ]
+        @indent_closers = @settings[ "lang.#{@language}.indent.closers" ].nil? ? false : @settings[ "lang.#{@language}.indent.closers" ]
         @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or Curses::A_NORMAL )
         @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or Curses::A_REVERSE )
         @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
