@@ -821,7 +821,12 @@ class Diakonos
             hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
         end
 
-        setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   F1 for help  F12 to configure   Ctrl-Q to quit"
+        if ENV[ 'COLORTERM' ] == 'gnome-terminal'
+          help_key = 'Shift-F1'
+        else
+          help_key = 'F1'
+        end
+        setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
         
         num_opened = 0
         if @files.length == 0 and @read_only_files.length == 0
