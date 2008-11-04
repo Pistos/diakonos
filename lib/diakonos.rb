@@ -48,7 +48,7 @@ require 'diakonos/readline'
 module Diakonos
 
     VERSION = '0.8.7'
-    LAST_MODIFIED = 'November 2, 2008'
+    LAST_MODIFIED = 'November 4, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -258,6 +258,8 @@ class Diakonos
 
         @buffer_stack = Array.new
         @current_buffer = nil
+        @buffer_history = Array.new
+        @buffer_history_pointer = nil
         @bookmarks = Hash.new
         @macro_history = nil
         @macro_input_history = nil
@@ -1023,6 +1025,13 @@ class Diakonos
       switched
     end
     protected :switchTo
+    
+    def remember_buffer( buffer )
+      if @buffer_history.last != buffer
+        @buffer_history << buffer
+        @buffer_history_pointer = @buffer_history.size - 1
+      end
+    end
     
     def set_status_variable( identifier, value )
       @status_vars[ identifier ] = value
@@ -2794,13 +2803,31 @@ class Diakonos
     end
 
     def switchToNextBuffer
-        buffer_number = bufferToNumber( @current_buffer )
-        switchToBufferNumber( buffer_number + 1 )
+      if @buffer_history.any?
+        @buffer_history_pointer += 1
+        if @buffer_history_pointer >= @buffer_history_pointer.size
+          @buffer_history_pointer = @buffer_history_pointer.size - 1
+          switchToBufferNumber( bufferToNumber( @current_buffer ) + 1 )
+        else
+          switchTo @buffer_history[ @buffer_history_pointer ]
+        end
+      else
+        switchToBufferNumber( bufferToNumber( @current_buffer ) + 1 )
+      end
     end
 
     def switchToPreviousBuffer
-        buffer_number = bufferToNumber( @current_buffer )
-        switchToBufferNumber( buffer_number - 1 )
+      if @buffer_history.any?
+        @buffer_history_pointer -= 1
+        if @buffer_history_pointer < 0
+          @buffer_history_pointer = 0
+          switchToBufferNumber( bufferToNumber( @current_buffer ) - 1 )
+        else
+          switchTo @buffer_history[ @buffer_history_pointer ]
+        end
+      else
+        switchToBufferNumber( bufferToNumber( @current_buffer ) - 1 )
+      end
     end
 
     def toggleBookmark

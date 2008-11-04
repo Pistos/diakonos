@@ -1082,9 +1082,11 @@ class Buffer
             end
             @diakonos.updateStatusLine
             @diakonos.updateContextLine
+            
+            @diakonos.remember_buffer self
         end
         
-        return changed
+        changed
     end
     
     def cursorReturn( direction )
