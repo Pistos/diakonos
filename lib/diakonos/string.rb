@@ -249,7 +249,7 @@ class String
                 if match.length > 1
                     # Find first matching group
                     1.upto( match.length - 1 ) do |match_item_index|
-                        if match[ match_item_index ] != nil
+                        if match[ match_item_index ]
                             i = match.begin( match_item_index )
                             match_text = match[ match_item_index ]
                             break
@@ -288,7 +288,7 @@ class String
                 if match.length > 1
                     # Find first matching group
                     1.upto( match.length - 1 ) do |match_item_index|
-                        if match[ match_item_index ] != nil
+                        if match[ match_item_index ]
                             i = match.end( match_item_index ) - 1
                             match_text = match[ match_item_index ]
                             break

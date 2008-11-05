@@ -177,7 +177,7 @@ module Diakonos
     # Redisplays the input text starting at the start of the user input area,
     # positioning the cursor at the end of the text.
     def cursorWriteInput
-      if @input != nil
+      if @input
         @input_cursor = @input.length
         @window.setpos( @window.cury, @icurx + @input.length )
         redrawInput

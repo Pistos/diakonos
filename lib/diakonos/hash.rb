@@ -36,7 +36,7 @@ class Hash
     def getNode( path )
         node = self[ path[ 0 ] ]
         if path.length > 1
-            if node != nil and node.respond_to?( :getNode )
+            if node and node.respond_to?( :getNode )
                 return node.getNode( path[ 1..-1 ] )
             end
         elsif path.length == 1

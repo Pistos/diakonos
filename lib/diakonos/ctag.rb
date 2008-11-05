@@ -16,7 +16,7 @@ class CTag
     
     def == ( other )
         return (
-            other != nil and
+            other and
             @file == other.file and
             @command == other.command and
             @kind == other.kind and
