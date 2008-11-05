@@ -52,7 +52,7 @@ module KeyCode
         if self.class == Fixnum
             retval = KEYSTRINGS[ self ]
         end
-        if retval == nil
+        if retval.nil?
             case self
                 when Curses::KEY_DOWN
                     retval = "down"
@@ -100,7 +100,7 @@ module KeyCode
                     retval = "resize2"
             end
         end
-        if retval == nil and self.class == Fixnum
+        if retval.nil? and self.class == Fixnum
             retval = "keycode#{self}"
         end
         retval

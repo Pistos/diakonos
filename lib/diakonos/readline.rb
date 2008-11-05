@@ -233,7 +233,7 @@ module Diakonos
             common = common[ 0...i ]
           end
         end
-        if common == nil
+        if common.nil?
           File.open( @list_filename, "w" ) do |f|
             f.puts "(no matches)"
           end

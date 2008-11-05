@@ -174,7 +174,7 @@ class String
     end
 
     def indentation_level( indent_size, indent_roundup, tab_size = Diakonos::DEFAULT_TAB_SIZE, indent_ignore_charset = nil )
-        if indent_ignore_charset == nil
+        if indent_ignore_charset.nil?
             level = 0
             if self =~ /^([\s]+)/
                 #whitespace = $1.gsub( /\t/, ' ' * tab_size )

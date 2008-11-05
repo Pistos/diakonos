@@ -203,7 +203,7 @@ class Diakonos
               exit 1
             when '-ro'
               filename = argv.shift
-              if filename == nil
+              if filename.nil?
                 printUsage
                 exit 1
               else
@@ -211,7 +211,7 @@ class Diakonos
               end
             when '-c', '--config'
               @config_filename = argv.shift
-              if @config_filename == nil
+              if @config_filename.nil?
                 printUsage
                 exit 1
               end
@@ -481,7 +481,7 @@ class Diakonos
             next if line[ 0 ] == ?#
 
             command, arg = line.split( /\s+/, 2 )
-            next if command == nil
+            next if command.nil?
             command = command.downcase
             case command
                 when "include"
@@ -1182,7 +1182,7 @@ class Diakonos
     end
 
     def subShellVariables( string )
-        return nil if string == nil
+        return nil if string.nil?
 
         retval = string
         retval = retval.subHome

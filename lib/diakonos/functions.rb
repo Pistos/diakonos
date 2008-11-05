@@ -28,14 +28,14 @@ module Diakonos
     end
     
     def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
-        if key_ == nil
+        if key_.nil?
             key = getUserInput( "Setting: " )
         else
             key = key_
         end
 
         if key
-            if value == nil
+            if value.nil?
                 value = getUserInput( "Value: " )
             end
             case @settings[ key ]
@@ -62,7 +62,7 @@ module Diakonos
 
     # Returns the choice the user made, or nil if the user was not prompted to choose.
     def closeFile( buffer = @current_buffer, to_all = nil )
-        return nil if buffer == nil
+        return nil if buffer.nil?
         
         choice = nil
         if @buffers.has_value?( buffer )
@@ -70,7 +70,7 @@ module Diakonos
 
             if buffer.modified
                 if not buffer.read_only
-                    if to_all == nil
+                    if to_all.nil?
                         choices = [ CHOICE_YES, CHOICE_NO, CHOICE_CANCEL ]
                         if @quitting
                             choices.concat [ CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL ]
@@ -294,7 +294,7 @@ module Diakonos
     end
     
     def evaluate( code_ = nil )
-        if code_ == nil
+        if code_.nil?
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
@@ -366,7 +366,7 @@ module Diakonos
     end
 
     def findExact( dir_str = "down", search_term_ = nil )
-        if search_term_ == nil
+        if search_term_.nil?
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
@@ -411,7 +411,7 @@ module Diakonos
     end
 
     def goToNamedBookmark( name_ = nil )
-        if name_ == nil
+        if name_.nil?
             name = getUserInput "Bookmark name: "
         else
             name = name_
@@ -441,7 +441,7 @@ module Diakonos
         
         # If necessary, prompt for tag name.
         
-        if tag_ == nil
+        if tag_.nil?
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
@@ -593,7 +593,7 @@ module Diakonos
     end
     
     def loadScript( name_ = nil )
-        if name_ == nil
+        if name_.nil?
             name = getUserInput( "File to load as script: ", @rlh_files )
         else
             name = name_
@@ -898,7 +898,7 @@ module Diakonos
     end
 
     def removeNamedBookmark( name_ = nil )
-        if name_ == nil
+        if name_.nil?
             name = getUserInput "Bookmark name: "
         else
             name = name_
@@ -1021,7 +1021,7 @@ module Diakonos
     end
 
     def setBufferType( type_ = nil )
-        if type_ == nil
+        if type_.nil?
             type = getUserInput "Content type: "
         else
             type = type_
@@ -1047,7 +1047,7 @@ module Diakonos
     end
 
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
-        if command_ == nil
+        if command_.nil?
             command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
@@ -1085,7 +1085,7 @@ module Diakonos
     end
     
     def execute( command_ = nil )
-        if command_ == nil
+        if command_.nil?
             command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
@@ -1111,7 +1111,7 @@ module Diakonos
     end
     
     def pasteShellResult( command_ = nil )
-        if command_ == nil
+        if command_.nil?
             command = getUserInput( "Command: ", @rlh_shell )
         else
             command = command_
@@ -1198,7 +1198,7 @@ module Diakonos
     end
 
     def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
-        if key_ == nil
+        if key_.nil?
             key = getUserInput( "Setting: " )
         else
             key = key_

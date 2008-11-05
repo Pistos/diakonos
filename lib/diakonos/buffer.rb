@@ -425,7 +425,7 @@ class Buffer
     
     # For debugging purposes
     def quotedOrNil( str )
-        if str == nil
+        if str.nil?
             "nil"
         else
             "'#{str}'"
@@ -434,7 +434,7 @@ class Buffer
     
     def paintMarks( row )
         string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
-        return if string == nil or string == ""
+        return if string.nil? or string == ""
         string = string.expandTabs( @tab_size )
         cury = @win_main.cury
         curx = @win_main.curx
@@ -475,7 +475,7 @@ class Buffer
 
     def printString( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
         return if not @pen_down
-        return if string == nil
+        return if string.nil?
 
         @win_main.attrset formatting
         @win_main.addstr string
@@ -494,7 +494,7 @@ class Buffer
             if @continued_format_class
                 close_index, close_match_text = findClosingMatch( substr, @close_token_regexps[ @continued_format_class ], i == 0 )
 
-                if close_match_text == nil
+                if close_match_text.nil?
                     printString truncateOffScreen( substr, i )
                     printPaddingFrom( line.length )
                     i = line.length
@@ -584,7 +584,7 @@ class Buffer
         else
             @name = name
             @read_only = false
-            if @name == nil
+            if @name.nil?
                 @diakonos.saveFileAs
             #elsif name.empty?
                 #@diakonos.setILine "(file not saved)"
@@ -920,7 +920,7 @@ class Buffer
     
     # Returns nil if the row is off-screen.
     def rowToY( row )
-        return nil if row == nil
+        return nil if row.nil?
         y = row - @top_line
         y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
         y
@@ -928,7 +928,7 @@ class Buffer
     
     # Returns nil if the column is off-screen.
     def columnToX( col )
-        return nil if col == nil
+        return nil if col.nil?
         x = col - @left_column
         x = nil if ( x < 0 ) or ( x > @left_column + Curses::cols - 1 )
         x
@@ -1349,7 +1349,7 @@ class Buffer
     end
 
     def deleteSelection( do_display = DO_DISPLAY )
-        return if @text_marks[ SELECTION ] == nil
+        return if @text_marks[ SELECTION ].nil?
 
         takeSnapshot
 
@@ -1373,7 +1373,7 @@ class Buffer
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
     def paste( text, do_parsed_indent = false )
-      return if text == nil
+      return if text.nil?
       
       if not text.kind_of? Array
         s = text.to_s
@@ -1420,7 +1420,7 @@ class Buffer
     def find( regexps, options = {} )
         return if regexps.nil?
         regexp = regexps[ 0 ]
-        return if regexp == nil or regexp == //
+        return if regexp.nil? or regexp == //
         
         direction = options[ :direction ]
         replacement = options[ :replacement ]
@@ -1639,7 +1639,7 @@ class Buffer
     end
 
     def replaceAll( regexp, replacement )
-        return if( regexp == nil or replacement == nil )
+        return if( regexp.nil? or replacement.nil? )
 
         @lines = @lines.collect { |line|
             line.gsub( regexp, replacement )
@@ -1679,7 +1679,7 @@ class Buffer
     end
     
     def seek( regexp, direction = :down )
-        return if regexp == nil or regexp == //
+        return if regexp.nil? or regexp == //
         
         found_row = nil
         found_col = nil

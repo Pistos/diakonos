@@ -11,12 +11,12 @@ class Bookmark
     end
 
     def == (other)
-        return false if other == nil
+        return false if other.nil?
         ( @buffer == other.buffer and @row == other.row and @col == other.col )
     end
 
     def <=> (other)
-        return nil if other == nil
+        return nil if other.nil?
         comparison = ( $diakonos.bufferToNumber( @buffer ) <=> $diakonos.bufferToNumber( other.buffer ) )
         return comparison if comparison != 0
         comparison = ( @row <=> other.row )

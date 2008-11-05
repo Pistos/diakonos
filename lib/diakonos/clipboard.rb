@@ -18,7 +18,7 @@ module Diakonos
     # Returns true iff a clip was added,
     # and only non-nil text can be added.
     def addClip( text )
-      return false if text == nil
+      return false if text.nil?
       @clips.unshift text
       @clips.pop if @clips.length > @max_clips
       true
