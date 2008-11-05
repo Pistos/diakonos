@@ -301,16 +301,16 @@ class Diakonos
     end
     
     def initializeDisplay
-        if @win_main != nil
+        if @win_main
             @win_main.close
         end
-        if @win_status != nil
+        if @win_status
             @win_status.close
         end
-        if @win_interaction != nil
+        if @win_interaction
             @win_interaction.close
         end
-        if @win_context != nil
+        if @win_context
             @win_context.close
         end
 
@@ -462,7 +462,7 @@ class Diakonos
             @clipboard = Clipboard.new @settings[ "max_clips" ]
             @log = File.open( @logfilename, "a" )
 
-            if @buffers != nil
+            if @buffers
                 @buffers.each_value do |buffer|
                     buffer.configure
                 end
@@ -487,7 +487,7 @@ class Diakonos
                 when "include"
                     parseConfigurationFile arg.subHome
                 when "key"
-                    if arg != nil
+                    if arg
                         if /  / === arg
                             keystrings, function_and_args = arg.split( / {2,}/, 2 )
                         else
@@ -747,7 +747,7 @@ class Diakonos
           updateStatusLine
           updateContextLine
           
-          if @post_load_script != nil
+          if @post_load_script
             eval @post_load_script
           end
           
@@ -1011,8 +1011,8 @@ class Diakonos
     end
 
     def updateContextLine
-        if @win_context != nil
-            @context_thread.exit if @context_thread != nil
+        if @win_context
+            @context_thread.exit if @context_thread
             @context_thread = Thread.new do ||
 
                 context = @current_buffer.context
@@ -1207,7 +1207,7 @@ class Diakonos
         if retval =~ /\$c/
             clip_filename = @diakonos_home + "/clip.txt"
             File.open( clip_filename, "w" ) do |clipfile|
-                if @clipboard.clip != nil
+                if @clipboard.clip
                     clipfile.puts( @clipboard.clip.join( "\n" ) )
                 end
             end
@@ -1229,7 +1229,7 @@ class Diakonos
             
             File.open( text_filename, "w" ) do |textfile|
                 selected_text = @current_buffer.selected_text
-                if selected_text != nil
+                if selected_text
                     textfile.puts( selected_text.join( "\n" ) )
                 end
             end
@@ -1257,7 +1257,7 @@ class Diakonos
     end
     
     def terminateMessage
-        if @message_thread != nil and @message_thread.alive?
+        if @message_thread and @message_thread.alive?
             @message_thread.terminate
             @message_thread = nil
         end
@@ -1267,14 +1267,14 @@ class Diakonos
         terminateMessage
         setILine @settings[ 'interaction.blink_string' ]
         sleep @settings[ 'interaction.blink_duration' ]
-        setILine message if message != nil
+        setILine message if message
     end
     
     # choices should be an array of CHOICE_* constants.
     # default is what is returned when Enter is pressed.
     def getChoice( prompt, choices, default = nil )
         retval = @iterated_choice
-        if retval != nil
+        if retval
             @choice_iterations -= 1
             if @choice_iterations < 1
                 @iterated_choice = nil
@@ -1308,7 +1308,7 @@ class Diakonos
                 when Curses::KEY_PPAGE
                     pageUp
                 else
-                    if @message_expiry != nil and Time.now < @message_expiry
+                    if @message_expiry and Time.now < @message_expiry
                         interactionBlink
                         showMessage msg
                     else
@@ -1350,7 +1350,7 @@ class Diakonos
     end
 
     def startRecordingMacro( name = nil )
-        return if @macro_history != nil
+        return if @macro_history
         @macro_name = name
         @macro_history = Array.new
         @macro_input_history = Array.new
@@ -1375,7 +1375,7 @@ class Diakonos
     
     def loadTags
         @tags = Hash.new
-        if @current_buffer != nil and @current_buffer.name != nil
+        if @current_buffer and @current_buffer.name
             path = File.expand_path( File.dirname( @current_buffer.name ) )
             tagfile = path + "/tags"
         else
@@ -1400,7 +1400,7 @@ class Diakonos
     
     def refreshAll
         @win_main.refresh
-        if @win_context != nil
+        if @win_context
             @win_context.refresh
         end
         @win_status.refresh
