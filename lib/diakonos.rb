@@ -49,37 +49,37 @@ require 'diakonos/readline'
 
 module Diakonos
   
-  VERSION = '0.8.7'
+  VERSION       = '0.8.7'
   LAST_MODIFIED = 'November 5, 2008'
   
-  DONT_ADJUST_ROW = false
-  ADJUST_ROW = true
-  PROMPT_OVERWRITE = true
+  DONT_ADJUST_ROW       = false
+  ADJUST_ROW            = true
+  PROMPT_OVERWRITE      = true
   DONT_PROMPT_OVERWRITE = false
-  DO_REDRAW = true
-  DONT_REDRAW = false
-  QUIET = true
-  NOISY = false
+  DO_REDRAW             = true
+  DONT_REDRAW           = false
+  QUIET                 = true
+  NOISY                 = false
   
-  TAB = 9
-  ENTER = 13
-  ESCAPE = 27
+  TAB       = 9
+  ENTER     = 13
+  ESCAPE    = 27
   BACKSPACE = 127
-  CTRL_C = 3
-  CTRL_D = 4
-  CTRL_K = 11
-  CTRL_Q = 17
-  CTRL_H = 263
-  RESIZE2 = 4294967295
+  CTRL_C    = 3
+  CTRL_D    = 4
+  CTRL_K    = 11
+  CTRL_Q    = 17
+  CTRL_H    = 263
+  RESIZE2   = 4294967295
   
   DEFAULT_TAB_SIZE = 8
   
-  CHOICE_NO = 0
-  CHOICE_YES = 1
-  CHOICE_ALL = 2
-  CHOICE_CANCEL = 3
-  CHOICE_YES_TO_ALL = 4
-  CHOICE_NO_TO_ALL = 5
+  CHOICE_NO           = 0
+  CHOICE_YES          = 1
+  CHOICE_ALL          = 2
+  CHOICE_CANCEL       = 3
+  CHOICE_YES_TO_ALL   = 4
+  CHOICE_NO_TO_ALL    = 5
   CHOICE_YES_AND_STOP = 6
   CHOICE_KEYS = [
     [ ?n, ?N ],
@@ -92,22 +92,22 @@ module Diakonos
   ]
   CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top' ]
   
-  BOL_ZERO = 0
-  BOL_FIRST_CHAR = 1
-  BOL_ALT_ZERO = 2
+  BOL_ZERO           = 0
+  BOL_FIRST_CHAR     = 1
+  BOL_ALT_ZERO       = 2
   BOL_ALT_FIRST_CHAR = 3
   
-  EOL_END = 0
-  EOL_LAST_CHAR = 1
-  EOL_ALT_END = 2
+  EOL_END           = 0
+  EOL_LAST_CHAR     = 1
+  EOL_ALT_END       = 2
   EOL_ALT_LAST_CHAR = 3
   
   FORCE_REVERT = true
-  ASK_REVERT = false
+  ASK_REVERT   = false
   
   ASK_REPLACEMENT = true
   
-  CASE_SENSITIVE = true
+  CASE_SENSITIVE   = true
   CASE_INSENSITIVE = false
   
   LANG_TEXT = 'text'
