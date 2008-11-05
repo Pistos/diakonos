@@ -611,7 +611,7 @@ class Buffer
                     end
                 end
                 
-                if file_modified
+                if file_modified?
                     proceed = ! @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
                 end
                 
@@ -1760,7 +1760,7 @@ class Buffer
         fmod = false
         if not @modified
             @modified = true
-            fmod = file_modified
+            fmod = file_modified?
         end
         
         reverted = false
@@ -1779,7 +1779,7 @@ class Buffer
     
     # Check if the file which is being edited has been modified since
     # the last time we checked it; return true if so, false otherwise.
-    def file_modified
+    def file_modified?
         modified = false
         
         if @name
