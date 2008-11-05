@@ -18,6 +18,7 @@ require 'open3'
 require 'thread'
 require 'English'
 require 'set'
+require 'digest/md5'
 
 require 'diakonos/object'
 require 'diakonos/enumerable'

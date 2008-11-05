@@ -646,13 +646,14 @@ module Diakonos
         end
         buffer_key = filename
         if(
-          (not force_revert) and
+          ( not force_revert ) and
           ( (existing_buffer = @buffers[ filename ]) != nil ) and
-          ( filename !~ /\.diakonos/ )
+          ( filename !~ /\.diakonos/ ) and
+          existing_buffer.file_different?
         )
           switchTo( existing_buffer )
           choice = getChoice(
-            "Revert to on-disk version of #{existing_buffer.nice_name}?",
+            "Load on-disk version of #{existing_buffer.nice_name}?",
             [ CHOICE_YES, CHOICE_NO ]
           )
           case choice

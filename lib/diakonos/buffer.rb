@@ -1798,6 +1798,20 @@ class Buffer
         modified
     end
 
+    # Compares MD5 sums of buffer and actual file on disk.
+    # Returns true if there is no file on disk.
+    def file_different?
+      if @name
+        Digest::MD5.hexdigest(
+          @lines.join( "\n" )
+        ) != Digest::MD5.hexdigest(
+          File.read( @name )
+        )
+      else
+        true
+      end
+    end
+
     def takeSnapshot( typing = false )
         take_snapshot = false
         if @typing != typing
