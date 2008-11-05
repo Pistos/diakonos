@@ -34,7 +34,7 @@ module Diakonos
             key = key_
         end
 
-        if key != nil
+        if key
             if value == nil
                 value = getUserInput( "Value: " )
             end
@@ -128,9 +128,9 @@ module Diakonos
                     to_switch_to = buf
                 end
                 
-                if to_switch_to != nil
+                if to_switch_to
                     switchTo( to_switch_to )
-                elsif previous_buffer != nil
+                elsif previous_buffer
                     switchTo( previous_buffer )
                 else
                     # No buffers left.  Open a new blank one.
@@ -303,7 +303,7 @@ module Diakonos
             code = code_
         end
         
-        if code != nil
+        if code
             begin
                 eval code
             rescue Exception => e
@@ -353,7 +353,7 @@ module Diakonos
     end
     
     def findAgain( dir_str = nil )
-        if dir_str != nil
+        if dir_str
             direction = dir_str.toDirection
             @current_buffer.findAgain( @last_search_regexps, direction )
         else
@@ -374,7 +374,7 @@ module Diakonos
         else
             search_term = search_term_
         end
-        if search_term != nil
+        if search_term
             direction = dir_str.toDirection
             regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
             @current_buffer.find( regexp, :direction => direction )
@@ -384,7 +384,7 @@ module Diakonos
 
     def goToLineAsk
         input = getUserInput( "Go to [line number|+lines][,column number]: " )
-        if input != nil
+        if input
             row = nil
             
             if input =~ /([+-]\d+)/
@@ -398,7 +398,7 @@ module Diakonos
                     else
                         row = input[ 0 ] - 1
                     end
-                    if input[ 1 ] != nil
+                    if input[ 1 ]
                         col = input[ 1 ] - 1
                     end
                 end
@@ -417,9 +417,9 @@ module Diakonos
             name = name_
         end
 
-        if name != nil
+        if name
             bookmark = @bookmarks[ name ]
-            if bookmark != nil
+            if bookmark
                 switchTo( bookmark.buffer )
                 bookmark.buffer.cursorTo( bookmark.row, bookmark.col, Buffer::DO_DISPLAY )
             else
@@ -451,7 +451,7 @@ module Diakonos
         end
 
         tag_array = @tags[ tag_name ]
-        if tag_array != nil and tag_array.length > 0
+        if tag_array and tag_array.length > 0
             if i = tag_array.index( @last_tag )
                 tag = ( tag_array[ i + 1 ] or tag_array[ 0 ] )
             else
@@ -470,7 +470,7 @@ module Diakonos
             else
                 find( "down", CASE_SENSITIVE, tag.command )
             end
-        elsif tag_name != nil
+        elsif tag_name
             setILine "No such tag: '#{tag_name}'"
         end
     end
@@ -599,7 +599,7 @@ module Diakonos
             name = name_
         end
 
-        if name != nil
+        if name
             thread = Thread.new( name ) do |f|
                 begin
                     load( f )
@@ -754,9 +754,9 @@ module Diakonos
     def operateOnString(
         ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'str.' )
     )
-        if ruby_code != nil
+        if ruby_code
             str = @current_buffer.selected_string
-            if str != nil and not str.empty?
+            if str and not str.empty?
                 @current_buffer.paste eval( ruby_code )
             end
         end
@@ -765,9 +765,9 @@ module Diakonos
     def operateOnLines(
         ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'lines.collect { |l| l }' )
     )
-        if ruby_code != nil
+        if ruby_code
             lines = @current_buffer.selected_text
-            if lines != nil and not lines.empty?
+            if lines and not lines.empty?
                 if lines[ -1 ].empty?
                     lines.pop
                     popped = true
@@ -784,9 +784,9 @@ module Diakonos
     def operateOnEachLine(
         ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'line.' )
     )
-        if ruby_code != nil
+        if ruby_code
             lines = @current_buffer.selected_text
-            if lines != nil and not lines.empty?
+            if lines and not lines.empty?
                 if lines[ -1 ].empty?
                     lines.pop
                     popped = true
@@ -844,9 +844,9 @@ module Diakonos
 
     def playMacro( name = nil )
         macro, input_history = @macros[ name ]
-        if input_history != nil
+        if input_history
             @macro_input_history = input_history.deep_clone
-            if macro != nil
+            if macro
                 @playing_macro = true
                 macro.each do |command|
                     eval command
@@ -859,7 +859,7 @@ module Diakonos
     
     def popTag
         tag = @tag_stack.pop
-        if tag != nil
+        if tag
             if not switchTo( @buffers[ tag[ 0 ] ] )
                 openFile( tag[ 0 ] )
             end
@@ -904,7 +904,7 @@ module Diakonos
             name = name_
         end
 
-        if name != nil
+        if name
             bookmark = @bookmarks.delete name
             setILine "Removed bookmark #{bookmark.to_s}."
         end
@@ -928,7 +928,7 @@ module Diakonos
         `#{@settings[ 'diff_command' ]} #{current_text_file} #{@current_buffer.name} > #{@diff_filename}`
         diff_buffer = openFile( @diff_filename )
         
-        if prompt != nil
+        if prompt
             choice = getChoice(
                 prompt,
                 [ CHOICE_YES, CHOICE_NO ]
@@ -952,13 +952,13 @@ module Diakonos
     end
 
     def saveFileAs
-        if @current_buffer != nil and @current_buffer.name != nil
+        if @current_buffer and @current_buffer.name
             path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
             file = getUserInput( "Filename: ", @rlh_files, path )
         else
             file = getUserInput( "Filename: ", @rlh_files )
         end
-        if file != nil
+        if file
             #old_name = @current_buffer.name
             @current_buffer.save( file, PROMPT_OVERWRITE )
             #if not @current_buffer.modified
@@ -999,7 +999,7 @@ module Diakonos
     end
 
     def scrollUp
-        if @settings[ "view.scroll_amount" ] != nil
+        if @settings[ "view.scroll_amount" ]
             @current_buffer.pitchView( -@settings[ "view.scroll_amount" ] )
         else
             @current_buffer.pitchView( -1 )
@@ -1013,7 +1013,7 @@ module Diakonos
     end
     
     def seek( regexp_source, dir_str = "down" )
-        if regexp_source != nil
+        if regexp_source
             direction = dir_str.toDirection
             regexp = Regexp.new( regexp_source )
             @current_buffer.seek( regexp, direction )
@@ -1027,7 +1027,7 @@ module Diakonos
             type = type_
         end
 
-        if type != nil
+        if type
             if @current_buffer.setType( type )
                 updateStatusLine
                 updateContextLine
@@ -1038,7 +1038,7 @@ module Diakonos
     # If read_only is nil, the read_only state of the current buffer is toggled.
     # Otherwise, the read_only state of the current buffer is set to read_only.
     def setReadOnly( read_only = nil )
-        if read_only != nil
+        if read_only
             @current_buffer.read_only = read_only
         else
             @current_buffer.read_only = ( not @current_buffer.read_only )
@@ -1091,7 +1091,7 @@ module Diakonos
             command = command_
         end
 
-        if command != nil
+        if command
             command = subShellVariables( command )
 
             Curses::close_screen
@@ -1117,7 +1117,7 @@ module Diakonos
             command = command_
         end
 
-        if command != nil
+        if command
             command = subShellVariables( command )
 
             Curses::close_screen
@@ -1144,7 +1144,7 @@ module Diakonos
     end
 
     def toggleMacroRecording( name = nil )
-        if @macro_history != nil
+        if @macro_history
             stopRecordingMacro
         else
             startRecordingMacro( name )
@@ -1204,14 +1204,14 @@ module Diakonos
             key = key_
         end
 
-        if key != nil
+        if key
             value = nil
             if @session_settings[ key ].class == TrueClass or @session_settings[ key ].class == FalseClass
                 value = ! @session_settings[ key ]
             elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
                 value = ! @settings[ key ]
             end
-            if value != nil
+            if value
                 @session_settings[ key ] = value
                 redraw if do_redraw
                 setILine "#{key} = #{value}"
