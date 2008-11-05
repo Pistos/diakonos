@@ -44,7 +44,7 @@ require 'diakonos/readline'
 #$profiling = true
 
 #if $profiling
-    #require 'ruby-prof'
+  #require 'ruby-prof'
 #end
 
 module Diakonos

@@ -740,7 +740,7 @@ module Diakonos
       
       files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
       if files.any?
-        if files.size > 1
+        if files.size > 5
             choice = getChoice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
             return if choice == CHOICE_NO
         end
