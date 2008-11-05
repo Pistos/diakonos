@@ -68,7 +68,7 @@ module Diakonos
         if @buffers.has_value?( buffer )
             do_closure = true
 
-            if buffer.modified
+            if buffer.modified?
                 if not buffer.read_only
                     if to_all.nil?
                         choices = [ CHOICE_YES, CHOICE_NO, CHOICE_CANCEL ]
@@ -883,7 +883,7 @@ module Diakonos
         @quitting = true
         to_all = nil
         @buffers.each_value do |buffer|
-            if buffer.modified
+            if buffer.modified?
                 switchTo buffer
                 closure_choice = closeFile( buffer, to_all )
                 case closure_choice
@@ -961,7 +961,7 @@ module Diakonos
         if file
             #old_name = @current_buffer.name
             @current_buffer.save( file, PROMPT_OVERWRITE )
-            #if not @current_buffer.modified
+            #if not @current_buffer.modified?
                 # Save was okay.
                 #@buffers.delete old_name
                 #@buffers[ @current_buffer.name ] = @current_buffer

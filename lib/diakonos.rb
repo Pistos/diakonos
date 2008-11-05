@@ -941,7 +941,7 @@ module Diakonos
           name = @current_buffer.nice_name
           var_array.push( name[ ([ truncation, name.length ].min)..-1 ] )
         when "modified"
-          if @current_buffer.modified
+          if @current_buffer.modified?
             var_array.push @settings[ "status.modified_str" ]
           else
             var_array.push ""

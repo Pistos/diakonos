@@ -1,7 +1,7 @@
 module Diakonos
 
 class Buffer
-    attr_reader :name, :key, :modified, :original_language, :changing_selection, :read_only,
+    attr_reader :name, :key, :original_language, :changing_selection, :read_only,
         :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col
     attr_writer :desired_column, :read_only
 
@@ -147,6 +147,10 @@ class Buffer
 
     def length
         @lines.length
+    end
+    
+    def modified?
+      @modified
     end
 
     def nice_name
