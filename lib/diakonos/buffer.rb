@@ -38,7 +38,7 @@ class Buffer
 
         @buffer_states = Array.new
         @cursor_states = Array.new
-        if @name != nil
+        if @name
             @name = @name.subHome
             if FileTest.exists? @name
                 @lines = IO.readlines( @name )
@@ -182,7 +182,7 @@ class Buffer
                         
                         open_index, open_token_class, open_match_text = findOpeningMatch( line )
                         
-                        if open_token_class != nil
+                        if open_token_class
                             @pen_down = false
                             @lines[ index...@top_line ].each do |line|
                                 printLine line
@@ -266,7 +266,7 @@ class Buffer
                 end
                 if ( not regexp.uses_bos ) or ( bos_allowed and ( whole_match_index == 0 ) )
                     if index < open_index
-                        if ( ( not match_close ) or @close_token_regexps[ token_class ] != nil )
+                        if ( ( not match_close ) or @close_token_regexps[ token_class ] )
                             open_index = index
                             open_token_class = token_class
                             open_match_text = match_text
@@ -310,7 +310,7 @@ class Buffer
     # @mark_start[ "col" ] is inclusive,
     # @mark_end[ "col" ] is exclusive.
     def recordMarkStartAndEnd
-        if @mark_anchor != nil
+        if @mark_anchor
             crow = @last_row
             ccol = @last_col
             anchor_first = true
@@ -408,7 +408,7 @@ class Buffer
             write_cursor_col = @left_column
         end
 
-        if retval != nil
+        if retval
             # Truncate based on right edge of display area
             if write_cursor_col + retval.length > @left_column + Curses::cols - 1
                 new_length = ( @left_column + Curses::cols - write_cursor_col )
@@ -440,7 +440,7 @@ class Buffer
         curx = @win_main.curx
         
         @text_marks.reverse_each do |text_mark|
-            if text_mark != nil
+            if text_mark
                 @win_main.attrset text_mark.formatting
                 if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
                     @win_main.setpos( cury, curx )
@@ -491,7 +491,7 @@ class Buffer
         index = nil
         while i < line.length
             substr = line[ i..-1 ]
-            if @continued_format_class != nil
+            if @continued_format_class
                 close_index, close_match_text = findClosingMatch( substr, @close_token_regexps[ @continued_format_class ], i == 0 )
 
                 if close_match_text == nil
@@ -510,7 +510,7 @@ class Buffer
                 if @lang_stack.length > 0
                     prev_lang, close_token_class = @lang_stack[ -1 ]
                     close_index, close_match_text = findClosingMatch( substr, @diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
-                    if close_match_text != nil and close_index <= first_index
+                    if close_match_text and close_index <= first_index
                         if close_index > 0
                             # Print any remaining text in the embedded language
                             printString truncateOffScreen( substr[ 0...close_index ], i )
@@ -531,7 +531,7 @@ class Buffer
                     end
                 end
 
-                if first_word != nil
+                if first_word
                     if first_index > 0
                         # Print any preceding text in the default format
                         printString truncateOffScreen( substr[ 0...first_index ], i )
@@ -539,7 +539,7 @@ class Buffer
                     end
                     printString( truncateOffScreen( first_word, i ), @token_formats[ first_token_class ] )
                     i += first_word.length
-                    if @close_token_regexps[ first_token_class ] != nil
+                    if @close_token_regexps[ first_token_class ]
                         if change_to = @settings[ "lang.#{@language}.tokens.#{first_token_class}.change_to" ]
                             @lang_stack.push [ @language, first_token_class ]
                             setLanguage change_to
@@ -573,7 +573,7 @@ class Buffer
     end
 
     def save( filename = nil, prompt_overwrite = DONT_PROMPT_OVERWRITE )
-        if filename != nil
+        if filename
             name = filename.subHome
         else
             name = @name
@@ -686,7 +686,7 @@ class Buffer
 
     # x and y are given window-relative, not buffer-relative.
     def delete
-        if selection_mark != nil
+        if selection_mark
             deleteSelection
         else
             row = @last_row
@@ -839,7 +839,7 @@ class Buffer
     end
 
     def deleteLine
-        removeSelection( DONT_DISPLAY ) if selection_mark != nil
+        removeSelection( DONT_DISPLAY ) if selection_mark
 
         row = @last_row
         takeSnapshot
@@ -858,7 +858,7 @@ class Buffer
     end
 
     def deleteToEOL
-        removeSelection( DONT_DISPLAY ) if selection_mark != nil
+        removeSelection( DONT_DISPLAY ) if selection_mark
 
         row = @last_row
         col = @last_col
@@ -1069,11 +1069,11 @@ class Buffer
             recordMarkStartAndEnd
             
             removed = false
-            if not @changing_selection and selection_mark != nil
+            if not @changing_selection and selection_mark
                 removeSelection( DONT_DISPLAY )
                 removed = true
             end
-            if removed or ( do_display and ( selection_mark != nil or view_changed ) )
+            if removed or ( do_display and ( selection_mark or view_changed ) )
                 display
             else
                 @diakonos.display_mutex.synchronize do
@@ -1111,7 +1111,7 @@ class Buffer
             return_pointer = @cursor_stack_pointer = @cursor_stack.length - 1
         else
             cursor_state = @cursor_stack[ @cursor_stack_pointer ]
-            if cursor_state != nil
+            if cursor_state
                 pitchView( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
                 cursorTo( cursor_state[ :row ], cursor_state[ :col ] )
                 @diakonos.updateStatusLine
@@ -1265,7 +1265,7 @@ class Buffer
                 level = prev_line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
 
                 line = @lines[ row ]
-                if @preventers != nil
+                if @preventers
                     prev_line = prev_line.gsub( @preventers, "" )
                     line = line.gsub( @preventers, "" )
                 end
@@ -1652,7 +1652,7 @@ class Buffer
     end
     
     def highlightMatches
-        if @highlight_regexp != nil
+        if @highlight_regexp
             found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
                 TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
             end
@@ -1691,7 +1691,7 @@ class Buffer
                 # Check the current row first.
                 
                 index, match_text = @lines[ @last_row ].group_index( regexp, @last_col + 1 )
-                if index != nil
+                if index
                     found_row = @last_row
                     found_col = index
                     found_text = match_text
@@ -1702,7 +1702,7 @@ class Buffer
                 
                 ( (@last_row + 1)...@lines.length ).each do |i|
                     index, match_text = @lines[ i ].group_index( regexp )
-                    if index != nil
+                    if index
                         found_row = i
                         found_col = index
                         found_text = match_text
@@ -1717,7 +1717,7 @@ class Buffer
                 col_to_check = @last_col - 1
                 if col_to_check >= 0
                     index, match_text = @lines[ @last_row ].group_rindex( regexp, col_to_check )
-                    if index != nil
+                    if index
                         found_row = @last_row
                         found_col = index
                         found_text = match_text
@@ -1729,7 +1729,7 @@ class Buffer
                 
                 (@last_row - 1).downto( 0 ) do |i|
                     index, match_text = @lines[ i ].group_rindex( regexp )
-                    if index != nil
+                    if index
                         found_row = i
                         found_col = index
                         found_text = match_text
@@ -1739,7 +1739,7 @@ class Buffer
             end
         end
         
-        if found_text != nil
+        if found_text
             #@last_found_row = found_row
             #@last_found_col = found_col
             cursorTo( found_row, found_col )
@@ -1778,7 +1778,7 @@ class Buffer
     def file_modified
         modified = false
         
-        if @name != nil
+        if @name
             begin
                 mtime = File.mtime( @name )
                 
@@ -1906,7 +1906,7 @@ class Buffer
                 break
             end
         end
-        if prev != nil
+        if prev
             cursorTo( prev.row, prev.col, DO_DISPLAY )
         end
     end
@@ -1952,7 +1952,7 @@ class Buffer
 
     def setType( type )
         success = false
-        if type != nil
+        if type
             configure( type )
             display
             success = true
