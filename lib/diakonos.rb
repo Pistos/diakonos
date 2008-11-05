@@ -635,41 +635,41 @@ module Diakonos
     protected :parseConfigurationFile
 
     def getTokenRegexp( hash, arg, match )
-        language = match[ 1 ]
-        token_class = match[ 2 ]
-        case_insensitive = ( match[ 3 ] != nil )
-        hash[ language ] = ( hash[ language ] or Hash.new )
-        if case_insensitive
-            hash[ language ][ token_class ] = Regexp.new( arg, Regexp::IGNORECASE )
-        else
-            hash[ language ][ token_class ] = Regexp.new arg
-        end
+      language = match[ 1 ]
+      token_class = match[ 2 ]
+      case_insensitive = ( match[ 3 ] != nil )
+      hash[ language ] = ( hash[ language ] or Hash.new )
+      if case_insensitive
+        hash[ language ][ token_class ] = Regexp.new( arg, Regexp::IGNORECASE )
+      else
+        hash[ language ][ token_class ] = Regexp.new arg
+      end
     end
 
     def redraw
-        loadConfiguration
-        initializeDisplay
-        updateStatusLine
-        updateContextLine
-        @current_buffer.display
+      loadConfiguration
+      initializeDisplay
+      updateStatusLine
+      updateContextLine
+      @current_buffer.display
     end
-
+    
     def log( string )
-        @log.puts string
-        @log.flush
+      @log.puts string
+      @log.flush
     end
     
     def debugLog( string )
-        @debug.puts( Time.now.strftime( "[%a %H:%M:%S] #{string}" ) )
-        @debug.flush
+      @debug.puts( Time.now.strftime( "[%a %H:%M:%S] #{string}" ) )
+      @debug.flush
     end
     
     def register_proc( the_proc, hook_name, priority = 0 )
-        @hooks[ hook_name ] << { :proc => the_proc, :priority => priority }
+      @hooks[ hook_name ] << { :proc => the_proc, :priority => priority }
     end
     
     def clearNonMovementFlag
-        @there_was_non_movement = false
+      @there_was_non_movement = false
     end
     
     # -----------------------------------------------------------------------
