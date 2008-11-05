@@ -313,7 +313,7 @@ class String
     end
     
     def movement?
-        ( ( self =~ /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ ) != nil )
+        self =~ /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/
     end
 end
 
