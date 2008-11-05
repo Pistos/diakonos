@@ -27,9 +27,11 @@ require 'diakonos/hash'
 require 'diakonos/buffer-hash'
 require 'diakonos/array'
 require 'diakonos/string'
-require 'diakonos/keycode'
 require 'diakonos/fixnum'
 require 'diakonos/bignum'
+
+require 'diakonos/functions'
+require 'diakonos/keycode'
 require 'diakonos/text-mark'
 require 'diakonos/bookmark'
 require 'diakonos/ctag'
@@ -46,7 +48,7 @@ require 'diakonos/readline'
 #end
 
 module Diakonos
-
+  
     VERSION = '0.8.7'
     LAST_MODIFIED = 'November 2, 2008'
 
@@ -220,6 +222,7 @@ class Diakonos
         :indenters, :unindenters, :closers, :clipboard, :do_display,
         :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
+    include ::Diakonos::Functions
 
     def initialize( argv = [] )
         @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
@@ -1556,32 +1559,6 @@ class Diakonos
     #
     # Program Functions
 
-    def addNamedBookmark( name_ = nil )
-        if name_ == nil
-            name = getUserInput "Bookmark name: "
-        else
-            name = name_
-        end
-
-        if name != nil
-            @bookmarks[ name ] = Bookmark.new( @current_buffer, @current_buffer.currentRow, @current_buffer.currentColumn, name )
-            setILine "Added bookmark #{@bookmarks[ name ].to_s}."
-        end
-    end
-
-    def anchorSelection
-        @current_buffer.anchorSelection
-        updateStatusLine
-    end
-
-    def backspace
-        delete if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
-    end
-
-    def carriageReturn
-        @current_buffer.carriageReturn
-        @current_buffer.deleteSelection
-    end
     
     def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
         if key_ == nil
