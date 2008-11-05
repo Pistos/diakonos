@@ -117,75 +117,75 @@ module Diakonos
   class Diakonos
     
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
-        :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
-        :indenters, :unindenters, :closers, :clipboard, :do_display,
-        :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
+      :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
+      :indenters, :unindenters, :closers, :clipboard, :do_display,
+      :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
 
     include ::Diakonos::Functions
 
     def initialize( argv = [] )
-        @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
-        mkdir @diakonos_home
-        @script_dir = "#{@diakonos_home}/scripts"
-        mkdir @script_dir
-        
-        init_help
-        
-        @debug          = File.new( "#{@diakonos_home}/debug.log", 'w' )
-        @list_filename  = @diakonos_home + '/listing.txt'
-        @diff_filename  = @diakonos_home + '/text.diff'
-        @help_filename  = "#{@help_dir}/about-help.dhf"
-        @error_filename = "#{@diakonos_home}/diakonos.err"
-
-        @files = Array.new
-        @read_only_files = Array.new
-        @config_filename = nil
-        
-        parseOptions argv
-        
-        @session_settings = Hash.new
-        @win_main        = nil
-        @win_context     = nil
-        @win_status      = nil
-        @win_interaction = nil
-        @buffers = BufferHash.new
-        
-        loadConfiguration
-        
-        @quitting = false
-        @untitled_id = 0
-
-        @x = 0
-        @y = 0
-
-        @buffer_stack = Array.new
-        @current_buffer = nil
-        @buffer_history = Array.new
-        @buffer_history_pointer = nil
-        @bookmarks = Hash.new
-        @macro_history = nil
-        @macro_input_history = nil
-        @macros = Hash.new
-        @last_commands = SizedArray.new( NUM_LAST_COMMANDS )
-        @playing_macro = false
-        @display_mutex = Mutex.new
-        @display_queue_mutex = Mutex.new
-        @display_queue = nil
-        @do_display = true
-        @iline_mutex = Mutex.new
-        @tag_stack = Array.new
-        @last_search_regexps = nil
-        @iterated_choice = nil
-        @choice_iterations = 0
-        @there_was_non_movement = false
-        @status_vars = Hash.new
-        
-        # Readline histories
-        @rlh_general = Array.new
-        @rlh_files   = Array.new
-        @rlh_search  = Array.new
-        @rlh_shell   = Array.new
-        @rlh_help    = Array.new
+      @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
+      mkdir @diakonos_home
+      @script_dir = "#{@diakonos_home}/scripts"
+      mkdir @script_dir
+      
+      init_help
+      
+      @debug          = File.new( "#{@diakonos_home}/debug.log", 'w' )
+      @list_filename  = @diakonos_home + '/listing.txt'
+      @diff_filename  = @diakonos_home + '/text.diff'
+      @help_filename  = "#{@help_dir}/about-help.dhf"
+      @error_filename = "#{@diakonos_home}/diakonos.err"
+      
+      @files = Array.new
+      @read_only_files = Array.new
+      @config_filename = nil
+      
+      parseOptions argv
+      
+      @session_settings = Hash.new
+      @win_main        = nil
+      @win_context     = nil
+      @win_status      = nil
+      @win_interaction = nil
+      @buffers = BufferHash.new
+      
+      loadConfiguration
+      
+      @quitting = false
+      @untitled_id = 0
+      
+      @x = 0
+      @y = 0
+      
+      @buffer_stack = Array.new
+      @current_buffer = nil
+      @buffer_history = Array.new
+      @buffer_history_pointer = nil
+      @bookmarks = Hash.new
+      @macro_history = nil
+      @macro_input_history = nil
+      @macros = Hash.new
+      @last_commands = SizedArray.new( NUM_LAST_COMMANDS )
+      @playing_macro = false
+      @display_mutex = Mutex.new
+      @display_queue_mutex = Mutex.new
+      @display_queue = nil
+      @do_display = true
+      @iline_mutex = Mutex.new
+      @tag_stack = Array.new
+      @last_search_regexps = nil
+      @iterated_choice = nil
+      @choice_iterations = 0
+      @there_was_non_movement = false
+      @status_vars = Hash.new
+      
+      # Readline histories
+      @rlh_general = Array.new
+      @rlh_files   = Array.new
+      @rlh_search  = Array.new
+      @rlh_shell   = Array.new
+      @rlh_help    = Array.new
     end
     
     def mkdir( dir )
@@ -196,57 +196,57 @@ module Diakonos
 
     def parseOptions( argv )
       @post_load_script = ""
-        while argv.length > 0
-            arg = argv.shift
-            case arg
-            when '-h', '--help'
-              printUsage
-              exit 1
-            when '-ro'
-              filename = argv.shift
-              if filename.nil?
-                printUsage
-                exit 1
-              else
-                @read_only_files.push filename
-              end
-            when '-c', '--config'
-              @config_filename = argv.shift
-              if @config_filename.nil?
-                printUsage
-                exit 1
-              end
-            when '-e', '--execute'
-              post_load_script = argv.shift
-              if post_load_script.nil?
-                printUsage
-                exit 1
-              else
-                @post_load_script << "\n#{post_load_script}"
-              end                        
-            when '-m', '--open-matching'
-              regexp = argv.shift
-              files = `egrep -rl '#{regexp}' *`.split( /\n/ )
-              if files.any?
-                @files.concat files
-                script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
-                @post_load_script << script
-              end              
-            else
-              # a name of a file to open
-              @files.push arg
-            end
+      while argv.length > 0
+        arg = argv.shift
+        case arg
+        when '-h', '--help'
+          printUsage
+          exit 1
+        when '-ro'
+          filename = argv.shift
+          if filename.nil?
+            printUsage
+            exit 1
+          else
+            @read_only_files.push filename
+          end
+        when '-c', '--config'
+          @config_filename = argv.shift
+          if @config_filename.nil?
+            printUsage
+            exit 1
+          end
+        when '-e', '--execute'
+          post_load_script = argv.shift
+          if post_load_script.nil?
+            printUsage
+            exit 1
+          else
+            @post_load_script << "\n#{post_load_script}"
+          end                        
+        when '-m', '--open-matching'
+          regexp = argv.shift
+          files = `egrep -rl '#{regexp}' *`.split( /\n/ )
+          if files.any?
+            @files.concat files
+            script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
+            @post_load_script << script
+          end              
+        else
+          # a name of a file to open
+          @files.push arg
         end
+      end
     end
     protected :parseOptions
 
     def printUsage
-        puts "Usage: #{$0} [options] [file] [file...]"
-        puts "\t--help\tDisplay usage"
-        puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
-        puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
-        puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
-        puts "\t-ro <file>\tLoad file as read-only"
+      puts "Usage: #{$0} [options] [file] [file...]"
+      puts "\t--help\tDisplay usage"
+      puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
+      puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
+      puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
+      puts "\t-ro <file>\tLoad file as read-only"
     end
     protected :printUsage
     
@@ -302,65 +302,57 @@ module Diakonos
     end
     
     def initializeDisplay
-        if @win_main
-            @win_main.close
+      @win_main.close if @win_main
+      @win_status.close if @win_status
+      @win_interaction.close if @win_interaction
+      @win_context.close if @win_context
+      
+      Curses::init_screen
+      Curses::nonl
+      Curses::raw
+      Curses::noecho
+      
+      if Curses::has_colors?
+        Curses::start_color
+        Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
+        Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
+        Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
+        Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
+        Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
+        Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
+        Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
+        Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
+        @colour_pairs.each do |cp|
+          Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
         end
-        if @win_status
-            @win_status.close
-        end
-        if @win_interaction
-            @win_interaction.close
-        end
-        if @win_context
-            @win_context.close
-        end
-
-        Curses::init_screen
-        Curses::nonl
-        Curses::raw
-        Curses::noecho
-
-        if Curses::has_colors?
-            Curses::start_color
-            Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
-            Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
-            Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
-            Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
-            Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
-            Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
-            Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
-            Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
-            @colour_pairs.each do |cp|
-                Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
-            end
-        end
-        
-        @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
-        @win_main.keypad( true )
-        @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
-        @win_status.keypad( true )
-        @win_status.attrset @settings[ 'status.format' ]
-        @win_interaction = Curses::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
-        @win_interaction.keypad( true )
-        
-        if @settings[ 'context.visible' ]
-            if @settings[ 'context.combined' ]
-                pos = 1
-            else
-                pos = 3
-            end
-            @win_context = Curses::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
-            @win_context.keypad( true )
+      end
+      
+      @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
+      @win_main.keypad( true )
+      @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
+      @win_status.keypad( true )
+      @win_status.attrset @settings[ 'status.format' ]
+      @win_interaction = Curses::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
+      @win_interaction.keypad( true )
+      
+      if @settings[ 'context.visible' ]
+        if @settings[ 'context.combined' ]
+          pos = 1
         else
-            @win_context = nil
+          pos = 3
         end
-
-        @win_interaction.refresh
-        @win_main.refresh
-        
-        @buffers.each_value do |buffer|
-            buffer.reset_win_main
-        end
+        @win_context = Curses::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
+        @win_context.keypad( true )
+      else
+        @win_context = nil
+      end
+      
+      @win_interaction.refresh
+      @win_main.refresh
+      
+      @buffers.each_value do |buffer|
+        buffer.reset_win_main
+      end
     end
     
     def fetch_conf( location = "v#{VERSION}" )
