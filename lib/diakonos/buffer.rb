@@ -1118,7 +1118,7 @@ class Buffer
             end
         end
         
-        return_pointer, @cursor_stack.size
+        [ return_pointer, @cursor_stack.size ]
     end
     
     def tabExpandedColumn( col, row )

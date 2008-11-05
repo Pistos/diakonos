@@ -265,7 +265,7 @@ class String
             working_offset += 1
         end
         
-        i, match_text
+        [ i, match_text ]
     end
     
     # Works like normal String#rindex except returns the index
@@ -309,7 +309,7 @@ class String
             working_offset -= 1
         end
         
-        i, match_text
+        [ i, match_text ]
     end
     
     def movement?
