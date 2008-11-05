@@ -675,93 +675,93 @@ module Diakonos
     # -----------------------------------------------------------------------
 
     def main_window_height
-        # One line for the status line
-        # One line for the input line
-        # One line for the context line
-        retval = Curses::lines - 2
-        if @settings[ "context.visible" ] and not @settings[ "context.combined" ]
-            retval = retval - 1
-        end
-        retval
+      # One line for the status line
+      # One line for the input line
+      # One line for the context line
+      retval = Curses::lines - 2
+      if @settings[ "context.visible" ] and not @settings[ "context.combined" ]
+        retval = retval - 1
+      end
+      retval
     end
-
+    
     def main_window_width
-        Curses::cols
+      Curses::cols
     end
-
+    
     def start
-        initializeDisplay
-        
-        @hooks = {
-          :after_buffer_switch => [],
-          :after_open          => [],
-          :after_save          => [],
-          :after_startup       => [],
-        }
-        Dir[ "#{@script_dir}/*" ].each do |script|
-            begin
-                require script
-            rescue Exception => e
-                showException(
-                    e,
-                    [
-                        "There is a syntax error in the script.",
-                        "An invalid hook name was used."
-                    ]
-                )
-            end
+      initializeDisplay
+      
+      @hooks = {
+        :after_buffer_switch => [],
+        :after_open          => [],
+        :after_save          => [],
+        :after_startup       => [],
+      }
+      Dir[ "#{@script_dir}/*" ].each do |script|
+        begin
+          require script
+        rescue Exception => e
+          showException(
+            e,
+            [
+              "There is a syntax error in the script.",
+              "An invalid hook name was used."
+            ]
+          )
         end
-        @hooks.each do |hook_name, hook|
-            hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
-        end
+      end
+      @hooks.each do |hook_name, hook|
+        hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
+      end
 
-        if ENV[ 'COLORTERM' ] == 'gnome-terminal'
-          help_key = 'Shift-F1'
-        else
-          help_key = 'F1'
+      if ENV[ 'COLORTERM' ] == 'gnome-terminal'
+        help_key = 'Shift-F1'
+      else
+        help_key = 'F1'
+      end
+      setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
+      
+      num_opened = 0
+      if @files.length == 0 and @read_only_files.length == 0
+        num_opened += 1 if openFile
+      else
+        @files.each do |file|
+          num_opened += 1 if openFile file
         end
-        setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
+        @read_only_files.each do |file|
+          num_opened += 1 if openFile( file, Buffer::READ_ONLY )
+        end
+      end
+      
+      if num_opened > 0
+        switchToBufferNumber 1
         
-        num_opened = 0
-        if @files.length == 0 and @read_only_files.length == 0
-            num_opened += 1 if openFile
-        else
-            @files.each do |file|
-                num_opened += 1 if openFile file
-            end
-            @read_only_files.each do |file|
-                num_opened += 1 if openFile( file, Buffer::READ_ONLY )
-            end
+        updateStatusLine
+        updateContextLine
+        
+        if @post_load_script
+          eval @post_load_script
         end
         
-        if num_opened > 0
-          switchToBufferNumber 1
-          
-          updateStatusLine
-          updateContextLine
-          
-          if @post_load_script
-            eval @post_load_script
-          end
-          
-          runHookProcs :after_startup
-          
-          if not @settings[ 'suppress_welcome' ]
-            openFile "#{@help_dir}/welcome.dhf"
-          end
-          
-          begin
-            # Main keyboard loop.
-            while not @quitting
-              processKeystroke
-              @win_main.refresh
-            end
-          rescue SignalException => e
-            debugLog "Terminated by signal (#{e.message})"
-          end
-          
-          @debug.close
+        runHookProcs :after_startup
+        
+        if not @settings[ 'suppress_welcome' ]
+          openFile "#{@help_dir}/welcome.dhf"
         end
+        
+        begin
+          # Main keyboard loop.
+          while not @quitting
+            processKeystroke
+            @win_main.refresh
+          end
+        rescue SignalException => e
+          debugLog "Terminated by signal (#{e.message})"
+        end
+        
+        @debug.close
+      end
     end
     
     def capture_keychain( c, context )
@@ -880,23 +880,23 @@ module Diakonos
 
     # Display text on the interaction line.
     def setILine( string = "" )
-        Curses::curs_set 0
-        @win_interaction.setpos( 0, 0 )
-        @win_interaction.addstr( "%-#{Curses::cols}s" % string )
-        @win_interaction.refresh
-        Curses::curs_set 1
-        string.length
+      Curses::curs_set 0
+      @win_interaction.setpos( 0, 0 )
+      @win_interaction.addstr( "%-#{Curses::cols}s" % string )
+      @win_interaction.refresh
+      Curses::curs_set 1
+      string.length
     end
     
     def showClips
-        clip_filename = @diakonos_home + "/clips.txt"
-        File.open( clip_filename, "w" ) do |f|
-            @clipboard.each do |clip|
-                f.puts clip
-                f.puts "---------------------------"
-            end
+      clip_filename = @diakonos_home + "/clips.txt"
+      File.open( clip_filename, "w" ) do |f|
+        @clipboard.each do |clip|
+          f.puts clip
+          f.puts "---------------------------"
         end
-        openFile clip_filename
+      end
+      openFile clip_filename
     end
 
     def switchTo( buffer )
@@ -930,131 +930,131 @@ module Diakonos
     end
 
     def buildStatusLine( truncation = 0 )
-        var_array = Array.new
-        @settings[ "status.vars" ].each do |var|
-            case var
-                when "buffer_number"
-                    var_array.push bufferToNumber( @current_buffer )
-                when "col"
-                    var_array.push( @current_buffer.last_screen_col + 1 )
-                when "filename"
-                    name = @current_buffer.nice_name
-                    var_array.push( name[ ([ truncation, name.length ].min)..-1 ] )
-                when "modified"
-                    if @current_buffer.modified
-                        var_array.push @settings[ "status.modified_str" ]
-                    else
-                        var_array.push ""
-                    end
-                when "num_buffers"
-                    var_array.push @buffers.length
-                when "num_lines"
-                    var_array.push @current_buffer.length
-                when "row", "line"
-                    var_array.push( @current_buffer.last_row + 1 )
-                when "read_only"
-                    if @current_buffer.read_only
-                        var_array.push @settings[ "status.read_only_str" ]
-                    else
-                        var_array.push ""
-                    end
-                when "selecting"
-                    if @current_buffer.changing_selection
-                        var_array.push @settings[ "status.selecting_str" ]
-                    else
-                        var_array.push ""
-                    end
-                when "type"
-                    var_array.push @current_buffer.original_language
-                when /^@/
-                  var_array.push @status_vars[ var ]
-            end
+      var_array = Array.new
+      @settings[ "status.vars" ].each do |var|
+        case var
+        when "buffer_number"
+          var_array.push bufferToNumber( @current_buffer )
+        when "col"
+          var_array.push( @current_buffer.last_screen_col + 1 )
+        when "filename"
+          name = @current_buffer.nice_name
+          var_array.push( name[ ([ truncation, name.length ].min)..-1 ] )
+        when "modified"
+          if @current_buffer.modified
+            var_array.push @settings[ "status.modified_str" ]
+          else
+            var_array.push ""
+          end
+        when "num_buffers"
+          var_array.push @buffers.length
+        when "num_lines"
+          var_array.push @current_buffer.length
+        when "row", "line"
+          var_array.push( @current_buffer.last_row + 1 )
+        when "read_only"
+          if @current_buffer.read_only
+            var_array.push @settings[ "status.read_only_str" ]
+          else
+            var_array.push ""
+          end
+        when "selecting"
+          if @current_buffer.changing_selection
+            var_array.push @settings[ "status.selecting_str" ]
+          else
+            var_array.push ""
+          end
+        when "type"
+          var_array.push @current_buffer.original_language
+        when /^@/
+          var_array.push @status_vars[ var ]
         end
-        str = nil
-        begin
-            status_left = @settings[ "status.left" ]
-            field_count = status_left.count "%"
-            status_left = status_left % var_array[ 0...field_count ]
-            status_right = @settings[ "status.right" ] % var_array[ field_count..-1 ]
-            filler_string = @settings[ "status.filler" ]
-            fill_amount = (Curses::cols - status_left.length - status_right.length) / filler_string.length
-            if fill_amount > 0
-                filler = filler_string * fill_amount
-            else
-                filler = ""
-            end
-            str = status_left + filler + status_right
-        rescue ArgumentError => e
-            str = "%-#{Curses::cols}s" % "(status line configuration error)"
+      end
+      str = nil
+      begin
+        status_left = @settings[ "status.left" ]
+        field_count = status_left.count "%"
+        status_left = status_left % var_array[ 0...field_count ]
+        status_right = @settings[ "status.right" ] % var_array[ field_count..-1 ]
+        filler_string = @settings[ "status.filler" ]
+        fill_amount = (Curses::cols - status_left.length - status_right.length) / filler_string.length
+        if fill_amount > 0
+          filler = filler_string * fill_amount
+        else
+          filler = ""
         end
-        str
+        str = status_left + filler + status_right
+      rescue ArgumentError => e
+        str = "%-#{Curses::cols}s" % "(status line configuration error)"
+      end
+      str
     end
     protected :buildStatusLine
 
     def updateStatusLine
-        str = buildStatusLine
-        if str.length > Curses::cols
-            str = buildStatusLine( str.length - Curses::cols )
-        end
-        Curses::curs_set 0
-        @win_status.setpos( 0, 0 )
-        @win_status.addstr str
-        @win_status.refresh
-        Curses::curs_set 1
+      str = buildStatusLine
+      if str.length > Curses::cols
+        str = buildStatusLine( str.length - Curses::cols )
+      end
+      Curses::curs_set 0
+      @win_status.setpos( 0, 0 )
+      @win_status.addstr str
+      @win_status.refresh
+      Curses::curs_set 1
     end
 
     def updateContextLine
-        if @win_context
-            @context_thread.exit if @context_thread
-            @context_thread = Thread.new do ||
-
-                context = @current_buffer.context
-
-                Curses::curs_set 0
-                @win_context.setpos( 0, 0 )
-                chars_printed = 0
-                if context.length > 0
-                    truncation = [ @settings[ "context.max_levels" ], context.length ].min
-                    max_length = [
-                        ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
-                        ( @settings[ "context.max_segment_width" ] or Curses::cols )
-                    ].min
-                    line = nil
-                    context_subset = context[ 0...truncation ]
-                    context_subset = context_subset.collect do |line|
-                        line.strip[ 0...max_length ]
-                    end
-
-                    context_subset.each do |line|
-                        @win_context.attrset @settings[ "context.format" ]
-                        @win_context.addstr line
-                        chars_printed += line.length
-                        @win_context.attrset @settings[ "context.separator.format" ]
-                        @win_context.addstr @settings[ "context.separator" ]
-                        chars_printed += @settings[ "context.separator" ].length
-                    end
-                end
-
-                @iline_mutex.synchronize do
-                    @win_context.attrset @settings[ "context.format" ]
-                    @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
-                    @win_context.refresh
-                end
-                @display_mutex.synchronize do
-                    @win_main.setpos( @current_buffer.last_screen_y, @current_buffer.last_screen_x )
-                    @win_main.refresh
-                end
-                Curses::curs_set 1
+      if @win_context
+        @context_thread.exit if @context_thread
+        @context_thread = Thread.new do ||
+          
+          context = @current_buffer.context
+          
+          Curses::curs_set 0
+          @win_context.setpos( 0, 0 )
+          chars_printed = 0
+          if context.length > 0
+            truncation = [ @settings[ "context.max_levels" ], context.length ].min
+            max_length = [
+              ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
+              ( @settings[ "context.max_segment_width" ] or Curses::cols )
+            ].min
+            line = nil
+            context_subset = context[ 0...truncation ]
+            context_subset = context_subset.collect do |line|
+              line.strip[ 0...max_length ]
             end
             
-            @context_thread.priority = -2
+            context_subset.each do |line|
+              @win_context.attrset @settings[ "context.format" ]
+              @win_context.addstr line
+              chars_printed += line.length
+              @win_context.attrset @settings[ "context.separator.format" ]
+              @win_context.addstr @settings[ "context.separator" ]
+              chars_printed += @settings[ "context.separator" ].length
+            end
+          end
+          
+          @iline_mutex.synchronize do
+            @win_context.attrset @settings[ "context.format" ]
+            @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
+            @win_context.refresh
+          end
+          @display_mutex.synchronize do
+            @win_main.setpos( @current_buffer.last_screen_y, @current_buffer.last_screen_x )
+            @win_main.refresh
+          end
+          Curses::curs_set 1
         end
+        
+        @context_thread.priority = -2
+      end
     end
     
     def displayEnqueue( buffer )
-        @display_queue_mutex.synchronize do
-            @display_queue = buffer
-        end
+      @display_queue_mutex.synchronize do
+        @display_queue = buffer
+      end
     end
     
     def displayDequeue
@@ -1072,341 +1072,341 @@ module Diakonos
 
     # completion_array is the array of strings that tab completion can use
     def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, &block )
-        if @playing_macro
-            retval = @macro_input_history.shift
-        else
-            retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
-            if @macro_history
-                @macro_input_history.push retval
-            end
-            setILine
+      if @playing_macro
+        retval = @macro_input_history.shift
+      else
+        retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
+        if @macro_history
+          @macro_input_history.push retval
         end
-        retval
+        setILine
+      end
+      retval
     end
 
     def getLanguageFromName( name )
-        retval = nil
-        @filemasks.each do |language,filemask|
-            if name =~ filemask
-                retval = language
-                break
-            end
+      retval = nil
+      @filemasks.each do |language,filemask|
+        if name =~ filemask
+          retval = language
+          break
         end
-        retval
+      end
+      retval
     end
     
     def getLanguageFromShaBang( first_line )
-        retval = nil
-        @bangmasks.each do |language,bangmask|
-            if first_line =~ /^#!/ and first_line =~ bangmask
-                retval = language
-                break
-            end
+      retval = nil
+      @bangmasks.each do |language,bangmask|
+        if first_line =~ /^#!/ and first_line =~ bangmask
+          retval = language
+          break
         end
-        retval
+      end
+      retval
     end
     
     def showException( e, probable_causes = [ "Unknown" ] )
-        begin
-            File.open( @error_filename, "w" ) do |f|
-                f.puts "Diakonos Error:"
-                f.puts
-                f.puts e.message
-                f.puts
-                f.puts "Probable Causes:"
-                f.puts
-                probable_causes.each do |pc|
-                    f.puts "- #{pc}"
-                end
-                f.puts
-                f.puts "----------------------------------------------------"
-                f.puts "If you can reproduce this error, please report it at"
-                f.puts "http://linis.purepistos.net/ticket/list/Diakonos !"
-                f.puts "----------------------------------------------------"
-                f.puts e.backtrace
-            end
-            openFile( @error_filename )
-        rescue Exception => e2
-            debugLog "EXCEPTION: #{e.message}"
-            debugLog "\t#{e.backtrace}"
+      begin
+        File.open( @error_filename, "w" ) do |f|
+          f.puts "Diakonos Error:"
+          f.puts
+          f.puts e.message
+          f.puts
+          f.puts "Probable Causes:"
+          f.puts
+          probable_causes.each do |pc|
+            f.puts "- #{pc}"
+          end
+          f.puts
+          f.puts "----------------------------------------------------"
+          f.puts "If you can reproduce this error, please report it at"
+          f.puts "http://linis.purepistos.net/ticket/list/Diakonos !"
+          f.puts "----------------------------------------------------"
+          f.puts e.backtrace
         end
+        openFile( @error_filename )
+      rescue Exception => e2
+        debugLog "EXCEPTION: #{e.message}"
+        debugLog "\t#{e.backtrace}"
+      end
     end
     
     def logBacktrace
-        begin
-            raise Exception
-        rescue Exception => e
-            e.backtrace[ 1..-1 ].each do |x|
-                debugLog x
-            end
+      begin
+        raise Exception
+      rescue Exception => e
+        e.backtrace[ 1..-1 ].each do |x|
+          debugLog x
         end
+      end
     end
 
     # The given buffer_number should be 1-based, not zero-based.
     # Returns nil if no such buffer exists.
     def bufferNumberToName( buffer_number )
-        return nil if buffer_number < 1
-
-        number = 1
-        buffer_name = nil
-        @buffers.each_key do |name|
-            if number == buffer_number
-                buffer_name = name
-                break
-            end
-            number += 1
+      return nil if buffer_number < 1
+      
+      number = 1
+      buffer_name = nil
+      @buffers.each_key do |name|
+        if number == buffer_number
+          buffer_name = name
+          break
         end
-        buffer_name
+        number += 1
+      end
+      buffer_name
     end
 
     # The returned value is 1-based, not zero-based.
     # Returns nil if no such buffer exists.
     def bufferToNumber( buffer )
-        number = 1
-        buffer_number = nil
-        @buffers.each_value do |b|
-            if b == buffer
-                buffer_number = number
-                break
-            end
-            number += 1
+      number = 1
+      buffer_number = nil
+      @buffers.each_value do |b|
+        if b == buffer
+          buffer_number = number
+          break
         end
-        buffer_number
+        number += 1
+      end
+      buffer_number
     end
 
     def subShellVariables( string )
-        return nil if string.nil?
-
-        retval = string
-        retval = retval.subHome
-        
-        # Current buffer filename
-        retval.gsub!( /\$f/, ( $1 or "" ) + ( @current_buffer.name or "" ) )
-        
-        # space-separated list of all buffer filenames
-        name_array = Array.new
-        @buffers.each_value do |b|
-            name_array.push b.name
+      return nil if string.nil?
+      
+      retval = string
+      retval = retval.subHome
+      
+      # Current buffer filename
+      retval.gsub!( /\$f/, ( $1 or "" ) + ( @current_buffer.name or "" ) )
+      
+      # space-separated list of all buffer filenames
+      name_array = Array.new
+      @buffers.each_value do |b|
+        name_array.push b.name
+      end
+      retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )
+      
+      # Get user input, sub it in
+      if retval =~ /\$i/
+        user_input = getUserInput( "Argument: ", @rlh_shell )
+        retval.gsub!( /\$i/, user_input )
+      end
+      
+      # Current clipboard text
+      if retval =~ /\$c/
+        clip_filename = @diakonos_home + "/clip.txt"
+        File.open( clip_filename, "w" ) do |clipfile|
+          if @clipboard.clip
+            clipfile.puts( @clipboard.clip.join( "\n" ) )
+          end
         end
-        retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )
-        
-        # Get user input, sub it in
-        if retval =~ /\$i/
-            user_input = getUserInput( "Argument: ", @rlh_shell )
-            retval.gsub!( /\$i/, user_input )
+        retval.gsub!( /\$c/, clip_filename )
+      end
+      
+      # Current klipper (KDE clipboard) text
+      if retval =~ /\$k/
+        clip_filename = @diakonos_home + "/clip.txt"
+        File.open( clip_filename, "w" ) do |clipfile|
+          clipfile.puts( `dcop klipper klipper getClipboardContents` )
         end
+        retval.gsub!( /\$k/, clip_filename )
+      end
+      
+      # Currently selected text
+      if retval =~ /\$s/
+        text_filename = @diakonos_home + "/selected.txt"
         
-        # Current clipboard text
-        if retval =~ /\$c/
-            clip_filename = @diakonos_home + "/clip.txt"
-            File.open( clip_filename, "w" ) do |clipfile|
-                if @clipboard.clip
-                    clipfile.puts( @clipboard.clip.join( "\n" ) )
-                end
-            end
-            retval.gsub!( /\$c/, clip_filename )
+        File.open( text_filename, "w" ) do |textfile|
+          selected_text = @current_buffer.selected_text
+          if selected_text
+            textfile.puts( selected_text.join( "\n" ) )
+          end
         end
-        
-        # Current klipper (KDE clipboard) text
-        if retval =~ /\$k/
-            clip_filename = @diakonos_home + "/clip.txt"
-            File.open( clip_filename, "w" ) do |clipfile|
-                clipfile.puts( `dcop klipper klipper getClipboardContents` )
-            end
-            retval.gsub!( /\$k/, clip_filename )
-        end
-        
-        # Currently selected text
-        if retval =~ /\$s/
-            text_filename = @diakonos_home + "/selected.txt"
-            
-            File.open( text_filename, "w" ) do |textfile|
-                selected_text = @current_buffer.selected_text
-                if selected_text
-                    textfile.puts( selected_text.join( "\n" ) )
-                end
-            end
-            retval.gsub!( /\$s/, text_filename )
-        end
-        
-        retval
+        retval.gsub!( /\$s/, text_filename )
+      end
+      
+      retval
     end
     
     def showMessage( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
-        terminateMessage
-        
-        @message_expiry = Time.now + non_interaction_duration
-        @message_thread = Thread.new do
-            time_left = @message_expiry - Time.now
-            while time_left > 0
-                setILine "(#{time_left.round}) #{message}"
-                @win_main.setpos( @saved_main_y, @saved_main_x )
-                sleep 1
-                time_left = @message_expiry - Time.now
-            end
-            setILine message
-            @win_main.setpos( @saved_main_y, @saved_main_x )
+      terminateMessage
+      
+      @message_expiry = Time.now + non_interaction_duration
+      @message_thread = Thread.new do
+        time_left = @message_expiry - Time.now
+        while time_left > 0
+          setILine "(#{time_left.round}) #{message}"
+          @win_main.setpos( @saved_main_y, @saved_main_x )
+          sleep 1
+          time_left = @message_expiry - Time.now
         end
+        setILine message
+        @win_main.setpos( @saved_main_y, @saved_main_x )
+      end
     end
     
     def terminateMessage
-        if @message_thread and @message_thread.alive?
-            @message_thread.terminate
-            @message_thread = nil
-        end
+      if @message_thread and @message_thread.alive?
+        @message_thread.terminate
+        @message_thread = nil
+      end
     end
     
     def interactionBlink( message = nil )
-        terminateMessage
-        setILine @settings[ 'interaction.blink_string' ]
-        sleep @settings[ 'interaction.blink_duration' ]
-        setILine message if message
+      terminateMessage
+      setILine @settings[ 'interaction.blink_string' ]
+      sleep @settings[ 'interaction.blink_duration' ]
+      setILine message if message
     end
     
     # choices should be an array of CHOICE_* constants.
     # default is what is returned when Enter is pressed.
     def getChoice( prompt, choices, default = nil )
-        retval = @iterated_choice
-        if retval
-            @choice_iterations -= 1
-            if @choice_iterations < 1
-                @iterated_choice = nil
-                @do_display = true
-            end
-            return retval 
+      retval = @iterated_choice
+      if retval
+        @choice_iterations -= 1
+        if @choice_iterations < 1
+          @iterated_choice = nil
+          @do_display = true
         end
+        return retval 
+      end
+      
+      @saved_main_x = @win_main.curx
+      @saved_main_y = @win_main.cury
+      
+      msg = prompt + " "
+      choice_strings = choices.collect do |choice|
+        CHOICE_STRINGS[ choice ]
+      end
+      msg << choice_strings.join( ", " )
+      
+      if default.nil?
+        showMessage msg
+      else
+        setILine msg
+      end
+      
+      c = nil
+      while retval.nil?
+        c = @win_interaction.getch
         
-        @saved_main_x = @win_main.curx
-        @saved_main_y = @win_main.cury
-
-        msg = prompt + " "
-        choice_strings = choices.collect do |choice|
-            CHOICE_STRINGS[ choice ]
-        end
-        msg << choice_strings.join( ", " )
-        
-        if default.nil?
-            showMessage msg
+        case c
+        when Curses::KEY_NPAGE
+          pageDown
+        when Curses::KEY_PPAGE
+          pageUp
         else
-            setILine msg
-        end
-        
-        c = nil
-        while retval.nil?
-            c = @win_interaction.getch
-            
+          if @message_expiry and Time.now < @message_expiry
+            interactionBlink
+            showMessage msg
+          else
             case c
-                when Curses::KEY_NPAGE
-                    pageDown
-                when Curses::KEY_PPAGE
-                    pageUp
-                else
-                    if @message_expiry and Time.now < @message_expiry
-                        interactionBlink
-                        showMessage msg
-                    else
-                        case c
-                            when ENTER
-                                retval = default
-                            when ?0..?9
-                                if @choice_iterations < 1
-                                    @choice_iterations = ( c - ?0 )
-                                else
-                                    @choice_iterations = @choice_iterations * 10 + ( c - ?0 )
-                                end
-                            else
-                                choices.each do |choice|
-                                    if CHOICE_KEYS[ choice ].include? c
-                                        retval = choice
-                                        break
-                                    end
-                                end
-                        end
-                        
-                        if retval.nil?
-                            interactionBlink( msg )
-                        end
-                    end
+            when ENTER
+              retval = default
+            when ?0..?9
+              if @choice_iterations < 1
+                @choice_iterations = ( c - ?0 )
+              else
+                @choice_iterations = @choice_iterations * 10 + ( c - ?0 )
+              end
+            else
+              choices.each do |choice|
+                if CHOICE_KEYS[ choice ].include? c
+                  retval = choice
+                  break
+                end
+              end
             end
+            
+            if retval.nil?
+              interactionBlink( msg )
+            end
+          end
         end
-        
-        terminateMessage
-        setILine
-
-        if @choice_iterations > 0
-            @choice_iterations -= 1
-            @iterated_choice = retval
-            @do_display = false
-        end
-        
-        retval
+      end
+      
+      terminateMessage
+      setILine
+      
+      if @choice_iterations > 0
+        @choice_iterations -= 1
+        @iterated_choice = retval
+        @do_display = false
+      end
+      
+      retval
     end
 
     def startRecordingMacro( name = nil )
-        return if @macro_history
-        @macro_name = name
-        @macro_history = Array.new
-        @macro_input_history = Array.new
-        setILine "Started macro recording."
+      return if @macro_history
+      @macro_name = name
+      @macro_history = Array.new
+      @macro_input_history = Array.new
+      setILine "Started macro recording."
     end
     protected :startRecordingMacro
-
+    
     def stopRecordingMacro
-        @macro_history.pop  # Remove the stopRecordingMacro command itself
-        @macros[ @macro_name ] = [ @macro_history, @macro_input_history ]
-        @macro_history = nil
-        @macro_input_history = nil
-        setILine "Stopped macro recording."
+      @macro_history.pop  # Remove the stopRecordingMacro command itself
+      @macros[ @macro_name ] = [ @macro_history, @macro_input_history ]
+      @macro_history = nil
+      @macro_input_history = nil
+      setILine "Stopped macro recording."
     end
     protected :stopRecordingMacro
 
     def typeCharacter( c )
-        @current_buffer.deleteSelection( Buffer::DONT_DISPLAY )
-        @current_buffer.insertChar c
-        cursorRight( Buffer::STILL_TYPING )
+      @current_buffer.deleteSelection( Buffer::DONT_DISPLAY )
+      @current_buffer.insertChar c
+      cursorRight( Buffer::STILL_TYPING )
     end
     
     def loadTags
-        @tags = Hash.new
-        if @current_buffer and @current_buffer.name
-            path = File.expand_path( File.dirname( @current_buffer.name ) )
-            tagfile = path + "/tags"
-        else
-            tagfile = "./tags"
+      @tags = Hash.new
+      if @current_buffer and @current_buffer.name
+        path = File.expand_path( File.dirname( @current_buffer.name ) )
+        tagfile = path + "/tags"
+      else
+        tagfile = "./tags"
+      end
+      if FileTest.exists? tagfile
+        IO.foreach( tagfile ) do |line_|
+          line = line_.chomp
+          # <tagname>\t<filepath>\t<line number or regexp>\t<kind of tag>
+          tag, file, command, kind, rest = line.split( /\t/ )
+          command.gsub!( /;"$/, "" )
+          if command =~ /^\/.*\/$/
+            command = command[ 1...-1 ]
+          end
+          @tags[ tag ] ||= Array.new
+          @tags[ tag ].push CTag.new( file, command, kind, rest )
         end
-        if FileTest.exists? tagfile
-            IO.foreach( tagfile ) do |line_|
-                line = line_.chomp
-                # <tagname>\t<filepath>\t<line number or regexp>\t<kind of tag>
-                tag, file, command, kind, rest = line.split( /\t/ )
-                command.gsub!( /;"$/, "" )
-                if command =~ /^\/.*\/$/
-                    command = command[ 1...-1 ]
-                end
-                @tags[ tag ] ||= Array.new
-                @tags[ tag ].push CTag.new( file, command, kind, rest )
-            end
-        else
-            setILine "(tags file not found)"
-        end
+      else
+        setILine "(tags file not found)"
+      end
     end
     
     def refreshAll
-        @win_main.refresh
-        if @win_context
-            @win_context.refresh
-        end
-        @win_status.refresh
-        @win_interaction.refresh
+      @win_main.refresh
+      if @win_context
+        @win_context.refresh
+      end
+      @win_status.refresh
+      @win_interaction.refresh
     end
     
     def openListBuffer
-        @list_buffer = openFile( @list_filename )
+      @list_buffer = openFile( @list_filename )
     end
     
     def closeListBuffer
-        closeFile( @list_buffer )
-        @list_buffer = nil
+      closeFile( @list_buffer )
+      @list_buffer = nil
     end
     def showing_list?
       @list_buffer
@@ -1448,9 +1448,9 @@ module Diakonos
     end
     
     def runHookProcs( hook_id, *args )
-        @hooks[ hook_id ].each do |hook_proc|
-            hook_proc[ :proc ].call( *args )
-        end
+      @hooks[ hook_id ].each do |hook_proc|
+        hook_proc[ :proc ].call( *args )
+      end
     end
     
     # --------------------------------------------------------------------
