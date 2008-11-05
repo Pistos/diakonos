@@ -1454,6 +1454,15 @@ module Diakonos
       end
     end
     
+    def show_buffer_file_diff( buffer = @current_buffer )
+      current_text_file = @diakonos_home + '/current-buffer'
+      buffer.saveCopy( current_text_file )
+      `#{@settings[ 'diff_command' ]} #{current_text_file} #{buffer.name} > #{@diff_filename}`
+      diff_buffer = openFile( @diff_filename )
+      yield diff_buffer
+      closeFile diff_buffer
+    end
+    
     # --------------------------------------------------------------------
     #
     # Program Function helpers

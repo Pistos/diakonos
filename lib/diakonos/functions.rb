@@ -651,14 +651,15 @@ module Diakonos
           ( filename !~ /\.diakonos/ ) and
           existing_buffer.file_different?
         )
-          switchTo( existing_buffer )
-          choice = getChoice(
-            "Load on-disk version of #{existing_buffer.nice_name}?",
-            [ CHOICE_YES, CHOICE_NO ]
-          )
-          case choice
-          when CHOICE_NO
-            do_open = false
+          show_buffer_file_diff( existing_buffer ) do
+            choice = getChoice(
+              "Load on-disk version of #{existing_buffer.nice_name}?",
+              [ CHOICE_YES, CHOICE_NO ]
+            )
+            case choice
+            when CHOICE_NO
+              do_open = false
+            end
           end
         end
       
@@ -922,29 +923,24 @@ module Diakonos
 
     # If the prompt is non-nil, ask the user yes or no question first.
     def revert( prompt = nil )
-        do_revert = true
-        
-        current_text_file = @diakonos_home + '/current-buffer'
-        @current_buffer.saveCopy( current_text_file )
-        `#{@settings[ 'diff_command' ]} #{current_text_file} #{@current_buffer.name} > #{@diff_filename}`
-        diff_buffer = openFile( @diff_filename )
-        
-        if prompt
-            choice = getChoice(
-                prompt,
-                [ CHOICE_YES, CHOICE_NO ]
-            )
-            case choice
-                when CHOICE_NO
-                    do_revert = false
-            end
+      do_revert = true
+      
+      if prompt
+        show_buffer_file_diff do
+          choice = getChoice(
+            prompt,
+            [ CHOICE_YES, CHOICE_NO ]
+          )
+          case choice
+          when CHOICE_NO
+            do_revert = false
+          end
         end
-        
-        closeFile( diff_buffer )
-        
-        if do_revert
-            openFile( @current_buffer.name, Buffer::READ_WRITE, FORCE_REVERT )
-        end
+      end
+      
+      if do_revert
+        openFile( @current_buffer.name, Buffer::READ_WRITE, FORCE_REVERT )
+      end
     end
 
     def saveFile( buffer = @current_buffer )
