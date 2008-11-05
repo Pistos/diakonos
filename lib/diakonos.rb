@@ -50,7 +50,7 @@ require 'diakonos/readline'
 module Diakonos
   
     VERSION = '0.8.7'
-    LAST_MODIFIED = 'November 2, 2008'
+    LAST_MODIFIED = 'November 4, 2008'
 
     DONT_ADJUST_ROW = false
     ADJUST_ROW = true
@@ -167,6 +167,7 @@ module Diakonos
         'newFile',
         'openFile',
         'openFileAsk',
+        'open_matching_files',
         'operateOnEachLine',
         'operateOnLines',
         'operateOnString',
@@ -261,6 +262,8 @@ class Diakonos
 
         @buffer_stack = Array.new
         @current_buffer = nil
+        @buffer_history = Array.new
+        @buffer_history_pointer = nil
         @bookmarks = Hash.new
         @macro_history = nil
         @macro_input_history = nil
@@ -1026,6 +1029,13 @@ class Diakonos
       switched
     end
     protected :switchTo
+    
+    def remember_buffer( buffer )
+      if @buffer_history.last != buffer
+        @buffer_history << buffer
+        @buffer_history_pointer = @buffer_history.size - 1
+      end
+    end
     
     def set_status_variable( identifier, value )
       @status_vars[ identifier ] = value
@@ -2345,7 +2355,7 @@ class Diakonos
       prefill = ''
       
       if @current_buffer
-        if @current_buffer.current_line =~ %r{/} and @current_buffer.current_line =~ %r{[/\w.]+}
+        if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
           prefill = $&
         elsif @current_buffer.name
           prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
@@ -2359,6 +2369,31 @@ class Diakonos
         updateStatusLine
         updateContextLine
       end
+    end
+    
+    def open_matching_files( regexp = nil, search_root = nil )
+      regexp ||= getUserInput( "Regexp: ", @rlh_search )
+      return if regexp.nil?
+      
+      if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
+        prefill = $&
+      else
+        prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+      end
+      search_root ||= getUserInput( "Search within: ", @rlh_files, prefill )
+      return if search_root.nil?
+      
+      files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
+      if files.any?
+        if files.size > 1
+            choice = getChoice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
+            return if choice == CHOICE_NO
+        end
+        files.each do |f|
+          openFile f
+        end
+        find 'down', CASE_SENSITIVE, regexp
+      end              
     end
     
     def operateOnString(
@@ -2771,13 +2806,31 @@ class Diakonos
     end
 
     def switchToNextBuffer
-        buffer_number = bufferToNumber( @current_buffer )
-        switchToBufferNumber( buffer_number + 1 )
+      if @buffer_history.any?
+        @buffer_history_pointer += 1
+        if @buffer_history_pointer >= @buffer_history_pointer.size
+          @buffer_history_pointer = @buffer_history_pointer.size - 1
+          switchToBufferNumber( bufferToNumber( @current_buffer ) + 1 )
+        else
+          switchTo @buffer_history[ @buffer_history_pointer ]
+        end
+      else
+        switchToBufferNumber( bufferToNumber( @current_buffer ) + 1 )
+      end
     end
 
     def switchToPreviousBuffer
-        buffer_number = bufferToNumber( @current_buffer )
-        switchToBufferNumber( buffer_number - 1 )
+      if @buffer_history.any?
+        @buffer_history_pointer -= 1
+        if @buffer_history_pointer < 0
+          @buffer_history_pointer = 0
+          switchToBufferNumber( bufferToNumber( @current_buffer ) - 1 )
+        else
+          switchTo @buffer_history[ @buffer_history_pointer ]
+        end
+      else
+        switchToBufferNumber( bufferToNumber( @current_buffer ) - 1 )
+      end
     end
 
     def toggleBookmark
