@@ -693,7 +693,7 @@ class Diakonos
     end
 
     def main_window_width
-        return Curses::cols
+        Curses::cols
     end
 
     def start
@@ -994,7 +994,7 @@ class Diakonos
         rescue ArgumentError => e
             str = "%-#{Curses::cols}s" % "(status line configuration error)"
         end
-        return str
+        str
     end
     protected :buildStatusLine
 
@@ -1163,7 +1163,7 @@ class Diakonos
             end
             number += 1
         end
-        return buffer_name
+        buffer_name
     end
 
     # The returned value is 1-based, not zero-based.

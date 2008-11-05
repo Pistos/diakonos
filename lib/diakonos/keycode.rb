@@ -103,7 +103,7 @@ module KeyCode
         if retval == nil and self.class == Fixnum
             retval = "keycode#{self}"
         end
-        return retval
+        retval
     end
 end
 

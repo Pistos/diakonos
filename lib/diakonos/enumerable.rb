@@ -9,7 +9,7 @@ module Enumerable
                 array.push [ index, strindex, strindex + match_text.length ]
             end
         end
-        return array
+        array
     end
 end
 

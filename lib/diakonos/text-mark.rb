@@ -12,7 +12,7 @@ class TextMark
     end
 
     def to_s
-        return "(#{start_row},#{start_col})-(#{end_row},#{end_col}) #{formatting}"
+        "(#{start_row},#{start_col})-(#{end_row},#{end_col}) #{formatting}"
     end
 end
 

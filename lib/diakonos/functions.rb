@@ -146,7 +146,7 @@ module Diakonos
             log "No such buffer: #{buffer.name}"
         end
 
-        return choice
+        choice
     end
     
     def collapseWhitespace
@@ -183,21 +183,21 @@ module Diakonos
     
     # Returns true iff the cursor changed positions
     def cursorDown
-        return @current_buffer.cursorTo( @current_buffer.last_row + 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
+        @current_buffer.cursorTo( @current_buffer.last_row + 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
     end
 
     # Returns true iff the cursor changed positions
     def cursorLeft( stopped_typing = Buffer::STOPPED_TYPING )
-        return @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col - 1, Buffer::DO_DISPLAY, stopped_typing )
+        @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col - 1, Buffer::DO_DISPLAY, stopped_typing )
     end
 
     def cursorRight( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
-        return @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col + amount, Buffer::DO_DISPLAY, stopped_typing )
+        @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col + amount, Buffer::DO_DISPLAY, stopped_typing )
     end
 
     # Returns true iff the cursor changed positions
     def cursorUp
-        return @current_buffer.cursorTo( @current_buffer.last_row - 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
+        @current_buffer.cursorTo( @current_buffer.last_row - 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
     end
 
     def cursorBOF

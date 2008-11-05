@@ -137,7 +137,7 @@ class Buffer
     protected :setLanguage
 
     def [] ( arg )
-        return @lines[ arg ]
+        @lines[ arg ]
     end
     
     def == (other)
@@ -146,11 +146,11 @@ class Buffer
     end
 
     def length
-        return @lines.length
+        @lines.length
     end
 
     def nice_name
-        return ( @name || @settings[ "status.unnamed_str" ] )
+        @name || @settings[ "status.unnamed_str" ]
     end
 
     def display
@@ -276,7 +276,7 @@ class Buffer
             end
         end
 
-        return [ open_index, open_token_class, open_match_text ]
+        [ open_index, open_token_class, open_match_text ]
     end
 
     def findClosingMatch( line_, regexp, bos_allowed = true, start_at = 0 )
@@ -303,7 +303,7 @@ class Buffer
             end
         end
 
-        return [ close_index, close_match_text ]
+        [ close_index, close_match_text ]
     end
     protected :findClosingMatch
 
@@ -420,15 +420,15 @@ class Buffer
             end
         end
         
-        return ( retval == "" ? nil : retval )
+        retval == "" ? nil : retval
     end
     
     # For debugging purposes
     def quotedOrNil( str )
         if str == nil
-            return "nil"
+            "nil"
         else
-            return "'#{str}'"
+            "'#{str}'"
         end
     end
     
@@ -655,7 +655,7 @@ class Buffer
             end
         end
         
-        return true
+        true
     end
 
     def replaceChar( c )
@@ -905,17 +905,17 @@ class Buffer
 
     # Returns true iff the given column, x, is less than the length of the given line, y.
     def inLine( x, y )
-        return ( x + @left_column < lineAt( y ).length )
+        x + @left_column < lineAt( y ).length
     end
 
     # Translates the window column, x, to a buffer-relative column index.
     def columnOf( x )
-        return @left_column + x
+        @left_column + x
     end
 
     # Translates the window row, y, to a buffer-relative row index.
     def rowOf( y )
-        return @top_line + y
+        @top_line + y
     end
     
     # Returns nil if the row is off-screen.
@@ -923,7 +923,7 @@ class Buffer
         return nil if row == nil
         y = row - @top_line
         y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
-        return y
+        y
     end
     
     # Returns nil if the column is off-screen.
@@ -931,7 +931,7 @@ class Buffer
         return nil if col == nil
         x = col - @left_column
         x = nil if ( x < 0 ) or ( x > @left_column + Curses::cols - 1 )
-        return x
+        x
     end
 
     def currentRow
@@ -948,7 +948,7 @@ class Buffer
         @left_column = [ @left_column + x, 0 ].max
         recordMarkStartAndEnd
         display if do_display
-        return ( @left_column - old_left_column )
+        @left_column - old_left_column
     end
 
     # Returns the amount the view was actually pitched.
@@ -997,7 +997,7 @@ class Buffer
 
         display if do_display
 
-        return changed
+        changed
     end
     
     def pushCursorState( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
@@ -1118,7 +1118,7 @@ class Buffer
             end
         end
         
-        return return_pointer, @cursor_stack.size
+        return_pointer, @cursor_stack.size
     end
     
     def tabExpandedColumn( col, row )
@@ -1129,7 +1129,7 @@ class Buffer
                 delta += ( @tab_size - ( (i+delta) % @tab_size ) ) - 1
             end
         end
-        return ( col + delta )
+        col + delta
     end
 
     def cursorToEOF
@@ -1219,7 +1219,7 @@ class Buffer
             break if( panView( amount, DONT_DISPLAY ) != amount )
         end
 
-        return ( @top_line != old_top_line or @left_column != old_left_column )
+        @top_line != old_top_line or @left_column != old_left_column
     end
 
     def setIndent( row, level, do_display = DO_DISPLAY )
@@ -1791,7 +1791,7 @@ class Buffer
             end
         end
         
-        return modified
+        modified
     end
 
     def takeSnapshot( typing = false )
@@ -1947,17 +1947,15 @@ class Buffer
                 end
             end
         end
-        return retval
+        retval
     end
 
     def setType( type )
-        success = false
         if type
             configure( type )
             display
-            success = true
+            true
         end
-        return success
     end
     
     def wordUnderCursor
@@ -1971,7 +1969,7 @@ class Buffer
             end
         end
         
-        return word
+        word
     end
 end
 

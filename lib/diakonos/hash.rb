@@ -16,7 +16,7 @@ class Hash
             delete( path[ 0 ] )
         end
         
-        return self
+        self
     end
     
     def setKeyPath( path, leaf )
@@ -30,7 +30,7 @@ class Hash
             self[ path[ 0 ] ] = leaf
         end
         
-        return self
+        self
     end
     
     def getNode( path )
@@ -43,16 +43,16 @@ class Hash
             return node
         end
         
-        return nil
+        nil
     end
     
     def getLeaf( path )
         node = getNode( path )
         if node.respond_to?( :getNode )
             # Only want a leaf node
-            return nil
+            nil
         else
-            return node
+            node
         end
     end
     
@@ -65,7 +65,7 @@ class Hash
             end
         end
         
-        return _leaves
+        _leaves
     end
     
     def paths_and_leaves( path_so_far = [], _paths_and_leaves = Set.new )
@@ -85,7 +85,7 @@ class Hash
             end
         end
         
-        return _paths_and_leaves
+        _paths_and_leaves
     end
     
     def each_path_and_leaf( path_so_far = [] )

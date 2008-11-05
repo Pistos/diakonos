@@ -4,7 +4,7 @@ class BufferHash < Hash
             when String
                 key = File.expand_path( key )
         end
-        return super
+        super
     end
     
     def []= ( key, value )

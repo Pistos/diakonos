@@ -12,7 +12,7 @@ class Bookmark
 
     def == (other)
         return false if other == nil
-        return ( @buffer == other.buffer and @row == other.row and @col == other.col )
+        ( @buffer == other.buffer and @row == other.row and @col == other.col )
     end
 
     def <=> (other)
@@ -21,15 +21,14 @@ class Bookmark
         return comparison if comparison != 0
         comparison = ( @row <=> other.row )
         return comparison if comparison != 0
-        comparison = ( @col <=> other.col )
-        return comparison
+        @col <=> other.col
     end
 
     def < (other)
-        return ( ( self <=> other ) < 0 )
+        ( ( self <=> other ) < 0 )
     end
     def > (other)
-        return ( ( self <=> other ) > 0 )
+        ( ( self <=> other ) > 0 )
     end
     
     def incRow( increment )
@@ -44,7 +43,7 @@ class Bookmark
     end
 
     def to_s
-        return "[#{@name}|#{@buffer.name}:#{@row+1},#{@col+1}]"
+        "[#{@name}|#{@buffer.name}:#{@row+1},#{@col+1}]"
     end
 end
 

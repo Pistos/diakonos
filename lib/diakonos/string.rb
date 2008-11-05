@@ -1,6 +1,6 @@
 class String
     def subHome
-        return gsub( /~/, ENV[ "HOME" ] )
+        gsub( /~/, ENV[ "HOME" ] )
     end
 
     def keyCode
@@ -72,7 +72,7 @@ class String
         if retval.class != Array
             retval = [ retval ]
         end
-        return retval
+        retval
     end
 
     def toFormatting
@@ -115,7 +115,7 @@ class String
                     end
             end
         end
-        return formatting
+        formatting
     end
 
     def toColourConstant
@@ -157,20 +157,20 @@ class String
             else
                 direction = default
         end
-        return direction
+        direction
     end
     
     def to_a
-        return [ self ]
+        [ self ]
     end
 
     def to_b
-        retval = false
         case downcase
-            when "true", "t", "1", "yes", "y", "on", "+"
-                retval = true
+        when "true", "t", "1", "yes", "y", "on", "+"
+          true
+        else
+          false
         end
-        return retval
     end
 
     def indentation_level( indent_size, indent_roundup, tab_size = Diakonos::DEFAULT_TAB_SIZE, indent_ignore_charset = nil )
@@ -199,7 +199,7 @@ class String
             end
         end
         
-        return level
+        level
     end
     
     def expandTabs( tab_size = Diakonos::DEFAULT_TAB_SIZE )
@@ -211,7 +211,7 @@ class String
                 " " * ( tab_size - ( index % tab_size ) )
             }
         end
-        return s
+        s
     end
     
     def newlineSplit
@@ -226,7 +226,7 @@ class String
             end
             retval[ -1 ] = "^" << retval[ -1 ]
         end
-        return retval
+        retval
     end
     
     # Works like normal String#index except returns the index
@@ -265,7 +265,7 @@ class String
             working_offset += 1
         end
         
-        return i, match_text
+        i, match_text
     end
     
     # Works like normal String#rindex except returns the index
@@ -309,11 +309,11 @@ class String
             working_offset -= 1
         end
         
-        return i, match_text
+        i, match_text
     end
     
     def movement?
-        return ( ( self =~ /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ ) != nil )
+        ( ( self =~ /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ ) != nil )
     end
 end
 

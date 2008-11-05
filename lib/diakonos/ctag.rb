@@ -11,11 +11,11 @@ class CTag
     end
     
     def to_s
-        return "#{@file}:#{@command} (#{@kind}) #{@rest}"
+        "#{@file}:#{@command} (#{@kind}) #{@rest}"
     end
     
     def == ( other )
-        return (
+        (
             other and
             @file == other.file and
             @command == other.command and

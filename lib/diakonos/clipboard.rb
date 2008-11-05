@@ -7,11 +7,11 @@ module Diakonos
     end
     
     def [] ( arg )
-      return @clips[ arg ]
+      @clips[ arg ]
     end
     
     def clip
-      return @clips[ 0 ]
+      @clips[ 0 ]
     end
     
     # text is an array of Strings
@@ -40,7 +40,7 @@ module Diakonos
       last_clip = @clips[ 0 ]
       last_clip.pop if last_clip[ -1 ] == ""
       @clips[ 0 ] = last_clip + text
-      return true
+      true
     end
   end
   

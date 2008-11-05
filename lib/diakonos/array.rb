@@ -9,7 +9,7 @@ class Array
                 chain_str << key.to_s + " "
             end
         end
-        return chain_str
+        chain_str
     end
 end
 

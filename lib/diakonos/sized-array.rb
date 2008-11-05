@@ -16,13 +16,13 @@ class SizedArray < Array
     def concat( other_array )
         super( other_array )
         resize
-        return self
+        self
     end
     
     def fill( *args )
         retval = super( *args )
         resize
-        return self
+        self
     end
     
     def <<( item )
@@ -30,7 +30,7 @@ class SizedArray < Array
         if size > @capacity
             retval = shift
         end
-        return retval
+        retval
     end
     
     def push( item )
@@ -42,7 +42,7 @@ class SizedArray < Array
         if size > @capacity
             retval = pop
         end
-        return retval
+        retval
     end
 end
 
