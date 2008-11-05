@@ -115,6 +115,7 @@ module Diakonos
   NUM_LAST_COMMANDS = 2
     
   class Diakonos
+    
     attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
         :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
         :indenters, :unindenters, :closers, :clipboard, :do_display,
@@ -130,10 +131,10 @@ module Diakonos
         
         init_help
         
-        @debug = File.new( "#{@diakonos_home}/debug.log", 'w' )
-        @list_filename = @diakonos_home + '/listing.txt'
-        @diff_filename = @diakonos_home + '/text.diff'
-        @help_filename = "#{@help_dir}/about-help.dhf"
+        @debug          = File.new( "#{@diakonos_home}/debug.log", 'w' )
+        @list_filename  = @diakonos_home + '/listing.txt'
+        @diff_filename  = @diakonos_home + '/text.diff'
+        @help_filename  = "#{@help_dir}/about-help.dhf"
         @error_filename = "#{@diakonos_home}/diakonos.err"
 
         @files = Array.new
@@ -143,9 +144,9 @@ module Diakonos
         parseOptions argv
         
         @session_settings = Hash.new
-        @win_main = nil
-        @win_context = nil
-        @win_status = nil
+        @win_main        = nil
+        @win_context     = nil
+        @win_status      = nil
         @win_interaction = nil
         @buffers = BufferHash.new
         
@@ -181,10 +182,10 @@ module Diakonos
         
         # Readline histories
         @rlh_general = Array.new
-        @rlh_files = Array.new
-        @rlh_search = Array.new
-        @rlh_shell = Array.new
-        @rlh_help = Array.new
+        @rlh_files   = Array.new
+        @rlh_search  = Array.new
+        @rlh_shell   = Array.new
+        @rlh_help    = Array.new
     end
     
     def mkdir( dir )
@@ -430,15 +431,15 @@ module Diakonos
         end
 
         @logfilename = @diakonos_home + "/diakonos.log"
-        @keychains = Hash.new
-        @token_regexps = Hash.new
+        @keychains           = Hash.new
+        @token_regexps       = Hash.new
         @close_token_regexps = Hash.new
-        @token_formats = Hash.new
-        @indenters = Hash.new
-        @unindenters = Hash.new
-        @filemasks = Hash.new
-        @bangmasks = Hash.new
-        @closers = Hash.new
+        @token_formats       = Hash.new
+        @indenters           = Hash.new
+        @unindenters         = Hash.new
+        @filemasks           = Hash.new
+        @bangmasks           = Hash.new
+        @closers             = Hash.new
 
         @settings = Hash.new
         # Setup some defaults
@@ -701,9 +702,9 @@ module Diakonos
         
         @hooks = {
           :after_buffer_switch => [],
-          :after_open => [],
-          :after_save => [],
-          :after_startup => [],
+          :after_open          => [],
+          :after_save          => [],
+          :after_startup       => [],
         }
         Dir[ "#{@script_dir}/*" ].each do |script|
             begin
@@ -1521,11 +1522,11 @@ module Diakonos
       
       @current_buffer.find(
         regexps,
-        :direction => direction,
-        :replacement => replacement,
+        :direction    => direction,
+        :replacement  => replacement,
         :starting_row => starting_row,
         :starting_col => starting_col,
-        :quiet => quiet
+        :quiet        => quiet
       )
       @last_search_regexps = regexps
     end
