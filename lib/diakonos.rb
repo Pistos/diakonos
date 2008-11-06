@@ -36,6 +36,7 @@ require 'diakonos/functions'
 require 'diakonos/help'
 require 'diakonos/display'
 require 'diakonos/interaction'
+require 'diakonos/hooks'
 
 require 'diakonos/keycode'
 require 'diakonos/text-mark'
@@ -252,10 +253,6 @@ module Diakonos
     def debugLog( string )
       @debug.puts( Time.now.strftime( "[%a %H:%M:%S] #{string}" ) )
       @debug.flush
-    end
-    
-    def register_proc( the_proc, hook_name, priority = 0 )
-      @hooks[ hook_name ] << { :proc => the_proc, :priority => priority }
     end
     
     def clearNonMovementFlag
@@ -723,12 +720,6 @@ module Diakonos
       if @list_buffer
         cursorDown
         @list_buffer[ @list_buffer.currentRow ]
-      end
-    end
-    
-    def runHookProcs( hook_id, *args )
-      @hooks[ hook_id ].each do |hook_proc|
-        hook_proc[ :proc ].call( *args )
       end
     end
     
