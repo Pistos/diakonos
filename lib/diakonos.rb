@@ -35,6 +35,7 @@ require 'diakonos/config'
 require 'diakonos/functions'
 require 'diakonos/help'
 require 'diakonos/display'
+require 'diakonos/interaction'
 
 require 'diakonos/keycode'
 require 'diakonos/text-mark'
@@ -61,8 +62,6 @@ module Diakonos
   ADJUST_ROW            = true
   PROMPT_OVERWRITE      = true
   DONT_PROMPT_OVERWRITE = false
-  DO_REDRAW             = true
-  DONT_REDRAW           = false
   QUIET                 = true
   NOISY                 = false
   
@@ -491,20 +490,6 @@ module Diakonos
       end
     end
     
-    # completion_array is the array of strings that tab completion can use
-    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, &block )
-      if @playing_macro
-        retval = @macro_input_history.shift
-      else
-        retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
-        if @macro_history
-          @macro_input_history.push retval
-        end
-        setILine
-      end
-      retval
-    end
-
     def getLanguageFromName( name )
       retval = nil
       @filemasks.each do |language,filemask|
@@ -653,92 +638,6 @@ module Diakonos
       retval
     end
     
-    def interactionBlink( message = nil )
-      terminateMessage
-      setILine @settings[ 'interaction.blink_string' ]
-      sleep @settings[ 'interaction.blink_duration' ]
-      setILine message if message
-    end
-    
-    # choices should be an array of CHOICE_* constants.
-    # default is what is returned when Enter is pressed.
-    def getChoice( prompt, choices, default = nil )
-      retval = @iterated_choice
-      if retval
-        @choice_iterations -= 1
-        if @choice_iterations < 1
-          @iterated_choice = nil
-          @do_display = true
-        end
-        return retval 
-      end
-      
-      @saved_main_x = @win_main.curx
-      @saved_main_y = @win_main.cury
-      
-      msg = prompt + " "
-      choice_strings = choices.collect do |choice|
-        CHOICE_STRINGS[ choice ]
-      end
-      msg << choice_strings.join( ", " )
-      
-      if default.nil?
-        showMessage msg
-      else
-        setILine msg
-      end
-      
-      c = nil
-      while retval.nil?
-        c = @win_interaction.getch
-        
-        case c
-        when Curses::KEY_NPAGE
-          pageDown
-        when Curses::KEY_PPAGE
-          pageUp
-        else
-          if @message_expiry and Time.now < @message_expiry
-            interactionBlink
-            showMessage msg
-          else
-            case c
-            when ENTER
-              retval = default
-            when ?0..?9
-              if @choice_iterations < 1
-                @choice_iterations = ( c - ?0 )
-              else
-                @choice_iterations = @choice_iterations * 10 + ( c - ?0 )
-              end
-            else
-              choices.each do |choice|
-                if CHOICE_KEYS[ choice ].include? c
-                  retval = choice
-                  break
-                end
-              end
-            end
-            
-            if retval.nil?
-              interactionBlink( msg )
-            end
-          end
-        end
-      end
-      
-      terminateMessage
-      setILine
-      
-      if @choice_iterations > 0
-        @choice_iterations -= 1
-        @iterated_choice = retval
-        @do_display = false
-      end
-      
-      retval
-    end
-
     def startRecordingMacro( name = nil )
       return if @macro_history
       @macro_name = name
