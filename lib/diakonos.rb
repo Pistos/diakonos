@@ -66,17 +66,6 @@ module Diakonos
   QUIET                 = true
   NOISY                 = false
   
-  TAB       = 9
-  ENTER     = 13
-  ESCAPE    = 27
-  BACKSPACE = 127
-  CTRL_C    = 3
-  CTRL_D    = 4
-  CTRL_K    = 11
-  CTRL_Q    = 17
-  CTRL_H    = 263
-  RESIZE2   = 4294967295
-  
   DEFAULT_TAB_SIZE = 8
   
   FORCE_REVERT = true

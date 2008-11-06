@@ -1,5 +1,16 @@
 module Diakonos
   
+  TAB       = 9
+  ENTER     = 13
+  ESCAPE    = 27
+  BACKSPACE = 127
+  CTRL_C    = 3
+  CTRL_D    = 4
+  CTRL_K    = 11
+  CTRL_Q    = 17
+  CTRL_H    = 263
+  RESIZE2   = 4294967295
+  
   CHOICE_NO           = 0
   CHOICE_YES          = 1
   CHOICE_ALL          = 2
