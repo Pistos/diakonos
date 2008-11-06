@@ -79,24 +79,6 @@ module Diakonos
   
   DEFAULT_TAB_SIZE = 8
   
-  CHOICE_NO           = 0
-  CHOICE_YES          = 1
-  CHOICE_ALL          = 2
-  CHOICE_CANCEL       = 3
-  CHOICE_YES_TO_ALL   = 4
-  CHOICE_NO_TO_ALL    = 5
-  CHOICE_YES_AND_STOP = 6
-  CHOICE_KEYS = [
-    [ ?n, ?N ],
-    [ ?y, ?Y ],
-    [ ?a, ?A ],
-    [ ?c, ?C, ESCAPE, CTRL_C, CTRL_D, CTRL_Q ],
-    [ ?e ],
-    [ ?o ],
-    [ ?s ],
-  ]
-  CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top' ]
-  
   FORCE_REVERT = true
   ASK_REVERT   = false
   
