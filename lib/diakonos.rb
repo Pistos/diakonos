@@ -216,16 +216,6 @@ module Diakonos
     end
     protected :printUsage
     
-    def log( string )
-      @log.puts string
-      @log.flush
-    end
-    
-    def debugLog( string )
-      @debug.puts( Time.now.strftime( "[%a %H:%M:%S] #{string}" ) )
-      @debug.flush
-    end
-    
     def clearNonMovementFlag
       @there_was_non_movement = false
     end
@@ -392,16 +382,6 @@ module Diakonos
       end
     end
     
-    def logBacktrace
-      begin
-        raise Exception
-      rescue Exception => e
-        e.backtrace[ 1..-1 ].each do |x|
-          debugLog x
-        end
-      end
-    end
-
     # The given buffer_number should be 1-based, not zero-based.
     # Returns nil if no such buffer exists.
     def bufferNumberToName( buffer_number )
