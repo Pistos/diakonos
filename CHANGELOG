@@ -1,6 +1,12 @@
 Diakonos Changelog
 ------------------
 
+0.8.7
+
+- MRU buffer history added.
+- Lots of code refactoring done.
+- Numerous little adjustments and fixes made.
+
 0.8.6
 
 - Find-as-you-type added.
