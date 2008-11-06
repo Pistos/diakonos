@@ -82,10 +82,9 @@ module Diakonos
     
   class Diakonos
     
-    attr_reader :win_main, :settings, :token_regexps, :close_token_regexps,
-      :token_formats, :diakonos_home, :script_dir, :diakonos_conf, :display_mutex,
-      :indenters, :unindenters, :closers, :clipboard, :do_display,
-      :current_buffer, :list_filename, :hooks, :last_commands, :there_was_non_movement
+    attr_reader :diakonos_home, :script_dir, :clipboard,
+      :current_buffer, :list_filename, :hooks, :indenters, :unindenters, :closers,
+      :last_commands, :there_was_non_movement, :do_display
 
     include ::Diakonos::Functions
 

@@ -3,6 +3,8 @@ module Diakonos
   DONT_REDRAW           = false
   
   class Diakonos
+    attr_reader :win_main, :display_mutex
+    
     def initializeDisplay
       @win_main.close if @win_main
       @win_status.close if @win_status
