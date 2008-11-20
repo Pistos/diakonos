@@ -59,33 +59,33 @@ require 'diakonos/readline'
 #end
 
 module Diakonos
-  
+
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'November 5, 2008'
-  
+  LAST_MODIFIED = 'November 20, 2008'
+
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
   PROMPT_OVERWRITE      = true
   DONT_PROMPT_OVERWRITE = false
   QUIET                 = true
   NOISY                 = false
-  
+
   DEFAULT_TAB_SIZE = 8
-  
+
   FORCE_REVERT = true
   ASK_REVERT   = false
-  
+
   ASK_REPLACEMENT = true
-  
+
   CASE_SENSITIVE   = true
   CASE_INSENSITIVE = false
-  
+
   LANG_TEXT = 'text'
-  
+
   NUM_LAST_COMMANDS = 2
-    
+
   class Diakonos
-    
+
     attr_reader :diakonos_home, :script_dir, :clipboard,
       :list_filename, :hooks, :indenters, :unindenters, :closers,
       :last_commands, :there_was_non_movement, :do_display
@@ -97,36 +97,36 @@ module Diakonos
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
-      
+
       init_help
-      
+
       @debug          = File.new( "#{@diakonos_home}/debug.log", 'w' )
       @list_filename  = @diakonos_home + '/listing.txt'
       @diff_filename  = @diakonos_home + '/text.diff'
       @help_filename  = "#{@help_dir}/about-help.dhf"
       @error_filename = "#{@diakonos_home}/diakonos.err"
-      
+
       @files = Array.new
       @read_only_files = Array.new
       @config_filename = nil
-      
+
       parseOptions argv
-      
+
       @session_settings = Hash.new
       @win_main        = nil
       @win_context     = nil
       @win_status      = nil
       @win_interaction = nil
       @buffers = BufferHash.new
-      
+
       loadConfiguration
-      
+
       @quitting = false
       @untitled_id = 0
-      
+
       @x = 0
       @y = 0
-      
+
       @buffer_stack = Array.new
       @current_buffer = nil
       @buffer_history = Array.new
@@ -148,7 +148,7 @@ module Diakonos
       @choice_iterations = 0
       @there_was_non_movement = false
       @status_vars = Hash.new
-      
+
       # Readline histories
       @rlh_general = Array.new
       @rlh_files   = Array.new
@@ -156,7 +156,7 @@ module Diakonos
       @rlh_shell   = Array.new
       @rlh_help    = Array.new
     end
-    
+
     def mkdir( dir )
       if not FileTest.exists? dir
         Dir.mkdir dir
@@ -192,7 +192,7 @@ module Diakonos
             exit 1
           else
             @post_load_script << "\n#{post_load_script}"
-          end                        
+          end
         when '-m', '--open-matching'
           regexp = argv.shift
           files = `egrep -rl '#{regexp}' *`.split( /\n/ )
@@ -200,7 +200,7 @@ module Diakonos
             @files.concat files
             script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
             @post_load_script << script
-          end              
+          end
         else
           # a name of a file to open
           @files.push arg
@@ -218,16 +218,16 @@ module Diakonos
       puts "\t-ro <file>\tLoad file as read-only"
     end
     protected :printUsage
-    
+
     def clearNonMovementFlag
       @there_was_non_movement = false
     end
-    
+
     # -----------------------------------------------------------------------
 
     def start
       initializeDisplay
-      
+
       @hooks = {
         :after_buffer_switch => [],
         :after_open          => [],
@@ -257,7 +257,7 @@ module Diakonos
         help_key = 'F1'
       end
       setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
-      
+
       num_opened = 0
       if @files.length == 0 and @read_only_files.length == 0
         num_opened += 1 if openFile
@@ -269,23 +269,23 @@ module Diakonos
           num_opened += 1 if openFile( file, Buffer::READ_ONLY )
         end
       end
-      
+
       if num_opened > 0
         switchToBufferNumber 1
-        
+
         updateStatusLine
         updateContextLine
-        
+
         if @post_load_script
           eval @post_load_script
         end
-        
+
         runHookProcs :after_startup
-        
+
         if not @settings[ 'suppress_welcome' ]
           openFile "#{@help_dir}/welcome.dhf"
         end
-        
+
         begin
           # Main keyboard loop.
           while not @quitting
@@ -295,11 +295,11 @@ module Diakonos
         rescue SignalException => e
           debugLog "Terminated by signal (#{e.message})"
         end
-        
+
         @debug.close
       end
     end
-    
+
     def showClips
       clip_filename = @diakonos_home + "/clips.txt"
       File.open( clip_filename, "w" ) do |f|
@@ -321,7 +321,7 @@ module Diakonos
       end
       retval
     end
-    
+
     def getLanguageFromShaBang( first_line )
       retval = nil
       @bangmasks.each do |language,bangmask|
@@ -332,7 +332,7 @@ module Diakonos
       end
       retval
     end
-    
+
     def showException( e, probable_causes = [ "Unknown" ] )
       begin
         File.open( @error_filename, "w" ) do |f|
@@ -358,29 +358,29 @@ module Diakonos
         debugLog "\t#{e.backtrace}"
       end
     end
-    
+
     def subShellVariables( string )
       return nil if string.nil?
-      
+
       retval = string
       retval = retval.subHome
-      
+
       # Current buffer filename
       retval.gsub!( /\$f/, ( $1 or "" ) + ( @current_buffer.name or "" ) )
-      
+
       # space-separated list of all buffer filenames
       name_array = Array.new
       @buffers.each_value do |b|
         name_array.push b.name
       end
       retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )
-      
+
       # Get user input, sub it in
       if retval =~ /\$i/
         user_input = getUserInput( "Argument: ", @rlh_shell )
         retval.gsub!( /\$i/, user_input )
       end
-      
+
       # Current clipboard text
       if retval =~ /\$c/
         clip_filename = @diakonos_home + "/clip.txt"
@@ -391,7 +391,7 @@ module Diakonos
         end
         retval.gsub!( /\$c/, clip_filename )
       end
-      
+
       # Current klipper (KDE clipboard) text
       if retval =~ /\$k/
         clip_filename = @diakonos_home + "/clip.txt"
@@ -400,11 +400,11 @@ module Diakonos
         end
         retval.gsub!( /\$k/, clip_filename )
       end
-      
+
       # Currently selected text
       if retval =~ /\$s/
         text_filename = @diakonos_home + "/selected.txt"
-        
+
         File.open( text_filename, "w" ) do |textfile|
           selected_text = @current_buffer.selected_text
           if selected_text
@@ -413,10 +413,10 @@ module Diakonos
         end
         retval.gsub!( /\$s/, text_filename )
       end
-      
+
       retval
     end
-    
+
     def startRecordingMacro( name = nil )
       return if @macro_history
       @macro_name = name
@@ -425,7 +425,7 @@ module Diakonos
       setILine "Started macro recording."
     end
     protected :startRecordingMacro
-    
+
     def stopRecordingMacro
       @macro_history.pop  # Remove the stopRecordingMacro command itself
       @macros[ @macro_name ] = [ @macro_history, @macro_input_history ]
@@ -459,7 +459,7 @@ module Diakonos
         setILine "(tags file not found)"
       end
     end
-    
+
     def write_to_clip_file( text )
       clip_filename = @diakonos_home + "/clip.txt"
       File.open( clip_filename, "w" ) do |f|
@@ -467,11 +467,11 @@ module Diakonos
       end
       clip_filename
     end
-    
+
     # Returns true iff some text was copied to klipper.
     def send_to_klipper( text )
       return false if text.nil?
-      
+
       clip_filename = write_to_clip_file( text.join( "\n" ) )
       # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
       # Thank you to pgas from irc.freenode.net#bash for help with this.
@@ -482,11 +482,11 @@ module Diakonos
     # Worker method for find function.
     def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
       return if( regexp_source.nil? or regexp_source.empty? )
-      
+
       rs_array = regexp_source.newlineSplit
       regexps = Array.new
       exception_thrown = nil
-      
+
       rs_array.each do |source|
         begin
           warning_verbosity = $VERBOSE
@@ -506,15 +506,15 @@ module Diakonos
           end
         end
       end
-      
+
       if replacement == ASK_REPLACEMENT
         replacement = getUserInput( "Replace with: ", @rlh_search )
       end
-      
+
       if exception_thrown and not quiet
         setILine( "Searching literally; #{exception_thrown.message}" )
       end
-      
+
       @current_buffer.find(
         regexps,
         :direction    => direction,

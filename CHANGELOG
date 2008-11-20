@@ -4,6 +4,7 @@ Diakonos Changelog
 0.8.7
 
 - MRU buffer history added.
+- Added strip_trailing_whitespace_on_save option.
 - Lots of code refactoring done.
 - Numerous little adjustments and fixes made.
 

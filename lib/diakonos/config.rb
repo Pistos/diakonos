@@ -235,7 +235,7 @@ module Diakonos
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
           /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
           "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
-          'suppress_welcome'
+          'suppress_welcome', 'strip_trailing_whitespace_on_save'
           @settings[ command ] = arg.to_b
         when "context.format", "context.separator.format", "status.format"
           @settings[ command ] = arg.toFormatting

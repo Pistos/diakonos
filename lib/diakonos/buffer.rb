@@ -577,69 +577,80 @@ class Buffer
     end
 
     def save( filename = nil, prompt_overwrite = DONT_PROMPT_OVERWRITE )
-        if filename
-            name = filename.subHome
+      if filename
+        name = filename.subHome
+      else
+        name = @name
+      end
+      
+      if @read_only and FileTest.exists?( @name ) and FileTest.exists?( name ) and ( File.stat( @name ).ino == File.stat( name ).ino )
+        @diakonos.setILine "#{name} cannot be saved since it is read-only."
+      else
+        @name = name
+        @read_only = false
+        if @name.nil?
+          @diakonos.saveFileAs
         else
-            name = @name
-        end
-        
-        if @read_only and FileTest.exists?( @name ) and FileTest.exists?( name ) and ( File.stat( @name ).ino == File.stat( name ).ino )
-            @diakonos.setILine "#{name} cannot be saved since it is read-only."
-        else
-            @name = name
-            @read_only = false
-            if @name.nil?
-                @diakonos.saveFileAs
-            #elsif name.empty?
-                #@diakonos.setILine "(file not saved)"
-                #@name = nil
-            else
-                proceed = true
-                
-                if prompt_overwrite and FileTest.exists? @name
-                    proceed = false
-                    choice = @diakonos.getChoice(
-                        "Overwrite existing '#{@name}'?",
-                        [ CHOICE_YES, CHOICE_NO ],
-                        CHOICE_NO
-                    )
-                    case choice
-                        when CHOICE_YES
-                            proceed = true
-                        when CHOICE_NO
-                            proceed = false
-                    end
-                end
-                
-                if file_modified?
-                    proceed = ! @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
-                end
-                
-                if proceed
-                    File.open( @name, "w" ) do |f|
-                        @lines[ 0..-2 ].each do |line|
-                            f.puts line
-                        end
-                        if @lines[ -1 ] != ""
-                            # No final newline character
-                            f.print @lines[ -1 ]
-                            f.print "\n" if @settings[ "eof_newline" ]
-                        end
-                    end
-                    @last_modification_check = File.mtime( @name )
-                        
-                    if @name == @diakonos.diakonos_conf
-                        @diakonos.loadConfiguration
-                        @diakonos.initializeDisplay
-                    end
-                    
-                    @modified = false
-                    
-                    display
-                    @diakonos.updateStatusLine
-                end
+          proceed = true
+          
+          if prompt_overwrite and FileTest.exists? @name
+            proceed = false
+            choice = @diakonos.getChoice(
+              "Overwrite existing '#{@name}'?",
+              [ CHOICE_YES, CHOICE_NO ],
+              CHOICE_NO
+            )
+            case choice
+            when CHOICE_YES
+              proceed = true
+            when CHOICE_NO
+              proceed = false
             end
+          end
+          
+          if file_modified?
+            proceed = ! @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+          end
+          
+          if proceed
+            File.open( @name, "w" ) do |f|
+              @lines[ 0..-2 ].each do |line|
+                if @settings[ 'strip_trailing_whitespace_on_save' ]
+                  line.rstrip!
+                end
+                f.puts line
+              end
+              
+              line = @lines[ -1 ]
+              if @settings[ 'strip_trailing_whitespace_on_save' ]
+                line.rstrip!
+              end
+              if line != ""
+                # No final newline character
+                f.print line
+                f.print "\n" if @settings[ "eof_newline" ]
+              end
+              
+              if @settings[ 'strip_trailing_whitespace_on_save' ]
+                if @last_col > @lines[ @last_row ].size
+                  cursorTo @last_row, @lines[ @last_row ].size
+                end
+              end
+            end
+            @last_modification_check = File.mtime( @name )
+            
+            if @name == @diakonos.diakonos_conf
+              @diakonos.loadConfiguration
+              @diakonos.initializeDisplay
+            end
+            
+            @modified = false
+            
+            display
+            @diakonos.updateStatusLine
+          end
         end
+      end
     end
 
     # Returns true on successful write.
