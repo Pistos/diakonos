@@ -1,10 +1,37 @@
+# A Hash which is iterated in insertion order.
+# Keys are assumed to be paths; these paths are expanded on read and write.
 class BufferHash < Hash
+  def initialize
+    @keys_ = []
+  end
+  
   def [] ( key )
     super File.expand_path( key.to_s )
   end
   
   def []= ( key, value )
+    if not @keys_.include?( key )
+      @keys_ << key
+    end
     super File.expand_path( key.to_s ), value
+  end
+  
+  def each
+    @keys_.each do |key|
+      yield key, self[ key ]
+    end
+  end
+  
+  def each_key
+    @keys_.each do |key|
+      yield key
+    end
+  end
+  
+  def each_value
+    @keys_.each do |key|
+      yield self[ key ]
+    end
   end
 end
 
