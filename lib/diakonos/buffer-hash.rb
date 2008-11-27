@@ -47,5 +47,13 @@ class BufferHash < Hash
   def keys
     @keys_.dup
   end
+  
+  def values
+    @keys_.map { |key| self[ key ] }
+  end
+  
+  def length
+    @keys_.length
+  end
 end
 
