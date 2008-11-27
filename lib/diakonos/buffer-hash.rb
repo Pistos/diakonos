@@ -33,5 +33,19 @@ class BufferHash < Hash
       yield self[ key ]
     end
   end
+  
+  def clear
+    @keys_ = []
+    super
+  end
+  
+  def delete( key )
+    @keys_.delete key
+    super
+  end
+  
+  def keys
+    @keys_.dup
+  end
 end
 
