@@ -99,6 +99,7 @@ module Diakonos
       mkdir @script_dir
       @session_dir = "#{@diakonos_home}/sessions"
       mkdir @session_dir
+      @session_file = "#{@session_dir}/#{Process.pid}"
 
       init_help
 
@@ -297,6 +298,8 @@ module Diakonos
         rescue SignalException => e
           debugLog "Terminated by signal (#{e.message})"
         end
+        
+        File.delete @session_file
 
         @debug.close
       end
@@ -526,6 +529,14 @@ module Diakonos
         :quiet        => quiet
       )
       @last_search_regexps = regexps
+    end
+    
+    def save_session
+      File.open( @session_file, 'w' ) do |f|
+        @buffers.each_key do |filepath|
+          f.puts filepath
+        end
+      end
     end
 
   end

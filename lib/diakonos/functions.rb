@@ -699,6 +699,7 @@ module Diakonos
           buffer = Buffer.new( self, filename, buffer_key, read_only )
           runHookProcs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
+          save_session
           if switchTo( buffer ) and line_number
             @current_buffer.goToLine( line_number, 0 )
           end
