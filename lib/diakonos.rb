@@ -123,33 +123,33 @@ module Diakonos
 
       loadConfiguration
 
-      @quitting = false
+      @quitting    = false
       @untitled_id = 0
 
       @x = 0
       @y = 0
 
-      @buffer_stack = Array.new
-      @current_buffer = nil
-      @buffer_history = Array.new
+      @buffer_stack           = Array.new
+      @current_buffer         = nil
+      @buffer_history         = Array.new
       @buffer_history_pointer = nil
-      @bookmarks = Hash.new
-      @macro_history = nil
-      @macro_input_history = nil
-      @macros = Hash.new
-      @last_commands = SizedArray.new( NUM_LAST_COMMANDS )
-      @playing_macro = false
-      @display_mutex = Mutex.new
-      @display_queue_mutex = Mutex.new
-      @display_queue = nil
-      @do_display = true
-      @iline_mutex = Mutex.new
-      @tag_stack = Array.new
-      @last_search_regexps = nil
-      @iterated_choice = nil
-      @choice_iterations = 0
+      @bookmarks              = Hash.new
+      @macro_history          = nil
+      @macro_input_history    = nil
+      @macros                 = Hash.new
+      @last_commands          = SizedArray.new( NUM_LAST_COMMANDS )
+      @playing_macro          = false
+      @display_mutex          = Mutex.new
+      @display_queue_mutex    = Mutex.new
+      @display_queue          = nil
+      @do_display             = true
+      @iline_mutex            = Mutex.new
+      @tag_stack              = Array.new
+      @last_search_regexps    = nil
+      @iterated_choice        = nil
+      @choice_iterations      = 0
       @there_was_non_movement = false
-      @status_vars = Hash.new
+      @status_vars            = Hash.new
 
       # Readline histories
       @rlh_general = Array.new

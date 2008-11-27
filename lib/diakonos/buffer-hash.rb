@@ -1,18 +1,18 @@
 class BufferHash < Hash
-    def [] ( key )
-        case key
-            when String
-                key = File.expand_path( key )
-        end
-        super
+  def [] ( key )
+    case key
+    when String
+      key = File.expand_path( key )
     end
-    
-    def []= ( key, value )
-        case key
-            when String
-                key = File.expand_path( key )
-        end
-        super
+    super
+  end
+  
+  def []= ( key, value )
+    case key
+    when String
+      key = File.expand_path( key )
     end
+    super
+  end
 end
 
