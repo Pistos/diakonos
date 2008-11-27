@@ -10,10 +10,11 @@ class BufferHash < Hash
   end
   
   def []= ( key, value )
+    key = File.expand_path( key.to_s )
     if not @keys_.include?( key )
       @keys_ << key
     end
-    super File.expand_path( key.to_s ), value
+    super key, value
   end
   
   def each
