@@ -61,7 +61,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'November 20, 2008'
+  LAST_MODIFIED = 'November 26, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -97,6 +97,8 @@ module Diakonos
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
+      @session_dir = "#{@diakonos_home}/sessions"
+      mkdir @session_dir
 
       init_help
 
