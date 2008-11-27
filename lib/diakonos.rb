@@ -158,6 +158,13 @@ module Diakonos
       @rlh_search  = Array.new
       @rlh_shell   = Array.new
       @rlh_help    = Array.new
+      
+      @hooks = {
+        :after_buffer_switch => [],
+        :after_open          => [],
+        :after_save          => [],
+        :after_startup       => [],
+      }
     end
 
     def mkdir( dir )
@@ -204,6 +211,12 @@ module Diakonos
             script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
             @post_load_script << script
           end
+        when '-s', '--load-session'
+          @session_to_load = argv.shift
+          if not File.exist? @session_to_load
+            puts "No such session file: #{@session_to_load}"
+            exit
+          end
         else
           # a name of a file to open
           @files.push arg
@@ -219,6 +232,7 @@ module Diakonos
       puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
       puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
       puts "\t-ro <file>\tLoad file as read-only"
+      puts "\t-s, --load-session <session file>\tLoad a session (file containing a list of file paths)"
     end
     protected :printUsage
 
@@ -229,14 +243,47 @@ module Diakonos
     # -----------------------------------------------------------------------
 
     def start
+      if @session_to_load
+        files = File.readlines( @session_to_load ).collect { |filename| filename.strip }
+        @files.concat files
+      else
+        session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
+        if session_files.size > 1
+          puts "Several stale sessions were found:"
+          puts session_files.join( "\n" )
+          puts 'Either delete them or restore one of them with'
+          puts "    diakonos -s <session file>"
+          exit 1
+        end
+      end
+        
       initializeDisplay
+      
+      if ENV[ 'COLORTERM' ] == 'gnome-terminal'
+        help_key = 'Shift-F1'
+      else
+        help_key = 'F1'
+      end
+      setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
-      @hooks = {
-        :after_buffer_switch => [],
-        :after_open          => [],
-        :after_save          => [],
-        :after_startup       => [],
-      }
+      if session_files and session_files.size == 1
+        session_file = session_files[ 0 ]
+        session_buffer = openFile( session_file )
+        
+        choice = getChoice(
+          "An old, unclosed session was found.  Restore it?",
+          [ CHOICE_YES, CHOICE_NO ]
+        )
+        
+        closeFile session_buffer
+        
+        if choice == CHOICE_YES
+          files = File.readlines( session_file ).collect { |filename| filename.strip }
+          @files = files
+          File.delete session_file
+        end
+      end
+
       Dir[ "#{@script_dir}/*" ].each do |script|
         begin
           require script
@@ -253,13 +300,6 @@ module Diakonos
       @hooks.each do |hook_name, hook|
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
-
-      if ENV[ 'COLORTERM' ] == 'gnome-terminal'
-        help_key = 'Shift-F1'
-      else
-        help_key = 'F1'
-      end
-      setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
       num_opened = 0
       if @files.length == 0 and @read_only_files.length == 0
@@ -538,7 +578,7 @@ module Diakonos
         end
       end
     end
-
+    
   end
 
 end
