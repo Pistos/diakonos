@@ -61,7 +61,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'November 26, 2008'
+  LAST_MODIFIED = 'November 27, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -271,11 +271,9 @@ module Diakonos
         session_buffer = openFile( session_file )
         
         choice = getChoice(
-          "An old, unclosed session was found.  Restore it?",
+          "An old, unclosed session was found.  Open the above files?",
           [ CHOICE_YES, CHOICE_NO ]
         )
-        
-        closeFile session_buffer
         
         if choice == CHOICE_YES
           files = File.readlines( session_file ).collect { |filename| filename.strip }
@@ -300,7 +298,7 @@ module Diakonos
       @hooks.each do |hook_name, hook|
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
-
+      
       num_opened = 0
       if @files.length == 0 and @read_only_files.length == 0
         num_opened += 1 if openFile
@@ -313,6 +311,10 @@ module Diakonos
         end
       end
 
+      if session_buffer
+        closeFile session_buffer
+      end
+        
       if num_opened > 0
         switchToBufferNumber 1
 
