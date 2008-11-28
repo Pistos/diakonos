@@ -586,17 +586,16 @@ class Buffer
       if @read_only and FileTest.exists?( @name ) and FileTest.exists?( name ) and ( File.stat( @name ).ino == File.stat( name ).ino )
         @diakonos.setILine "#{name} cannot be saved since it is read-only."
       else
-        @name = name
         @read_only = false
-        if @name.nil?
+        if name.nil?
           @diakonos.saveFileAs
         else
           proceed = true
           
-          if prompt_overwrite and FileTest.exists? @name
+          if prompt_overwrite and FileTest.exists? name
             proceed = false
             choice = @diakonos.getChoice(
-              "Overwrite existing '#{@name}'?",
+              "Overwrite existing '#{name}'?",
               [ CHOICE_YES, CHOICE_NO ],
               CHOICE_NO
             )
@@ -613,7 +612,7 @@ class Buffer
           end
           
           if proceed
-            File.open( @name, "w" ) do |f|
+            File.open( name, "w" ) do |f|
               @lines[ 0..-2 ].each do |line|
                 if @settings[ 'strip_trailing_whitespace_on_save' ]
                   line.rstrip!
@@ -637,7 +636,9 @@ class Buffer
                 end
               end
             end
+            @name = name
             @last_modification_check = File.mtime( @name )
+            saved = true
             
             if @name == @diakonos.diakonos_conf
               @diakonos.loadConfiguration
@@ -651,6 +652,8 @@ class Buffer
           end
         end
       end
+      
+      saved
     end
 
     # Returns true on successful write.
