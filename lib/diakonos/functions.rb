@@ -138,6 +138,7 @@ module Diakonos
                 end
 
                 @buffers.delete del_buffer_key
+                save_session
 
                 updateStatusLine
                 updateContextLine
