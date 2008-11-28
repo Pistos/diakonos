@@ -243,20 +243,6 @@ module Diakonos
     # -----------------------------------------------------------------------
 
     def start
-      if @session_to_load
-        files = File.readlines( @session_to_load ).collect { |filename| filename.strip }
-        @files.concat files
-      else
-        session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
-        if session_files.size > 1
-          puts "Several stale sessions were found:"
-          puts session_files.join( "\n" )
-          puts 'Either delete them or restore one of them with'
-          puts "    diakonos -s <session file>"
-          exit 1
-        end
-      end
-        
       initializeDisplay
       
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
@@ -266,19 +252,26 @@ module Diakonos
       end
       setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
-      if session_files and session_files.size == 1
-        session_file = session_files[ 0 ]
-        session_buffer = openFile( session_file )
-        
-        choice = getChoice(
-          "An old, unclosed session was found.  Open the above files?",
-          [ CHOICE_YES, CHOICE_NO ]
-        )
-        
-        if choice == CHOICE_YES
-          files = File.readlines( session_file ).collect { |filename| filename.strip }
-          @files = files
-          File.delete session_file
+      if @session_to_load
+        files = File.readlines( @session_to_load ).collect { |filename| filename.strip }
+        @files.concat files
+      else
+        session_buffers = []
+        session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
+        session_files.each_with_index do |session_file,index|
+          session_buffers << openFile( session_file )
+          
+          choice = getChoice(
+            "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
+            [ CHOICE_YES, CHOICE_NO ]
+          )
+          
+          if choice == CHOICE_YES
+            files = File.readlines( session_file ).collect { |filename| filename.strip }
+            @files = files
+            File.delete session_file
+            break
+          end
         end
       end
 
@@ -311,8 +304,10 @@ module Diakonos
         end
       end
 
-      if session_buffer
-        closeFile session_buffer
+      if session_buffers
+        session_buffers.each do |buffer|
+          closeFile buffer
+        end
       end
         
       if num_opened > 0
