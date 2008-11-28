@@ -253,7 +253,8 @@ module Diakonos
       setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
       if @session_to_load
-        files = File.readlines( @session_to_load ).collect { |filename| filename.strip }
+        @session_file = @session_to_load
+        files = File.readlines( @session_file ).collect { |filename| filename.strip }
         @files.concat files
       else
         session_buffers = []
@@ -336,7 +337,9 @@ module Diakonos
           debugLog "Terminated by signal (#{e.message})"
         end
         
-        File.delete @session_file
+        if @session_file =~ %r{/\d+$}
+          File.delete @session_file
+        end
 
         @debug.close
       end
@@ -568,8 +571,8 @@ module Diakonos
       @last_search_regexps = regexps
     end
     
-    def save_session
-      File.open( @session_file, 'w' ) do |f|
+    def save_session( session_file = @session_file )
+      File.open( session_file, 'w' ) do |f|
         @buffers.each_key do |filepath|
           f.puts filepath
         end
