@@ -258,7 +258,18 @@ module Diakonos
         @files.concat files
       else
         session_buffers = []
+        
         session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
+        pids = session_files.map { |sf| sf[ %r{/(\d+)$}, 1 ].to_i }
+        pids.each do |pid|
+          begin
+            Process.getpgid pid
+            session_files.reject! { |sf| sf =~ %r{/#{pid}$} }
+          rescue Errno::ESRCH
+            # Process is no longer alive, so we consider the session stale
+          end
+        end
+        
         session_files.each_with_index do |session_file,index|
           session_buffers << openFile( session_file )
           
