@@ -958,14 +958,12 @@ module Diakonos
             file = getUserInput( "Filename: ", @rlh_files )
         end
         if file
-            #old_name = @current_buffer.name
-            @current_buffer.save( file, PROMPT_OVERWRITE )
-            #if not @current_buffer.modified?
-                # Save was okay.
-                #@buffers.delete old_name
-                #@buffers[ @current_buffer.name ] = @current_buffer
-                #switchTo( @current_buffer )
-            #end
+            old_name = @current_buffer.name
+            if @current_buffer.save( file, PROMPT_OVERWRITE )
+                @buffers.delete old_name
+                @buffers[ @current_buffer.name ] = @current_buffer
+                save_session
+            end
         end
     end
     
