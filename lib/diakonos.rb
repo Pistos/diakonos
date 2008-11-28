@@ -61,7 +61,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'November 27, 2008'
+  LAST_MODIFIED = 'November 28, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -584,8 +584,10 @@ module Diakonos
     
     def save_session( session_file = @session_file )
       File.open( session_file, 'w' ) do |f|
-        @buffers.each_key do |filepath|
-          f.puts filepath
+        @buffers.each do |filepath,buffer|
+          if buffer.name
+            f.puts filepath
+          end
         end
       end
     end
