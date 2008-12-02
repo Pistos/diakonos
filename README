@@ -6,7 +6,7 @@ Diakonos
 INSTALLATION
 ============
 
-There are three ways to install Ruby:
+There are three ways to install Diakonos:
   * by rubygems (recommended)
   * from the tarball using setup.rb
   * manual file copy
