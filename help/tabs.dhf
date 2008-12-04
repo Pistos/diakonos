@@ -1,23 +1,36 @@
 # Tab Characters
 
+## Indenting with tab characters instead of spaces
+
+By default, Diakonos indents with spaces.
+
+To insert a single tab character, press <Ctrl-T>.
+
+To make Diakonos always indent with tab characters, look for the indent
+settings for the language whose behaviour you wish to configure.  For example,
+to change the indentation of Ruby, add the following line to your configuration
+file (<F12>):
+
+lang.ruby.indent.using_tabs true
+
 ## Changing the width of tab characters
 
 The width of a tab character depends on the language of the file.  To change
 the width for a specific language, change the tabsize setting for the
-language.  For example, to change the tabsize of Ruby files, open the
+language.  For example, to change the tab size of Ruby files, open the
 configuration file by pressing <F12>, and look for a line like this:
 
 lang.ruby.tabsize 2
 
 Then change the number 2 to whatever number you desire, such as 4.
 
-## Indenting with tab characters instead of spaces
+## Converting tab characters
 
-By default, Diakonos indents with spaces.  To make it indent with tab
-characters instead, look for the ident settings for the language.  For
-example, to change the indentation of Ruby, add the following line to your
-configuration file (<F12>):
+Diakonos can convert tabs to spaces when files are opened.  Set the
+convert_tabs configuration option to true:
 
-lang.ruby.indent.using_tabs true
+convert_tabs true
 
-Tags: tab tabs indent indenting indentation space spaces whitespace char character characters width size number
+By default Diakonos does not do this.
+
+Tags: tab tabs indent indenting indentation insert space spaces whitespace char character characters width size number
