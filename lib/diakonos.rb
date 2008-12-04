@@ -327,6 +327,10 @@ module Diakonos
           closeFile buffer
         end
       end
+      name = File.basename( @session_file )
+      if name =~ /\D/
+        @session_name = name
+      end
         
       if num_opened > 0
         switchToBufferNumber 1
