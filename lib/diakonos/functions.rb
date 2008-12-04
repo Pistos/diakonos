@@ -629,6 +629,14 @@ module Diakonos
             thread.join
         end
     end
+    
+    def name_session
+      name = getUserInput( 'Session name: ' )
+      if name
+        @session_file = File.expand_path( "#{@session_dir}/#{name}" )
+        save_session
+      end
+    end
 
     def newFile
         openFile

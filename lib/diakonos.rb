@@ -61,7 +61,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'November 28, 2008'
+  LAST_MODIFIED = 'December 4, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -158,7 +158,7 @@ module Diakonos
       @rlh_search  = Array.new
       @rlh_shell   = Array.new
       @rlh_help    = Array.new
-      
+
       @hooks = {
         :after_buffer_switch => [],
         :after_open          => [],
@@ -212,10 +212,16 @@ module Diakonos
             @post_load_script << script
           end
         when '-s', '--load-session'
-          @session_to_load = argv.shift
+          session_to_load = @session_to_load = argv.shift
           if not File.exist? @session_to_load
-            puts "No such session file: #{@session_to_load}"
-            exit
+            @session_to_load = "#{@session_dir}/#{@session_to_load}"
+            if not File.exist? @session_to_load
+              File.open( @session_to_load, 'w' ) { |f| }  # Create empty file
+              if not File.exist? @session_to_load
+                puts "No such session file '#{session_to_load}'; failed to create '#{@session_to_load}'."
+                exit
+              end
+            end
           end
         else
           # a name of a file to open
@@ -244,7 +250,7 @@ module Diakonos
 
     def start
       initializeDisplay
-      
+
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
         help_key = 'Shift-F1'
       else
@@ -258,7 +264,7 @@ module Diakonos
         @files.concat files
       else
         session_buffers = []
-        
+
         session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
         pids = session_files.map { |sf| sf[ %r{/(\d+)$}, 1 ].to_i }
         pids.each do |pid|
@@ -269,20 +275,23 @@ module Diakonos
             # Process is no longer alive, so we consider the session stale
           end
         end
-        
+
         session_files.each_with_index do |session_file,index|
           session_buffers << openFile( session_file )
-          
+
           choice = getChoice(
             "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
-            [ CHOICE_YES, CHOICE_NO ]
+            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ]
           )
-          
-          if choice == CHOICE_YES
+
+          case choice
+          when CHOICE_YES
             files = File.readlines( session_file ).collect { |filename| filename.strip }
             @files = files
             File.delete session_file
             break
+          when CHOICE_DELETE
+            File.delete session_file
           end
         end
       end
@@ -303,7 +312,7 @@ module Diakonos
       @hooks.each do |hook_name, hook|
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
-      
+
       num_opened = 0
       if @files.length == 0 and @read_only_files.length == 0
         num_opened += 1 if openFile
@@ -321,7 +330,11 @@ module Diakonos
           closeFile buffer
         end
       end
-        
+      name = File.basename( @session_file )
+      if name =~ /\D/
+        @session_name = name
+      end
+
       if num_opened > 0
         switchToBufferNumber 1
 
@@ -347,7 +360,7 @@ module Diakonos
         rescue SignalException => e
           debugLog "Terminated by signal (#{e.message})"
         end
-        
+
         if @session_file =~ %r{/\d+$}
           File.delete @session_file
         end
@@ -581,7 +594,7 @@ module Diakonos
       )
       @last_search_regexps = regexps
     end
-    
+
     def save_session( session_file = @session_file )
       File.open( session_file, 'w' ) do |f|
         @buffers.each do |filepath,buffer|
@@ -591,7 +604,7 @@ module Diakonos
         end
       end
     end
-    
+
   end
 
 end
