@@ -281,14 +281,17 @@ module Diakonos
           
           choice = getChoice(
             "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
-            [ CHOICE_YES, CHOICE_NO ]
+            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ]
           )
           
-          if choice == CHOICE_YES
+          case choice
+          when CHOICE_YES
             files = File.readlines( session_file ).collect { |filename| filename.strip }
             @files = files
             File.delete session_file
             break
+          when CHOICE_DELETE
+            File.delete session_file
           end
         end
       end

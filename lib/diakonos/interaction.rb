@@ -18,6 +18,7 @@ module Diakonos
   CHOICE_YES_TO_ALL   = 4
   CHOICE_NO_TO_ALL    = 5
   CHOICE_YES_AND_STOP = 6
+  CHOICE_DELETE       = 7
   CHOICE_KEYS = [
     [ ?n, ?N ],
     [ ?y, ?Y ],
@@ -26,8 +27,9 @@ module Diakonos
     [ ?e ],
     [ ?o ],
     [ ?s ],
+    [ ?d ],
   ]
-  CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top' ]
+  CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top', '(d)elete' ]
   
   class Diakonos
     # completion_array is the array of strings that tab completion can use
