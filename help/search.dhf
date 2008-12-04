@@ -1,12 +1,28 @@
 # Searching for and Replacing Text
 
+## Executive Summary
+
+<Ctrl-F>            Begin search
+<F3>                Find next
+<Ctrl-R>            Begin search and replace
+
+<Ctrl-Alt-U>        Clear match highlighting
+<Alt-F>             Begin case-sensitive search
+<Ctrl-Alt-F>        Begin upward search
+<Shift-F3>          Find next upwards
+
+While typing search expression:
+
+<Enter>             Confirm search expression
+<Esc>               Abort search
+
 ## Searching for Text
 
 Press <Ctrl-F> to perform a case-insensitive search for text.  You will be
 prompted for what to search for.  As you type your search expression,
 matching text will be highlighted.  You can try it right now as you read this
-document!  Press <Ctrl-F> and then type the word "text".  Press <Esc> to stop
-searching.
+document!  Press <Ctrl-F> and then type the word "text".  Press <Esc> to abort
+the search and return the cursor to where it was when the search began.
 
 What you type will be interpreted as a regular expression.  (If you don't know
 what a regular expression is, search the Internet, or read the Wikipedia
