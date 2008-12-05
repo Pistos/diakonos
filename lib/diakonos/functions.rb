@@ -138,6 +138,7 @@ module Diakonos
                 end
 
                 @buffers.delete del_buffer_key
+                save_session
 
                 updateStatusLine
                 updateContextLine
@@ -631,6 +632,40 @@ module Diakonos
         end
     end
 
+    def load_session( session_id = nil )
+      if session_id.nil?
+        session_id = getUserInput( "Session: ", @rlh_sessions, @session_dir, nil, DO_COMPLETE )
+      end
+      return if session_id.nil? or session_id.empty?
+
+      path = session_filepath_for( session_id )
+      if not File.exist?( path )
+        setILine "No such session: #{session_id}"
+      else
+        if pid_session?( @session_file )
+          File.delete @session_file
+        end
+        @session_file = nil
+        @buffers.each_value do |buffer|
+          closeFile buffer
+        end
+        @session_file = path
+        set_session_name
+        files = File.readlines( @session_file ).collect { |filename| filename.strip }
+        files.each do |file|
+          openFile file
+        end
+      end
+    end
+
+    def name_session
+      name = getUserInput( 'Session name: ' )
+      if name
+        @session_file = File.expand_path( "#{@session_dir}/#{name}" )
+        save_session
+      end
+    end
+
     def newFile
         openFile
     end
@@ -701,6 +736,7 @@ module Diakonos
           buffer = Buffer.new( self, filename, buffer_key, read_only )
           runHookProcs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
+          save_session
           if switchTo( buffer ) and line_number
             @current_buffer.goToLine( line_number, 0 )
           end
@@ -714,7 +750,7 @@ module Diakonos
       prefill = ''
 
       if @current_buffer
-        if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
+        if @current_buffer.current_line =~ %r#(/\w+)+/\w+\.\w+#
           prefill = $&
         elsif @current_buffer.name
           prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
@@ -958,14 +994,12 @@ module Diakonos
             file = getUserInput( "Filename: ", @rlh_files )
         end
         if file
-            #old_name = @current_buffer.name
-            @current_buffer.save( file, PROMPT_OVERWRITE )
-            #if not @current_buffer.modified?
-                # Save was okay.
-                #@buffers.delete old_name
-                #@buffers[ @current_buffer.name ] = @current_buffer
-                #switchTo( @current_buffer )
-            #end
+            old_name = @current_buffer.name
+            if @current_buffer.save( file, PROMPT_OVERWRITE )
+                @buffers.delete old_name
+                @buffers[ @current_buffer.name ] = @current_buffer
+                save_session
+            end
         end
     end
 

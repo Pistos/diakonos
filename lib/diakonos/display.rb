@@ -118,7 +118,7 @@ module Diakonos
           var_array.push( @current_buffer.last_screen_col + 1 )
         when "filename"
           name = @current_buffer.nice_name
-          var_array.push( name[ ([ truncation, name.length ].min)..-1 ] )
+          var_array.push name[ ([ truncation, name.length ].min)..-1 ]
         when "modified"
           if @current_buffer.modified?
             var_array.push @settings[ "status.modified_str" ]
@@ -143,6 +143,8 @@ module Diakonos
           else
             var_array.push ""
           end
+        when 'session_name'
+          var_array.push @session_name
         when "type"
           var_array.push @current_buffer.original_language
         when /^@/

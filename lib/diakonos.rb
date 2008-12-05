@@ -41,6 +41,7 @@ require 'diakonos/keying'
 require 'diakonos/logging'
 require 'diakonos/list'
 require 'diakonos/buffer-management'
+require 'diakonos/sessions'
 
 require 'diakonos/keycode'
 require 'diakonos/text-mark'
@@ -61,7 +62,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'November 20, 2008'
+  LAST_MODIFIED = 'December 5, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -97,6 +98,9 @@ module Diakonos
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
+      @session_dir = "#{@diakonos_home}/sessions"
+      mkdir @session_dir
+      @session_file = "#{@session_dir}/#{Process.pid}"
 
       init_help
 
@@ -121,40 +125,48 @@ module Diakonos
 
       loadConfiguration
 
-      @quitting = false
+      @quitting    = false
       @untitled_id = 0
 
       @x = 0
       @y = 0
 
-      @buffer_stack = Array.new
-      @current_buffer = nil
-      @buffer_history = Array.new
+      @buffer_stack           = Array.new
+      @current_buffer         = nil
+      @buffer_history         = Array.new
       @buffer_history_pointer = nil
-      @bookmarks = Hash.new
-      @macro_history = nil
-      @macro_input_history = nil
-      @macros = Hash.new
-      @last_commands = SizedArray.new( NUM_LAST_COMMANDS )
-      @playing_macro = false
-      @display_mutex = Mutex.new
-      @display_queue_mutex = Mutex.new
-      @display_queue = nil
-      @do_display = true
-      @iline_mutex = Mutex.new
-      @tag_stack = Array.new
-      @last_search_regexps = nil
-      @iterated_choice = nil
-      @choice_iterations = 0
+      @bookmarks              = Hash.new
+      @macro_history          = nil
+      @macro_input_history    = nil
+      @macros                 = Hash.new
+      @last_commands          = SizedArray.new( NUM_LAST_COMMANDS )
+      @playing_macro          = false
+      @display_mutex          = Mutex.new
+      @display_queue_mutex    = Mutex.new
+      @display_queue          = nil
+      @do_display             = true
+      @iline_mutex            = Mutex.new
+      @tag_stack              = Array.new
+      @last_search_regexps    = nil
+      @iterated_choice        = nil
+      @choice_iterations      = 0
       @there_was_non_movement = false
-      @status_vars = Hash.new
+      @status_vars            = Hash.new
 
       # Readline histories
-      @rlh_general = Array.new
-      @rlh_files   = Array.new
-      @rlh_search  = Array.new
-      @rlh_shell   = Array.new
-      @rlh_help    = Array.new
+      @rlh_general  = Array.new
+      @rlh_files    = Array.new
+      @rlh_search   = Array.new
+      @rlh_shell    = Array.new
+      @rlh_help     = Array.new
+      @rlh_sessions = Array.new
+
+      @hooks = {
+        :after_buffer_switch => [],
+        :after_open          => [],
+        :after_save          => [],
+        :after_startup       => [],
+      }
     end
 
     def mkdir( dir )
@@ -201,6 +213,16 @@ module Diakonos
             script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
             @post_load_script << script
           end
+        when '-s', '--load-session'
+          session_to_load = argv.shift
+          @session_to_load = session_filepath_for( session_to_load )
+          if not File.exist? @session_to_load
+            File.open( @session_to_load, 'w' ) { |f| }  # Create empty file
+            if not File.exist? @session_to_load
+              puts "No such session file '#{session_to_load}'; failed to create '#{@session_to_load}'."
+              exit
+            end
+          end
         else
           # a name of a file to open
           @files.push arg
@@ -216,6 +238,7 @@ module Diakonos
       puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
       puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
       puts "\t-ro <file>\tLoad file as read-only"
+      puts "\t-s, --load-session <session file>\tLoad a session (file containing a list of file paths)"
     end
     protected :printUsage
 
@@ -228,12 +251,59 @@ module Diakonos
     def start
       initializeDisplay
 
-      @hooks = {
-        :after_buffer_switch => [],
-        :after_open          => [],
-        :after_save          => [],
-        :after_startup       => [],
-      }
+      if ENV[ 'COLORTERM' ] == 'gnome-terminal'
+        help_key = 'Shift-F1'
+      else
+        help_key = 'F1'
+      end
+      setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
+
+      if @session_to_load
+        @session_file = @session_to_load
+        files = File.readlines( @session_file ).collect { |filename| filename.strip }
+        @files.concat files
+      else
+        session_buffers = []
+
+        session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
+        pids = session_files.map { |sf| sf[ %r{/(\d+)$}, 1 ].to_i }
+        pids.each do |pid|
+          begin
+            Process.kill 0, pid
+            session_files.reject! { |sf| pid_session? sf }
+          rescue Errno::ESRCH
+            # Process is no longer alive, so we consider the session stale
+          end
+        end
+
+        session_files.each_with_index do |session_file,index|
+          session_buffers << openFile( session_file )
+
+          choice = getChoice(
+            "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
+            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ]
+          )
+
+          case choice
+          when CHOICE_YES
+            files = File.readlines( session_file ).collect { |filename| filename.strip }
+            @files = files
+            File.delete session_file
+            break
+          when CHOICE_DELETE
+            File.delete session_file
+          end
+        end
+
+        if session_buffers.empty? and @files.empty? and @settings[ 'session.default_session' ]
+          @session_file = session_filepath_for( @settings[ 'session.default_session' ] )
+          if File.exist? @session_file
+            files = File.readlines( @session_file ).collect { |filename| filename.strip }
+            @files.concat files
+          end
+        end
+      end
+
       Dir[ "#{@script_dir}/*" ].each do |script|
         begin
           require script
@@ -251,13 +321,6 @@ module Diakonos
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
 
-      if ENV[ 'COLORTERM' ] == 'gnome-terminal'
-        help_key = 'Shift-F1'
-      else
-        help_key = 'F1'
-      end
-      setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
-
       num_opened = 0
       if @files.length == 0 and @read_only_files.length == 0
         num_opened += 1 if openFile
@@ -269,6 +332,14 @@ module Diakonos
           num_opened += 1 if openFile( file, Buffer::READ_ONLY )
         end
       end
+
+      if session_buffers
+        session_buffers.each do |buffer|
+          closeFile buffer
+        end
+      end
+
+      set_session_name
 
       if num_opened > 0
         switchToBufferNumber 1
@@ -294,6 +365,10 @@ module Diakonos
           end
         rescue SignalException => e
           debugLog "Terminated by signal (#{e.message})"
+        end
+
+        if @session_file =~ %r{/\d+$}
+          File.delete @session_file
         end
 
         @debug.close

@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - MRU buffer history added.
 - Added strip_trailing_whitespace_on_save option.
+- Sessions (named and unnamed) added.
 - Lots of code refactoring done.
 - Numerous little adjustments and fixes made.
 

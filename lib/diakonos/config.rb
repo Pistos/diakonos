@@ -248,7 +248,7 @@ module Diakonos
           /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
           /^lang\.(.+?)\.column_delimiters$/,
           "view.nonfilelines.character",
-          'interaction.blink_string', 'diff_command'
+          'interaction.blink_string', 'diff_command', 'session.default_session'
           @settings[ command ] = arg
         when /^lang\..+?\.comment_(?:close_)?string$/
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
