@@ -10,7 +10,10 @@ module Diakonos
   CTRL_Q    = 17
   CTRL_H    = 263
   RESIZE2   = 4294967295
-  
+
+  DO_COMPLETE   = true
+  DONT_COMPLETE = false
+
   CHOICE_NO           = 0
   CHOICE_YES          = 1
   CHOICE_ALL          = 2
@@ -30,14 +33,14 @@ module Diakonos
     [ ?d ],
   ]
   CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top', '(d)elete' ]
-  
+
   class Diakonos
     # completion_array is the array of strings that tab completion can use
-    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, &block )
+    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, do_complete = DONT_COMPLETE, &block )
       if @playing_macro
         retval = @macro_input_history.shift
       else
-        retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, &block ).readline
+        retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, do_complete, &block ).readline
         if @macro_history
           @macro_input_history.push retval
         end

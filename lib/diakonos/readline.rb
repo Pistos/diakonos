@@ -1,10 +1,10 @@
 module Diakonos
-  
+
   class Readline
-    
+
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
-    def initialize( diakonos, window, prompt, initial_text = "", completion_array = nil, history = [], &block )
+    def initialize( diakonos, window, prompt, initial_text = "", completion_array = nil, history = [], do_complete = Diakonos::DONT_COMPLETE, &block )
       @diakonos = diakonos
       @window = window
       @prompt = prompt
@@ -13,41 +13,47 @@ module Diakonos
       @initial_text = initial_text
       @completion_array = completion_array
       @list_filename = @diakonos.list_filename
-      
+
       @history = history
       @history << initial_text
       @history_index = @history.length - 1
-      
+
+      @do_complete = do_complete
+
       @block = block
     end
-    
+
     def redraw_prompt
       @diakonos.setILine @prompt
     end
-    
+
     def call_block
       if @block
         @block.call( @input )
         @window.refresh
       end
     end
-    
+
     # Returns nil on cancel.
     def readline
       @input = @initial_text
       if not @input.empty?
         call_block
       end
-      
+
       @icurx = @window.curx
       @icury = @window.cury
       @window.addstr @initial_text
       @input_cursor = @initial_text.length
       @opened_list_file = false
-      
+
+      if @do_complete
+        completeInput
+      end
+
       loop do
         c = @window.getch
-        
+
         case c
         when Curses::KEY_DC
           if @input_cursor < @input.length
@@ -60,7 +66,7 @@ module Diakonos
           if @input_cursor > 0
             @input_cursor += -1
             @window.setpos( @window.cury, @window.curx - 1 )
-            
+
             # Curses::KEY_DC
             if @input_cursor < @input.length
               @window.delch
@@ -157,15 +163,15 @@ module Diakonos
           end
         end
       end
-      
+
       @diakonos.closeListBuffer
-      
+
       @history[ -1 ] = @input
     end
 
     def redrawInput
       input = @input[ 0...Curses::cols ]
-      
+
       curx = @window.curx
       cury = @window.cury
       @window.setpos( @icury, @icurx )
@@ -173,7 +179,7 @@ module Diakonos
       @window.setpos( cury, curx )
       @window.refresh
     end
-    
+
     # Redisplays the input text starting at the start of the user input area,
     # positioning the cursor at the end of the text.
     def cursorWriteInput
@@ -191,7 +197,7 @@ module Diakonos
       else
         matches = Dir.glob( ( @input.subHome() + "*" ).gsub( /\*\*/, "*" ) )
       end
-      
+
       if matches.length == 1
         @input = matches[ 0 ]
         cursorWriteInput
@@ -219,12 +225,12 @@ module Diakonos
               @diakonos.log "'#{match}' is not a directory"
             end
             f.puts
-            
+
             if match[ 0 ] != common[ 0 ]
               common = nil
               break
             end
-            
+
             up_to = [ common.length - 1, match.length - 1 ].min
             i = 1
             while ( i <= up_to ) and ( match[ 0..i ] == common[ 0..i ] )
@@ -249,7 +255,7 @@ module Diakonos
       @diakonos.openListBuffer
       @window.setpos( @window.cury, @window.curx )
     end
-    
+
   end
 
 end

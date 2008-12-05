@@ -154,11 +154,12 @@ module Diakonos
       @status_vars            = Hash.new
 
       # Readline histories
-      @rlh_general = Array.new
-      @rlh_files   = Array.new
-      @rlh_search  = Array.new
-      @rlh_shell   = Array.new
-      @rlh_help    = Array.new
+      @rlh_general  = Array.new
+      @rlh_files    = Array.new
+      @rlh_search   = Array.new
+      @rlh_shell    = Array.new
+      @rlh_help     = Array.new
+      @rlh_sessions = Array.new
 
       @hooks = {
         :after_buffer_switch => [],

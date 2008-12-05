@@ -629,7 +629,32 @@ module Diakonos
             thread.join
         end
     end
-    
+
+    def load_session( session_id = nil )
+      if session_id.nil?
+        session_id = getUserInput( "Session: ", @rlh_sessions, @session_dir, nil, DO_COMPLETE )
+      end
+      return if session_id.nil? or session_id.empty?
+
+      path = session_filepath_for( session_id )
+      if not File.exist?( path )
+        setILine "No such session: #{session_id}"
+      else
+        if pid_session?( @session_file )
+          File.delete @session_file
+        end
+        @session_file = nil
+        @buffers.each_value do |buffer|
+          closeFile buffer
+        end
+        @session_file = path
+        files = File.readlines( @session_file ).collect { |filename| filename.strip }
+        files.each do |file|
+          openFile file
+        end
+      end
+    end
+
     def name_session
       name = getUserInput( 'Session name: ' )
       if name
