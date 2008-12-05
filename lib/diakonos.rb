@@ -62,7 +62,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'December 4, 2008'
+  LAST_MODIFIED = 'December 5, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -216,6 +216,13 @@ module Diakonos
         when '-s', '--load-session'
           session_to_load = argv.shift
           @session_to_load = session_filepath_for( session_to_load )
+          if not File.exist? @session_to_load
+            File.open( @session_to_load, 'w' ) { |f| }  # Create empty file
+            if not File.exist? @session_to_load
+              puts "No such session file '#{session_to_load}'; failed to create '#{@session_to_load}'."
+              exit
+            end
+          end
         else
           # a name of a file to open
           @files.push arg
