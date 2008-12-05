@@ -23,5 +23,12 @@ module Diakonos
     def pid_session?( path )
       %r{/\d+$} === path
     end
+
+    def set_session_name
+      name = File.basename( @session_file )
+      if name =~ /\D/
+        @session_name = name
+      end
+    end
   end
 end

@@ -648,6 +648,7 @@ module Diakonos
           closeFile buffer
         end
         @session_file = path
+        set_session_name
         files = File.readlines( @session_file ).collect { |filename| filename.strip }
         files.each do |file|
           openFile file
