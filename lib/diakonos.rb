@@ -216,13 +216,6 @@ module Diakonos
         when '-s', '--load-session'
           session_to_load = argv.shift
           @session_to_load = session_filepath_for( session_to_load )
-          if not File.exist? @session_to_load
-            File.open( @session_to_load, 'w' ) { |f| }  # Create empty file
-            if not File.exist? @session_to_load
-              puts "No such session file '#{session_to_load}'; failed to create '#{@session_to_load}'."
-              exit
-            end
-          end
         else
           # a name of a file to open
           @files.push arg
@@ -292,6 +285,14 @@ module Diakonos
             break
           when CHOICE_DELETE
             File.delete session_file
+          end
+        end
+
+        if session_buffers.empty? and @files.empty? and @settings[ 'session.default_session' ]
+          @session_file = session_filepath_for( @settings[ 'session.default_session' ] )
+          if File.exist? @session_file
+            files = File.readlines( @session_file ).collect { |filename| filename.strip }
+            @files.concat files
           end
         end
       end
