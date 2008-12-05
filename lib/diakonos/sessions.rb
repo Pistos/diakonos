@@ -13,7 +13,7 @@ module Diakonos
     end
 
     def session_filepath_for( session_id )
-      if session_id and not File.exist? session_id
+      if session_id and session_id !~ %r{/}
         "#{@session_dir}/#{session_id}"
       else
         session_id
