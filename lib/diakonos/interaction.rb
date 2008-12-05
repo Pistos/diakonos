@@ -1,5 +1,5 @@
 module Diakonos
-  
+
   TAB       = 9
   ENTER     = 13
   ESCAPE    = 27
@@ -52,7 +52,7 @@ module Diakonos
       sleep @settings[ 'interaction.blink_duration' ]
       setILine message if message
     end
-    
+
     # choices should be an array of CHOICE_* constants.
     # default is what is returned when Enter is pressed.
     def getChoice( prompt, choices, default = nil )
@@ -63,28 +63,28 @@ module Diakonos
           @iterated_choice = nil
           @do_display = true
         end
-        return retval 
+        return retval
       end
-      
+
       @saved_main_x = @win_main.curx
       @saved_main_y = @win_main.cury
-      
+
       msg = prompt + " "
       choice_strings = choices.collect do |choice|
         CHOICE_STRINGS[ choice ]
       end
       msg << choice_strings.join( ", " )
-      
+
       if default.nil?
         showMessage msg
       else
         setILine msg
       end
-      
+
       c = nil
       while retval.nil?
         c = @win_interaction.getch
-        
+
         case c
         when Curses::KEY_NPAGE
           pageDown
@@ -112,23 +112,23 @@ module Diakonos
                 end
               end
             end
-            
+
             if retval.nil?
               interactionBlink( msg )
             end
           end
         end
       end
-      
+
       terminateMessage
       setILine
-      
+
       if @choice_iterations > 0
         @choice_iterations -= 1
         @iterated_choice = retval
         @do_display = false
       end
-      
+
       retval
     end
 

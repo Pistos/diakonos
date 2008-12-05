@@ -41,6 +41,7 @@ require 'diakonos/keying'
 require 'diakonos/logging'
 require 'diakonos/list'
 require 'diakonos/buffer-management'
+require 'diakonos/sessions'
 
 require 'diakonos/keycode'
 require 'diakonos/text-mark'
@@ -212,15 +213,13 @@ module Diakonos
             @post_load_script << script
           end
         when '-s', '--load-session'
-          session_to_load = @session_to_load = argv.shift
+          session_to_load = argv.shift
+          @session_to_load = session_filepath_for( session_to_load )
           if not File.exist? @session_to_load
-            @session_to_load = "#{@session_dir}/#{@session_to_load}"
+            File.open( @session_to_load, 'w' ) { |f| }  # Create empty file
             if not File.exist? @session_to_load
-              File.open( @session_to_load, 'w' ) { |f| }  # Create empty file
-              if not File.exist? @session_to_load
-                puts "No such session file '#{session_to_load}'; failed to create '#{@session_to_load}'."
-                exit
-              end
+              puts "No such session file '#{session_to_load}'; failed to create '#{@session_to_load}'."
+              exit
             end
           end
         else
@@ -270,7 +269,7 @@ module Diakonos
         pids.each do |pid|
           begin
             Process.kill 0, pid
-            session_files.reject! { |sf| sf =~ %r{/#{pid}$} }
+            session_files.reject! { |sf| pid_session? sf }
           rescue Errno::ESRCH
             # Process is no longer alive, so we consider the session stale
           end
@@ -593,16 +592,6 @@ module Diakonos
         :quiet        => quiet
       )
       @last_search_regexps = regexps
-    end
-
-    def save_session( session_file = @session_file )
-      File.open( session_file, 'w' ) do |f|
-        @buffers.each do |filepath,buffer|
-          if buffer.name
-            f.puts filepath
-          end
-        end
-      end
     end
 
   end
