@@ -4,8 +4,11 @@ Diakonos Changelog
 0.8.7
 
 - MRU buffer history added.
-- Added strip_trailing_whitespace_on_save option.
+- strip_trailing_whitespace_on_save setting added.
 - Sessions (named and unnamed) added.
+- Makefile config added.
+- find.return_on_abort setting added.
+- Help files updated.
 - Lots of code refactoring done.
 - Numerous little adjustments and fixes made.
 
