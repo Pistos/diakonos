@@ -1,24 +1,24 @@
 module Diakonos
-  
+
   BOL_ZERO           = 0
   BOL_FIRST_CHAR     = 1
   BOL_ALT_ZERO       = 2
   BOL_ALT_FIRST_CHAR = 3
-  
+
   EOL_END           = 0
   EOL_LAST_CHAR     = 1
   EOL_ALT_END       = 2
   EOL_ALT_LAST_CHAR = 3
-  
+
   class Diakonos
     attr_reader :settings, :token_regexps, :close_token_regexps, :token_formats,
       :diakonos_conf
-    
+
     def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
       found = false
       puts "Fetching configuration from #{location}..."
-      
+
       begin
         open( "http://github.com/Pistos/diakonos/tree/#{location}/diakonos.conf?raw=true" ) do |http|
           text = http.read
@@ -32,13 +32,13 @@ module Diakonos
       rescue OpenURI::HTTPError => e
         $stderr.puts "Failed to fetch from #{location}."
       end
-      
+
       found
     end
-    
+
     def loadConfiguration
       # Set defaults first
-      
+
       existent = 0
       conf_dirs = [
         '/usr/local/etc/diakonos.conf',
@@ -47,7 +47,7 @@ module Diakonos
         '/usr/local/share/diakonos/diakonos.conf',
         '/usr/share/diakonos/diakonos.conf'
       ]
-      
+
       conf_dirs.each do |conf_dir|
         @global_diakonos_conf = conf_dir
         if FileTest.exists? @global_diakonos_conf
@@ -55,10 +55,10 @@ module Diakonos
           break
         end
       end
-      
+
       @diakonos_conf = ( @config_filename or ( @diakonos_home + '/diakonos.conf' ) )
       existent += 1 if FileTest.exists? @diakonos_conf
-      
+
       if existent < 1
         puts "diakonos.conf not found in any of:"
         conf_dirs.each do |conf_dir|
@@ -74,13 +74,13 @@ module Diakonos
             fetch_conf 'master'
           end
         end
-        
+
         if not FileTest.exists?( @diakonos_conf )
           puts "Terminating..."
           exit 1
         end
       end
-      
+
       @logfilename = @diakonos_home + "/diakonos.log"
       @keychains           = Hash.new
       @token_regexps       = Hash.new
@@ -91,29 +91,29 @@ module Diakonos
       @filemasks           = Hash.new
       @bangmasks           = Hash.new
       @closers             = Hash.new
-      
+
       @settings = Hash.new
       # Setup some defaults
       @settings[ "context.format" ] = Curses::A_REVERSE
-      
+
       @keychains[ Curses::KEY_RESIZE ] = [ "redraw", nil ]
       @keychains[ RESIZE2 ] = [ "redraw", nil ]
-      
+
       @colour_pairs = Array.new
-      
+
       begin
         parseConfigurationFile( @global_diakonos_conf )
         parseConfigurationFile( @diakonos_conf )
-        
+
         # Session settings override config file settings.
-        
+
         @session_settings.each do |key,value|
           @settings[ key ] = value
         end
-        
+
         @clipboard = Clipboard.new @settings[ "max_clips" ]
         @log = File.open( @logfilename, "a" )
-        
+
         if @buffers
           @buffers.each_value do |buffer|
             buffer.configure
@@ -123,15 +123,15 @@ module Diakonos
         # No config file found or readable
       end
     end
-    
+
     def parseConfigurationFile( filename )
       return if not FileTest.exists? filename
-      
+
       lines = IO.readlines( filename ).collect { |l| l.chomp }
       lines.each do |line|
         # Skip comments
         next if line[ 0 ] == ?#
-        
+
         command, arg = line.split( /\s+/, 2 )
         next if command.nil?
         command = command.downcase
@@ -235,7 +235,8 @@ module Diakonos
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
           /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
           "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
-          'suppress_welcome', 'strip_trailing_whitespace_on_save'
+          'suppress_welcome', 'strip_trailing_whitespace_on_save',
+          'find.return_on_abort'
           @settings[ command ] = arg.to_b
         when "context.format", "context.separator.format", "status.format"
           @settings[ command ] = arg.toFormatting
