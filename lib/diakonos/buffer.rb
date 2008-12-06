@@ -1779,6 +1779,9 @@ class Buffer
           line_numbers << i
         end
       end
+
+      prefix = "#{File.basename( @name )}"
+
       line_numbers.uniq!
       results = []
       last_i = line_numbers[ 0 ]
@@ -1788,7 +1791,7 @@ class Buffer
           results << one_result.join( "\n" )
           one_result = []
         end
-        one_result << @lines[ i ]
+        one_result << "#{prefix}:#{i}: #{@lines[ i ]}"
         last_i = i
       end
       if not one_result.empty?
