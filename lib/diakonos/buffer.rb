@@ -1669,14 +1669,13 @@ class Buffer
         display
     end
 
-    def highlightMatches
-        if @highlight_regexp
-            found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
-                TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
-            end
-            #@text_marks = [ nil ] + found_marks
-            @text_marks = [ @text_marks[ 0 ] ] + found_marks
-        end
+    def highlightMatches( regexp = @highlight_regexp )
+      @highlight_regexp = regexp
+      return if @highlight_regexp.nil?
+      found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
+        TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
+      end
+      @text_marks = [ @text_marks[ 0 ] ] + found_marks
     end
 
     def clearMatches( do_display = DONT_DISPLAY )

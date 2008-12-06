@@ -490,18 +490,21 @@ module Diakonos
 
       original_buffer = @current_buffer
 
-      regexp_source = getUserInput(
+      getUserInput(
         "Grep regexp: ",
         @rlh_search,
-        ( selected_text or "" )
+        ( regexp_source or selected_text or "" )
       ) { |input|
-        grep_results = original_buffer.grep( input )
+        regexp = Regexp.new( input )
+        grep_results = original_buffer.grep( regexp )
         with_list_file do |list|
           list.puts grep_results.join( "\n---\n" )
         end
-        openListBuffer
+        list_buffer = openListBuffer
+        list_buffer.highlightMatches regexp
+        list_buffer.display
       }
-      @current_buffer.cursorTo starting_row, starting_col
+      original_buffer.cursorTo starting_row, starting_col
     end
 
     def help( prefill = '' )
