@@ -482,6 +482,28 @@ module Diakonos
         goToTag @current_buffer.wordUnderCursor
     end
 
+    def grep( regexp_source = nil )
+      if @current_buffer.changing_selection
+        selected_text = @current_buffer.copySelection[ 0 ]
+      end
+      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+
+      original_buffer = @current_buffer
+
+      regexp_source = getUserInput(
+        "Grep regexp: ",
+        @rlh_search,
+        ( selected_text or "" )
+      ) { |input|
+        matching_lines = original_buffer.grep( input )
+        with_list_file do |list|
+          list.puts matching_lines.join( "\n" )
+        end
+        openListBuffer
+      }
+      @current_buffer.cursorTo starting_row, starting_col
+    end
+
     def help( prefill = '' )
       open_help_buffer
       matching_docs = nil
