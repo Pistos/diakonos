@@ -1766,8 +1766,37 @@ class Buffer
         end
     end
 
+    # Returns an Array of results, where each result is a String usually
+    # containing \n's due to context
     def grep( regexp_source )
-      @lines.grep Regexp.new( regexp_source )
+      regexp = Regexp.new( regexp_source )
+      num_lines = @lines.size
+      line_numbers = []
+      @lines.each_with_index do |line,index|
+        next if line !~ regexp
+        start_index = [ 0, index - @settings[ 'grep.context' ] ].max
+        end_index = [ index + @settings[ 'grep.context' ], num_lines-1 ].min
+        (start_index..end_index).each do |i|
+          line_numbers << i
+        end
+      end
+      line_numbers.uniq!
+      results = []
+      last_i = line_numbers[ 0 ]
+      one_result = []
+      line_numbers.each do |i|
+        if i - last_i > 1
+          results << one_result.join( "\n" )
+          one_result = []
+        end
+        one_result << @lines[ i ]
+        last_i = i
+      end
+      if not one_result.empty?
+        results << one_result.join( "\n" )
+      end
+
+      results
     end
 
     def setModified( do_display = DO_DISPLAY )

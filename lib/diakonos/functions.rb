@@ -495,9 +495,9 @@ module Diakonos
         @rlh_search,
         ( selected_text or "" )
       ) { |input|
-        matching_lines = original_buffer.grep( input )
+        grep_results = original_buffer.grep( input )
         with_list_file do |list|
-          list.puts matching_lines.join( "\n" )
+          list.puts grep_results.join( "\n---\n" )
         end
         openListBuffer
       }
