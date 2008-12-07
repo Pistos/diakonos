@@ -768,7 +768,18 @@ module Diakonos
         end
       end
 
-      file = getUserInput( "Filename: ", @rlh_files, prefill )
+      if @settings[ 'fuzzy_file_find' ]
+        prefill = ''
+        finder_block = lambda { |input|
+          finder = FuzzyFileFinder.new
+          matches = finder.find( input ).sort_by { |m| [ -m[:score], m[:path] ] }
+          with_list_file do |list|
+            list.puts matches.map { |m| m[ :path ] }.join( "\n" )
+          end
+          openListBuffer
+        }
+      end
+      file = getUserInput( "Filename: ", @rlh_files, prefill, &finder_block )
 
       if file
         openFile file

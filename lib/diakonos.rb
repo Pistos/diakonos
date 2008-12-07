@@ -54,7 +54,7 @@ require 'diakonos/window'
 require 'diakonos/clipboard'
 require 'diakonos/readline'
 
-require 'diakonos/vendor/fuzzy_file_finder'
+require 'vendor/fuzzy_file_finder'
 
 #$profiling = true
 
