@@ -489,21 +489,8 @@ module Diakonos
       starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 
       original_buffer = @current_buffer
+      selected = grep_( regexp_source || selected_text || "", original_buffer )
 
-      selected = getUserInput(
-        "Grep regexp: ",
-        @rlh_search,
-        ( regexp_source or selected_text or "" )
-      ) { |input|
-        regexp = Regexp.new( input, Regexp::IGNORECASE )
-        grep_results = original_buffer.grep( regexp )
-        with_list_file do |list|
-          list.puts grep_results.join( "\n---\n" )
-        end
-        list_buffer = openListBuffer
-        list_buffer.highlightMatches regexp
-        list_buffer.display
-      }
       if selected
         spl = selected.split( "| " )
         if spl.size > 1

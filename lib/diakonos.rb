@@ -601,6 +601,22 @@ module Diakonos
       @last_search_regexps = regexps
     end
 
+    def grep_( preset = "", *buffers )
+      getUserInput(
+        "Grep regexp: ",
+        @rlh_search,
+        preset
+      ) { |input|
+        regexp = Regexp.new( input, Regexp::IGNORECASE )
+        grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
+        with_list_file do |list|
+          list.puts grep_results.join( "\n---\n" )
+        end
+        list_buffer = openListBuffer
+        list_buffer.highlightMatches regexp
+        list_buffer.display
+      }
+    end
   end
 
 end
