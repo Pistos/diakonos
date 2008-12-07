@@ -833,7 +833,7 @@ module Diakonos
           finder = FuzzyFileFinder.new
           matches = finder.find( input ).sort_by { |m| [ -m[:score], m[:path] ] }
           with_list_file do |list|
-            list.puts matches.map { |m| m[ :path ] }.join( "\n" )
+            list.puts matches.map { |m| m[ :path ] }
           end
           openListBuffer
         }
