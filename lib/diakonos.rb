@@ -607,6 +607,7 @@ module Diakonos
         @rlh_search,
         preset
       ) { |input|
+        next if input.length < 2
         regexp = Regexp.new( input, Regexp::IGNORECASE )
         grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
         with_list_file do |list|
