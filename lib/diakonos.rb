@@ -601,11 +601,17 @@ module Diakonos
       @last_search_regexps = regexps
     end
 
-    def grep_( preset = "", *buffers )
-      getUserInput(
+    def grep_( regexp_source, *buffers )
+      original_buffer = @current_buffer
+      if @current_buffer.changing_selection
+        selected_text = @current_buffer.copySelection[ 0 ]
+      end
+      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+
+      selected = getUserInput(
         "Grep regexp: ",
         @rlh_search,
-        preset
+        regexp_source || selected_text || ""
       ) { |input|
         next if input.length < 2
         begin
@@ -621,6 +627,15 @@ module Diakonos
           # Do nothing
         end
       }
+
+      if selected
+        spl = selected.split( "| " )
+        if spl.size > 1
+          openFile spl[ -1 ]
+        end
+      else
+        original_buffer.cursorTo starting_row, starting_col
+      end
     end
   end
 

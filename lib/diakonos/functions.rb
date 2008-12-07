@@ -483,22 +483,11 @@ module Diakonos
     end
 
     def grep( regexp_source = nil )
-      if @current_buffer.changing_selection
-        selected_text = @current_buffer.copySelection[ 0 ]
-      end
-      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+      grep_( regexp_source, @current_buffer )
+    end
 
-      original_buffer = @current_buffer
-      selected = grep_( regexp_source || selected_text || "", original_buffer )
-
-      if selected
-        spl = selected.split( "| " )
-        if spl.size > 1
-          openFile spl[ -1 ]
-        end
-      else
-        original_buffer.cursorTo starting_row, starting_col
-      end
+    def grep_buffers( regexp_source = nil )
+      grep_( regexp_source, @buffers.values )
     end
 
     def help( prefill = '' )
