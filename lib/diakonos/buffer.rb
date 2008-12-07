@@ -1791,7 +1791,7 @@ class Buffer
           results << one_result.join( "\n" )
           one_result = []
         end
-        one_result << "#{prefix}:#{i}: #{@lines[ i ]}"
+        one_result << ( "#{prefix}:#{i+1}: " << ( "%-200s | #{@key}:#{i+1}" % @lines[ i ] ) )
         last_i = i
       end
       if not one_result.empty?

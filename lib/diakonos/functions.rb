@@ -490,7 +490,7 @@ module Diakonos
 
       original_buffer = @current_buffer
 
-      getUserInput(
+      selected = getUserInput(
         "Grep regexp: ",
         @rlh_search,
         ( regexp_source or selected_text or "" )
@@ -504,7 +504,14 @@ module Diakonos
         list_buffer.highlightMatches regexp
         list_buffer.display
       }
-      original_buffer.cursorTo starting_row, starting_col
+      if selected
+        spl = selected.split( "| " )
+        if spl.size > 1
+          openFile spl[ -1 ]
+        end
+      else
+        original_buffer.cursorTo starting_row, starting_col
+      end
     end
 
     def help( prefill = '' )
