@@ -62,7 +62,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'December 5, 2008'
+  LAST_MODIFIED = 'December 7, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -413,7 +413,7 @@ module Diakonos
         File.open( @error_filename, "w" ) do |f|
           f.puts "Diakonos Error:"
           f.puts
-          f.puts e.message
+          f.puts "#{e.class}: #{e.message}"
           f.puts
           f.puts "Probable Causes:"
           f.puts
@@ -601,6 +601,42 @@ module Diakonos
       @last_search_regexps = regexps
     end
 
+    def grep_( regexp_source, *buffers )
+      original_buffer = @current_buffer
+      if @current_buffer.changing_selection
+        selected_text = @current_buffer.copySelection[ 0 ]
+      end
+      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+
+      selected = getUserInput(
+        "Grep regexp: ",
+        @rlh_search,
+        regexp_source || selected_text || ""
+      ) { |input|
+        next if input.length < 2
+        begin
+          regexp = Regexp.new( input, Regexp::IGNORECASE )
+          grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
+          with_list_file do |list|
+            list.puts grep_results.join( "\n---\n" )
+          end
+          list_buffer = openListBuffer
+          list_buffer.highlightMatches regexp
+          list_buffer.display
+        rescue RegexpError
+          # Do nothing
+        end
+      }
+
+      if selected
+        spl = selected.split( "| " )
+        if spl.size > 1
+          openFile spl[ -1 ]
+        end
+      else
+        original_buffer.cursorTo starting_row, starting_col
+      end
+    end
   end
 
 end

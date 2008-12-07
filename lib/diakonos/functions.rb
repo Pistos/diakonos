@@ -482,6 +482,14 @@ module Diakonos
         goToTag @current_buffer.wordUnderCursor
     end
 
+    def grep( regexp_source = nil )
+      grep_( regexp_source, @current_buffer )
+    end
+
+    def grep_buffers( regexp_source = nil )
+      grep_( regexp_source, *@buffers.values )
+    end
+
     def help( prefill = '' )
       open_help_buffer
       matching_docs = nil

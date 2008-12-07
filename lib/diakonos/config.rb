@@ -257,7 +257,7 @@ module Diakonos
         when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/
           @settings[ command ] = arg.to_i
         when "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
-          "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback"
+          "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context'
           @settings[ command ] = arg.to_i
         when "view.jump.x", "view.jump.y"
           value = arg.to_i

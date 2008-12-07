@@ -94,7 +94,7 @@ class Buffer
                 @diakonos.setILine "(spaces substituted for tab characters)"
             end
         end
-            
+
         @buffer_states[ @current_buffer_state ] = @lines
         @cursor_states[ @current_buffer_state ] = [ @last_row, @last_col ]
     end
@@ -110,7 +110,7 @@ class Buffer
         setLanguage language
         @original_language = @language
     end
-    
+
     def reset_win_main
         @win_main = @diakonos.win_main
     end
@@ -139,7 +139,7 @@ class Buffer
     def [] ( arg )
         @lines[ arg ]
     end
-    
+
     def == (other)
         return false if other.nil?
         key == other.key
@@ -148,7 +148,7 @@ class Buffer
     def length
         @lines.length
     end
-    
+
     def modified?
       @modified
     end
@@ -159,23 +159,23 @@ class Buffer
 
     def display
         return if not @diakonos.do_display
-        
+
         Thread.new do
             #if $profiling
                 #RubyProf.start
             #end
-                    
+
             if @diakonos.display_mutex.try_lock
                 begin
                     Curses::curs_set 0
-                    
+
                     @continued_format_class = nil
-                    
+
                     @pen_down = true
-                    
+
                     # First, we have to "draw" off-screen, in order to check for opening of
                     # multi-line highlights.
-                    
+
                     # So, first look backwards from the @top_line to find the first opening
                     # regexp match, if any.
                     index = @top_line - 1
@@ -183,22 +183,22 @@ class Buffer
                         open_index = -1
                         open_token_class = nil
                         open_match_text = nil
-                        
+
                         open_index, open_token_class, open_match_text = findOpeningMatch( line )
-                        
+
                         if open_token_class
                             @pen_down = false
                             @lines[ index...@top_line ].each do |line|
                                 printLine line
                             end
                             @pen_down = true
-                            
+
                             break
                         end
-                        
+
                         index = index - 1
                     end
-                    
+
                     # Draw each on-screen line.
                     y = 0
                     @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
@@ -208,7 +208,7 @@ class Buffer
                         paintMarks @top_line + row
                         y += 1
                     end
-                    
+
                     # Paint the empty space below the file if the file is too short to fit in one screen.
                     ( y...@diakonos.main_window_height ).each do |y|
                         @win_main.setpos( y, 0 )
@@ -217,17 +217,17 @@ class Buffer
                         if @settings[ "view.nonfilelines.visible" ]
                             linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
                         end
-                        
+
                         @win_main.addstr linestr
                     end
-                    
+
                     @win_main.setpos( @last_screen_y , @last_screen_x )
                     @win_main.refresh
-                    
+
                     if @language != @original_language
                         setLanguage( @original_language )
                     end
-                    
+
                     Curses::curs_set 1
                 rescue Exception => e
                     @diakonos.log( "Display Exception:" )
@@ -240,7 +240,7 @@ class Buffer
             else
                 @diakonos.displayEnqueue( self )
             end
-            
+
             #if $profiling
                 #result = RubyProf.stop
                 #printer = RubyProf::GraphHtmlPrinter.new( result )
@@ -249,7 +249,7 @@ class Buffer
                 #end
             #end
         end
-        
+
     end
 
     def findOpeningMatch( line, match_close = true, bos_allowed = true )
@@ -348,14 +348,14 @@ class Buffer
             @text_marks[ SELECTION ] = nil
         end
     end
-    
+
     def selection_mark
       @text_marks[ SELECTION ]
     end
     def selecting?
       !!selection_mark
     end
-    
+
     def select_current_line
       @text_marks[ SELECTION ] = TextMark.new(
         @last_row,
@@ -366,15 +366,15 @@ class Buffer
       )
       @lines[ @last_row ]
     end
-    
+
     def select_all
       anchorSelection( 0, 0, DONT_DISPLAY )
       cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
-    
+
     def select( from_regexp, to_regexp, include_ending = true )
       start_row = nil
-      
+
       @lines[ 0..@last_row ].reverse.each_with_index do |line,index|
         if line =~ from_regexp
           start_row = @last_row - index
@@ -405,7 +405,7 @@ class Buffer
     # write_cursor_col is buffer-relative, not screen-relative
     def truncateOffScreen( string, write_cursor_col )
         retval = string
-        
+
         # Truncate based on left edge of display area
         if write_cursor_col < @left_column
             retval = retval[ (@left_column - write_cursor_col)..-1 ]
@@ -423,10 +423,10 @@ class Buffer
                 end
             end
         end
-        
+
         retval == "" ? nil : retval
     end
-    
+
     # For debugging purposes
     def quotedOrNil( str )
         if str.nil?
@@ -435,14 +435,14 @@ class Buffer
             "'#{str}'"
         end
     end
-    
+
     def paintMarks( row )
         string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
         return if string.nil? or string == ""
         string = string.expandTabs( @tab_size )
         cury = @win_main.cury
         curx = @win_main.curx
-        
+
         @text_marks.reverse_each do |text_mark|
             if text_mark
                 @win_main.attrset text_mark.formatting
@@ -570,7 +570,7 @@ class Buffer
         else
             remainder = @left_column + Curses::cols - col
         end
-        
+
         if remainder > 0
             printString( " " * remainder )
         end
@@ -582,7 +582,7 @@ class Buffer
       else
         name = @name
       end
-      
+
       if @read_only and FileTest.exists?( @name ) and FileTest.exists?( name ) and ( File.stat( @name ).ino == File.stat( name ).ino )
         @diakonos.setILine "#{name} cannot be saved since it is read-only."
       else
@@ -591,7 +591,7 @@ class Buffer
           @diakonos.saveFileAs
         else
           proceed = true
-          
+
           if prompt_overwrite and FileTest.exists? name
             proceed = false
             choice = @diakonos.getChoice(
@@ -606,11 +606,11 @@ class Buffer
               proceed = false
             end
           end
-          
+
           if file_modified?
             proceed = ! @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
           end
-          
+
           if proceed
             File.open( name, "w" ) do |f|
               @lines[ 0..-2 ].each do |line|
@@ -619,7 +619,7 @@ class Buffer
                 end
                 f.puts line
               end
-              
+
               line = @lines[ -1 ]
               if @settings[ 'strip_trailing_whitespace_on_save' ]
                 line.rstrip!
@@ -629,7 +629,7 @@ class Buffer
                 f.print line
                 f.print "\n" if @settings[ "eof_newline" ]
               end
-              
+
               if @settings[ 'strip_trailing_whitespace_on_save' ]
                 if @last_col > @lines[ @last_row ].size
                   cursorTo @last_row, @lines[ @last_row ].size
@@ -639,29 +639,29 @@ class Buffer
             @name = name
             @last_modification_check = File.mtime( @name )
             saved = true
-            
+
             if @name == @diakonos.diakonos_conf
               @diakonos.loadConfiguration
               @diakonos.initializeDisplay
             end
-            
+
             @modified = false
-            
+
             display
             @diakonos.updateStatusLine
           end
         end
       end
-      
+
       saved
     end
 
     # Returns true on successful write.
     def saveCopy( filename )
         return false if filename.nil?
-        
+
         name = filename.subHome
-        
+
         File.open( name, "w" ) do |f|
             @lines[ 0..-2 ].each do |line|
                 f.puts line
@@ -672,7 +672,7 @@ class Buffer
                 f.print "\n" if @settings[ "eof_newline" ]
             end
         end
-        
+
         true
     end
 
@@ -692,7 +692,7 @@ class Buffer
         @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
         setModified
     end
-    
+
     def insertString( str )
         row = @last_row
         col = @last_col
@@ -725,7 +725,7 @@ class Buffer
             end
         end
     end
-    
+
     def joinLines( row = @last_row, strip = DONT_STRIP_LINE )
         takeSnapshot( TYPING )
         next_line = @lines.delete_at( row + 1 )
@@ -735,7 +735,7 @@ class Buffer
         @lines[ row ] << next_line
         setModified
     end
-    
+
     def close_code
       line = @lines[ @last_row ]
       @closers.each_value do |h|
@@ -754,12 +754,12 @@ class Buffer
         end
       end
     end
-    
+
     def collapseWhitespace
       if selection_mark
         removeSelection DONT_DISPLAY
       end
-        
+
       line = @lines[ @last_row ]
       head = line[ 0...@last_col ]
       tail = line[ @last_col..-1 ]
@@ -772,7 +772,7 @@ class Buffer
         setModified
       end
     end
-    
+
     def selected_lines
       selection = selection_mark
       if selection
@@ -786,10 +786,10 @@ class Buffer
         [ @lines[ @last_row ] ]
       end
     end
-    
+
     def columnize( delimiter = /=>?|:|,/, num_spaces_padding = 1 )
       takeSnapshot
-      
+
       lines = selected_lines
       column_width = 0
       lines.each do |line|
@@ -798,10 +798,10 @@ class Buffer
           column_width = [ pos, column_width ].max
         end
       end
-      
+
       padding = ' ' * num_spaces_padding
       one_modified = false
-      
+
       lines.each do |line|
         old_line = line.dup
         if line =~ /^(.+?)(#{delimiter.source})(.*)$/
@@ -820,12 +820,12 @@ class Buffer
         end
         one_modified ||= ( line != old_line )
       end
-      
+
       if one_modified
         setModified
       end
     end
-    
+
     def comment_out
       takeSnapshot
       one_modified = false
@@ -839,7 +839,7 @@ class Buffer
         setModified
       end
     end
-    
+
     def uncomment
       takeSnapshot
       comment_string = Regexp.escape( @settings[ "lang.#{@language}.comment_string" ].to_s )
@@ -880,13 +880,13 @@ class Buffer
 
         row = @last_row
         col = @last_col
-        
+
         takeSnapshot
         if @settings[ 'delete_newline_on_delete_to_eol' ] and col == @lines[ row ].size
           next_line = @lines.delete_at( row + 1 )
           @lines[ row ] << next_line
           retval = ''
-        else        
+        else
           retval = [ @lines[ row ][ col..-1 ] ]
           @lines[ row ] = @lines[ row ][ 0...col ]
         end
@@ -916,7 +916,7 @@ class Buffer
             @lines[ row ]
         end
     end
-    
+
     def current_line
       @lines[ @last_row ]
     end
@@ -935,7 +935,7 @@ class Buffer
     def rowOf( y )
         @top_line + y
     end
-    
+
     # Returns nil if the row is off-screen.
     def rowToY( row )
         return nil if row.nil?
@@ -943,7 +943,7 @@ class Buffer
         y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
         y
     end
-    
+
     # Returns nil if the column is off-screen.
     def columnToX( col )
         return nil if col.nil?
@@ -981,17 +981,17 @@ class Buffer
         else
             @top_line = new_top_line
         end
-        
+
         old_row = @last_row
         old_col = @last_col
-        
+
         changed = ( @top_line - old_top_line )
         if changed != 0 and do_pitch_cursor
             @last_row += changed
         end
-        
+
         height = [ @diakonos.main_window_height, @lines.length ].min
-        
+
         @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
         if @last_row - @top_line < @settings[ "view.margin.y" ]
             @last_row = @top_line + @settings[ "view.margin.y" ]
@@ -1003,9 +1003,9 @@ class Buffer
         @last_col = @last_col.fit( @left_column, [ @left_column + Curses::cols - 1, @lines[ @last_row ].length ].min )
         @last_screen_y = @last_row - @top_line
         @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
-        
+
         recordMarkStartAndEnd
-        
+
         if changed != 0
             highlightMatches
             if @diakonos.there_was_non_movement
@@ -1017,7 +1017,7 @@ class Buffer
 
         changed
     end
-    
+
     def pushCursorState( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
         new_state = {
             :top_line => top_line,
@@ -1037,7 +1037,7 @@ class Buffer
     def cursorTo( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = ADJUST_ROW )
         old_last_row = @last_row
         old_last_col = @last_col
-        
+
         row = row.fit( 0, @lines.length - 1 )
 
         if col < 0
@@ -1077,7 +1077,7 @@ class Buffer
         view_changed = showCharacter( row, new_col )
         @last_screen_y = row - @top_line
         @last_screen_x = new_col - @left_column
-        
+
         @typing = false if stopped_typing
         @last_row = row
         @last_col = col
@@ -1085,7 +1085,7 @@ class Buffer
         changed = ( @last_row != old_last_row or @last_col != old_last_col )
         if changed
             recordMarkStartAndEnd
-            
+
             removed = false
             if not @changing_selection and selection_mark
                 removeSelection( DONT_DISPLAY )
@@ -1100,13 +1100,13 @@ class Buffer
             end
             @diakonos.updateStatusLine
             @diakonos.updateContextLine
-            
+
             @diakonos.remember_buffer self
         end
-        
+
         changed
     end
-    
+
     def cursorReturn( direction )
         delta = 0
         if @cursor_stack_pointer.nil?
@@ -1120,9 +1120,9 @@ class Buffer
             else
                 @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
         end
-        
+
         return_pointer = @cursor_stack_pointer
-        
+
         if @cursor_stack_pointer < 0
             return_pointer = @cursor_stack_pointer = 0
         elsif @cursor_stack_pointer >= @cursor_stack.length
@@ -1135,10 +1135,10 @@ class Buffer
                 @diakonos.updateStatusLine
             end
         end
-        
+
         [ return_pointer, @cursor_stack.size ]
     end
-    
+
     def tabExpandedColumn( col, row )
         delta = 0
         line = @lines[ row ]
@@ -1178,7 +1178,7 @@ class Buffer
         end
         cursorTo( row, col, DO_DISPLAY )
     end
-    
+
     def cursorToEOL
       y = @win_main.cury
       end_col = lineAt( y ).length
@@ -1333,7 +1333,7 @@ class Buffer
         @last_finding = nil
         display if do_display
     end
-    
+
     def toggleSelection
         if @changing_selection
             removeSelection
@@ -1392,7 +1392,7 @@ class Buffer
     # text is an array of Strings, or a String with zero or more newlines ("\n")
     def paste( text, do_parsed_indent = false )
       return if text.nil?
-      
+
       if not text.kind_of? Array
         s = text.to_s
         if s.include?( "\n" )
@@ -1401,11 +1401,11 @@ class Buffer
           text = [ s ]
         end
       end
-      
+
       takeSnapshot
-      
+
       deleteSelection( DONT_DISPLAY )
-      
+
       row = @last_row
       col = @last_col
       line = @lines[ row ]
@@ -1427,7 +1427,7 @@ class Buffer
         end
         cursorTo( new_row, columnOf( text[ -1 ].length ) )
       end
-      
+
       setModified
     end
 
@@ -1439,13 +1439,13 @@ class Buffer
         return if regexps.nil?
         regexp = regexps[ 0 ]
         return if regexp.nil? or regexp == //
-        
+
         direction = options[ :direction ]
         replacement = options[ :replacement ]
         auto_choice = options[ :auto_choice ]
         from_row = options[ :starting_row ] || @last_row
         from_col = options[ :starting_col ] || @last_col
-        
+
         if direction == :opposite
             case @last_search_direction
                 when :up
@@ -1456,16 +1456,16 @@ class Buffer
         end
         @last_search_regexps = regexps
         @last_search_direction = direction
-        
+
         finding = nil
         wrapped = false
         match = nil
-        
+
         catch :found do
-        
+
             if direction == :down
                 # Check the current row first.
-                
+
                 if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) + 1 )
                   match = Regexp.last_match
                   found_text = match[ 0 ]
@@ -1476,9 +1476,9 @@ class Buffer
                     finding = nil
                   end
                 end
-                
+
                 # Check below the cursor.
-                
+
                 ( (from_row + 1)...@lines.length ).each do |i|
                     if index = @lines[ i ].index( regexp )
                       match = Regexp.last_match
@@ -1491,11 +1491,11 @@ class Buffer
                       end
                     end
                 end
-                
+
                 # Wrap around.
-                
+
                 wrapped = true
-                
+
                 ( 0...from_row ).each do |i|
                     if index = @lines[ i ].index( regexp )
                       match = Regexp.last_match
@@ -1508,9 +1508,9 @@ class Buffer
                       end
                     end
                 end
-                
+
                 # And finally, the other side of the current row.
-                
+
                 #if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) - 1 )
                 if index = @lines[ from_row ].index( regexp )
                     if index <= ( @last_finding ? @last_finding.start_col : from_col )
@@ -1524,10 +1524,10 @@ class Buffer
                       end
                     end
                 end
-                
+
             elsif direction == :up
                 # Check the current row first.
-                
+
                 col_to_check = ( @last_finding ? @last_finding.end_col : from_col ) - 1
                 if ( col_to_check >= 0 ) and ( index = @lines[ from_row ][ 0...col_to_check ].rindex( regexp ) )
                   match = Regexp.last_match
@@ -1539,9 +1539,9 @@ class Buffer
                     finding = nil
                   end
                 end
-                
+
                 # Check above the cursor.
-                
+
                 (from_row - 1).downto( 0 ) do |i|
                     if index = @lines[ i ].rindex( regexp )
                       match = Regexp.last_match
@@ -1554,11 +1554,11 @@ class Buffer
                       end
                     end
                 end
-                
+
                 # Wrap around.
-                
+
                 wrapped = true
-                
+
                 (@lines.length - 1).downto(from_row + 1) do |i|
                     if index = @lines[ i ].rindex( regexp )
                       match = Regexp.last_match
@@ -1571,9 +1571,9 @@ class Buffer
                       end
                     end
                 end
-                
+
                 # And finally, the other side of the current row.
-                
+
                 search_col = ( @last_finding ? @last_finding.start_col : from_col ) + 1
                 if index = @lines[ from_row ].rindex( regexp )
                     if index > search_col
@@ -1589,12 +1589,12 @@ class Buffer
                 end
             end
         end
-        
+
         if finding
             if wrapped and not options[ :quiet ]
               @diakonos.setILine( "(search wrapped around BOF/EOF)" )
             end
-            
+
             removeSelection( DONT_DISPLAY )
             @last_finding = finding
             if @settings[ "found_cursor_start" ]
@@ -1606,7 +1606,7 @@ class Buffer
             end
 
             @changing_selection = false
-            
+
             if regexps.length == 1
                 @highlight_regexp = regexp
                 highlightMatches
@@ -1614,7 +1614,7 @@ class Buffer
                 clearMatches
             end
             display
-            
+
             if replacement
               # Substitute placeholders (e.g. \1) in str for the group matches of the last match.
               actual_replacement = replacement.dup
@@ -1626,7 +1626,7 @@ class Buffer
                   match[ ref.to_i ]
                 end
               }
-              
+
               choice = auto_choice || @diakonos.getChoice(
                 "Replace?",
                 [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
@@ -1668,15 +1668,14 @@ class Buffer
 
         display
     end
-    
-    def highlightMatches
-        if @highlight_regexp
-            found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
-                TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
-            end
-            #@text_marks = [ nil ] + found_marks
-            @text_marks = [ @text_marks[ 0 ] ] + found_marks
-        end
+
+    def highlightMatches( regexp = @highlight_regexp )
+      @highlight_regexp = regexp
+      return if @highlight_regexp.nil?
+      found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
+        TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
+      end
+      @text_marks = [ @text_marks[ 0 ] ] + found_marks
     end
 
     def clearMatches( do_display = DONT_DISPLAY )
@@ -1695,19 +1694,19 @@ class Buffer
           find( @last_search_regexps, :direction => direction )
         end
     end
-    
+
     def seek( regexp, direction = :down )
         return if regexp.nil? or regexp == //
-        
+
         found_row = nil
         found_col = nil
         found_text = nil
         wrapped = false
-        
+
         catch :found do
             if direction == :down
                 # Check the current row first.
-                
+
                 index, match_text = @lines[ @last_row ].group_index( regexp, @last_col + 1 )
                 if index
                     found_row = @last_row
@@ -1715,9 +1714,9 @@ class Buffer
                     found_text = match_text
                     throw :found
                 end
-                
+
                 # Check below the cursor.
-                
+
                 ( (@last_row + 1)...@lines.length ).each do |i|
                     index, match_text = @lines[ i ].group_index( regexp )
                     if index
@@ -1727,10 +1726,10 @@ class Buffer
                         throw :found
                     end
                 end
-                
+
             else
                 # Check the current row first.
-                
+
                 #col_to_check = ( @last_found_col or @last_col ) - 1
                 col_to_check = @last_col - 1
                 if col_to_check >= 0
@@ -1742,9 +1741,9 @@ class Buffer
                         throw :found
                     end
                 end
-                
+
                 # Check above the cursor.
-                
+
                 (@last_row - 1).downto( 0 ) do |i|
                     index, match_text = @lines[ i ].group_rindex( regexp )
                     if index
@@ -1756,15 +1755,51 @@ class Buffer
                 end
             end
         end
-        
+
         if found_text
             #@last_found_row = found_row
             #@last_found_col = found_col
             cursorTo( found_row, found_col )
-            
+
             display
         end
-    end    
+    end
+
+    # Returns an Array of results, where each result is a String usually
+    # containing \n's due to context
+    def grep( regexp_source )
+      regexp = Regexp.new( regexp_source )
+      num_lines = @lines.size
+      line_numbers = []
+      @lines.each_with_index do |line,index|
+        next if line !~ regexp
+        start_index = [ 0, index - @settings[ 'grep.context' ] ].max
+        end_index = [ index + @settings[ 'grep.context' ], num_lines-1 ].min
+        (start_index..end_index).each do |i|
+          line_numbers << i
+        end
+      end
+
+      prefix = "#{File.basename( @name )}"
+
+      line_numbers.uniq!
+      results = []
+      last_i = line_numbers[ 0 ]
+      one_result = []
+      line_numbers.each do |i|
+        if i - last_i > 1
+          results << one_result.join( "\n" )
+          one_result = []
+        end
+        one_result << ( "#{prefix}:#{i+1}: " << ( "%-300s | #{@key}:#{i+1}" % @lines[ i ] ) )
+        last_i = i
+      end
+      if not one_result.empty?
+        results << one_result.join( "\n" )
+      end
+
+      results
+    end
 
     def setModified( do_display = DO_DISPLAY )
         if @read_only
@@ -1776,12 +1811,12 @@ class Buffer
             @modified = true
             fmod = file_modified?
         end
-        
+
         reverted = false
         if fmod
             reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
         end
-        
+
         if not reverted
             clearMatches
             if do_display
@@ -1790,16 +1825,16 @@ class Buffer
             end
         end
     end
-    
+
     # Check if the file which is being edited has been modified since
     # the last time we checked it; return true if so, false otherwise.
     def file_modified?
         modified = false
-        
+
         if @name
             begin
                 mtime = File.mtime( @name )
-                
+
                 if mtime > @last_modification_check
                     modified = true
                     @last_modification_check = mtime
@@ -1808,7 +1843,7 @@ class Buffer
                 # Ignore if file doesn't exist
             end
         end
-        
+
         modified
     end
 
@@ -1881,7 +1916,7 @@ class Buffer
         setModified
       end
     end
-    
+
     def wrap_paragraph
       start_row = end_row = @last_row
       until start_row == 0 || @lines[ start_row - 1 ].strip == ''
@@ -1989,10 +2024,10 @@ class Buffer
             true
         end
     end
-    
+
     def wordUnderCursor
         word = nil
-        
+
         @lines[ @last_row ].scan( /\w+/ ) do |match_text|
             last_match = Regexp.last_match
             if last_match.begin( 0 ) <= @last_col and @last_col < last_match.end( 0 )
@@ -2000,7 +2035,7 @@ class Buffer
                 break
             end
         end
-        
+
         word
     end
 end
