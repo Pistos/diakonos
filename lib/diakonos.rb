@@ -413,7 +413,7 @@ module Diakonos
         File.open( @error_filename, "w" ) do |f|
           f.puts "Diakonos Error:"
           f.puts
-          f.puts e.message
+          f.puts "#{e.class}: #{e.message}"
           f.puts
           f.puts "Probable Causes:"
           f.puts
