@@ -236,7 +236,7 @@ module Diakonos
           /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
           "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
           'suppress_welcome', 'strip_trailing_whitespace_on_save',
-          'find.return_on_abort'
+          'find.return_on_abort', 'fuzzy_file_find'
           @settings[ command ] = arg.to_b
         when "context.format", "context.separator.format", "status.format"
           @settings[ command ] = arg.toFormatting
