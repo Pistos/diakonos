@@ -3,34 +3,30 @@ module Diakonos
     def init_help
       @base_help_dir = "#{@diakonos_home}/help"
       mkdir @base_help_dir
-      
+
       @help_dir = "#{@diakonos_home}/help/#{VERSION}"
-      if not File.exist?( @help_dir )
+      if not File.exist?( @help_dir ) or Dir[ "#{@help_dir}/*" ].size == 0
         puts "Help files for this Diakonos version were not found (#{@help_dir})."
-        
-        $stdout.puts "Would you like to download the help files right now from the Diakonos website? (y/n)"; $stdout.flush
+
+        puts "Would you like to download the help files right now from the Diakonos website? (y/n)"
         answer = $stdin.gets
         case answer
         when /^y/i
           if not fetch_help
             $stderr.puts "Failed to get help for version #{VERSION}."
+            sleep 2
           end
         end
-        
-        if not FileTest.exists?( @help_dir ) or Dir[ "#{@help_dir}/*" ].size == 0
-          $stderr.puts "Terminating..."
-          exit 1
-        end
       end
-      
+
       @help_tags = `grep -h Tags #{@help_dir}/* | cut -d ' ' -f 2-`.split.uniq
     end
-    
+
     def fetch_help
       require 'open-uri'
       success = false
       puts "Fetching help documents for version #{VERSION}..."
-      
+
       filename = "diakonos-help-#{VERSION}.tar.gz"
       uri = "http://purepistos.net/diakonos/#{filename}"
       tarball = "#{@base_help_dir}/#{filename}"
@@ -47,10 +43,10 @@ module Diakonos
       rescue OpenURI::HTTPError => e
         $stderr.puts "Failed to fetch from #{uri} ."
       end
-      
+
       success
     end
-    
+
     def open_help_buffer
       @help_buffer = openFile( @help_filename )
     end
@@ -58,7 +54,7 @@ module Diakonos
       closeFile @help_buffer
       @help_buffer = nil
     end
-    
+
     def matching_help_documents( str )
       docs = []
 
@@ -72,22 +68,22 @@ module Diakonos
         file_grep = `egrep -i -l '^Tags.*\\b(#{terms})\\b' #{@help_dir}/*`
         files = file_grep.split( /\s+/ )
       end
-      
+
       files.each do |file|
         File.open( file ) do |f|
           docs << ( "%-300s | %s" % [ f.gets.strip, file ] )
         end
       end
-      
+
       docs.sort { |a,b| a.gsub( /^# (?:an?|the) */i, '# ' ) <=> b.gsub( /^# (?:an?|the) */i, '# ' ) }
     end
-    
+
     def open_help_document( selected_string )
       help_file = selected_string.split( "| " )[ -1 ]
       if File.exist? help_file
         openFile help_file
       end
     end
-    
+
   end
 end

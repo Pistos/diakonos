@@ -491,6 +491,11 @@ module Diakonos
     end
 
     def help( prefill = '' )
+      if ! File.exist?( @help_dir ) || Dir[ "#{@help_dir}/*" ].size == 0
+        setILine 'There are no help files installed.'
+        return
+      end
+
       open_help_buffer
       matching_docs = nil
 
