@@ -487,7 +487,7 @@ module Diakonos
     end
 
     def grep_buffers( regexp_source = nil )
-      grep_( regexp_source, @buffers.values )
+      grep_( regexp_source, *@buffers.values )
     end
 
     def help( prefill = '' )
