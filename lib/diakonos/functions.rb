@@ -495,7 +495,7 @@ module Diakonos
         @rlh_search,
         ( regexp_source or selected_text or "" )
       ) { |input|
-        regexp = Regexp.new( input )
+        regexp = Regexp.new( input, Regexp::IGNORECASE )
         grep_results = original_buffer.grep( regexp )
         with_list_file do |list|
           list.puts grep_results.join( "\n---\n" )
