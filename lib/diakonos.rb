@@ -608,14 +608,18 @@ module Diakonos
         preset
       ) { |input|
         next if input.length < 2
-        regexp = Regexp.new( input, Regexp::IGNORECASE )
-        grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
-        with_list_file do |list|
-          list.puts grep_results.join( "\n---\n" )
+        begin
+          regexp = Regexp.new( input, Regexp::IGNORECASE )
+          grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
+          with_list_file do |list|
+            list.puts grep_results.join( "\n---\n" )
+          end
+          list_buffer = openListBuffer
+          list_buffer.highlightMatches regexp
+          list_buffer.display
+        rescue RegexpError
+          # Do nothing
         end
-        list_buffer = openListBuffer
-        list_buffer.highlightMatches regexp
-        list_buffer.display
       }
     end
   end
