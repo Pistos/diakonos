@@ -6,6 +6,7 @@ Diakonos Changelog
 - MRU buffer history added.
 - strip_trailing_whitespace_on_save setting added.
 - Sessions (named and unnamed) added.
+- Interactive grep added.
 - Makefile config added.
 - find.return_on_abort setting added.
 - Help files updated.
