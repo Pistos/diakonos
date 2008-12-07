@@ -4,13 +4,14 @@ git_proc = Proc.new do |buffer|
   else
     dir = '.'
   end
-  
-  branch = Dir.chdir( dir ){ `git symbolic-ref HEAD 2>/dev/null`[ /[^\/\n]+$/ ] }
-  $diakonos.set_status_variable(
-    '@git_branch',
-    branch ? " git:#{branch} " : nil
-  )
-  
+
+  if File.exist? dir
+    branch = Dir.chdir( dir ){ `git symbolic-ref HEAD 2>/dev/null`[ /[^\/\n]+$/ ] }
+    $diakonos.set_status_variable(
+      '@git_branch',
+      branch ? " git:#{branch} " : nil
+    )
+  end
 end
 
 $diakonos.register_proc( git_proc, :after_open )
