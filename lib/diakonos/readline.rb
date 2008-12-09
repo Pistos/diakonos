@@ -147,6 +147,12 @@ module Diakonos
             @block.call @input
           end
           cursorWriteInput
+        when Curses::KEY_F5
+          @diakonos.decrease_grep_context
+          call_block
+        when Curses::KEY_F6
+          @diakonos.increase_grep_context
+          call_block
         else
           if c > 31 and c < 255 and c != BACKSPACE
             if @input_cursor == @input.length
