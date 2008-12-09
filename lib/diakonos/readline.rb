@@ -216,7 +216,9 @@ module Diakonos
         if @completion_array.nil? and FileTest.directory?( @input )
           @input << "/"
           cursorWriteInput
-          completeInput
+          if @on_dirs != :accept_dirs
+            completeInput
+          end
         end
       elsif matches.length > 1
         common = matches[ 0 ]
