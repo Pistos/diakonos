@@ -2,6 +2,8 @@
 
 ## Executive Summary
 
+### Searching
+
 <Ctrl-F>            Begin search
 <F3>                Find next
 <Ctrl-R>            Begin search and replace
@@ -15,6 +17,21 @@ While typing search expression:
 
 <Enter>             Confirm search expression
 <Esc>               Abort search
+
+### Grepping
+
+<Alt-G>             Grep a directory
+<Alt-Shift-G>       Grep all buffers
+<Ctrl-Alt-G>        Grep current buffer
+
+While typing grep expression:
+
+<Up>, <Down>        Select a grep result to jump to
+<Enter>             Jump to selected grep result
+<F5>                Decrease context around matches
+<F6>                Increase context around matches
+<Esc>               Abort grep
+
 
 ## Searching for Text
 
@@ -55,4 +72,16 @@ Diakonos will then highlight each individual match and ask whether or not you
 wish to replace the selected text.  You can also choose to replace all matches
 throughout the file at once.
 
-Tags: search searching replace replacing find finding text string regex regexp regular expression
+## Grepping
+
+Press <Alt-G> to begin grepping files under a directory (recursively).  Specify
+the directory, then press <Enter>.  Then begin typing a regular expression.
+The display will update as you type according to the matches found.  If you see
+a match you'd like to jump to, use <Down> (and <Up>) to select a match, and
+press <Enter> to view that line of that file.  Press <Esc> to abort the grep.
+
+If you need to see more context around the matches, press <F6> during the grep.
+<F5> reduces the context.  The grep.context setting is used for the default
+amount of context to show.
+
+Tags: search searching replace replacing find finding text string regex regexp regular expression grep grepping dir dirs directory buffer buffers file files
