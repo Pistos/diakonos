@@ -1,21 +1,21 @@
 module Diakonos
   DO_REDRAW             = true
   DONT_REDRAW           = false
-  
+
   class Diakonos
     attr_reader :win_main, :display_mutex
-    
+
     def initializeDisplay
       @win_main.close if @win_main
       @win_status.close if @win_status
       @win_interaction.close if @win_interaction
       @win_context.close if @win_context
-      
+
       Curses::init_screen
       Curses::nonl
       Curses::raw
       Curses::noecho
-      
+
       if Curses::has_colors?
         Curses::start_color
         Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
@@ -30,7 +30,7 @@ module Diakonos
           Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
         end
       end
-      
+
       @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
       @win_main.keypad( true )
       @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
@@ -38,7 +38,7 @@ module Diakonos
       @win_status.attrset @settings[ 'status.format' ]
       @win_interaction = Curses::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
       @win_interaction.keypad( true )
-      
+
       if @settings[ 'context.visible' ]
         if @settings[ 'context.combined' ]
           pos = 1
@@ -50,15 +50,15 @@ module Diakonos
       else
         @win_context = nil
       end
-      
+
       @win_interaction.refresh
       @win_main.refresh
-      
+
       @buffers.each_value do |buffer|
         buffer.reset_win_main
       end
     end
-    
+
     def getTokenRegexp( hash, arg, match )
       language = match[ 1 ]
       token_class = match[ 2 ]
@@ -78,7 +78,7 @@ module Diakonos
       updateContextLine
       @current_buffer.display
     end
-    
+
     def main_window_height
       # One line for the status line
       # One line for the input line
@@ -89,11 +89,11 @@ module Diakonos
       end
       retval
     end
-    
+
     def main_window_width
       Curses::cols
     end
-    
+
     # Display text on the interaction line.
     def setILine( string = "" )
       Curses::curs_set 0
@@ -103,7 +103,7 @@ module Diakonos
       Curses::curs_set 1
       string.length
     end
-    
+
     def set_status_variable( identifier, value )
       @status_vars[ identifier ] = value
     end
@@ -144,7 +144,7 @@ module Diakonos
             var_array.push ""
           end
         when 'session_name'
-          var_array.push @session_name
+          var_array.push @session[ 'name' ]
         when "type"
           var_array.push @current_buffer.original_language
         when /^@/
@@ -188,9 +188,9 @@ module Diakonos
       if @win_context
         @context_thread.exit if @context_thread
         @context_thread = Thread.new do ||
-          
+
           context = @current_buffer.context
-          
+
           Curses::curs_set 0
           @win_context.setpos( 0, 0 )
           chars_printed = 0
@@ -205,7 +205,7 @@ module Diakonos
             context_subset = context_subset.collect do |line|
               line.strip[ 0...max_length ]
             end
-            
+
             context_subset.each do |line|
               @win_context.attrset @settings[ "context.format" ]
               @win_context.addstr line
@@ -215,7 +215,7 @@ module Diakonos
               chars_printed += @settings[ "context.separator" ].length
             end
           end
-          
+
           @iline_mutex.synchronize do
             @win_context.attrset @settings[ "context.format" ]
             @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
@@ -227,17 +227,17 @@ module Diakonos
           end
           Curses::curs_set 1
         end
-        
+
         @context_thread.priority = -2
       end
     end
-    
+
     def displayEnqueue( buffer )
       @display_queue_mutex.synchronize do
         @display_queue = buffer
       end
     end
-    
+
     def displayDequeue
       @display_queue_mutex.synchronize do
         if @display_queue
@@ -253,7 +253,7 @@ module Diakonos
 
     def showMessage( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
       terminateMessage
-      
+
       @message_expiry = Time.now + non_interaction_duration
       @message_thread = Thread.new do
         time_left = @message_expiry - Time.now
@@ -267,14 +267,14 @@ module Diakonos
         @win_main.setpos( @saved_main_y, @saved_main_x )
       end
     end
-    
+
     def terminateMessage
       if @message_thread and @message_thread.alive?
         @message_thread.terminate
         @message_thread = nil
       end
     end
-    
+
     def refreshAll
       @win_main.refresh
       if @win_context
@@ -283,6 +283,6 @@ module Diakonos
       @win_status.refresh
       @win_interaction.refresh
     end
-    
+
   end
 end

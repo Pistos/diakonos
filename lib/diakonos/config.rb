@@ -107,7 +107,7 @@ module Diakonos
 
         # Session settings override config file settings.
 
-        @session_settings.each do |key,value|
+        @session[ 'settings' ].each do |key,value|
           @settings[ key ] = value
         end
 

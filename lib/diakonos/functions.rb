@@ -46,7 +46,7 @@ module Diakonos
                 when TrueClass, FalseClass
                     value = value.to_b
             end
-            @session_settings[ key ] = value
+            @session[ 'settings' ][ key ] = value
             redraw if do_redraw
             setILine "#{key} = #{value}"
         end
@@ -655,17 +655,15 @@ module Diakonos
       if not File.exist?( path )
         setILine "No such session: #{session_id}"
       else
-        if pid_session?( @session_file )
-          File.delete @session_file
+        if pid_session?( @session[ 'filename' ] )
+          File.delete @session[ 'filename' ]
         end
-        @session_file = nil
+        @session = nil
         @buffers.each_value do |buffer|
           closeFile buffer
         end
-        @session_file = path
-        set_session_name
-        files = File.readlines( @session_file ).collect { |filename| filename.strip }
-        files.each do |file|
+        new_session( path )
+        @session[ 'files' ].each do |file|
           openFile file
         end
       end
@@ -674,7 +672,7 @@ module Diakonos
     def name_session
       name = getUserInput( 'Session name: ' )
       if name
-        @session_file = File.expand_path( "#{@session_dir}/#{name}" )
+        new_session "#{@session_dir}/#{name}"
         save_session
       end
     end
@@ -1252,13 +1250,13 @@ module Diakonos
 
         if key
             value = nil
-            if @session_settings[ key ].class == TrueClass or @session_settings[ key ].class == FalseClass
-                value = ! @session_settings[ key ]
+            if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
+                value = ! @session[ 'settings' ][ key ]
             elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
                 value = ! @settings[ key ]
             end
             if value
-                @session_settings[ key ] = value
+                @session[ 'settings' ][ key ] = value
                 redraw if do_redraw
                 setILine "#{key} = #{value}"
             end

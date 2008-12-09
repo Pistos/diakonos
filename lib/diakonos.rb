@@ -18,6 +18,7 @@ require 'open3'
 require 'thread'
 require 'English'
 require 'set'
+require 'yaml'
 require 'digest/md5'
 
 require 'diakonos/object'
@@ -100,7 +101,7 @@ module Diakonos
       mkdir @script_dir
       @session_dir = "#{@diakonos_home}/sessions"
       mkdir @session_dir
-      @session_file = "#{@session_dir}/#{Process.pid}"
+      new_session "#{@session_dir}/#{Process.pid}"
 
       init_help
 
@@ -116,7 +117,6 @@ module Diakonos
 
       parseOptions argv
 
-      @session_settings = Hash.new
       @win_main        = nil
       @win_context     = nil
       @win_status      = nil
@@ -214,15 +214,7 @@ module Diakonos
             @post_load_script << script
           end
         when '-s', '--load-session'
-          session_to_load = argv.shift
-          @session_to_load = session_filepath_for( session_to_load )
-          if not File.exist? @session_to_load
-            File.open( @session_to_load, 'w' ) { |f| }  # Create empty file
-            if not File.exist? @session_to_load
-              puts "No such session file '#{session_to_load}'; failed to create '#{@session_to_load}'."
-              exit
-            end
-          end
+          @session_to_load = session_filepath_for( argv.shift )
         else
           # a name of a file to open
           @files.push arg
@@ -238,7 +230,7 @@ module Diakonos
       puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
       puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
       puts "\t-ro <file>\tLoad file as read-only"
-      puts "\t-s, --load-session <session file>\tLoad a session (file containing a list of file paths)"
+      puts "\t-s, --load-session <session identifier>\tLoad a session"
     end
     protected :printUsage
 
@@ -259,9 +251,13 @@ module Diakonos
       setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
       if @session_to_load
-        @session_file = @session_to_load
-        files = File.readlines( @session_file ).collect { |filename| filename.strip }
-        @files.concat files
+        pid_session = @session
+        load_session_data @session_to_load
+        if @session
+          @files.concat @session[ 'files' ]
+        else
+          @session = pid_session
+        end
       else
         session_buffers = []
 
@@ -286,20 +282,24 @@ module Diakonos
 
           case choice
           when CHOICE_YES
-            files = File.readlines( session_file ).collect { |filename| filename.strip }
-            @files = files
-            File.delete session_file
-            break
+            load_session_data session_file
+            if @session
+              @files.concat @session[ 'files' ]
+              File.delete session_file
+              break
+            end
           when CHOICE_DELETE
             File.delete session_file
           end
         end
 
         if session_buffers.empty? and @files.empty? and @settings[ 'session.default_session' ]
-          @session_file = session_filepath_for( @settings[ 'session.default_session' ] )
-          if File.exist? @session_file
-            files = File.readlines( @session_file ).collect { |filename| filename.strip }
-            @files.concat files
+          session_file = session_filepath_for( @settings[ 'session.default_session' ] )
+          if File.exist? session_file
+            load_session_data session_file
+            if @session
+              @files.concat @session[ 'files' ]
+            end
           end
         end
       end
@@ -367,8 +367,8 @@ module Diakonos
           debugLog "Terminated by signal (#{e.message})"
         end
 
-        if @session_file =~ %r{/\d+$}
-          File.delete @session_file
+        if pid_session?
+          File.delete @session[ 'filename' ]
         end
 
         @debug.close
