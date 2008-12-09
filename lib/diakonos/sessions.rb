@@ -1,14 +1,46 @@
 module Diakonos
   class Diakonos
 
-    def save_session( session_file = @session_file )
-      return if session_file.nil?
-      File.open( session_file, 'w' ) do |f|
-        @buffers.each do |filepath,buffer|
-          if buffer.name
-            f.puts filepath
+    def new_session( filepath )
+      basename = File.basename( filepath )
+      if not pid_session?( filepath )
+        name = basename
+      end
+      @session = {
+        'filename' => File.expand_path( filepath ),
+        'settings' => Hash.new,
+        'name' => name,
+        'files' => [],
+        'dir' => Dir.getwd,
+      }
+    end
+
+    def load_session_data( filename )
+      return if not File.exist? filename
+      File.open( filename ) do |f|
+        loaded = YAML::load( f )
+        if loaded
+          if(
+            loaded[ 'filename' ] and
+            loaded[ 'settings' ] and
+            loaded[ 'settings' ].respond_to?( :values ) and
+            loaded[ 'name' ] and
+            loaded[ 'files' ] and
+            loaded[ 'files' ].respond_to?( :each )
+          )
+            @session = loaded
           end
         end
+      end
+    end
+
+    def save_session( session_file = @session[ 'filename' ] )
+      return if session_file.nil?
+      @session[ 'files' ] = @buffers.collect { |filepath,buffer|
+        buffer.name ? filepath : nil
+      }.compact
+      File.open( session_file, 'w' ) do |f|
+        f.puts @session.to_yaml
       end
     end
 
@@ -20,15 +52,9 @@ module Diakonos
       end
     end
 
-    def pid_session?( path )
+    def pid_session?( path = @session[ 'filename' ] )
       %r{/\d+$} === path
     end
 
-    def set_session_name
-      name = File.basename( @session_file )
-      if name =~ /\D/
-        @session_name = name
-      end
-    end
   end
 end

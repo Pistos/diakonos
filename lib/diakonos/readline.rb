@@ -4,7 +4,7 @@ module Diakonos
 
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
-    def initialize( diakonos, window, prompt, initial_text = "", completion_array = nil, history = [], do_complete = Diakonos::DONT_COMPLETE, &block )
+    def initialize( diakonos, window, prompt, initial_text = "", completion_array = nil, history = [], do_complete = Diakonos::DONT_COMPLETE, on_dirs = :go_into_dirs, &block )
       @diakonos = diakonos
       @window = window
       @prompt = prompt
@@ -19,6 +19,7 @@ module Diakonos
       @history_index = @history.length - 1
 
       @do_complete = do_complete
+      @on_dirs = on_dirs
 
       @block = block
     end
@@ -76,7 +77,7 @@ module Diakonos
           end
         when ENTER, Curses::KEY_F3
           item = @diakonos.current_list_item
-          if item and File.directory? item
+          if @on_dirs == :go_into_dirs and item and File.directory? item
             completeInput
           else
             break
@@ -196,7 +197,11 @@ module Diakonos
         matches = @completion_array.find_all { |el| el[ 0...len ] == @input and len <= el.length }
       else
         matches = Dir.glob( ( @input.subHome() + "*" ).gsub( /\*\*/, "*" ) )
+        if @on_dirs == :accept_dirs
+          matches = matches.select { |m| File.directory? m }
+        end
       end
+      matches.sort!
 
       if matches.length == 1
         @input = matches[ 0 ]

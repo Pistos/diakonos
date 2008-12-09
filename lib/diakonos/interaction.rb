@@ -36,11 +36,11 @@ module Diakonos
 
   class Diakonos
     # completion_array is the array of strings that tab completion can use
-    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, do_complete = DONT_COMPLETE, &block )
+    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, do_complete = DONT_COMPLETE, on_dirs = :go_into_dirs, &block )
       if @playing_macro
         retval = @macro_input_history.shift
       else
-        retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, do_complete, &block ).readline
+        retval = Readline.new( self, @win_interaction, prompt, initial_text, completion_array, history, do_complete, on_dirs, &block ).readline
         if @macro_history
           @macro_input_history.push retval
         end
