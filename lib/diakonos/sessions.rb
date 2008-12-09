@@ -11,6 +11,7 @@ module Diakonos
         'settings' => Hash.new,
         'name' => name,
         'files' => [],
+        'dir' => Dir.getwd,
       }
     end
 
