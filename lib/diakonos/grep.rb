@@ -1,5 +1,5 @@
 module Diakonos
-  def self.grep_array( regexp, array, lines_of_context, prefix )
+  def self.grep_array( regexp, array, lines_of_context, prefix, filepath )
     num_lines = array.size
     line_numbers = []
     array.each_with_index do |line,index|
@@ -20,7 +20,7 @@ module Diakonos
         results << one_result.join( "\n" )
         one_result = []
       end
-      one_result << ( "#{prefix}#{i+1}: " << ( "%-300s | #{@key}:#{i+1}" % array[ i ] ) )
+      one_result << ( "#{prefix}#{i+1}: " << ( "%-300s | #{filepath}:#{i+1}" % array[ i ] ) )
       last_i = i
     end
     if not one_result.empty?

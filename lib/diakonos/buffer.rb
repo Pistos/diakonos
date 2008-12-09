@@ -1772,7 +1772,8 @@ class Buffer
         Regexp.new( regexp_source ),
         @lines,
         @diakonos.settings[ 'grep.context' ],
-        "#{File.basename( @name )}:"
+        "#{File.basename( @name )}:",
+        @key
       )
     end
 

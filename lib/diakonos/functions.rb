@@ -514,9 +514,26 @@ module Diakonos
       ) { |input|
         next if input.length < 2
         escaped_input = input.gsub( /'/ ) { "\\047" }
-        with_list_file do |list|
-          list.puts `grep '#{escaped_input}' -rniI -C #{settings[ 'grep.context' ]} #{dir}`
+        matching_files = `egrep '#{escaped_input}' -rniIl #{dir}`.split( /\n/ )
+
+        grep_results = matching_files.map { |f|
+          ::Diakonos.grep_array(
+            Regexp.new( input ),
+            File.read( f ).split( /\n/ ),
+            settings[ 'grep.context' ],
+            "#{File.basename( f )}:",
+            f
+          )
+        }.flatten
+        if settings[ 'grep.context' ] == 0
+          join_str = "\n"
+        else
+          join_str = "\n---\n"
         end
+        with_list_file do |list|
+          list.puts grep_results.join( join_str )
+        end
+
         list_buffer = openListBuffer
         list_buffer.highlightMatches Regexp.new( input )
         list_buffer.display
