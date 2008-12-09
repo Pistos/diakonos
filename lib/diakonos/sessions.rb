@@ -2,10 +2,14 @@ module Diakonos
   class Diakonos
 
     def new_session( filepath )
+      basename = File.basename( filepath )
+      if not pid_session?( filepath )
+        name = basename
+      end
       @session = {
         'filename' => File.expand_path( filepath ),
         'settings' => Hash.new,
-        'name' => File.basename( filepath ),
+        'name' => name,
         'files' => [],
       }
     end
@@ -48,7 +52,6 @@ module Diakonos
     end
 
     def pid_session?( path = @session[ 'filename' ] )
-      debugLog "%r{/\d+$} === path  => " + ( %r{/\d+$} === path ).to_s
       %r{/\d+$} === path
     end
 
