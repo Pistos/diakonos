@@ -617,8 +617,13 @@ module Diakonos
         begin
           regexp = Regexp.new( input, Regexp::IGNORECASE )
           grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
+          if settings[ 'grep.context' ] == 0
+            join_str = "\n"
+          else
+            join_str = "\n---\n"
+          end
           with_list_file do |list|
-            list.puts grep_results.join( "\n---\n" )
+            list.puts grep_results.join( join_str )
           end
           list_buffer = openListBuffer
           list_buffer.highlightMatches regexp
