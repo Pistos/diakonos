@@ -1773,8 +1773,8 @@ class Buffer
       line_numbers = []
       @lines.each_with_index do |line,index|
         next if line !~ regexp
-        start_index = [ 0, index - @settings[ 'grep.context' ] ].max
-        end_index = [ index + @settings[ 'grep.context' ], num_lines-1 ].min
+        start_index = [ 0, index - @diakonos.settings[ 'grep.context' ] ].max
+        end_index = [ index + @diakonos.settings[ 'grep.context' ], num_lines-1 ].min
         (start_index..end_index).each do |i|
           line_numbers << i
         end

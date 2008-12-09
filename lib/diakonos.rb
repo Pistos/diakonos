@@ -637,6 +637,10 @@ module Diakonos
         original_buffer.cursorTo starting_row, starting_col
       end
     end
+
+    def settings
+      @settings.merge @session[ 'settings' ]
+    end
   end
 
 end
