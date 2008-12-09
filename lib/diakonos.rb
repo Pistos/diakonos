@@ -43,6 +43,7 @@ require 'diakonos/logging'
 require 'diakonos/list'
 require 'diakonos/buffer-management'
 require 'diakonos/sessions'
+require 'diakonos/grep'
 
 require 'diakonos/keycode'
 require 'diakonos/text-mark'
@@ -599,48 +600,6 @@ module Diakonos
         :quiet        => quiet
       )
       @last_search_regexps = regexps
-    end
-
-    def grep_( regexp_source, *buffers )
-      original_buffer = @current_buffer
-      if @current_buffer.changing_selection
-        selected_text = @current_buffer.copySelection[ 0 ]
-      end
-      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
-
-      selected = getUserInput(
-        "Grep regexp: ",
-        @rlh_search,
-        regexp_source || selected_text || ""
-      ) { |input|
-        next if input.length < 2
-        begin
-          regexp = Regexp.new( input, Regexp::IGNORECASE )
-          grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
-          if settings[ 'grep.context' ] == 0
-            join_str = "\n"
-          else
-            join_str = "\n---\n"
-          end
-          with_list_file do |list|
-            list.puts grep_results.join( join_str )
-          end
-          list_buffer = openListBuffer
-          list_buffer.highlightMatches regexp
-          list_buffer.display
-        rescue RegexpError
-          # Do nothing
-        end
-      }
-
-      if selected
-        spl = selected.split( "| " )
-        if spl.size > 1
-          openFile spl[ -1 ]
-        end
-      else
-        original_buffer.cursorTo starting_row, starting_col
-      end
     end
 
     def settings
