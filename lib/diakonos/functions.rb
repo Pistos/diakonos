@@ -771,7 +771,7 @@ module Diakonos
       if @settings[ 'fuzzy_file_find' ]
         prefill = ''
         finder_block = lambda { |input|
-          finder = FuzzyFileFinder.new
+          finder = FuzzyFileFinder.new( @session[ 'dir' ] )
           matches = finder.find( input ).sort_by { |m| [ -m[:score], m[:path] ] }
           with_list_file do |list|
             list.puts matches.map { |m| m[ :path ] }
