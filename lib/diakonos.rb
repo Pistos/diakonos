@@ -252,11 +252,13 @@ module Diakonos
 
       if @session_to_load
         pid_session = @session
-        load_session_data @session_to_load
+        @session = nil
+        session_path = session_filepath_for( @session_to_load )
+        load_session_data session_path
         if @session
           @files.concat @session[ 'files' ]
         else
-          @session = pid_session
+          new_session session_path
         end
       else
         session_buffers = []

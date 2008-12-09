@@ -35,7 +35,7 @@ module Diakonos
         buffer.name ? filepath : nil
       }.compact
       File.open( session_file, 'w' ) do |f|
-        f.puts @session
+        f.puts @session.to_yaml
       end
     end
 
