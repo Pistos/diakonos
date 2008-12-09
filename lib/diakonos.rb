@@ -63,7 +63,7 @@ require 'diakonos/readline'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'December 7, 2008'
+  LAST_MODIFIED = 'December 8, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
