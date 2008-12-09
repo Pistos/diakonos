@@ -55,12 +55,5 @@ module Diakonos
       %r{/\d+$} === path
     end
 
-    def set_session_name
-      name = File.basename( @session[ 'filename' ] )
-      if name =~ /\D/
-        debugLog "FOO #{name.inspect}"
-        @session[ 'name' ] = name
-      end
-    end
   end
 end

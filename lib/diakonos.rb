@@ -341,8 +341,6 @@ module Diakonos
         end
       end
 
-      set_session_name
-
       if num_opened > 0
         switchToBufferNumber 1
 
