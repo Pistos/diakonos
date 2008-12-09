@@ -1090,6 +1090,16 @@ module Diakonos
         updateStatusLine
     end
 
+    def set_session_dir
+      path = getUserInput( "Session dir: ", @rlh_files, @session[ 'dir' ] )
+      if path
+        @session[ 'dir' ] = File.expand_path( path )
+        setILine "Session dir changed to: #{@session['dir']}"
+      else
+        setILine "(Session dir is: #{@session['dir']})"
+      end
+    end
+
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
         if command_.nil?
             command = getUserInput( "Command: ", @rlh_shell )
