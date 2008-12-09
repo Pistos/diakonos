@@ -490,6 +490,48 @@ module Diakonos
       grep_( regexp_source, *@buffers.values )
     end
 
+    def grep_session_dir( regexp_source = nil )
+      grep_dir regexp_source, @session[ 'dir' ]
+    end
+
+    def grep_dir( regexp_source = nil, dir = nil )
+      if dir.nil?
+        dir = getUserInput( "Grep directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
+        return if dir.nil?
+      end
+      dir = File.expand_path( dir )
+
+      original_buffer = @current_buffer
+      if @current_buffer.changing_selection
+        selected_text = @current_buffer.copySelection[ 0 ]
+      end
+      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+
+      selected = getUserInput(
+        "Grep regexp: ",
+        @rlh_search,
+        regexp_source || selected_text || ""
+      ) { |input|
+        next if input.length < 2
+        escaped_input = input.gsub( /'/ ) { "\\047" }
+        with_list_file do |list|
+          list.puts `grep '#{escaped_input}' -rniI -C #{settings[ 'grep.context' ]} #{dir}`
+        end
+        list_buffer = openListBuffer
+        list_buffer.highlightMatches Regexp.new( input )
+        list_buffer.display
+      }
+
+      if selected
+        spl = selected.split( "| " )
+        if spl.size > 1
+          openFile spl[ -1 ]
+        end
+      else
+        original_buffer.cursorTo starting_row, starting_col
+      end
+    end
+
     def help( prefill = '' )
       if ! File.exist?( @help_dir ) || Dir[ "#{@help_dir}/*" ].size == 0
         setILine 'There are no help files installed.'
@@ -1091,7 +1133,7 @@ module Diakonos
     end
 
     def set_session_dir
-      path = getUserInput( "Session dir: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
+      path = getUserInput( "Session directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
       if path
         @session[ 'dir' ] = File.expand_path( path )
         save_session
