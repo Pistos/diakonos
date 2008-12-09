@@ -1094,6 +1094,7 @@ module Diakonos
       path = getUserInput( "Session dir: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
       if path
         @session[ 'dir' ] = File.expand_path( path )
+        save_session
         setILine "Session dir changed to: #{@session['dir']}"
       else
         setILine "(Session dir is: #{@session['dir']})"
