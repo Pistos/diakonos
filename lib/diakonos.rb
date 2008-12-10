@@ -403,7 +403,7 @@ module Diakonos
     def getLanguageFromShaBang( first_line )
       retval = nil
       @bangmasks.each do |language,bangmask|
-        if first_line =~ /^#!/ and first_line =~ bangmask
+        if first_line =~ bangmask
           retval = language
           break
         end
