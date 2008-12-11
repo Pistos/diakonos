@@ -179,6 +179,7 @@ module Diakonos
       words = words.grep( /^#{Regexp.escape(partial)}./ ).sort
       if words.any?
         @current_buffer.insert_and_select words[ 0 ][ partial.length..-1 ]
+        setILine words[ 0 ].center( Curses::cols )
       end
     end
 

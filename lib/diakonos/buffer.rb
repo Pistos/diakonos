@@ -708,6 +708,7 @@ class Buffer
       anchorSelection
       insertString text
       cursorTo @last_row, @last_col + text.length, DO_DISPLAY
+      @changing_selection = false
     end
 
     # x and y are given window-relative, not buffer-relative.
