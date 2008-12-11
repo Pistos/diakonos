@@ -27,6 +27,7 @@ class Buffer
     DONT_CLEAR_STACK_POINTER = false
     STRIP_LINE = true
     DONT_STRIP_LINE = false
+    WORD_REGEXP = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, key, read_only = false )
@@ -700,6 +701,13 @@ class Buffer
         line = @lines[ row ]
         @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
         setModified
+    end
+
+    def insert_and_select( text )
+      deleteSelection
+      anchorSelection
+      insertString text
+      cursorTo @last_row, @last_col + text.length, DO_DISPLAY
     end
 
     # x and y are given window-relative, not buffer-relative.
@@ -2004,7 +2012,7 @@ class Buffer
     def wordUnderCursor
         word = nil
 
-        @lines[ @last_row ].scan( /\w+/ ) do |match_text|
+        @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
             last_match = Regexp.last_match
             if last_match.begin( 0 ) <= @last_col and @last_col < last_match.end( 0 )
                 word = match_text
@@ -2013,6 +2021,24 @@ class Buffer
         end
 
         word
+    end
+
+    def word_before_cursor
+        word = nil
+
+        @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
+            last_match = Regexp.last_match
+            if last_match.begin( 0 ) <= @last_col and @last_col <= last_match.end( 0 )
+                word = match_text
+                break
+            end
+        end
+
+        word
+    end
+
+    def words
+      @lines.join( ' ' ).scan( WORD_REGEXP ).uniq
     end
 end
 
