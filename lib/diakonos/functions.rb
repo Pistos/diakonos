@@ -171,6 +171,17 @@ module Diakonos
       @current_buffer.comment_out
     end
 
+    def complete_word
+      partial = @current_buffer.word_before_cursor
+      return if partial.nil?
+
+      words = @buffers.values.collect { |b| b.words }.flatten
+      words = words.grep( /^#{Regexp.escape(partial)}./ ).sort
+      if words.any?
+        @current_buffer.insert_and_select words[ 0 ][ partial.length..-1 ]
+      end
+    end
+
     def copySelection
       @clipboard.addClip @current_buffer.copySelection
       removeSelection
