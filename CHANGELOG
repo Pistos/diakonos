@@ -9,6 +9,7 @@ Diakonos Changelog
 - grep as you type added.
 - Makefile config added.
 - find.return_on_abort setting added.
+- Now including custom.conf from default diakonos.conf.
 - Help files updated.
 - Lots of code refactoring done.
 - Numerous little adjustments and fixes made.
