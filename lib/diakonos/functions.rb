@@ -299,7 +299,7 @@ module Diakonos
             if @current_buffer.changing_selection
                 selected_text = @current_buffer.copySelection[ 0 ]
             end
-            code = getUserInput( "Ruby code: ", @rlh_general, ( selected_text or "" ), FUNCTIONS )
+            code = getUserInput( "Ruby code: ", @rlh_general, ( selected_text or "" ), ::Diakonos::Functions.public_instance_methods )
         else
             code = code_
         end
