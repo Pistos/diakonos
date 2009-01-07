@@ -66,7 +66,7 @@ require 'diakonos/vendor/fuzzy_file_finder'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'December 9, 2008'
+  LAST_MODIFIED = 'January 7, 2009'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -272,7 +272,7 @@ module Diakonos
           begin
             Process.kill 0, pid
             session_files.reject! { |sf| pid_session? sf }
-          rescue Errno::ESRCH
+          rescue Errno::ESRCH, Errno::EPERM
             # Process is no longer alive, so we consider the session stale
           end
         end
