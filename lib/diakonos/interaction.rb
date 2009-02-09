@@ -23,14 +23,14 @@ module Diakonos
   CHOICE_YES_AND_STOP = 6
   CHOICE_DELETE       = 7
   CHOICE_KEYS = [
-    [ ?n, ?N ],
-    [ ?y, ?Y ],
-    [ ?a, ?A ],
-    [ ?c, ?C, ESCAPE, CTRL_C, CTRL_D, CTRL_Q ],
-    [ ?e ],
-    [ ?o ],
-    [ ?s ],
-    [ ?d ],
+    [ "n".ord, "N".ord ],
+    [ "y".ord, "Y".ord ],
+    [ "a".ord, "A".ord ],
+    [ "c".ord, "C".ord, ESCAPE, CTRL_C, CTRL_D, CTRL_Q ],
+    [ "e".ord ],
+    [ "o".ord ],
+    [ "s".ord ],
+    [ "d".ord ],
   ]
   CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top', '(d)elete' ]
 
