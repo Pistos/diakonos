@@ -66,7 +66,7 @@ require 'diakonos/vendor/fuzzy_file_finder'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'January 7, 2009'
+  LAST_MODIFIED = 'February 9, 2009'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true

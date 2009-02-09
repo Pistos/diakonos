@@ -140,7 +140,7 @@ class String
           to_i
       end
     end
-    
+
     def toDirection( default = :down )
         direction = nil
         case self
@@ -159,7 +159,7 @@ class String
         end
         direction
     end
-    
+
     def to_a
         [ self ]
     end
@@ -198,10 +198,10 @@ class String
                 level = 0
             end
         end
-        
+
         level
     end
-    
+
     def expandTabs( tab_size = Diakonos::DEFAULT_TAB_SIZE )
         s = dup
         while s.sub!( /\t/ ) { |match_text|
@@ -213,7 +213,7 @@ class String
         end
         s
     end
-    
+
     def newlineSplit
         retval = split( /\\n/ )
         if self =~ /\\n$/
@@ -228,7 +228,7 @@ class String
         end
         retval
     end
-    
+
     # Works like normal String#index except returns the index
     # of the first matching regexp group if one or more groups are specified
     # in the regexp. Both the index and the matched text are returned.
@@ -236,7 +236,7 @@ class String
         if regexp.class != Regexp
             return index( regexp, offset )
         end
-        
+
         i = nil
         match_text = nil
         working_offset = 0
@@ -256,7 +256,7 @@ class String
                         end
                     end
                 end
-                
+
                 break if i >= offset
             else
                 i = nil
@@ -264,10 +264,10 @@ class String
             end
             working_offset += 1
         end
-        
+
         [ i, match_text ]
     end
-    
+
     # Works like normal String#rindex except returns the index
     # of the first matching regexp group if one or more groups are specified
     # in the regexp. Both the index and the matched text are returned.
@@ -275,7 +275,7 @@ class String
         if regexp.class != Regexp
             return rindex( regexp, offset )
         end
-        
+
         i = nil
         match_text = nil
         working_offset = length
@@ -295,12 +295,12 @@ class String
                         end
                     end
                 end
-                
+
                 if match_text == ""
                     # Assume that an empty string means that it matched $
                     i += 1
                 end
-                
+
                 break if i <= offset
             else
                 i = nil
@@ -308,12 +308,19 @@ class String
             end
             working_offset -= 1
         end
-        
+
         [ i, match_text ]
     end
-    
+
     def movement?
         self =~ /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/
+    end
+
+    # Backport of Ruby 1.9's String#ord into Ruby 1.8
+    unless method_defined?( :ord )
+      def ord
+        self[ 0 ]
+      end
     end
 end
 
