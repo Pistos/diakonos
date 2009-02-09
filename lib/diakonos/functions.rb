@@ -120,7 +120,7 @@ module Diakonos
                 while(
                     ( not @buffer_stack.empty? ) and
                     ( not @buffers.values.include?( buf ) ) or
-                    ( @buffers.index( buf ) == del_buffer_key )
+                    ( @buffers.key( buf ) == del_buffer_key )
                 ) do
                     buf = @buffer_stack.pop
                 end
