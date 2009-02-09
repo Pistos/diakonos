@@ -86,7 +86,7 @@ module Diakonos
 
       c = nil
       while retval.nil?
-        c = @win_interaction.getch
+        c = @win_interaction.getch.ord
 
         case c
         when Curses::KEY_NPAGE

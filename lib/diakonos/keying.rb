@@ -5,17 +5,17 @@ module Diakonos
         @capturing_keychain = false
         @current_buffer.deleteSelection
         str = context.to_keychain_s.strip
-        @current_buffer.insertString str 
+        @current_buffer.insertString str
         cursorRight( Buffer::STILL_TYPING, str.length )
       else
         keychain_pressed = context.concat [ c ]
-        
+
         function_and_args = @keychains.getLeaf( keychain_pressed )
-        
+
         if function_and_args
           function, args = function_and_args
         end
-        
+
         partial_keychain = @keychains.getNode( keychain_pressed )
         if partial_keychain
           setILine( "Part of existing keychain: " + keychain_pressed.to_keychain_s + "..." )
@@ -25,7 +25,7 @@ module Diakonos
         processKeystroke( keychain_pressed )
       end
     end
-    
+
     def capture_mapping( c, context )
       if c == ENTER
         @capturing_mapping = false
@@ -33,9 +33,9 @@ module Diakonos
         setILine
       else
         keychain_pressed = context.concat [ c ]
-        
+
         function_and_args = @keychains.getLeaf( keychain_pressed )
-        
+
         if function_and_args
           function, args = function_and_args
           setILine "#{keychain_pressed.to_keychain_s.strip}  ->  #{function}( #{args} )"
@@ -50,18 +50,18 @@ module Diakonos
         end
       end
     end
-    
+
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def processKeystroke( context = [] )
-      c = @win_main.getch
-        
+      c = @win_main.getch.ord
+
       if @capturing_keychain
         capture_keychain c, context
       elsif @capturing_mapping
         capture_mapping c, context
       else
-        
+
         if context.empty?
           if c > 31 and c < 255 and c != BACKSPACE
             if @macro_history
@@ -73,23 +73,23 @@ module Diakonos
           end
         end
         keychain_pressed = context.concat [ c ]
-            
+
         function_and_args = @keychains.getLeaf( keychain_pressed )
-        
+
         if function_and_args
           function, args = function_and_args
           setILine if not @settings[ "context.combined" ]
-          
+
           if args
             to_eval = "#{function}( #{args} )"
           else
             to_eval = function
           end
-          
+
           if @macro_history
             @macro_history.push to_eval
           end
-          
+
           begin
             eval to_eval, nil, "eval"
             @last_commands << to_eval unless to_eval == "repeatLast"
@@ -119,6 +119,6 @@ module Diakonos
       @current_buffer.insertChar c
       cursorRight( Buffer::STILL_TYPING )
     end
-    
+
   end
 end

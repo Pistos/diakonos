@@ -53,7 +53,7 @@ module Diakonos
       end
 
       loop do
-        c = @window.getch
+        c = @window.getch.ord
 
         case c
         when Curses::KEY_DC
