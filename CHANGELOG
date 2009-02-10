@@ -7,12 +7,13 @@ Diakonos Changelog
 - strip_trailing_whitespace_on_save setting added.
 - Sessions (named and unnamed) added.
 - grep as you type added.
+- find.return_on_abort setting added.
 - Makefile config added.
 - Markdown config added.
 - Sass config added.
-- find.return_on_abort setting added.
 - Now including custom.conf from default diakonos.conf.
 - Help files updated.
+- Some Ruby 1.9 compatibility introduced.
 - Lots of code refactoring done.
 - Numerous little adjustments and fixes made.
 
