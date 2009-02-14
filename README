@@ -34,7 +34,7 @@ If you want to set options like the installation directories:
 
 By default, the installer copies bin/diakonos into a system-wide bin directory,
 such as /usr/bin; and copies lib/* into the system-wide ruby library path,
-such as /usr/lib/ruby/site_ruby/1.8 .  You may need root priveleges on the
+such as /usr/lib/ruby/site_ruby/1.8 .  You may need root privileges on the
 system in order to install to system-wide places like /usr/bin .
 
 === Installing from tarball by manual copy ===
@@ -59,7 +59,7 @@ or
 
 or, for other options and arguments,
 
-  diakonos --help 
+  diakonos --help
 
 For help using Diakonos, simply press F1 from within the editor to use the
 interactive help system.
