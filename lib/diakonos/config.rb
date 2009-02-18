@@ -60,14 +60,19 @@ module Diakonos
       existent += 1 if FileTest.exists? @diakonos_conf
 
       if existent < 1
-        puts "diakonos.conf not found in any of:"
-        conf_dirs.each do |conf_dir|
-          puts "   #{conf_dir}"
+        if @testing
+          answer = 'y'
+        else
+          puts "diakonos.conf not found in any of:"
+          conf_dirs.each do |conf_dir|
+            puts "   #{conf_dir}"
+          end
+          puts "   ~/.diakonos/"
+          puts "At least one configuration file must exist."
+          $stdout.puts "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
+          answer = $stdin.gets
         end
-        puts "   ~/.diakonos/"
-        puts "At least one configuration file must exist."
-        $stdout.puts "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
-        answer = $stdin.gets
+
         case answer
         when /^y/i
           if not fetch_conf

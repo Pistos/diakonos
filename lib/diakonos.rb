@@ -106,6 +106,11 @@ module Diakonos
       mkdir @session_dir
       new_session "#{@session_dir}/#{Process.pid}"
 
+      @files = Array.new
+      @read_only_files = Array.new
+      @config_filename = nil
+      parseOptions argv
+
       init_help
 
       @debug          = File.new( "#{@diakonos_home}/debug.log", 'w' )
@@ -113,12 +118,6 @@ module Diakonos
       @diff_filename  = @diakonos_home + '/text.diff'
       @help_filename  = "#{@help_dir}/about-help.dhf"
       @error_filename = "#{@diakonos_home}/diakonos.err"
-
-      @files = Array.new
-      @read_only_files = Array.new
-      @config_filename = nil
-
-      parseOptions argv
 
       @win_main        = nil
       @win_context     = nil

@@ -1,17 +1,18 @@
 module Diakonos
   class Diakonos
     def init_help
-      return  if @testing
-
       @base_help_dir = "#{@diakonos_home}/help"
       mkdir @base_help_dir
 
       @help_dir = "#{@diakonos_home}/help/#{VERSION}"
       if not File.exist?( @help_dir ) or Dir[ "#{@help_dir}/*" ].size == 0
-        puts "Help files for this Diakonos version were not found (#{@help_dir})."
-
-        puts "Would you like to download the help files right now from the Diakonos website? (y/n)"
-        answer = $stdin.gets
+        if @testing
+          answer = 'y'
+        else
+          puts "Help files for this Diakonos version were not found (#{@help_dir})."
+          puts "Would you like to download the help files right now from the Diakonos website? (y/n)"
+          answer = $stdin.gets
+        end
         case answer
         when /^y/i
           if not fetch_help
