@@ -284,7 +284,9 @@ module Diakonos
 
     def delete_to( char = nil )
       if char.nil?
+        setILine "Type character to delete to..."
         char = @win_main.getch
+        setILine
       end
       if char
         removed_text = @current_buffer.delete_to char
@@ -296,7 +298,9 @@ module Diakonos
 
     def delete_to_and_from( char = nil )
       if char.nil?
+        setILine "Type character to delete to and from..."
         char = @win_main.getch
+        setILine
       end
       if char
         removed_text = @current_buffer.delete_to_and_from char
