@@ -61,7 +61,9 @@ module Diakonos
 
       if existent < 1
         if @testing
-          answer = 'y'
+          File.open( @diakonos_conf, 'w' ) do |f|
+            f.puts File.read( './diakonos.conf' )
+          end
         else
           puts "diakonos.conf not found in any of:"
           conf_dirs.each do |conf_dir|
@@ -71,12 +73,12 @@ module Diakonos
           puts "At least one configuration file must exist."
           $stdout.puts "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
           answer = $stdin.gets
-        end
 
-        case answer
-        when /^y/i
-          if not fetch_conf
-            fetch_conf 'master'
+          case answer
+          when /^y/i
+            if not fetch_conf
+              fetch_conf 'master'
+            end
           end
         end
 

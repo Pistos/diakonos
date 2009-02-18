@@ -7,17 +7,17 @@ module Diakonos
       @help_dir = "#{@diakonos_home}/help/#{VERSION}"
       if not File.exist?( @help_dir ) or Dir[ "#{@help_dir}/*" ].size == 0
         if @testing
-          answer = 'y'
+          `cp -r ./help #{@help_dir}`
         else
           puts "Help files for this Diakonos version were not found (#{@help_dir})."
           puts "Would you like to download the help files right now from the Diakonos website? (y/n)"
           answer = $stdin.gets
-        end
-        case answer
-        when /^y/i
-          if not fetch_help
-            $stderr.puts "Failed to get help for version #{VERSION}."
-            sleep 2
+          case answer
+          when /^y/i
+            if not fetch_help
+              $stderr.puts "Failed to get help for version #{VERSION}."
+              sleep 2
+            end
           end
         end
       end
