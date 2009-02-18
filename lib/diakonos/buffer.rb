@@ -899,20 +899,25 @@ class Buffer
       removeSelection( DONT_DISPLAY )  if selection_mark
       takeSnapshot
       index = @lines[ @last_row ].index( char, @last_col )
-      retval = @lines[ @last_row ].slice!( @last_col, index - @last_col )
-      setModified
-      retval
+      if index
+        retval = @lines[ @last_row ].slice!( @last_col, index - @last_col )
+        setModified
+        retval
+      end
     end
 
     def delete_to_and_from( char )
       removeSelection( DONT_DISPLAY )  if selection_mark
       takeSnapshot
-      index_before = @lines[ @last_row ].rindex( char, @last_col ) + 1
+      index_before = @lines[ @last_row ].rindex( char, @last_col )
       index_after = @lines[ @last_row ].index( char, @last_col )
-      retval = @lines[ @last_row ].slice!( index_before, index_after - index_before )
-      cursorTo( @last_row, index_before )
-      setModified
-      retval
+      if index_before && index_after
+        index_before += 1
+        retval = @lines[ @last_row ].slice!( index_before, index_after - index_before )
+        cursorTo( @last_row, index_before )
+        setModified
+        retval
+      end
     end
 
     def carriageReturn

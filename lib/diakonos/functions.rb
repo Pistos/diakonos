@@ -292,6 +292,8 @@ module Diakonos
         removed_text = @current_buffer.delete_to char
         if removed_text
           @clipboard.addClip removed_text
+        else
+          setILine "'#{char}' not found."
         end
       end
     end
@@ -306,6 +308,8 @@ module Diakonos
         removed_text = @current_buffer.delete_to_and_from char
         if removed_text
           @clipboard.addClip removed_text
+        else
+          setILine "'#{char}' not found."
         end
       end
     end
