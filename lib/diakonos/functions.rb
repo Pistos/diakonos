@@ -284,10 +284,22 @@ module Diakonos
 
     def delete_to( char = nil )
       if char.nil?
-        char = @win_main.getch#.ord
+        char = @win_main.getch
       end
       if char
         removed_text = @current_buffer.delete_to char
+        if removed_text
+          @clipboard.addClip removed_text
+        end
+      end
+    end
+
+    def delete_to_and_from( char = nil )
+      if char.nil?
+        char = @win_main.getch
+      end
+      if char
+        removed_text = @current_buffer.delete_to_and_from char
         if removed_text
           @clipboard.addClip removed_text
         end
