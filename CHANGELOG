@@ -7,6 +7,7 @@ Diakonos Changelog
 - strip_trailing_whitespace_on_save setting added.
 - Sessions (named and unnamed) added.
 - grep as you type added.
+- delete_to added.
 - Makefile config added.
 - Markdown config added.
 - Sass config added.
