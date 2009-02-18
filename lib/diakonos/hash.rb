@@ -15,10 +15,10 @@ class Hash
         elsif path.length == 1
             delete( path[ 0 ] )
         end
-        
+
         self
     end
-    
+
     def setKeyPath( path, leaf )
         if path.length > 1
             node = self[ path[ 0 ] ]
@@ -29,10 +29,10 @@ class Hash
         elsif path.length == 1
             self[ path[ 0 ] ] = leaf
         end
-        
+
         self
     end
-    
+
     def getNode( path )
         node = self[ path[ 0 ] ]
         if path.length > 1
@@ -42,10 +42,10 @@ class Hash
         elsif path.length == 1
             return node
         end
-        
+
         nil
     end
-    
+
     def getLeaf( path )
         node = getNode( path )
         if node.respond_to?( :getNode )
@@ -55,7 +55,7 @@ class Hash
             node
         end
     end
-    
+
     def leaves( _leaves = Set.new )
         each_value do |value|
             if value.respond_to?( :leaves )
@@ -64,10 +64,10 @@ class Hash
                 _leaves << value
             end
         end
-        
+
         _leaves
     end
-    
+
     def paths_and_leaves( path_so_far = [], _paths_and_leaves = Set.new )
         each do |key, value|
             if value.respond_to?( :paths_and_leaves )
@@ -84,10 +84,10 @@ class Hash
                 }
             end
         end
-        
+
         _paths_and_leaves
     end
-    
+
     def each_path_and_leaf( path_so_far = [] )
         each do |key, value|
             if value.respond_to?( :each_path_and_leaf )
@@ -101,7 +101,7 @@ class Hash
     # Implement Ruby 1.9's Hash#key for Ruby 1.8
     if ! method_defined?( :key )
         def key( *args )
-            index *args
+            index( *args )
         end
     end
 end
