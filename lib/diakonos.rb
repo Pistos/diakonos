@@ -66,7 +66,7 @@ require 'diakonos/vendor/fuzzy_file_finder'
 module Diakonos
 
   VERSION       = '0.8.7'
-  LAST_MODIFIED = 'February 9, 2009'
+  LAST_MODIFIED = 'February 17, 2009'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -183,17 +183,6 @@ module Diakonos
       while argv.length > 0
         arg = argv.shift
         case arg
-        when '-h', '--help'
-          printUsage
-          exit 1
-        when '-ro'
-          filename = argv.shift
-          if filename.nil?
-            printUsage
-            exit 1
-          else
-            @read_only_files.push filename
-          end
         when '-c', '--config'
           @config_filename = argv.shift
           if @config_filename.nil?
@@ -208,6 +197,9 @@ module Diakonos
           else
             @post_load_script << "\n#{post_load_script}"
           end
+        when '-h', '--help'
+          printUsage
+          exit 1
         when '-m', '--open-matching'
           regexp = argv.shift
           files = `egrep -rl '#{regexp}' *`.split( /\n/ )
@@ -215,6 +207,14 @@ module Diakonos
             @files.concat files
             script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
             @post_load_script << script
+          end
+        when '-ro'
+          filename = argv.shift
+          if filename.nil?
+            printUsage
+            exit 1
+          else
+            @read_only_files.push filename
           end
         when '-s', '--load-session'
           @session_to_load = session_filepath_for( argv.shift )
