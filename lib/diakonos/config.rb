@@ -11,8 +11,7 @@ module Diakonos
   EOL_ALT_LAST_CHAR = 3
 
   class Diakonos
-    attr_reader :settings, :token_regexps, :close_token_regexps, :token_formats,
-      :diakonos_conf
+    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf
 
     def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
