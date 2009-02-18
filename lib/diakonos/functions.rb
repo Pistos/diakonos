@@ -282,6 +282,18 @@ module Diakonos
         @clipboard.addClip( [ removed_text, "" ] ) if removed_text
     end
 
+    def delete_to( char = nil )
+      if char.nil?
+        char = @win_main.getch#.ord
+      end
+      if char
+        removed_text = @current_buffer.delete_to char
+        if removed_text
+          @clipboard.addClip removed_text
+        end
+      end
+    end
+
     def delete_to_EOL_to_klipper
         removed_text = @current_buffer.deleteToEOL
         if removed_text

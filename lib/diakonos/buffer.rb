@@ -895,6 +895,15 @@ class Buffer
         retval
     end
 
+    def delete_to( char )
+      removeSelection( DONT_DISPLAY )  if selection_mark
+      takeSnapshot
+      index = @lines[ @last_row ].index( char, @last_col )
+      retval = @lines[ @last_row ].slice!( @last_col, index - @last_col )
+      setModified
+      retval
+    end
+
     def carriageReturn
         takeSnapshot
         row = @last_row
