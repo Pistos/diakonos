@@ -5,9 +5,9 @@ require 'diakonos'
 
 class TC_Diakonos < Test::Unit::TestCase
     def setup
-        $diakonos = Diakonos::Diakonos.new
+        $diakonos = Diakonos::Diakonos.new [ '--test', ]
     end
-    
+
     def test_true
         assert true
     end

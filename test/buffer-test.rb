@@ -5,16 +5,16 @@ require 'diakonos'
 
 class TC_Buffer < Test::Unit::TestCase
   SAMPLE_FILE = File.dirname( File.expand_path( __FILE__ ) ) + '/sample-file.rb'
-  
+
   def setup
-    @d = Diakonos::Diakonos.new [ '-e', 'quit' ]
+    @d = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
     @d.start
   end
-  
+
   def teardown
     system "reset"
   end
-  
+
   def test_selected_text
     @d.openFile( SAMPLE_FILE )
     b = Diakonos::Buffer.new( @d, SAMPLE_FILE, SAMPLE_FILE )
@@ -33,7 +33,7 @@ class TC_Buffer < Test::Unit::TestCase
       @d.clipboard.clip
     )
   end
-  
+
   def test_replace
     @d.openFile SAMPLE_FILE
     b = Diakonos::Buffer.new( @d, SAMPLE_FILE, SAMPLE_FILE )

@@ -218,6 +218,8 @@ module Diakonos
           end
         when '-s', '--load-session'
           @session_to_load = session_filepath_for( argv.shift )
+        when '--test', '--testing'
+          @testing = true
         else
           # a name of a file to open
           @files.push arg

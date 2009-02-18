@@ -1,6 +1,8 @@
 module Diakonos
   class Diakonos
     def init_help
+      return  if @testing
+
       @base_help_dir = "#{@diakonos_home}/help"
       mkdir @base_help_dir
 
