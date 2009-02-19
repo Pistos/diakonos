@@ -9,6 +9,7 @@ module Diakonos
   CTRL_K    = 11
   CTRL_Q    = 17
   CTRL_H    = 263
+  CTRL_W    = 23
   RESIZE2   = 4294967295
 
   DO_COMPLETE   = true

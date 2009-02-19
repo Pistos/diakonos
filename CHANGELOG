@@ -3,7 +3,7 @@ Diakonos Changelog
 
 0.8.8
 
--
+- "Remove word" functionality (Ctrl-W) added to readline.
 
 0.8.7
 
