@@ -153,6 +153,12 @@ module Diakonos
         when Curses::KEY_F6
           @diakonos.increase_grep_context
           call_block
+        when CTRL_W
+          @input = @input.gsub( /\W+$/, '' ).gsub( /\w+$/, '' )
+          if @block
+            @block.call @input
+          end
+          cursorWriteInput
         else
           if c > 31 and c < 255 and c != BACKSPACE
             if @input_cursor == @input.length
