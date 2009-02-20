@@ -292,4 +292,174 @@ module Diakonos
     end
 
   end
+
+  class Buffer
+    # Prints text to the screen, truncating where necessary.
+    # Returns nil if the string is completely off-screen.
+    # write_cursor_col is buffer-relative, not screen-relative
+    def truncateOffScreen( string, write_cursor_col )
+        retval = string
+
+        # Truncate based on left edge of display area
+        if write_cursor_col < @left_column
+            retval = retval[ (@left_column - write_cursor_col)..-1 ]
+            write_cursor_col = @left_column
+        end
+
+        if retval
+            # Truncate based on right edge of display area
+            if write_cursor_col + retval.length > @left_column + Curses::cols - 1
+                new_length = ( @left_column + Curses::cols - write_cursor_col )
+                if new_length <= 0
+                    retval = nil
+                else
+                    retval = retval[ 0...new_length ]
+                end
+            end
+        end
+
+        retval == "" ? nil : retval
+    end
+
+    def paintMarks( row )
+        string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
+        return if string.nil? or string == ""
+        string = string.expandTabs( @tab_size )
+        cury = @win_main.cury
+        curx = @win_main.curx
+
+        @text_marks.reverse_each do |text_mark|
+            if text_mark
+                @win_main.attrset text_mark.formatting
+                if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
+                    @win_main.setpos( cury, curx )
+                    @win_main.addstr string
+                elsif row == text_mark.start_row and row == text_mark.end_row
+                    expanded_col = tabExpandedColumn( text_mark.start_col, row )
+                    if expanded_col < @left_column + Curses::cols
+                        left = [ expanded_col - @left_column, 0 ].max
+                        right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
+                        if left < right
+                            @win_main.setpos( cury, curx + left )
+                            @win_main.addstr string[ left...right ]
+                        end
+                    end
+                elsif row == text_mark.start_row
+                    expanded_col = tabExpandedColumn( text_mark.start_col, row )
+                    if expanded_col < @left_column + Curses::cols
+                        left = [ expanded_col - @left_column, 0 ].max
+                        @win_main.setpos( cury, curx + left )
+                        @win_main.addstr string[ left..-1 ]
+                    end
+                elsif row == text_mark.end_row
+                    right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
+                    @win_main.setpos( cury, curx )
+                    @win_main.addstr string[ 0...right ]
+                else
+                    # This row not in selection.
+                end
+            end
+        end
+    end
+
+    def printString( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
+        return if not @pen_down
+        return if string.nil?
+
+        @win_main.attrset formatting
+        @win_main.addstr string
+    end
+
+    # This method assumes that the cursor has been setup already at
+    # the left-most column of the correct on-screen row.
+    # It merely unintelligently prints the characters on the current curses line,
+    # refusing to print characters of the in-buffer line which are offscreen.
+    def printLine( line )
+        i = 0
+        substr = nil
+        index = nil
+        while i < line.length
+            substr = line[ i..-1 ]
+            if @continued_format_class
+                close_index, close_match_text = findClosingMatch( substr, @close_token_regexps[ @continued_format_class ], i == 0 )
+
+                if close_match_text.nil?
+                    printString truncateOffScreen( substr, i )
+                    printPaddingFrom( line.length )
+                    i = line.length
+                else
+                    end_index = close_index + close_match_text.length
+                    printString truncateOffScreen( substr[ 0...end_index ], i )
+                    @continued_format_class = nil
+                    i += end_index
+                end
+            else
+                first_index, first_token_class, first_word = findOpeningMatch( substr, MATCH_ANY, i == 0 )
+
+                if @lang_stack.length > 0
+                    prev_lang, close_token_class = @lang_stack[ -1 ]
+                    close_index, close_match_text = findClosingMatch( substr, @diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
+                    if close_match_text and close_index <= first_index
+                        if close_index > 0
+                            # Print any remaining text in the embedded language
+                            printString truncateOffScreen( substr[ 0...close_index ], i )
+                            i += substr[ 0...close_index ].length
+                        end
+
+                        @lang_stack.pop
+                        setLanguage prev_lang
+
+                        printString(
+                            truncateOffScreen( substr[ close_index...(close_index + close_match_text.length) ], i ),
+                            @token_formats[ close_token_class ]
+                        )
+                        i += close_match_text.length
+
+                        # Continue printing from here.
+                        next
+                    end
+                end
+
+                if first_word
+                    if first_index > 0
+                        # Print any preceding text in the default format
+                        printString truncateOffScreen( substr[ 0...first_index ], i )
+                        i += substr[ 0...first_index ].length
+                    end
+                    printString( truncateOffScreen( first_word, i ), @token_formats[ first_token_class ] )
+                    i += first_word.length
+                    if @close_token_regexps[ first_token_class ]
+                        if change_to = @settings[ "lang.#{@language}.tokens.#{first_token_class}.change_to" ]
+                            @lang_stack.push [ @language, first_token_class ]
+                            setLanguage change_to
+                        else
+                            @continued_format_class = first_token_class
+                        end
+                    end
+                else
+                    printString truncateOffScreen( substr, i )
+                    i += substr.length
+                    break
+                end
+            end
+        end
+
+        printPaddingFrom i
+    end
+
+    def printPaddingFrom( col )
+        return if not @pen_down
+
+        if col < @left_column
+            remainder = Curses::cols
+        else
+            remainder = @left_column + Curses::cols - col
+        end
+
+        if remainder > 0
+            printString( " " * remainder )
+        end
+    end
+
+  end
 end
