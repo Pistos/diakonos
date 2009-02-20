@@ -143,6 +143,13 @@ module Diakonos
           else
             var_array.push ""
           end
+        when 'selection_mode'
+          case @current_buffer.selection_mode
+          when :block
+            var_array.push 'block'
+          else
+            var_array.push ''
+          end
         when 'session_name'
           var_array.push @session[ 'name' ]
         when "type"
