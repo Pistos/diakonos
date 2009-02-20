@@ -329,35 +329,34 @@ module Diakonos
       curx = @win_main.curx
 
       @text_marks.reverse_each do |text_mark|
-        if text_mark
-          @win_main.attrset text_mark.formatting
-          if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
-            @win_main.setpos( cury, curx )
-            @win_main.addstr string
-          elsif row == text_mark.start_row and row == text_mark.end_row
-            expanded_col = tabExpandedColumn( text_mark.start_col, row )
-            if expanded_col < @left_column + Curses::cols
-              left = [ expanded_col - @left_column, 0 ].max
-              right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
-              if left < right
-                @win_main.setpos( cury, curx + left )
-                @win_main.addstr string[ left...right ]
-              end
-            end
-          elsif row == text_mark.start_row
-            expanded_col = tabExpandedColumn( text_mark.start_col, row )
-            if expanded_col < @left_column + Curses::cols
-              left = [ expanded_col - @left_column, 0 ].max
-              @win_main.setpos( cury, curx + left )
-              @win_main.addstr string[ left..-1 ]
-            end
-          elsif row == text_mark.end_row
+        next  if text_mark.nil?
+        @win_main.attrset text_mark.formatting
+        if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
+          @win_main.setpos( cury, curx )
+          @win_main.addstr string
+        elsif row == text_mark.start_row and row == text_mark.end_row
+          expanded_col = tabExpandedColumn( text_mark.start_col, row )
+          if expanded_col < @left_column + Curses::cols
+            left = [ expanded_col - @left_column, 0 ].max
             right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
-            @win_main.setpos( cury, curx )
-            @win_main.addstr string[ 0...right ]
-          else
-            # This row not in selection.
+            if left < right
+              @win_main.setpos( cury, curx + left )
+              @win_main.addstr string[ left...right ]
+            end
           end
+        elsif row == text_mark.start_row
+          expanded_col = tabExpandedColumn( text_mark.start_col, row )
+          if expanded_col < @left_column + Curses::cols
+            left = [ expanded_col - @left_column, 0 ].max
+            @win_main.setpos( cury, curx + left )
+            @win_main.addstr string[ left..-1 ]
+          end
+        elsif row == text_mark.end_row
+          right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
+          @win_main.setpos( cury, curx )
+          @win_main.addstr string[ 0...right ]
+        else
+          # This row not in selection.
         end
       end
     end
