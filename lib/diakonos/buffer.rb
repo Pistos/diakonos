@@ -1310,9 +1310,20 @@ class Buffer
         end
         cursorTo( @last_row, @last_col + text[ 0 ].length )
       elsif text.length > 1
-        @lines[ row ] = line[ 0...col ] + text[ 0 ]
-        @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
-        @lines[ row + 1, 0 ] = text[ 1..-2 ]
+
+        case @selection_mode
+        when :normal
+          @lines[ row ] = line[ 0...col ] + text[ 0 ]
+          @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
+          @lines[ row + 1, 0 ] = text[ 1..-2 ]
+        when :block
+          @lines[ row..( row + text.length ) ] = @lines[ row..( row + text.length ) ].collect.with_index { |line,index|
+            line[ 0...col ] +
+            text[ index ] +
+            line[ col..-1 ]
+          }
+        end
+
         new_row = @last_row + text.length - 1
         if do_parsed_indent
           ( row..new_row ).each do |r|
@@ -1320,6 +1331,7 @@ class Buffer
           end
         end
         cursorTo( new_row, columnOf( text[ -1 ].length ) )
+
       end
 
       setModified
