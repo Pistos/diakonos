@@ -704,7 +704,7 @@ class Buffer
     end
 
     def deleteLine
-        removeSelection( DONT_DISPLAY ) if selection_mark
+        removeSelection( DONT_DISPLAY )  if selection_mark
 
         row = @last_row
         takeSnapshot
@@ -723,7 +723,7 @@ class Buffer
     end
 
     def deleteToEOL
-        removeSelection( DONT_DISPLAY ) if selection_mark
+        removeSelection( DONT_DISPLAY )  if selection_mark
 
         row = @last_row
         col = @last_col
@@ -959,11 +959,11 @@ class Buffer
             recordMarkStartAndEnd
 
             removed = false
-            if not @changing_selection and selection_mark
+            if not @changing_selection and selecting?
                 removeSelection( DONT_DISPLAY )
                 removed = true
             end
-            if removed or ( do_display and ( selection_mark or view_changed ) )
+            if removed or ( do_display and ( selecting? or view_changed ) )
                 display
             else
                 @diakonos.display_mutex.synchronize do
@@ -1194,16 +1194,16 @@ class Buffer
         @mark_anchor[ "col" ] = col
         recordMarkStartAndEnd
         @changing_selection = true
-        display if do_display
+        display  if do_display
     end
 
     def removeSelection( do_display = DO_DISPLAY )
-        return if selection_mark.nil?
+        return  if selection_mark.nil?
         @mark_anchor = nil
         recordMarkStartAndEnd
         @changing_selection = false
         @last_finding = nil
-        display if do_display
+        display  if do_display
     end
 
     def toggleSelection
@@ -1552,21 +1552,19 @@ class Buffer
     end
 
     def replaceAll( regexp, replacement )
-        return if( regexp.nil? or replacement.nil? )
+      return  if( regexp.nil? or replacement.nil? )
 
-        @lines = @lines.collect { |line|
-            line.gsub( regexp, replacement )
-        }
-        setModified
-
-        clearMatches
-
-        display
+      @lines = @lines.collect { |line|
+        line.gsub( regexp, replacement )
+      }
+      setModified
+      clearMatches
+      display
     end
 
     def highlightMatches( regexp = @highlight_regexp )
       @highlight_regexp = regexp
-      return if @highlight_regexp.nil?
+      return  if @highlight_regexp.nil?
       found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
         TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
       end
@@ -1574,20 +1572,20 @@ class Buffer
     end
 
     def clearMatches( do_display = DONT_DISPLAY )
-        selection = @text_marks[ SELECTION ]
-        @text_marks = Array.new
-        @text_marks[ SELECTION ] = selection
-        @highlight_regexp = nil
-        display if do_display
+      selection = @text_marks[ SELECTION ]
+      @text_marks = Array.new
+      @text_marks[ SELECTION ] = selection
+      @highlight_regexp = nil
+      display  if do_display
     end
 
     def findAgain( last_search_regexps, direction = @last_search_direction )
-        if @last_search_regexps.nil?
-          @last_search_regexps = last_search_regexps
-        end
-        if @last_search_regexps
-          find( @last_search_regexps, :direction => direction )
-        end
+      if @last_search_regexps.nil?
+        @last_search_regexps = last_search_regexps
+      end
+      if @last_search_regexps
+        find( @last_search_regexps, :direction => direction )
+      end
     end
 
     def seek( regexp, direction = :down )
