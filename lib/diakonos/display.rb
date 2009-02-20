@@ -368,7 +368,10 @@ module Diakonos
             # This row not in selection.
           end
         when :block
-          if text_mark.start_row <= row && row <= text_mark.end_row
+          if(
+            text_mark.start_row <= row && row <= text_mark.end_row ||
+            text_mark.end_row <= row && row <= text_mark.start_row
+          )
             paint_single_row_mark( row, text_mark, string )
           end
         end
