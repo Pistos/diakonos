@@ -321,6 +321,19 @@ module Diakonos
       retval == "" ? nil : retval
     end
 
+    # Worker function for painting only part of a row.
+    def paint_single_row_mark( row, text_mark, string )
+      expanded_col = tabExpandedColumn( text_mark.start_col, row )
+      if expanded_col < @left_column + Curses::cols
+        left = [ expanded_col - @left_column, 0 ].max
+        right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
+        if left < right
+          @win_main.setpos( @win_main.cury, @win_main.curx + left )
+          @win_main.addstr string[ left...right ]
+        end
+      end
+    end
+
     def paintMarks( row )
       string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
       return  if string.nil? or string == ""
@@ -330,33 +343,34 @@ module Diakonos
 
       @text_marks.reverse_each do |text_mark|
         next  if text_mark.nil?
+
         @win_main.attrset text_mark.formatting
-        if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
-          @win_main.setpos( cury, curx )
-          @win_main.addstr string
-        elsif row == text_mark.start_row and row == text_mark.end_row
-          expanded_col = tabExpandedColumn( text_mark.start_col, row )
-          if expanded_col < @left_column + Curses::cols
-            left = [ expanded_col - @left_column, 0 ].max
-            right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
-            if left < right
+
+        case @selection_mode
+        when :normal
+          if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
+            @win_main.setpos( cury, curx )
+            @win_main.addstr string
+          elsif row == text_mark.start_row and row == text_mark.end_row
+            paint_single_row_mark( row, text_mark, string )
+          elsif row == text_mark.start_row
+            expanded_col = tabExpandedColumn( text_mark.start_col, row )
+            if expanded_col < @left_column + Curses::cols
+              left = [ expanded_col - @left_column, 0 ].max
               @win_main.setpos( cury, curx + left )
-              @win_main.addstr string[ left...right ]
+              @win_main.addstr string[ left..-1 ]
             end
+          elsif row == text_mark.end_row
+            right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
+            @win_main.setpos( cury, curx )
+            @win_main.addstr string[ 0...right ]
+          else
+            # This row not in selection.
           end
-        elsif row == text_mark.start_row
-          expanded_col = tabExpandedColumn( text_mark.start_col, row )
-          if expanded_col < @left_column + Curses::cols
-            left = [ expanded_col - @left_column, 0 ].max
-            @win_main.setpos( cury, curx + left )
-            @win_main.addstr string[ left..-1 ]
+        when :block
+          if text_mark.start_row <= row && row <= text_mark.end_row
+            paint_single_row_mark( row, text_mark, string )
           end
-        elsif row == text_mark.end_row
-          right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
-          @win_main.setpos( cury, curx )
-          @win_main.addstr string[ 0...right ]
-        else
-          # This row not in selection.
         end
       end
     end

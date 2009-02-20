@@ -6,7 +6,7 @@ class Buffer
         :selection_mode
     attr_writer :desired_column, :read_only
 
-    SELECTION = 0
+    SELECTION = 0  # Selection mark is the first element of the @text_marks array
     TYPING = true
     STOPPED_TYPING = true
     STILL_TYPING = false
