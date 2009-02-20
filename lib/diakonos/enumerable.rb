@@ -6,7 +6,7 @@ module Enumerable
             element.scan( regexp ) do |match_text|
                 match = Regexp.last_match
                 strindex = match.begin( 0 )
-                array.push [ index, strindex, strindex + match_text.length ]
+                array.push [ index, strindex, strindex + match[ 0 ].length ]
             end
         end
         array
