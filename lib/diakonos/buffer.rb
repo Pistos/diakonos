@@ -1272,10 +1272,9 @@ class Buffer
           @lines[ start_row ] = start_line[ 0...start_col ] + end_line[ end_col..-1 ]
           @lines = @lines[ 0..start_row ] + @lines[ (end_row + 1)..-1 ]
         when :block
-          @lines[ start_row..end_row ].each_with_index do |line,index|
-            @lines[ start_row + index ] = @lines[ start_row + index ][ 0...start_col ] +
-              ( @lines[ start_row + index ][ end_col..-1 ] || '' )
-          end
+          @lines[ start_row..end_row ] = @lines[ start_row..end_row ].collect { |line|
+            line[ 0...start_col ] + ( line[ end_col..-1 ] || '' )
+          }
         end
       end
 
