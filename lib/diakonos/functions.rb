@@ -1143,6 +1143,15 @@ module Diakonos
       end
     end
 
+    def selection_mode_block
+      @current_buffer.selection_mode_block
+      updateStatusLine
+    end
+    def selection_mode_normal
+      @current_buffer.selection_mode_normal
+      updateStatusLine
+    end
+
     def scrollDown
         @current_buffer.pitchView( @settings[ "view.scroll_amount" ] || 1 )
         updateStatusLine
