@@ -1379,9 +1379,15 @@ class Buffer
       elsif selection.start_row == selection.end_row
         [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
       else
-        [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
-          ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
-          [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
+        if @selection_mode == :block
+          @lines[ selection.start_row .. selection.end_row ].collect { |line|
+            line[ selection.start_col ... selection.end_col ]
+          }
+        else
+          [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
+            ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
+            [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
+        end
       end
     end
     def selected_string
