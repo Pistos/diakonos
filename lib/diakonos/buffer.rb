@@ -316,39 +316,40 @@ class Buffer
     # @mark_start[ "col" ] is inclusive,
     # @mark_end[ "col" ] is exclusive.
     def recordMarkStartAndEnd
-        if @mark_anchor
-            crow = @last_row
-            ccol = @last_col
-            anchor_first = true
-            if crow < @mark_anchor[ "row" ]
-                anchor_first = false
-            elsif crow > @mark_anchor[ "row" ]
-                anchor_first = true
-            else
-                if ccol < @mark_anchor[ "col" ]
-                    anchor_first = false
-                end
-            end
-            if anchor_first
-                @text_marks[ SELECTION ] = TextMark.new(
-                    @mark_anchor[ "row" ],
-                    @mark_anchor[ "col" ],
-                    crow,
-                    ccol,
-                    @selection_formatting
-                )
-            else
-                @text_marks[ SELECTION ] = TextMark.new(
-                    crow,
-                    ccol,
-                    @mark_anchor[ "row" ],
-                    @mark_anchor[ "col" ],
-                    @selection_formatting
-                )
-            end
-        else
-            @text_marks[ SELECTION ] = nil
+      if @mark_anchor.nil?
+        @text_marks[ SELECTION ] = nil
+        return
+      end
+
+      crow = @last_row
+      ccol = @last_col
+      anchor_first = true
+      if crow < @mark_anchor[ "row" ]
+        anchor_first = false
+      elsif crow > @mark_anchor[ "row" ]
+        anchor_first = true
+      else
+        if ccol < @mark_anchor[ "col" ]
+          anchor_first = false
         end
+      end
+      if anchor_first
+        @text_marks[ SELECTION ] = TextMark.new(
+          @mark_anchor[ "row" ],
+          @mark_anchor[ "col" ],
+          crow,
+          ccol,
+          @selection_formatting
+        )
+      else
+        @text_marks[ SELECTION ] = TextMark.new(
+          crow,
+          ccol,
+          @mark_anchor[ "row" ],
+          @mark_anchor[ "col" ],
+          @selection_formatting
+        )
+      end
     end
 
     def selection_mark
