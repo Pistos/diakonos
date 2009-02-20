@@ -1393,6 +1393,13 @@ class Buffer
       end
     end
 
+    def selection_mode_block
+      @selection_mode = :block
+    end
+    def selection_mode_normal
+      @selection_mode = :normal
+    end
+
     def deleteSelection( do_display = DO_DISPLAY )
         return if @text_marks[ SELECTION ].nil?
 
