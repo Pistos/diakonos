@@ -381,6 +381,7 @@ class Buffer
     end
 
     def select_all
+      selection_mode_normal
       anchorSelection( 0, 0, DONT_DISPLAY )
       cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
