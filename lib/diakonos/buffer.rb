@@ -323,30 +323,42 @@ class Buffer
 
       crow = @last_row
       ccol = @last_col
-      mrow = @mark_anchor[ 'row' ]
-      mcol = @mark_anchor[ 'col' ]
+      arow = @mark_anchor[ 'row' ]
+      acol = @mark_anchor[ 'col' ]
 
       case @selection_mode
       when :normal
         anchor_first = true
 
-        if crow < mrow
+        if crow < arow
           anchor_first = false
-        elsif crow > mrow
+        elsif crow > arow
           anchor_first = true
         else
-          if ccol < mcol
+          if ccol < acol
             anchor_first = false
           end
         end
 
         if anchor_first
-          @text_marks[ SELECTION ] = TextMark.new( mrow, mcol, crow, ccol, @selection_formatting )
+          @text_marks[ SELECTION ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
         else
-          @text_marks[ SELECTION ] = TextMark.new( crow, ccol, mrow, mcol, @selection_formatting )
+          @text_marks[ SELECTION ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
         end
       when :block
-        if crow < @mark_a
+        if crow < arow
+          if ccol < acol # Northwest
+            @text_marks[ SELECTION ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
+          else           # Northeast
+            @text_marks[ SELECTION ] = TextMark.new( crow, acol, arow, ccol, @selection_formatting )
+          end
+        else
+          if ccol < acol  # Southwest
+            @text_marks[ SELECTION ] = TextMark.new( arow, ccol, crow, acol, @selection_formatting )
+          else            # Southeast
+            @text_marks[ SELECTION ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
+          end
+        end
       end
     end
 
