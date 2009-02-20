@@ -2,7 +2,8 @@ module Diakonos
 
 class Buffer
     attr_reader :name, :key, :original_language, :changing_selection, :read_only,
-        :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col
+        :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col,
+        :selection_mode
     attr_writer :desired_column, :read_only
 
     SELECTION = 0
@@ -63,6 +64,7 @@ class Buffer
         @desired_column = 0
         @mark_anchor = nil
         @text_marks = Array.new
+        @selection_mode = :normal
         @last_search_regexps = nil
         @highlight_regexp = nil
         @last_search = nil
