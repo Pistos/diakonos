@@ -504,82 +504,82 @@ class Buffer
 
     # Returns true on successful write.
     def saveCopy( filename )
-        return false if filename.nil?
+      return false if filename.nil?
 
-        name = filename.subHome
+      name = filename.subHome
 
-        File.open( name, "w" ) do |f|
-            @lines[ 0..-2 ].each do |line|
-                f.puts line
-            end
-            if @lines[ -1 ] != ""
-                # No final newline character
-                f.print @lines[ -1 ]
-                f.print "\n" if @settings[ "eof_newline" ]
-            end
+      File.open( name, "w" ) do |f|
+        @lines[ 0..-2 ].each do |line|
+          f.puts line
         end
+        if @lines[ -1 ] != ""
+          # No final newline character
+          f.print @lines[ -1 ]
+          f.print "\n" if @settings[ "eof_newline" ]
+        end
+      end
 
-        true
+      true
     end
 
     def replaceChar( c )
-        row = @last_row
-        col = @last_col
-        takeSnapshot( TYPING )
-        @lines[ row ][ col ] = c
-        setModified
+      row = @last_row
+      col = @last_col
+      takeSnapshot( TYPING )
+      @lines[ row ][ col ] = c
+      setModified
     end
 
     def insertChar( c )
-        row = @last_row
-        col = @last_col
-        takeSnapshot( TYPING )
-        line = @lines[ row ]
-        @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
-        setModified
+      row = @last_row
+      col = @last_col
+      takeSnapshot( TYPING )
+      line = @lines[ row ]
+      @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
+      setModified
     end
 
     def insertString( str )
-        row = @last_row
-        col = @last_col
-        takeSnapshot( TYPING )
-        line = @lines[ row ]
-        @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
-        setModified
+      row = @last_row
+      col = @last_col
+      takeSnapshot( TYPING )
+      line = @lines[ row ]
+      @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
+      setModified
     end
 
     # x and y are given window-relative, not buffer-relative.
     def delete
-        if selection_mark
-            deleteSelection
-        else
-            row = @last_row
-            col = @last_col
-            if ( row >= 0 ) and ( col >= 0 )
-                line = @lines[ row ]
-                if col == line.length
-                    if row < @lines.length - 1
-                        # Delete newline, and concat next line
-                        joinLines( row )
-                        cursorTo( @last_row, @last_col )
-                    end
-                else
-                    takeSnapshot( TYPING )
-                    @lines[ row ] = line[ 0...col ] + line[ (col + 1)..-1 ]
-                    setModified
-                end
+      if selection_mark
+        deleteSelection
+      else
+        row = @last_row
+        col = @last_col
+        if ( row >= 0 ) and ( col >= 0 )
+          line = @lines[ row ]
+          if col == line.length
+            if row < @lines.length - 1
+              # Delete newline, and concat next line
+              joinLines( row )
+              cursorTo( @last_row, @last_col )
             end
+          else
+            takeSnapshot( TYPING )
+            @lines[ row ] = line[ 0...col ] + line[ (col + 1)..-1 ]
+            setModified
+          end
         end
+      end
     end
 
     def joinLines( row = @last_row, strip = DONT_STRIP_LINE )
-        takeSnapshot( TYPING )
-        next_line = @lines.delete_at( row + 1 )
-        if strip
-            next_line = ' ' + next_line.strip
-        end
-        @lines[ row ] << next_line
-        setModified
+      takeSnapshot( TYPING )
+      next_line = @lines.delete_at( row + 1 )
+      if strip
+        next_line = ' ' + next_line.strip
+      end
+      @lines[ row ] << next_line
+      setModified
     end
 
     def close_code
@@ -1251,26 +1251,26 @@ class Buffer
     end
 
     def deleteSelection( do_display = DO_DISPLAY )
-        return if @text_marks[ SELECTION ].nil?
+      return  if @text_marks[ SELECTION ].nil?
 
-        takeSnapshot
+      takeSnapshot
 
-        selection = @text_marks[ SELECTION ]
-        start_row = selection.start_row
-        start_col = selection.start_col
-        start_line = @lines[ start_row ]
+      selection = @text_marks[ SELECTION ]
+      start_row = selection.start_row
+      start_col = selection.start_col
+      start_line = @lines[ start_row ]
 
-        if selection.end_row == selection.start_row
-            @lines[ start_row ] = start_line[ 0...start_col ] + start_line[ selection.end_col..-1 ]
-        else
-            end_line = @lines[ selection.end_row ]
-            @lines[ start_row ] = start_line[ 0...start_col ] + end_line[ selection.end_col..-1 ]
-            @lines = @lines[ 0..start_row ] + @lines[ (selection.end_row + 1)..-1 ]
-        end
+      if selection.end_row == selection.start_row
+        @lines[ start_row ] = start_line[ 0...start_col ] + start_line[ selection.end_col..-1 ]
+      else
+        end_line = @lines[ selection.end_row ]
+        @lines[ start_row ] = start_line[ 0...start_col ] + end_line[ selection.end_col..-1 ]
+        @lines = @lines[ 0..start_row ] + @lines[ (selection.end_row + 1)..-1 ]
+      end
 
-        cursorTo( start_row, start_col )
-        removeSelection( DONT_DISPLAY )
-        setModified( do_display )
+      cursorTo( start_row, start_col )
+      removeSelection( DONT_DISPLAY )
+      setModified( do_display )
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
