@@ -879,6 +879,10 @@ class Buffer
         recordMarkStartAndEnd
 
         if changed != 0
+            if not @changing_selection and selecting?
+                removeSelection( DONT_DISPLAY )
+            end
+
             highlightMatches
             if @diakonos.there_was_non_movement
                 pushCursorState( old_top_line, old_row, old_col )
