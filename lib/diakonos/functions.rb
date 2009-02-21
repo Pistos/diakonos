@@ -184,29 +184,51 @@ module Diakonos
 
     # Returns true iff the cursor changed positions
     def cursorDown
-        @current_buffer.cursorTo( @current_buffer.last_row + 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row + 1,
+        @current_buffer.last_col,
+        Buffer::DO_DISPLAY,
+        Buffer::STOPPED_TYPING,
+        DONT_ADJUST_ROW
+      )
     end
 
     # Returns true iff the cursor changed positions
     def cursorLeft( stopped_typing = Buffer::STOPPED_TYPING )
-        @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col - 1, Buffer::DO_DISPLAY, stopped_typing )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row,
+        @current_buffer.last_col - 1,
+        Buffer::DO_DISPLAY,
+        stopped_typing
+      )
     end
 
     def cursorRight( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
-        @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col + amount, Buffer::DO_DISPLAY, stopped_typing )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row,
+        @current_buffer.last_col + amount,
+        Buffer::DO_DISPLAY,
+        stopped_typing
+      )
     end
 
     # Returns true iff the cursor changed positions
     def cursorUp
-        @current_buffer.cursorTo( @current_buffer.last_row - 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row - 1,
+        @current_buffer.last_col,
+        Buffer::DO_DISPLAY,
+        Buffer::STOPPED_TYPING,
+        DONT_ADJUST_ROW
+      )
     end
 
     def cursorBOF
-        @current_buffer.cursorTo( 0, 0, Buffer::DO_DISPLAY )
+      @current_buffer.cursorTo( 0, 0, Buffer::DO_DISPLAY )
     end
 
     def cursorBOL
-        @current_buffer.cursorToBOL
+      @current_buffer.cursorToBOL
     end
 
     def cursorEOL
@@ -214,26 +236,26 @@ module Diakonos
     end
 
     def cursorEOF
-        @current_buffer.cursorToEOF
+      @current_buffer.cursorToEOF
     end
 
     # Top of view
     def cursorTOV
-        @current_buffer.cursorToTOV
+      @current_buffer.cursorToTOV
     end
 
     # Bottom of view
     def cursorBOV
-        @current_buffer.cursorToBOV
+      @current_buffer.cursorToBOV
     end
 
     def cursorReturn( dir_str = "backward" )
-        stack_pointer, stack_size = @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
-        setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
+      stack_pointer, stack_size = @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
+      setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
     def cutSelection
-        delete if @clipboard.addClip( @current_buffer.copySelection )
+      delete  if @clipboard.addClip( @current_buffer.copySelection )
     end
 
     def cut_selection_to_klipper
@@ -243,7 +265,7 @@ module Diakonos
     end
 
     def delete
-        @current_buffer.delete
+      @current_buffer.delete
     end
 
     def delete_and_store_line_to_klipper
@@ -1141,6 +1163,15 @@ module Diakonos
       if beginning and ending
         @current_buffer.select( beginning, ending, including_ending )
       end
+    end
+
+    def selection_mode_block
+      @current_buffer.selection_mode_block
+      updateStatusLine
+    end
+    def selection_mode_normal
+      @current_buffer.selection_mode_normal
+      updateStatusLine
     end
 
     def scrollDown
