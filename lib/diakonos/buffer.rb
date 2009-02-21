@@ -1285,7 +1285,7 @@ class Buffer
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
     def paste( text, do_parsed_indent = false )
-      return if text.nil?
+      return  if text.nil?
 
       if not text.kind_of? Array
         s = text.to_s
@@ -1302,6 +1302,7 @@ class Buffer
 
       row = @last_row
       col = @last_col
+      new_col = nil
       line = @lines[ row ]
       if text.length == 1
         @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col..-1 ]
@@ -1316,12 +1317,12 @@ class Buffer
           @lines[ row ] = line[ 0...col ] + text[ 0 ]
           @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
           @lines[ row + 1, 0 ] = text[ 1..-2 ]
+          new_col = columnOf( text[ -1 ].length )
         when :block
-          @lines[ row..( row + text.length ) ] = @lines[ row..( row + text.length ) ].collect.with_index { |line,index|
-            line[ 0...col ] +
-            text[ index ] +
-            line[ col..-1 ]
+          @lines[ row...( row + text.length ) ] = @lines[ row...( row + text.length ) ].collect.with_index { |line,index|
+            line[ 0...col ] + text[ index ] + line[ col..-1 ]
           }
+          new_col = col + text[ -1 ].length
         end
 
         new_row = @last_row + text.length - 1
@@ -1330,7 +1331,7 @@ class Buffer
             parsedIndent r, DONT_DISPLAY
           end
         end
-        cursorTo( new_row, columnOf( text[ -1 ].length ) )
+        cursorTo( new_row, new_col )
 
       end
 
