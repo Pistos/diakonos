@@ -108,13 +108,14 @@ class Buffer
                 LANG_TEXT
             )
         )
-        reset_win_main
+        reset_display
         setLanguage language
         @original_language = @language
     end
 
-    def reset_win_main
+    def reset_display
         @win_main = @diakonos.win_main
+        @win_line_numbers = @diakonos.win_line_numbers
     end
 
     def setLanguage( language )

@@ -3,13 +3,14 @@ module Diakonos
   DONT_REDRAW           = false
 
   class Diakonos
-    attr_reader :win_main, :display_mutex
+    attr_reader :win_main, :display_mutex, :win_line_numbers
 
     def initializeDisplay
       @win_main.close if @win_main
       @win_status.close if @win_status
       @win_interaction.close if @win_interaction
       @win_context.close if @win_context
+      @win_line_numbers.close  if @win_line_numbers
 
       Curses::init_screen
       Curses::nonl
@@ -31,7 +32,14 @@ module Diakonos
         end
       end
 
-      @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
+      if settings[ 'view.line_numbers' ]
+        @win_line_numbers = Curses::Window.new( main_window_height, 5, 0, 0 )
+        @win_line_numbers.keypad( true )
+        @win_main = Curses::Window.new( main_window_height, Curses::cols - 5, 0, 5 )
+      else
+        @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
+        @win_line_numbers = nil
+      end
       @win_main.keypad( true )
       @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
       @win_status.keypad( true )
@@ -53,9 +61,12 @@ module Diakonos
 
       @win_interaction.refresh
       @win_main.refresh
+      if @win_line_numbers
+        @win_line_numbers.refresh
+      end
 
       @buffers.each_value do |buffer|
-        buffer.reset_win_main
+        buffer.reset_display
       end
     end
 
@@ -289,6 +300,9 @@ module Diakonos
       end
       @win_status.refresh
       @win_interaction.refresh
+      if @win_line_numbers
+        @win_line_numbers.refresh
+      end
     end
 
   end
@@ -522,6 +536,11 @@ module Diakonos
                     # Draw each on-screen line.
                     y = 0
                     @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
+                        if @win_line_numbers
+                          @win_line_numbers.setpos( y, 0 )
+                          @win_line_numbers.attrset @default_formatting
+                          @win_line_numbers.addstr( "%4s " % [ @top_line+row+1 ] )
+                        end
                         @win_main.setpos( y, 0 )
                         printLine line.expandTabs( @tab_size )
                         @win_main.setpos( y, 0 )
@@ -541,6 +560,9 @@ module Diakonos
                         @win_main.addstr linestr
                     end
 
+                    if @win_line_numbers
+                      @win_line_numbers.refresh
+                    end
                     @win_main.setpos( @last_screen_y , @last_screen_x )
                     @win_main.refresh
 

@@ -119,10 +119,11 @@ module Diakonos
       @help_filename  = "#{@help_dir}/about-help.dhf"
       @error_filename = "#{@diakonos_home}/diakonos.err"
 
-      @win_main        = nil
-      @win_context     = nil
-      @win_status      = nil
-      @win_interaction = nil
+      @win_main         = nil
+      @win_context      = nil
+      @win_status       = nil
+      @win_interaction  = nil
+      @win_line_numbers = nil
       @buffers = BufferHash.new
 
       loadConfiguration
