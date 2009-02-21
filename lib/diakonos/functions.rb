@@ -800,7 +800,7 @@ module Diakonos
     end
 
     # Returns the buffer of the opened file, or nil.
-    def openFile( filename = nil, read_only = false, force_revert = ASK_REVERT )
+    def openFile( filename = nil, read_only = false, force_revert = ASK_REVERT, last_row = nil, last_col = nil )
       do_open = true
       buffer = nil
       if filename.nil?
@@ -866,8 +866,12 @@ module Diakonos
           runHookProcs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
           save_session
-          if switchTo( buffer ) and line_number
-            @current_buffer.goToLine( line_number, 0 )
+          if switchTo( buffer )
+            if line_number
+              @current_buffer.goToLine( line_number, 0 )
+            elsif last_row && last_col
+              @current_buffer.cursorTo( last_row, last_col, Buffer::DO_DISPLAY )
+            end
           end
         end
       end
@@ -1117,7 +1121,13 @@ module Diakonos
       end
 
       if do_revert
-        openFile( @current_buffer.name, Buffer::READ_WRITE, FORCE_REVERT )
+        openFile(
+          @current_buffer.name,
+          Buffer::READ_WRITE,
+          FORCE_REVERT,
+          @current_buffer.last_row,
+          @current_buffer.last_col
+        )
       end
     end
 
