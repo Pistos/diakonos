@@ -256,7 +256,7 @@ module Diakonos
           "view.nonfilelines.character",
           'interaction.blink_string', 'diff_command', 'session.default_session'
           @settings[ command ] = arg
-        when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.format'
+        when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format'
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
         when "status.vars"
           @settings[ command ] = arg.split( /\s+/ )
