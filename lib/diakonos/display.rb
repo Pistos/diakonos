@@ -33,9 +33,9 @@ module Diakonos
       end
 
       if settings[ 'view.line_numbers' ]
-        @win_line_numbers = Curses::Window.new( main_window_height, 5, 0, 0 )
+        @win_line_numbers = Curses::Window.new( main_window_height, settings[ 'view.line_numbers.width' ], 0, 0 )
         @win_line_numbers.keypad( true )
-        @win_main = Curses::Window.new( main_window_height, Curses::cols - 5, 0, 5 )
+        @win_main = Curses::Window.new( main_window_height, Curses::cols - settings[ 'view.line_numbers.width' ], 0, settings[ 'view.line_numbers.width' ] )
       else
         @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
         @win_line_numbers = nil
@@ -539,7 +539,11 @@ module Diakonos
                         if @win_line_numbers
                           @win_line_numbers.setpos( y, 0 )
                           @win_line_numbers.attrset @default_formatting
-                          @win_line_numbers.addstr( "%4s " % [ @top_line+row+1 ] )
+                          n = ( @top_line+row+1 ).to_s
+                          @win_line_numbers.addstr(
+                            @settings[ 'view.line_numbers.format' ] % [
+                              n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min..-1 ]
+                            ] )
                         end
                         @win_main.setpos( y, 0 )
                         printLine line.expandTabs( @tab_size )
