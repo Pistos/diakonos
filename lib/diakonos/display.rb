@@ -538,7 +538,7 @@ module Diakonos
                     @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
                         if @win_line_numbers
                           @win_line_numbers.setpos( y, 0 )
-                          @win_line_numbers.attrset @default_formatting
+                          @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
                           n = ( @top_line+row+1 ).to_s
                           @win_line_numbers.addstr(
                             @settings[ 'view.line_numbers.number_format' ] % [

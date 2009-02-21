@@ -244,7 +244,7 @@ module Diakonos
           'suppress_welcome', 'strip_trailing_whitespace_on_save',
           'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers'
           @settings[ command ] = arg.to_b
-        when "context.format", "context.separator.format", "status.format"
+        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
           @settings[ command ] = arg.toFormatting
         when "logfile"
           @logfilename = arg.subHome
