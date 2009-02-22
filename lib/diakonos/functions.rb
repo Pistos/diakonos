@@ -19,7 +19,7 @@ module Diakonos
     end
 
     def backspace
-      delete if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
+      delete  if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
     end
 
     def carriageReturn
@@ -28,36 +28,36 @@ module Diakonos
     end
 
     def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
-        if key_.nil?
-            key = getUserInput( "Setting: " )
-        else
-            key = key_
-        end
+      if key_.nil?
+        key = getUserInput( "Setting: " )
+      else
+        key = key_
+      end
 
-        if key
-            if value.nil?
-                value = getUserInput( "Value: " )
-            end
-            case @settings[ key ]
-                when String
-                    value = value.to_s
-                when Fixnum
-                    value = value.to_i
-                when TrueClass, FalseClass
-                    value = value.to_b
-            end
-            @session[ 'settings' ][ key ] = value
-            redraw if do_redraw
-            setILine "#{key} = #{value}"
+      if key
+        if value.nil?
+          value = getUserInput( "Value: " )
         end
+        case @settings[ key ]
+        when String
+          value = value.to_s
+        when Fixnum
+          value = value.to_i
+        when TrueClass, FalseClass
+          value = value.to_b
+        end
+        @session[ 'settings' ][ key ] = value
+        redraw  if do_redraw
+        setILine "#{key} = #{value}"
+      end
     end
 
     def clearMatches
-        @current_buffer.clearMatches Buffer::DO_DISPLAY
+      @current_buffer.clearMatches Buffer::DO_DISPLAY
     end
 
     def close_code
-        @current_buffer.close_code
+      @current_buffer.close_code
     end
 
     # Returns the choice the user made, or nil if the user was not prompted to choose.
