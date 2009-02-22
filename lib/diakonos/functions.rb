@@ -1401,24 +1401,19 @@ module Diakonos
     end
 
     def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
-      if key_.nil?
-        key = getUserInput( "Setting: " )
-      else
-        key = key_
-      end
+      key = key_ || getUserInput( "Setting: " )
+      return  if key.nil?
 
-      if key
-        value = nil
-        if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
-          value = ! @session[ 'settings' ][ key ]
-        elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
-          value = ! @settings[ key ]
-        end
-        if value
-          @session[ 'settings' ][ key ] = value
-          redraw if do_redraw
-          setILine "#{key} = #{value}"
-        end
+      value = nil
+      if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
+        value = ! @session[ 'settings' ][ key ]
+      elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
+        value = ! @settings[ key ]
+      end
+      if value
+        @session[ 'settings' ][ key ] = value
+        redraw  if do_redraw
+        setILine "#{key} = #{value}"
       end
     end
 
