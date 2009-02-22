@@ -1368,7 +1368,7 @@ module Diakonos
             elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
                 value = ! @settings[ key ]
             end
-            if value
+            if value != nil   # explicitly true or false
                 @session[ 'settings' ][ key ] = value
                 redraw if do_redraw
                 setILine "#{key} = #{value}"
