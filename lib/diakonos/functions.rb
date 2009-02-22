@@ -1392,34 +1392,34 @@ module Diakonos
     end
 
     def toggleBookmark
-        @current_buffer.toggleBookmark
+      @current_buffer.toggleBookmark
     end
 
     def toggleSelection
-        @current_buffer.toggleSelection
-        updateStatusLine
+      @current_buffer.toggleSelection
+      updateStatusLine
     end
 
     def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
-        if key_.nil?
-            key = getUserInput( "Setting: " )
-        else
-            key = key_
-        end
+      if key_.nil?
+        key = getUserInput( "Setting: " )
+      else
+        key = key_
+      end
 
-        if key
-            value = nil
-            if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
-                value = ! @session[ 'settings' ][ key ]
-            elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
-                value = ! @settings[ key ]
-            end
-            if value
-                @session[ 'settings' ][ key ] = value
-                redraw if do_redraw
-                setILine "#{key} = #{value}"
-            end
+      if key
+        value = nil
+        if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
+          value = ! @session[ 'settings' ][ key ]
+        elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
+          value = ! @settings[ key ]
         end
+        if value
+          @session[ 'settings' ][ key ] = value
+          redraw if do_redraw
+          setILine "#{key} = #{value}"
+        end
+      end
     end
 
     def uncomment
@@ -1427,30 +1427,30 @@ module Diakonos
     end
 
     def undo( buffer = @current_buffer )
-        buffer.undo
+      buffer.undo
     end
 
     def unindent
-        if( @current_buffer.changing_selection )
-            @do_display = false
-            mark = @current_buffer.selection_mark
-            if mark.end_col > 0
-                end_row = mark.end_row
-            else
-                end_row = mark.end_row - 1
-            end
-            (mark.start_row..end_row).each do |row|
-                @current_buffer.unindent row, Buffer::DONT_DISPLAY
-            end
-            @do_display = true
-            @current_buffer.display
+      if( @current_buffer.changing_selection )
+        @do_display = false
+        mark = @current_buffer.selection_mark
+        if mark.end_col > 0
+          end_row = mark.end_row
         else
-            @current_buffer.unindent
+          end_row = mark.end_row - 1
         end
+        (mark.start_row..end_row).each do |row|
+          @current_buffer.unindent row, Buffer::DONT_DISPLAY
+        end
+        @do_display = true
+        @current_buffer.display
+      else
+        @current_buffer.unindent
+      end
     end
 
     def unundo( buffer = @current_buffer )
-        buffer.unundo
+      buffer.unundo
     end
 
     def wrap_paragraph
