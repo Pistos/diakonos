@@ -19,7 +19,7 @@ module Diakonos
     end
 
     def backspace
-      delete if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
+      delete  if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
     end
 
     def carriageReturn
@@ -28,36 +28,36 @@ module Diakonos
     end
 
     def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
-        if key_.nil?
-            key = getUserInput( "Setting: " )
-        else
-            key = key_
-        end
+      if key_.nil?
+        key = getUserInput( "Setting: " )
+      else
+        key = key_
+      end
 
-        if key
-            if value.nil?
-                value = getUserInput( "Value: " )
-            end
-            case @settings[ key ]
-                when String
-                    value = value.to_s
-                when Fixnum
-                    value = value.to_i
-                when TrueClass, FalseClass
-                    value = value.to_b
-            end
-            @session[ 'settings' ][ key ] = value
-            redraw if do_redraw
-            setILine "#{key} = #{value}"
+      if key
+        if value.nil?
+          value = getUserInput( "Value: " )
         end
+        case @settings[ key ]
+        when String
+          value = value.to_s
+        when Fixnum
+          value = value.to_i
+        when TrueClass, FalseClass
+          value = value.to_b
+        end
+        @session[ 'settings' ][ key ] = value
+        redraw  if do_redraw
+        setILine "#{key} = #{value}"
+      end
     end
 
     def clearMatches
-        @current_buffer.clearMatches Buffer::DO_DISPLAY
+      @current_buffer.clearMatches Buffer::DO_DISPLAY
     end
 
     def close_code
-        @current_buffer.close_code
+      @current_buffer.close_code
     end
 
     # Returns the choice the user made, or nil if the user was not prompted to choose.
@@ -184,29 +184,51 @@ module Diakonos
 
     # Returns true iff the cursor changed positions
     def cursorDown
-        @current_buffer.cursorTo( @current_buffer.last_row + 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row + 1,
+        @current_buffer.last_col,
+        Buffer::DO_DISPLAY,
+        Buffer::STOPPED_TYPING,
+        DONT_ADJUST_ROW
+      )
     end
 
     # Returns true iff the cursor changed positions
     def cursorLeft( stopped_typing = Buffer::STOPPED_TYPING )
-        @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col - 1, Buffer::DO_DISPLAY, stopped_typing )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row,
+        @current_buffer.last_col - 1,
+        Buffer::DO_DISPLAY,
+        stopped_typing
+      )
     end
 
     def cursorRight( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
-        @current_buffer.cursorTo( @current_buffer.last_row, @current_buffer.last_col + amount, Buffer::DO_DISPLAY, stopped_typing )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row,
+        @current_buffer.last_col + amount,
+        Buffer::DO_DISPLAY,
+        stopped_typing
+      )
     end
 
     # Returns true iff the cursor changed positions
     def cursorUp
-        @current_buffer.cursorTo( @current_buffer.last_row - 1, @current_buffer.last_col, Buffer::DO_DISPLAY, Buffer::STOPPED_TYPING, DONT_ADJUST_ROW )
+      @current_buffer.cursorTo(
+        @current_buffer.last_row - 1,
+        @current_buffer.last_col,
+        Buffer::DO_DISPLAY,
+        Buffer::STOPPED_TYPING,
+        DONT_ADJUST_ROW
+      )
     end
 
     def cursorBOF
-        @current_buffer.cursorTo( 0, 0, Buffer::DO_DISPLAY )
+      @current_buffer.cursorTo( 0, 0, Buffer::DO_DISPLAY )
     end
 
     def cursorBOL
-        @current_buffer.cursorToBOL
+      @current_buffer.cursorToBOL
     end
 
     def cursorEOL
@@ -214,26 +236,26 @@ module Diakonos
     end
 
     def cursorEOF
-        @current_buffer.cursorToEOF
+      @current_buffer.cursorToEOF
     end
 
     # Top of view
     def cursorTOV
-        @current_buffer.cursorToTOV
+      @current_buffer.cursorToTOV
     end
 
     # Bottom of view
     def cursorBOV
-        @current_buffer.cursorToBOV
+      @current_buffer.cursorToBOV
     end
 
     def cursorReturn( dir_str = "backward" )
-        stack_pointer, stack_size = @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
-        setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
+      stack_pointer, stack_size = @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
+      setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
     def cutSelection
-        delete if @clipboard.addClip( @current_buffer.copySelection )
+      delete  if @clipboard.addClip( @current_buffer.copySelection )
     end
 
     def cut_selection_to_klipper
@@ -243,7 +265,7 @@ module Diakonos
     end
 
     def delete
-        @current_buffer.delete
+      @current_buffer.delete
     end
 
     def delete_and_store_line_to_klipper
@@ -778,7 +800,7 @@ module Diakonos
     end
 
     # Returns the buffer of the opened file, or nil.
-    def openFile( filename = nil, read_only = false, force_revert = ASK_REVERT )
+    def openFile( filename = nil, read_only = false, force_revert = ASK_REVERT, last_row = nil, last_col = nil )
       do_open = true
       buffer = nil
       if filename.nil?
@@ -844,8 +866,12 @@ module Diakonos
           runHookProcs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
           save_session
-          if switchTo( buffer ) and line_number
-            @current_buffer.goToLine( line_number, 0 )
+          if switchTo( buffer )
+            if line_number
+              @current_buffer.goToLine( line_number, 0 )
+            elsif last_row && last_col
+              @current_buffer.cursorTo( last_row, last_col, Buffer::DO_DISPLAY )
+            end
           end
         end
       end
@@ -1095,7 +1121,13 @@ module Diakonos
       end
 
       if do_revert
-        openFile( @current_buffer.name, Buffer::READ_WRITE, FORCE_REVERT )
+        openFile(
+          @current_buffer.name,
+          Buffer::READ_WRITE,
+          FORCE_REVERT,
+          @current_buffer.last_row,
+          @current_buffer.last_col
+        )
       end
     end
 
@@ -1141,6 +1173,15 @@ module Diakonos
       if beginning and ending
         @current_buffer.select( beginning, ending, including_ending )
       end
+    end
+
+    def selection_mode_block
+      @current_buffer.selection_mode_block
+      updateStatusLine
+    end
+    def selection_mode_normal
+      @current_buffer.selection_mode_normal
+      updateStatusLine
     end
 
     def scrollDown
@@ -1351,34 +1392,29 @@ module Diakonos
     end
 
     def toggleBookmark
-        @current_buffer.toggleBookmark
+      @current_buffer.toggleBookmark
     end
 
     def toggleSelection
-        @current_buffer.toggleSelection
-        updateStatusLine
+      @current_buffer.toggleSelection
+      updateStatusLine
     end
 
     def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
-        if key_.nil?
-            key = getUserInput( "Setting: " )
-        else
-            key = key_
-        end
+      key = key_ || getUserInput( "Setting: " )
+      return  if key.nil?
 
-        if key
-            value = nil
-            if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
-                value = ! @session[ 'settings' ][ key ]
-            elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
-                value = ! @settings[ key ]
-            end
-            if value
-                @session[ 'settings' ][ key ] = value
-                redraw if do_redraw
-                setILine "#{key} = #{value}"
-            end
-        end
+      value = nil
+      if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
+        value = ! @session[ 'settings' ][ key ]
+      elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
+        value = ! @settings[ key ]
+      end
+      if value != nil   # explicitly true or false
+        @session[ 'settings' ][ key ] = value
+        redraw  if do_redraw
+        setILine "#{key} = #{value}"
+      end
     end
 
     def uncomment
@@ -1386,30 +1422,30 @@ module Diakonos
     end
 
     def undo( buffer = @current_buffer )
-        buffer.undo
+      buffer.undo
     end
 
     def unindent
-        if( @current_buffer.changing_selection )
-            @do_display = false
-            mark = @current_buffer.selection_mark
-            if mark.end_col > 0
-                end_row = mark.end_row
-            else
-                end_row = mark.end_row - 1
-            end
-            (mark.start_row..end_row).each do |row|
-                @current_buffer.unindent row, Buffer::DONT_DISPLAY
-            end
-            @do_display = true
-            @current_buffer.display
+      if( @current_buffer.changing_selection )
+        @do_display = false
+        mark = @current_buffer.selection_mark
+        if mark.end_col > 0
+          end_row = mark.end_row
         else
-            @current_buffer.unindent
+          end_row = mark.end_row - 1
         end
+        (mark.start_row..end_row).each do |row|
+          @current_buffer.unindent row, Buffer::DONT_DISPLAY
+        end
+        @do_display = true
+        @current_buffer.display
+      else
+        @current_buffer.unindent
+      end
     end
 
     def unundo( buffer = @current_buffer )
-        buffer.unundo
+      buffer.unundo
     end
 
     def wrap_paragraph

@@ -66,7 +66,7 @@ require 'diakonos/vendor/fuzzy_file_finder'
 module Diakonos
 
   VERSION       = '0.8.8'
-  LAST_MODIFIED = 'February 20, 2009'
+  LAST_MODIFIED = 'February 22, 2009'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -119,10 +119,11 @@ module Diakonos
       @help_filename  = "#{@help_dir}/about-help.dhf"
       @error_filename = "#{@diakonos_home}/diakonos.err"
 
-      @win_main        = nil
-      @win_context     = nil
-      @win_status      = nil
-      @win_interaction = nil
+      @win_main         = nil
+      @win_context      = nil
+      @win_status       = nil
+      @win_interaction  = nil
+      @win_line_numbers = nil
       @buffers = BufferHash.new
 
       loadConfiguration

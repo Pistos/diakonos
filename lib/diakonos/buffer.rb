@@ -2,10 +2,11 @@ module Diakonos
 
 class Buffer
     attr_reader :name, :key, :original_language, :changing_selection, :read_only,
-        :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col
+        :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col,
+        :selection_mode
     attr_writer :desired_column, :read_only
 
-    SELECTION = 0
+    SELECTION = 0  # Selection mark is the first element of the @text_marks array
     TYPING = true
     STOPPED_TYPING = true
     STILL_TYPING = false
@@ -63,6 +64,7 @@ class Buffer
         @desired_column = 0
         @mark_anchor = nil
         @text_marks = Array.new
+        @selection_mode = :normal
         @last_search_regexps = nil
         @highlight_regexp = nil
         @last_search = nil
@@ -106,13 +108,14 @@ class Buffer
                 LANG_TEXT
             )
         )
-        reset_win_main
+        reset_display
         setLanguage language
         @original_language = @language
     end
 
-    def reset_win_main
+    def reset_display
         @win_main = @diakonos.win_main
+        @win_line_numbers = @diakonos.win_line_numbers
     end
 
     def setLanguage( language )
@@ -155,101 +158,6 @@ class Buffer
 
     def nice_name
         @name || @settings[ "status.unnamed_str" ]
-    end
-
-    def display
-        return if not @diakonos.do_display
-
-        Thread.new do
-            #if $profiling
-                #RubyProf.start
-            #end
-
-            if @diakonos.display_mutex.try_lock
-                begin
-                    Curses::curs_set 0
-
-                    @continued_format_class = nil
-
-                    @pen_down = true
-
-                    # First, we have to "draw" off-screen, in order to check for opening of
-                    # multi-line highlights.
-
-                    # So, first look backwards from the @top_line to find the first opening
-                    # regexp match, if any.
-                    index = @top_line - 1
-                    @lines[ [ 0, @top_line - @settings[ "view.lookback" ] ].max...@top_line ].reverse_each do |line|
-                        open_index = -1
-                        open_token_class = nil
-                        open_match_text = nil
-
-                        open_index, open_token_class, open_match_text = findOpeningMatch( line )
-
-                        if open_token_class
-                            @pen_down = false
-                            @lines[ index...@top_line ].each do |line|
-                                printLine line
-                            end
-                            @pen_down = true
-
-                            break
-                        end
-
-                        index = index - 1
-                    end
-
-                    # Draw each on-screen line.
-                    y = 0
-                    @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
-                        @win_main.setpos( y, 0 )
-                        printLine line.expandTabs( @tab_size )
-                        @win_main.setpos( y, 0 )
-                        paintMarks @top_line + row
-                        y += 1
-                    end
-
-                    # Paint the empty space below the file if the file is too short to fit in one screen.
-                    ( y...@diakonos.main_window_height ).each do |y|
-                        @win_main.setpos( y, 0 )
-                        @win_main.attrset @default_formatting
-                        linestr = " " * Curses::cols
-                        if @settings[ "view.nonfilelines.visible" ]
-                            linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
-                        end
-
-                        @win_main.addstr linestr
-                    end
-
-                    @win_main.setpos( @last_screen_y , @last_screen_x )
-                    @win_main.refresh
-
-                    if @language != @original_language
-                        setLanguage( @original_language )
-                    end
-
-                    Curses::curs_set 1
-                rescue Exception => e
-                    @diakonos.log( "Display Exception:" )
-                    @diakonos.log( e.message )
-                    @diakonos.log( e.backtrace.join( "\n" ) )
-                    showException e
-                end
-                @diakonos.display_mutex.unlock
-                @diakonos.displayDequeue
-            else
-                @diakonos.displayEnqueue( self )
-            end
-
-            #if $profiling
-                #result = RubyProf.stop
-                #printer = RubyProf::GraphHtmlPrinter.new( result )
-                #File.open( "#{ENV['HOME']}/svn/diakonos/profiling/diakonos-profile-#{Time.now.to_i}.html", 'w' ) do |f|
-                    #printer.print( f )
-                #end
-            #end
-        end
-
     end
 
     def findOpeningMatch( line, match_close = true, bos_allowed = true )
@@ -314,39 +222,50 @@ class Buffer
     # @mark_start[ "col" ] is inclusive,
     # @mark_end[ "col" ] is exclusive.
     def recordMarkStartAndEnd
-        if @mark_anchor
-            crow = @last_row
-            ccol = @last_col
-            anchor_first = true
-            if crow < @mark_anchor[ "row" ]
-                anchor_first = false
-            elsif crow > @mark_anchor[ "row" ]
-                anchor_first = true
-            else
-                if ccol < @mark_anchor[ "col" ]
-                    anchor_first = false
-                end
-            end
-            if anchor_first
-                @text_marks[ SELECTION ] = TextMark.new(
-                    @mark_anchor[ "row" ],
-                    @mark_anchor[ "col" ],
-                    crow,
-                    ccol,
-                    @selection_formatting
-                )
-            else
-                @text_marks[ SELECTION ] = TextMark.new(
-                    crow,
-                    ccol,
-                    @mark_anchor[ "row" ],
-                    @mark_anchor[ "col" ],
-                    @selection_formatting
-                )
-            end
+      if @mark_anchor.nil?
+        @text_marks[ SELECTION ] = nil
+        return
+      end
+
+      crow = @last_row
+      ccol = @last_col
+      arow = @mark_anchor[ 'row' ]
+      acol = @mark_anchor[ 'col' ]
+
+      case @selection_mode
+      when :normal
+        anchor_first = true
+
+        if crow < arow
+          anchor_first = false
+        elsif crow > arow
+          anchor_first = true
         else
-            @text_marks[ SELECTION ] = nil
+          if ccol < acol
+            anchor_first = false
+          end
         end
+
+        if anchor_first
+          @text_marks[ SELECTION ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
+        else
+          @text_marks[ SELECTION ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
+        end
+      when :block
+        if crow < arow
+          if ccol < acol # Northwest
+            @text_marks[ SELECTION ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
+          else           # Northeast
+            @text_marks[ SELECTION ] = TextMark.new( crow, acol, arow, ccol, @selection_formatting )
+          end
+        else
+          if ccol < acol  # Southwest
+            @text_marks[ SELECTION ] = TextMark.new( arow, ccol, crow, acol, @selection_formatting )
+          else            # Southeast
+            @text_marks[ SELECTION ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
+          end
+        end
+      end
     end
 
     def selection_mark
@@ -368,6 +287,7 @@ class Buffer
     end
 
     def select_all
+      selection_mode_normal
       anchorSelection( 0, 0, DONT_DISPLAY )
       cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
@@ -400,179 +320,12 @@ class Buffer
       end
     end
 
-    # Prints text to the screen, truncating where necessary.
-    # Returns nil if the string is completely off-screen.
-    # write_cursor_col is buffer-relative, not screen-relative
-    def truncateOffScreen( string, write_cursor_col )
-        retval = string
-
-        # Truncate based on left edge of display area
-        if write_cursor_col < @left_column
-            retval = retval[ (@left_column - write_cursor_col)..-1 ]
-            write_cursor_col = @left_column
-        end
-
-        if retval
-            # Truncate based on right edge of display area
-            if write_cursor_col + retval.length > @left_column + Curses::cols - 1
-                new_length = ( @left_column + Curses::cols - write_cursor_col )
-                if new_length <= 0
-                    retval = nil
-                else
-                    retval = retval[ 0...new_length ]
-                end
-            end
-        end
-
-        retval == "" ? nil : retval
-    end
-
     # For debugging purposes
     def quotedOrNil( str )
         if str.nil?
             "nil"
         else
             "'#{str}'"
-        end
-    end
-
-    def paintMarks( row )
-        string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
-        return if string.nil? or string == ""
-        string = string.expandTabs( @tab_size )
-        cury = @win_main.cury
-        curx = @win_main.curx
-
-        @text_marks.reverse_each do |text_mark|
-            if text_mark
-                @win_main.attrset text_mark.formatting
-                if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
-                    @win_main.setpos( cury, curx )
-                    @win_main.addstr string
-                elsif row == text_mark.start_row and row == text_mark.end_row
-                    expanded_col = tabExpandedColumn( text_mark.start_col, row )
-                    if expanded_col < @left_column + Curses::cols
-                        left = [ expanded_col - @left_column, 0 ].max
-                        right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
-                        if left < right
-                            @win_main.setpos( cury, curx + left )
-                            @win_main.addstr string[ left...right ]
-                        end
-                    end
-                elsif row == text_mark.start_row
-                    expanded_col = tabExpandedColumn( text_mark.start_col, row )
-                    if expanded_col < @left_column + Curses::cols
-                        left = [ expanded_col - @left_column, 0 ].max
-                        @win_main.setpos( cury, curx + left )
-                        @win_main.addstr string[ left..-1 ]
-                    end
-                elsif row == text_mark.end_row
-                    right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
-                    @win_main.setpos( cury, curx )
-                    @win_main.addstr string[ 0...right ]
-                else
-                    # This row not in selection.
-                end
-            end
-        end
-    end
-
-    def printString( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
-        return if not @pen_down
-        return if string.nil?
-
-        @win_main.attrset formatting
-        @win_main.addstr string
-    end
-
-    # This method assumes that the cursor has been setup already at
-    # the left-most column of the correct on-screen row.
-    # It merely unintelligently prints the characters on the current curses line,
-    # refusing to print characters of the in-buffer line which are offscreen.
-    def printLine( line )
-        i = 0
-        substr = nil
-        index = nil
-        while i < line.length
-            substr = line[ i..-1 ]
-            if @continued_format_class
-                close_index, close_match_text = findClosingMatch( substr, @close_token_regexps[ @continued_format_class ], i == 0 )
-
-                if close_match_text.nil?
-                    printString truncateOffScreen( substr, i )
-                    printPaddingFrom( line.length )
-                    i = line.length
-                else
-                    end_index = close_index + close_match_text.length
-                    printString truncateOffScreen( substr[ 0...end_index ], i )
-                    @continued_format_class = nil
-                    i += end_index
-                end
-            else
-                first_index, first_token_class, first_word = findOpeningMatch( substr, MATCH_ANY, i == 0 )
-
-                if @lang_stack.length > 0
-                    prev_lang, close_token_class = @lang_stack[ -1 ]
-                    close_index, close_match_text = findClosingMatch( substr, @diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
-                    if close_match_text and close_index <= first_index
-                        if close_index > 0
-                            # Print any remaining text in the embedded language
-                            printString truncateOffScreen( substr[ 0...close_index ], i )
-                            i += substr[ 0...close_index ].length
-                        end
-
-                        @lang_stack.pop
-                        setLanguage prev_lang
-
-                        printString(
-                            truncateOffScreen( substr[ close_index...(close_index + close_match_text.length) ], i ),
-                            @token_formats[ close_token_class ]
-                        )
-                        i += close_match_text.length
-
-                        # Continue printing from here.
-                        next
-                    end
-                end
-
-                if first_word
-                    if first_index > 0
-                        # Print any preceding text in the default format
-                        printString truncateOffScreen( substr[ 0...first_index ], i )
-                        i += substr[ 0...first_index ].length
-                    end
-                    printString( truncateOffScreen( first_word, i ), @token_formats[ first_token_class ] )
-                    i += first_word.length
-                    if @close_token_regexps[ first_token_class ]
-                        if change_to = @settings[ "lang.#{@language}.tokens.#{first_token_class}.change_to" ]
-                            @lang_stack.push [ @language, first_token_class ]
-                            setLanguage change_to
-                        else
-                            @continued_format_class = first_token_class
-                        end
-                    end
-                else
-                    printString truncateOffScreen( substr, i )
-                    i += substr.length
-                    break
-                end
-            end
-        end
-
-        printPaddingFrom i
-    end
-
-    def printPaddingFrom( col )
-        return if not @pen_down
-
-        if col < @left_column
-            remainder = Curses::cols
-        else
-            remainder = @left_column + Curses::cols - col
-        end
-
-        if remainder > 0
-            printString( " " * remainder )
         end
     end
 
@@ -658,82 +411,82 @@ class Buffer
 
     # Returns true on successful write.
     def saveCopy( filename )
-        return false if filename.nil?
+      return false if filename.nil?
 
-        name = filename.subHome
+      name = filename.subHome
 
-        File.open( name, "w" ) do |f|
-            @lines[ 0..-2 ].each do |line|
-                f.puts line
-            end
-            if @lines[ -1 ] != ""
-                # No final newline character
-                f.print @lines[ -1 ]
-                f.print "\n" if @settings[ "eof_newline" ]
-            end
+      File.open( name, "w" ) do |f|
+        @lines[ 0..-2 ].each do |line|
+          f.puts line
         end
+        if @lines[ -1 ] != ""
+          # No final newline character
+          f.print @lines[ -1 ]
+          f.print "\n" if @settings[ "eof_newline" ]
+        end
+      end
 
-        true
+      true
     end
 
     def replaceChar( c )
-        row = @last_row
-        col = @last_col
-        takeSnapshot( TYPING )
-        @lines[ row ][ col ] = c
-        setModified
+      row = @last_row
+      col = @last_col
+      takeSnapshot( TYPING )
+      @lines[ row ][ col ] = c
+      setModified
     end
 
     def insertChar( c )
-        row = @last_row
-        col = @last_col
-        takeSnapshot( TYPING )
-        line = @lines[ row ]
-        @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
-        setModified
+      row = @last_row
+      col = @last_col
+      takeSnapshot( TYPING )
+      line = @lines[ row ]
+      @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
+      setModified
     end
 
     def insertString( str )
-        row = @last_row
-        col = @last_col
-        takeSnapshot( TYPING )
-        line = @lines[ row ]
-        @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
-        setModified
+      row = @last_row
+      col = @last_col
+      takeSnapshot( TYPING )
+      line = @lines[ row ]
+      @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
+      setModified
     end
 
     # x and y are given window-relative, not buffer-relative.
     def delete
-        if selection_mark
-            deleteSelection
-        else
-            row = @last_row
-            col = @last_col
-            if ( row >= 0 ) and ( col >= 0 )
-                line = @lines[ row ]
-                if col == line.length
-                    if row < @lines.length - 1
-                        # Delete newline, and concat next line
-                        joinLines( row )
-                        cursorTo( @last_row, @last_col )
-                    end
-                else
-                    takeSnapshot( TYPING )
-                    @lines[ row ] = line[ 0...col ] + line[ (col + 1)..-1 ]
-                    setModified
-                end
+      if selection_mark
+        deleteSelection
+      else
+        row = @last_row
+        col = @last_col
+        if ( row >= 0 ) and ( col >= 0 )
+          line = @lines[ row ]
+          if col == line.length
+            if row < @lines.length - 1
+              # Delete newline, and concat next line
+              joinLines( row )
+              cursorTo( @last_row, @last_col )
             end
+          else
+            takeSnapshot( TYPING )
+            @lines[ row ] = line[ 0...col ] + line[ (col + 1)..-1 ]
+            setModified
+          end
         end
+      end
     end
 
     def joinLines( row = @last_row, strip = DONT_STRIP_LINE )
-        takeSnapshot( TYPING )
-        next_line = @lines.delete_at( row + 1 )
-        if strip
-            next_line = ' ' + next_line.strip
-        end
-        @lines[ row ] << next_line
-        setModified
+      takeSnapshot( TYPING )
+      next_line = @lines.delete_at( row + 1 )
+      if strip
+        next_line = ' ' + next_line.strip
+      end
+      @lines[ row ] << next_line
+      setModified
     end
 
     def close_code
@@ -857,7 +610,7 @@ class Buffer
     end
 
     def deleteLine
-        removeSelection( DONT_DISPLAY ) if selection_mark
+        removeSelection( DONT_DISPLAY )  if selection_mark
 
         row = @last_row
         takeSnapshot
@@ -876,7 +629,7 @@ class Buffer
     end
 
     def deleteToEOL
-        removeSelection( DONT_DISPLAY ) if selection_mark
+        removeSelection( DONT_DISPLAY )  if selection_mark
 
         row = @last_row
         col = @last_col
@@ -1032,6 +785,10 @@ class Buffer
         recordMarkStartAndEnd
 
         if changed != 0
+            if not @changing_selection and selecting?
+                removeSelection( DONT_DISPLAY )
+            end
+
             highlightMatches
             if @diakonos.there_was_non_movement
                 pushCursorState( old_top_line, old_row, old_col )
@@ -1112,11 +869,11 @@ class Buffer
             recordMarkStartAndEnd
 
             removed = false
-            if not @changing_selection and selection_mark
+            if not @changing_selection and selecting?
                 removeSelection( DONT_DISPLAY )
                 removed = true
             end
-            if removed or ( do_display and ( selection_mark or view_changed ) )
+            if removed or ( do_display and ( selecting? or view_changed ) )
                 display
             else
                 @diakonos.display_mutex.synchronize do
@@ -1347,16 +1104,16 @@ class Buffer
         @mark_anchor[ "col" ] = col
         recordMarkStartAndEnd
         @changing_selection = true
-        display if do_display
+        display  if do_display
     end
 
     def removeSelection( do_display = DO_DISPLAY )
-        return if selection_mark.nil?
+        return  if selection_mark.nil?
         @mark_anchor = nil
         recordMarkStartAndEnd
         @changing_selection = false
         @last_finding = nil
-        display if do_display
+        display  if do_display
     end
 
     def toggleSelection
@@ -1377,9 +1134,15 @@ class Buffer
       elsif selection.start_row == selection.end_row
         [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
       else
-        [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
-          ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
-          [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
+        if @selection_mode == :block
+          @lines[ selection.start_row .. selection.end_row ].collect { |line|
+            line[ selection.start_col ... selection.end_col ]
+          }
+        else
+          [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
+            ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
+            [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
+        end
       end
     end
     def selected_string
@@ -1391,32 +1154,48 @@ class Buffer
       end
     end
 
+    def selection_mode_block
+      @selection_mode = :block
+    end
+    def selection_mode_normal
+      @selection_mode = :normal
+    end
+
     def deleteSelection( do_display = DO_DISPLAY )
-        return if @text_marks[ SELECTION ].nil?
+      return  if @text_marks[ SELECTION ].nil?
 
-        takeSnapshot
+      takeSnapshot
 
-        selection = @text_marks[ SELECTION ]
-        start_row = selection.start_row
-        start_col = selection.start_col
-        start_line = @lines[ start_row ]
+      selection  = @text_marks[ SELECTION ]
+      start_row  = selection.start_row
+      start_col  = selection.start_col
+      end_row    = selection.end_row
+      end_col    = selection.end_col
+      start_line = @lines[ start_row ]
 
-        if selection.end_row == selection.start_row
-            @lines[ start_row ] = start_line[ 0...start_col ] + start_line[ selection.end_col..-1 ]
-        else
-            end_line = @lines[ selection.end_row ]
-            @lines[ start_row ] = start_line[ 0...start_col ] + end_line[ selection.end_col..-1 ]
-            @lines = @lines[ 0..start_row ] + @lines[ (selection.end_row + 1)..-1 ]
+      if end_row == selection.start_row
+        @lines[ start_row ] = start_line[ 0...start_col ] + start_line[ end_col..-1 ]
+      else
+        case @selection_mode
+        when :normal
+          end_line = @lines[ end_row ]
+          @lines[ start_row ] = start_line[ 0...start_col ] + end_line[ end_col..-1 ]
+          @lines = @lines[ 0..start_row ] + @lines[ (end_row + 1)..-1 ]
+        when :block
+          @lines[ start_row..end_row ] = @lines[ start_row..end_row ].collect { |line|
+            line[ 0...start_col ] + ( line[ end_col..-1 ] || '' )
+          }
         end
+      end
 
-        cursorTo( start_row, start_col )
-        removeSelection( DONT_DISPLAY )
-        setModified( do_display )
+      cursorTo( start_row, start_col )
+      removeSelection( DONT_DISPLAY )
+      setModified( do_display )
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
     def paste( text, do_parsed_indent = false )
-      return if text.nil?
+      return  if text.nil?
 
       if not text.kind_of? Array
         s = text.to_s
@@ -1433,6 +1212,7 @@ class Buffer
 
       row = @last_row
       col = @last_col
+      new_col = nil
       line = @lines[ row ]
       if text.length == 1
         @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col..-1 ]
@@ -1441,16 +1221,28 @@ class Buffer
         end
         cursorTo( @last_row, @last_col + text[ 0 ].length )
       elsif text.length > 1
-        @lines[ row ] = line[ 0...col ] + text[ 0 ]
-        @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
-        @lines[ row + 1, 0 ] = text[ 1..-2 ]
+
+        case @selection_mode
+        when :normal
+          @lines[ row ] = line[ 0...col ] + text[ 0 ]
+          @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
+          @lines[ row + 1, 0 ] = text[ 1..-2 ]
+          new_col = columnOf( text[ -1 ].length )
+        when :block
+          @lines[ row...( row + text.length ) ] = @lines[ row...( row + text.length ) ].collect.with_index { |line,index|
+            line[ 0...col ] + text[ index ] + line[ col..-1 ]
+          }
+          new_col = col + text[ -1 ].length
+        end
+
         new_row = @last_row + text.length - 1
         if do_parsed_indent
           ( row..new_row ).each do |r|
             parsedIndent r, DONT_DISPLAY
           end
         end
-        cursorTo( new_row, columnOf( text[ -1 ].length ) )
+        cursorTo( new_row, new_col )
+
       end
 
       setModified
@@ -1682,21 +1474,19 @@ class Buffer
     end
 
     def replaceAll( regexp, replacement )
-        return if( regexp.nil? or replacement.nil? )
+      return  if( regexp.nil? or replacement.nil? )
 
-        @lines = @lines.collect { |line|
-            line.gsub( regexp, replacement )
-        }
-        setModified
-
-        clearMatches
-
-        display
+      @lines = @lines.collect { |line|
+        line.gsub( regexp, replacement )
+      }
+      setModified
+      clearMatches
+      display
     end
 
     def highlightMatches( regexp = @highlight_regexp )
       @highlight_regexp = regexp
-      return if @highlight_regexp.nil?
+      return  if @highlight_regexp.nil?
       found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
         TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
       end
@@ -1704,20 +1494,20 @@ class Buffer
     end
 
     def clearMatches( do_display = DONT_DISPLAY )
-        selection = @text_marks[ SELECTION ]
-        @text_marks = Array.new
-        @text_marks[ SELECTION ] = selection
-        @highlight_regexp = nil
-        display if do_display
+      selection = @text_marks[ SELECTION ]
+      @text_marks = Array.new
+      @text_marks[ SELECTION ] = selection
+      @highlight_regexp = nil
+      display  if do_display
     end
 
     def findAgain( last_search_regexps, direction = @last_search_direction )
-        if @last_search_regexps.nil?
-          @last_search_regexps = last_search_regexps
-        end
-        if @last_search_regexps
-          find( @last_search_regexps, :direction => direction )
-        end
+      if @last_search_regexps.nil?
+        @last_search_regexps = last_search_regexps
+      end
+      if @last_search_regexps
+        find( @last_search_regexps, :direction => direction )
+      end
     end
 
     def seek( regexp, direction = :down )

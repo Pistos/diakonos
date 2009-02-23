@@ -242,9 +242,9 @@ module Diakonos
           /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
           "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
           'suppress_welcome', 'strip_trailing_whitespace_on_save',
-          'find.return_on_abort', 'fuzzy_file_find'
+          'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers'
           @settings[ command ] = arg.to_b
-        when "context.format", "context.separator.format", "status.format"
+        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
           @settings[ command ] = arg.toFormatting
         when "logfile"
           @logfilename = arg.subHome
@@ -256,14 +256,15 @@ module Diakonos
           "view.nonfilelines.character",
           'interaction.blink_string', 'diff_command', 'session.default_session'
           @settings[ command ] = arg
-        when /^lang\..+?\.comment_(?:close_)?string$/
+        when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format'
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
         when "status.vars"
           @settings[ command ] = arg.split( /\s+/ )
         when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/
           @settings[ command ] = arg.to_i
         when "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
-          "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context'
+          "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
+          'view.line_numbers.width'
           @settings[ command ] = arg.to_i
         when "view.jump.x", "view.jump.y"
           value = arg.to_i
