@@ -567,7 +567,12 @@ module Diakonos
         end
 
         list_buffer = openListBuffer
-        list_buffer.highlightMatches Regexp.new( input )
+        regexp = nil
+        begin
+          list_buffer.highlightMatches Regexp.new( input )
+        rescue RegexpError => e
+          # ignore
+        end
         list_buffer.display
       }
 
