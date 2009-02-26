@@ -13,6 +13,15 @@ channel of the FreeNode IRC network
 
 Press <F1> at any time to activate Diakonos' interactive help system.
 
+## Gnome Terminal
+
+Gnome Terminal by default has several keyboard shortcuts which conflict with
+Diakonos.  For a smoother Diakonos experience, you should disable as many of
+these as you are comfortable with.  To edit Gnome Terminal's keyboard
+shortcuts, go to the Edit menu, then select Keyboard Shortcuts.  Double click
+a shortcut and press Backspace to disable it; repeat for each shortcut you
+wish to disable.
+
 ## Removing the Welcome Message
 
 To stop this welcome message from appearing, edit the configuration file (by
