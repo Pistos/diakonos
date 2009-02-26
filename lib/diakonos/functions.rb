@@ -410,130 +410,130 @@ module Diakonos
     end
 
     def findAgain( dir_str = nil )
-        if dir_str
-            direction = dir_str.toDirection
-            @current_buffer.findAgain( @last_search_regexps, direction )
-        else
-            @current_buffer.findAgain( @last_search_regexps )
-        end
+      if dir_str
+        direction = dir_str.toDirection
+        @current_buffer.findAgain( @last_search_regexps, direction )
+      else
+        @current_buffer.findAgain( @last_search_regexps )
+      end
     end
 
     def findAndReplace
-        searchAndReplace
+      searchAndReplace
     end
 
     def findExact( dir_str = "down", search_term_ = nil )
-        if search_term_.nil?
-            if @current_buffer.changing_selection
-                selected_text = @current_buffer.copySelection[ 0 ]
-            end
-            search_term = getUserInput( "Search for: ", @rlh_search, ( selected_text or "" ) )
-        else
-            search_term = search_term_
+      if search_term_.nil?
+        if @current_buffer.changing_selection
+          selected_text = @current_buffer.copySelection[ 0 ]
         end
-        if search_term
-            direction = dir_str.toDirection
-            regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
-            @current_buffer.find( regexp, :direction => direction )
-            @last_search_regexps = regexp
-        end
+        search_term = getUserInput( "Search for: ", @rlh_search, ( selected_text or "" ) )
+      else
+        search_term = search_term_
+      end
+      if search_term
+        direction = dir_str.toDirection
+        regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
+        @current_buffer.find( regexp, :direction => direction )
+        @last_search_regexps = regexp
+      end
     end
 
     def goToLineAsk
-        input = getUserInput( "Go to [line number|+lines][,column number]: " )
-        if input
-            row = nil
+      input = getUserInput( "Go to [line number|+lines][,column number]: " )
+      if input
+        row = nil
 
-            if input =~ /([+-]\d+)/
-                row = @current_buffer.last_row + $1.to_i
-                col = @current_buffer.last_col
+        if input =~ /([+-]\d+)/
+          row = @current_buffer.last_row + $1.to_i
+          col = @current_buffer.last_col
+        else
+          input = input.split( /\D+/ ).collect { |n| n.to_i }
+          if input.size > 0
+            if input[ 0 ] == 0
+              row = nil
             else
-                input = input.split( /\D+/ ).collect { |n| n.to_i }
-                if input.size > 0
-                    if input[ 0 ] == 0
-                        row = nil
-                    else
-                        row = input[ 0 ] - 1
-                    end
-                    if input[ 1 ]
-                        col = input[ 1 ] - 1
-                    end
-                end
+              row = input[ 0 ] - 1
             end
-
-            if row
-                @current_buffer.goToLine( row, col )
+            if input[ 1 ]
+              col = input[ 1 ] - 1
             end
+          end
         end
+
+        if row
+          @current_buffer.goToLine( row, col )
+        end
+      end
     end
 
     def goToNamedBookmark( name_ = nil )
-        if name_.nil?
-            name = getUserInput "Bookmark name: "
-        else
-            name = name_
-        end
+      if name_.nil?
+        name = getUserInput "Bookmark name: "
+      else
+        name = name_
+      end
 
-        if name
-            bookmark = @bookmarks[ name ]
-            if bookmark
-                switchTo( bookmark.buffer )
-                bookmark.buffer.cursorTo( bookmark.row, bookmark.col, Buffer::DO_DISPLAY )
-            else
-                setILine "No bookmark named '#{name}'."
-            end
+      if name
+        bookmark = @bookmarks[ name ]
+        if bookmark
+          switchTo( bookmark.buffer )
+          bookmark.buffer.cursorTo( bookmark.row, bookmark.col, Buffer::DO_DISPLAY )
+        else
+          setILine "No bookmark named '#{name}'."
         end
+      end
     end
 
     def goToNextBookmark
-        @current_buffer.goToNextBookmark
+      @current_buffer.goToNextBookmark
     end
 
     def goToPreviousBookmark
-        @current_buffer.goToPreviousBookmark
+      @current_buffer.goToPreviousBookmark
     end
 
     def goToTag( tag_ = nil )
-        loadTags
+      loadTags
 
-        # If necessary, prompt for tag name.
+      # If necessary, prompt for tag name.
 
-        if tag_.nil?
-            if @current_buffer.changing_selection
-                selected_text = @current_buffer.copySelection[ 0 ]
-            end
-            tag_name = getUserInput( "Tag name: ", @rlh_general, ( selected_text or "" ), @tags.keys )
+      if tag_.nil?
+        if @current_buffer.changing_selection
+          selected_text = @current_buffer.copySelection[ 0 ]
+        end
+        tag_name = getUserInput( "Tag name: ", @rlh_general, ( selected_text or "" ), @tags.keys )
+      else
+        tag_name = tag_
+      end
+
+      tag_array = @tags[ tag_name ]
+      if tag_array and tag_array.length > 0
+        if i = tag_array.index( @last_tag )
+          tag = ( tag_array[ i + 1 ] or tag_array[ 0 ] )
         else
-            tag_name = tag_
+          tag = tag_array[ 0 ]
         end
-
-        tag_array = @tags[ tag_name ]
-        if tag_array and tag_array.length > 0
-            if i = tag_array.index( @last_tag )
-                tag = ( tag_array[ i + 1 ] or tag_array[ 0 ] )
-            else
-                tag = tag_array[ 0 ]
-            end
-            @last_tag = tag
-            @tag_stack.push [ @current_buffer.name, @current_buffer.last_row, @current_buffer.last_col ]
-            if switchTo( @buffers[ tag.file ] )
-                #@current_buffer.goToLine( 0 )
-            else
-                openFile( tag.file )
-            end
-            line_number = tag.command.to_i
-            if line_number > 0
-                @current_buffer.goToLine( line_number - 1 )
-            else
-                find( "down", CASE_SENSITIVE, tag.command )
-            end
-        elsif tag_name
-            setILine "No such tag: '#{tag_name}'"
+        @last_tag = tag
+        @tag_stack.push [ @current_buffer.name, @current_buffer.last_row, @current_buffer.last_col ]
+        if switchTo( @buffers[ tag.file ] )
+          #@current_buffer.goToLine( 0 )
+        else
+          openFile( tag.file )
         end
+        line_number = tag.command.to_i
+        if line_number > 0
+          @current_buffer.goToLine( line_number - 1 )
+        else
+          find( "down", CASE_SENSITIVE, tag.command )
+        end
+      elsif tag_name
+        setILine "No such tag: '#{tag_name}'"
+      end
     end
 
     def goToTagUnderCursor
-        goToTag @current_buffer.wordUnderCursor
+      goToTag @current_buffer.wordUnderCursor
     end
 
     def grep( regexp_source = nil )
