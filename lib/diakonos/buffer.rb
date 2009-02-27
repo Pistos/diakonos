@@ -1822,6 +1822,9 @@ class Buffer
             if level >= initial_level
               new_row = row
               passed2 = true
+            elsif level <= initial_level - 2
+              # No previous block
+              break
             end
           else
             if level < initial_level
