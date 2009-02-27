@@ -28,6 +28,8 @@ class Buffer
     DONT_CLEAR_STACK_POINTER = false
     STRIP_LINE = true
     DONT_STRIP_LINE = false
+    USE_INDENT_IGNORE = true
+    DONT_USE_INDENT_IGNORE = false
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, key, read_only = false )
@@ -1048,6 +1050,15 @@ class Buffer
         setModified
     end
 
+    def indentation_level( row, use_indent_ignore = USE_INDENT_IGNORE )
+      @lines[ row ].indentation_level(
+        @indent_size,
+        @indent_roundup,
+        @tab_size,
+        use_indent_ignore ? @indent_ignore_charset : ''
+      )
+    end
+
     def parsedIndent( row = @last_row, do_display = DO_DISPLAY )
         if row == 0
             level = 0
@@ -1062,7 +1073,7 @@ class Buffer
                 level = 0
             else
                 prev_line = @lines[ row - i ]
-                level = prev_line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+                level = indentation_level( row - i )
 
                 line = @lines[ row ]
                 if @preventers
@@ -1089,13 +1100,13 @@ class Buffer
     end
 
     def indent( row = @last_row, do_display = DO_DISPLAY )
-        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size )
-        setIndent( row, level + 1, do_display )
+      level = indentation_level( row, DONT_USE_INDENT_IGNORE )
+      setIndent( row, level + 1, do_display )
     end
 
     def unindent( row = @last_row, do_display = DO_DISPLAY )
-        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size )
-        setIndent( row, level - 1, do_display )
+      level = indentation_level( row, DONT_USE_INDENT_IGNORE )
+      setIndent( row, level - 1, do_display )
     end
 
     def anchorSelection( row = @last_row, col = @last_col, do_display = DO_DISPLAY )
@@ -1787,17 +1798,17 @@ class Buffer
     def context
         retval = Array.new
         row = @last_row
-        clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+        clevel = indentation_level( row )
         while row > 0 and clevel < 0
             row = row - 1
-            clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+            clevel = indentation_level( row )
         end
         clevel = 0 if clevel < 0
         while row > 0
             row = row - 1
             line = @lines[ row ]
             if line !~ @settings[ "lang.#{@language}.context.ignore" ]
-                level = line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+                level = indentation_level( row )
                 if level < clevel and level > -1
                     retval.unshift line
                     clevel = level
