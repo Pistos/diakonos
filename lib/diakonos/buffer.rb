@@ -653,7 +653,7 @@ class Buffer
     def delete_to( char )
       removeSelection( DONT_DISPLAY )  if selection_mark
       takeSnapshot
-      index = @lines[ @last_row ].index( char, @last_col )
+      index = @lines[ @last_row ].index( char, @last_col+1 )
       if index
         retval = @lines[ @last_row ].slice!( @last_col, index - @last_col )
         setModified
@@ -665,7 +665,7 @@ class Buffer
       removeSelection( DONT_DISPLAY )  if selection_mark
       takeSnapshot
       index_before = @lines[ @last_row ].rindex( char, @last_col )
-      index_after = @lines[ @last_row ].index( char, @last_col )
+      index_after = @lines[ @last_row ].index( char, @last_col+1 )
       if index_before && index_after
         index_before += 1
         retval = @lines[ @last_row ].slice!( index_before, index_after - index_before )
