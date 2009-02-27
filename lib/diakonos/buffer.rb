@@ -1764,6 +1764,7 @@ class Buffer
       end
       goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
     end
+
     def go_block_inner
       initial_level = indentation_level( @last_row )
       new_row = @lines.length
@@ -1776,6 +1777,52 @@ class Buffer
         elsif level < initial_level
           new_row = @last_row
           break
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_next
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      passed = false
+      ( @last_row+1...@lines.length ).each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if ! passed
+          if level < initial_level
+            passed = true
+          end
+        else
+          if level == initial_level
+            new_row = row
+            break
+          elsif
+            level < initial_level - 1
+            break
+          end
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_previous
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      passed = false
+      ( 0...@last_row ).reverse_each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if ! passed
+          if level < initial_level
+            passed = true
+          end
+        else
+          if level >= initial_level
+            new_row = row
+          elsif level < initial_level
+            break
+          end
         end
       end
       goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
