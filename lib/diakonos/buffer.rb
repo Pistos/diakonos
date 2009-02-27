@@ -1751,8 +1751,20 @@ class Buffer
       end
     end
 
-    def goToLine( line = nil, column = nil )
-      cursorTo( line || @last_row, column || 0, DO_DISPLAY )
+    def go_block_outer
+      indentation = indentation_level( @last_row )
+      new_row = 0
+      ( 0...@last_row ).reverse_each do |row|
+        if ( ! @lines[ row ].strip.empty? ) && indentation_level( row ) < indentation
+          new_row = row
+          break
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def goToLine( line = nil, column = nil, do_display = DO_DISPLAY )
+      cursorTo( line || @last_row, column || 0, do_display )
     end
 
     def goToNextBookmark
