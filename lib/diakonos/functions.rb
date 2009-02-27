@@ -1250,117 +1250,117 @@ module Diakonos
     end
 
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
-        if command_.nil?
-            command = getUserInput( "Command: ", @rlh_shell )
-        else
-            command = command_
-        end
+      if command_.nil?
+        command = getUserInput( "Command: ", @rlh_shell )
+      else
+        command = command_
+      end
 
-        if command
-            command = subShellVariables( command )
+      if command
+        command = subShellVariables( command )
 
-            result_file = "#{@diakonos_home}/#{result_filename}"
-            File.open( result_file , "w" ) do |f|
-                f.puts command
-                f.puts
-                Curses::close_screen
+        result_file = "#{@diakonos_home}/#{result_filename}"
+        File.open( result_file , "w" ) do |f|
+          f.puts command
+          f.puts
+          Curses::close_screen
 
-                stdin, stdout, stderr = Open3.popen3( command )
-                t1 = Thread.new do
-                    stdout.each_line do |line|
-                        f.puts line
-                    end
-                end
-                t2 = Thread.new do
-                    stderr.each_line do |line|
-                        f.puts line
-                    end
-                end
-
-                t1.join
-                t2.join
-
-                Curses::init_screen
-                refreshAll
+          stdin, stdout, stderr = Open3.popen3( command )
+          t1 = Thread.new do
+            stdout.each_line do |line|
+              f.puts line
             end
-            openFile result_file
+          end
+          t2 = Thread.new do
+            stderr.each_line do |line|
+              f.puts line
+            end
+          end
+
+          t1.join
+          t2.join
+
+          Curses::init_screen
+          refreshAll
         end
+        openFile result_file
+      end
     end
 
     def execute( command_ = nil )
-        if command_.nil?
-            command = getUserInput( "Command: ", @rlh_shell )
+      if command_.nil?
+        command = getUserInput( "Command: ", @rlh_shell )
+      else
+        command = command_
+      end
+
+      if command
+        command = subShellVariables( command )
+
+        Curses::close_screen
+
+        success = system( command )
+        if not success
+          result = "Could not execute: #{command}"
         else
-            command = command_
+          result = "Return code: #{$?}"
         end
 
-        if command
-            command = subShellVariables( command )
+        Curses::init_screen
+        refreshAll
 
-            Curses::close_screen
-
-            success = system( command )
-            if not success
-                result = "Could not execute: #{command}"
-            else
-                result = "Return code: #{$?}"
-            end
-
-            Curses::init_screen
-            refreshAll
-
-            setILine result
-        end
+        setILine result
+      end
     end
 
     def pasteShellResult( command_ = nil )
-        if command_.nil?
-            command = getUserInput( "Command: ", @rlh_shell )
-        else
-            command = command_
+      if command_.nil?
+        command = getUserInput( "Command: ", @rlh_shell )
+      else
+        command = command_
+      end
+
+      if command
+        command = subShellVariables( command )
+
+        Curses::close_screen
+
+        begin
+          @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
+        rescue Exception => e
+          debugLog e.message
+          debugLog e.backtrace.join( "\n\t" )
+          showException e
         end
 
-        if command
-            command = subShellVariables( command )
-
-            Curses::close_screen
-
-            begin
-                @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
-            rescue Exception => e
-                debugLog e.message
-                debugLog e.backtrace.join( "\n\t" )
-                showException e
-            end
-
-            Curses::init_screen
-            refreshAll
-        end
+        Curses::init_screen
+        refreshAll
+      end
     end
 
     # Send the Diakonos job to background, as if with Ctrl-Z
     def suspend
-        Curses::close_screen
-        Process.kill( "SIGSTOP", $PID )
-        Curses::init_screen
-        refreshAll
+      Curses::close_screen
+      Process.kill( "SIGSTOP", $PID )
+      Curses::init_screen
+      refreshAll
     end
 
     def toggleMacroRecording( name = nil )
-        if @macro_history
-            stopRecordingMacro
-        else
-            startRecordingMacro( name )
-        end
+      if @macro_history
+        stopRecordingMacro
+      else
+        startRecordingMacro( name )
+      end
     end
 
     def switchToBufferNumber( buffer_number_ )
-        buffer_number = buffer_number_.to_i
-        return if buffer_number < 1
-        buffer_name = bufferNumberToName( buffer_number )
-        if buffer_name
-            switchTo( @buffers[ buffer_name ] )
-        end
+      buffer_number = buffer_number_.to_i
+      return  if buffer_number < 1
+      buffer_name = bufferNumberToName( buffer_number )
+      if buffer_name
+        switchTo( @buffers[ buffer_name ] )
+      end
     end
 
     def switchToNextBuffer
