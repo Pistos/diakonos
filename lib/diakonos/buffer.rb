@@ -1762,6 +1762,22 @@ class Buffer
       end
       goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
     end
+    def go_block_inner
+      initial_level = indentation_level( @last_row )
+      new_row = @lines.length
+      ( @last_row...@lines.length ).each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if level > initial_level
+          new_row = row
+          break
+        elsif level < initial_level
+          new_row = @last_row
+          break
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
 
     def goToLine( line = nil, column = nil, do_display = DO_DISPLAY )
       cursorTo( line || @last_row, column || 0, do_display )
