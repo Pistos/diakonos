@@ -6,6 +6,7 @@ Diakonos Changelog
 - "Remove word" functionality (Ctrl-W) added to readline.
 - Added block selection mode (Alt-Shift-M B; Alt-Shift-M N).
 - Added line numbering settings.
+- Added spawn function.
 - Several bugs fixed.
 
 0.8.7
