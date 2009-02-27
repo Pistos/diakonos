@@ -1797,8 +1797,7 @@ class Buffer
           if level == initial_level
             new_row = row
             break
-          elsif
-            level < initial_level - 1
+          elsif level < initial_level - 1
             break
           end
         end
@@ -1809,7 +1808,8 @@ class Buffer
     def go_block_previous
       initial_level = indentation_level( @last_row )
       new_row = @last_row
-      passed = false
+      passed = false   # search for unindent
+      passed2 = false  # search for reindent
       ( 0...@last_row ).reverse_each do |row|
         next  if @lines[ row ].strip.empty?
         level = indentation_level( row )
@@ -1818,10 +1818,16 @@ class Buffer
             passed = true
           end
         else
-          if level >= initial_level
-            new_row = row
-          elsif level < initial_level
-            break
+          if ! passed2
+            if level >= initial_level
+              new_row = row
+              passed2 = true
+            end
+          else
+            if level < initial_level
+              new_row = row + 1
+              break
+            end
           end
         end
       end
