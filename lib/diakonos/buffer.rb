@@ -1752,10 +1752,12 @@ class Buffer
     end
 
     def go_block_outer
-      indentation = indentation_level( @last_row )
-      new_row = 0
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
       ( 0...@last_row ).reverse_each do |row|
-        if ( ! @lines[ row ].strip.empty? ) && indentation_level( row ) < indentation
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if level < initial_level
           new_row = row
           break
         end
