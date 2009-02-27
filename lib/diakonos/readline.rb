@@ -10,7 +10,7 @@ module Diakonos
       @prompt = prompt
       pos = redraw_prompt
       @window.setpos( 0, pos )
-      @initial_text = initial_text
+      @initial_text = initial_text || ''
       @completion_array = completion_array
       @list_filename = @diakonos.list_filename
 
@@ -38,7 +38,7 @@ module Diakonos
     # Returns nil on cancel.
     def readline
       @input = @initial_text
-      if not @input.empty?
+      if ! @input.empty?
         call_block
       end
 
