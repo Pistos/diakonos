@@ -439,6 +439,19 @@ module Diakonos
       end
     end
 
+    def go_block_outer
+      @current_buffer.go_block_outer
+    end
+    def go_block_inner
+      @current_buffer.go_block_inner
+    end
+    def go_block_next
+      @current_buffer.go_block_next
+    end
+    def go_block_previous
+      @current_buffer.go_block_previous
+    end
+
     def goToLineAsk
       input = getUserInput( "Go to [line number|+lines][,column number]: " )
       if input

@@ -28,6 +28,8 @@ class Buffer
     DONT_CLEAR_STACK_POINTER = false
     STRIP_LINE = true
     DONT_STRIP_LINE = false
+    USE_INDENT_IGNORE = true
+    DONT_USE_INDENT_IGNORE = false
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, key, read_only = false )
@@ -1048,6 +1050,15 @@ class Buffer
         setModified
     end
 
+    def indentation_level( row, use_indent_ignore = USE_INDENT_IGNORE )
+      @lines[ row ].indentation_level(
+        @indent_size,
+        @indent_roundup,
+        @tab_size,
+        use_indent_ignore ? @indent_ignore_charset : ''
+      )
+    end
+
     def parsedIndent( row = @last_row, do_display = DO_DISPLAY )
         if row == 0
             level = 0
@@ -1062,7 +1073,7 @@ class Buffer
                 level = 0
             else
                 prev_line = @lines[ row - i ]
-                level = prev_line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+                level = indentation_level( row - i )
 
                 line = @lines[ row ]
                 if @preventers
@@ -1089,13 +1100,13 @@ class Buffer
     end
 
     def indent( row = @last_row, do_display = DO_DISPLAY )
-        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size )
-        setIndent( row, level + 1, do_display )
+      level = indentation_level( row, DONT_USE_INDENT_IGNORE )
+      setIndent( row, level + 1, do_display )
     end
 
     def unindent( row = @last_row, do_display = DO_DISPLAY )
-        level = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size )
-        setIndent( row, level - 1, do_display )
+      level = indentation_level( row, DONT_USE_INDENT_IGNORE )
+      setIndent( row, level - 1, do_display )
     end
 
     def anchorSelection( row = @last_row, col = @last_col, do_display = DO_DISPLAY )
@@ -1740,8 +1751,94 @@ class Buffer
       end
     end
 
-    def goToLine( line = nil, column = nil )
-      cursorTo( line || @last_row, column || 0, DO_DISPLAY )
+    def go_block_outer
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      ( 0...@last_row ).reverse_each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if level < initial_level
+          new_row = row
+          break
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_inner
+      initial_level = indentation_level( @last_row )
+      new_row = @lines.length
+      ( @last_row...@lines.length ).each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if level > initial_level
+          new_row = row
+          break
+        elsif level < initial_level
+          new_row = @last_row
+          break
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_next
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      passed = false
+      ( @last_row+1...@lines.length ).each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if ! passed
+          if level < initial_level
+            passed = true
+          end
+        else
+          if level == initial_level
+            new_row = row
+            break
+          elsif level < initial_level - 1
+            break
+          end
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_previous
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      passed = false   # search for unindent
+      passed2 = false  # search for reindent
+      ( 0...@last_row ).reverse_each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if ! passed
+          if level < initial_level
+            passed = true
+          end
+        else
+          if ! passed2
+            if level >= initial_level
+              new_row = row
+              passed2 = true
+            elsif level <= initial_level - 2
+              # No previous block
+              break
+            end
+          else
+            if level < initial_level
+              new_row = row + 1
+              break
+            end
+          end
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def goToLine( line = nil, column = nil, do_display = DO_DISPLAY )
+      cursorTo( line || @last_row, column || 0, do_display )
     end
 
     def goToNextBookmark
@@ -1787,17 +1884,17 @@ class Buffer
     def context
         retval = Array.new
         row = @last_row
-        clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+        clevel = indentation_level( row )
         while row > 0 and clevel < 0
             row = row - 1
-            clevel = @lines[ row ].indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+            clevel = indentation_level( row )
         end
         clevel = 0 if clevel < 0
         while row > 0
             row = row - 1
             line = @lines[ row ]
             if line !~ @settings[ "lang.#{@language}.context.ignore" ]
-                level = line.indentation_level( @indent_size, @indent_roundup, @tab_size, @indent_ignore_charset )
+                level = indentation_level( row )
                 if level < clevel and level > -1
                     retval.unshift line
                     clevel = level

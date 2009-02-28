@@ -7,6 +7,8 @@ Diakonos Changelog
 - Added block selection mode (Alt-Shift-M B; Alt-Shift-M N).
 - Added line numbering settings.
 - Added spawn function.
+- Added go_block_previous, go_block_next (Ctrl-PageUp, Ctrl-PageDown).
+- Added go_block_outer, go_block_inner (Alt-PageUp, Alt-PageDown).
 - Several bugs fixed.
 
 0.8.7
