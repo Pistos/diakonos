@@ -640,7 +640,7 @@ class Buffer
         if @settings[ 'delete_newline_on_delete_to_eol' ] and col == @lines[ row ].size
           next_line = @lines.delete_at( row + 1 )
           @lines[ row ] << next_line
-          retval = ''
+          retval = [ "\n" ]
         else
           retval = [ @lines[ row ][ col..-1 ] ]
           @lines[ row ] = @lines[ row ][ 0...col ]
