@@ -12,6 +12,7 @@ class TC_Buffer < Test::Unit::TestCase
   end
 
   def teardown
+    @d.quit
     system "reset"
   end
 
