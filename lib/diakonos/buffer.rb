@@ -653,7 +653,7 @@ class Buffer
     def delete_to( char )
       removeSelection( DONT_DISPLAY )  if selection_mark
       takeSnapshot
-      index = @lines[ @last_row ].index( char, @last_col )
+      index = @lines[ @last_row ].index( char, @last_col+1 )
       if index
         retval = @lines[ @last_row ].slice!( @last_col, index - @last_col )
         setModified
@@ -665,7 +665,7 @@ class Buffer
       removeSelection( DONT_DISPLAY )  if selection_mark
       takeSnapshot
       index_before = @lines[ @last_row ].rindex( char, @last_col )
-      index_after = @lines[ @last_row ].index( char, @last_col )
+      index_after = @lines[ @last_row ].index( char, @last_col+1 )
       if index_before && index_after
         index_before += 1
         retval = @lines[ @last_row ].slice!( index_before, index_after - index_before )
@@ -1754,12 +1754,21 @@ class Buffer
     def go_block_outer
       initial_level = indentation_level( @last_row )
       new_row = @last_row
+      passed = false
+      new_level = initial_level
       ( 0...@last_row ).reverse_each do |row|
         next  if @lines[ row ].strip.empty?
         level = indentation_level( row )
-        if level < initial_level
-          new_row = row
-          break
+        if ! passed
+          passed = ( level < initial_level )
+          new_level = level
+        else
+          if level < new_level
+            new_row = ( row+1..@last_row ).find { |r|
+              ! @lines[ r ].strip.empty?
+            }
+            break
+          end
         end
       end
       goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
@@ -1828,7 +1837,9 @@ class Buffer
             end
           else
             if level < initial_level
-              new_row = row + 1
+              new_row = ( row+1..@last_row ).find { |r|
+                ! @lines[ r ].strip.empty?
+              }
               break
             end
           end
