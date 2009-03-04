@@ -62,92 +62,93 @@ module Diakonos
 
     # Returns the choice the user made, or nil if the user was not prompted to choose.
     def closeFile( buffer = @current_buffer, to_all = nil )
-        return nil if buffer.nil?
+      return nil if buffer.nil?
 
-        choice = nil
-        if @buffers.has_value?( buffer )
-            do_closure = true
+      choice = nil
+      if @buffers.has_value?( buffer )
+        do_closure = true
 
-            if buffer.modified?
-                if not buffer.read_only
-                    if to_all.nil?
-                        choices = [ CHOICE_YES, CHOICE_NO, CHOICE_CANCEL ]
-                        if @quitting
-                            choices.concat [ CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL ]
-                        end
-                        choice = getChoice(
-                            "Save changes to #{buffer.nice_name}?",
-                            choices,
-                            CHOICE_CANCEL
-                        )
-                    else
-                        choice = to_all
-                    end
-                    case choice
-                        when CHOICE_YES, CHOICE_YES_TO_ALL
-                            do_closure = true
-                            saveFile( buffer )
-                        when CHOICE_NO, CHOICE_NO_TO_ALL
-                            do_closure = true
-                        when CHOICE_CANCEL
-                            do_closure = false
-                    end
-                end
+        if buffer.modified?
+          if not buffer.read_only
+            if to_all.nil?
+              choices = [ CHOICE_YES, CHOICE_NO, CHOICE_CANCEL ]
+              if @quitting
+                choices.concat [ CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL ]
+              end
+              choice = getChoice(
+                "Save changes to #{buffer.nice_name}?",
+                choices,
+                CHOICE_CANCEL
+              )
+            else
+              choice = to_all
             end
 
-            if do_closure
-                del_buffer_key = nil
-                previous_buffer = nil
-                to_switch_to = nil
-                switching = false
-
-                # Search the buffer hash for the buffer we want to delete,
-                # and mark the one we will switch to after deletion.
-                @buffers.each do |buffer_key,buf|
-                    if switching
-                        to_switch_to = buf
-                        break
-                    end
-                    if buf == buffer
-                        del_buffer_key = buffer_key
-                        switching = true
-                        next
-                    end
-                    previous_buffer = buf
-                end
-
-                buf = nil
-                while(
-                    ( not @buffer_stack.empty? ) and
-                    ( not @buffers.values.include?( buf ) ) or
-                    ( @buffers.key( buf ) == del_buffer_key )
-                ) do
-                    buf = @buffer_stack.pop
-                end
-                if @buffers.values.include?( buf )
-                    to_switch_to = buf
-                end
-
-                if to_switch_to
-                    switchTo( to_switch_to )
-                elsif previous_buffer
-                    switchTo( previous_buffer )
-                else
-                    # No buffers left.  Open a new blank one.
-                    openFile
-                end
-
-                @buffers.delete del_buffer_key
-                save_session
-
-                updateStatusLine
-                updateContextLine
+            case choice
+            when CHOICE_YES, CHOICE_YES_TO_ALL
+              do_closure = true
+              saveFile( buffer )
+            when CHOICE_NO, CHOICE_NO_TO_ALL
+              do_closure = true
+            when CHOICE_CANCEL
+              do_closure = false
             end
-        else
-            log "No such buffer: #{buffer.name}"
+          end
         end
 
-        choice
+        if do_closure
+          del_buffer_key = nil
+          previous_buffer = nil
+          to_switch_to = nil
+          switching = false
+
+          # Search the buffer hash for the buffer we want to delete,
+          # and mark the one we will switch to after deletion.
+          @buffers.each do |buffer_key,buf|
+            if switching
+              to_switch_to = buf
+              break
+            end
+            if buf == buffer
+              del_buffer_key = buffer_key
+              switching = true
+              next
+            end
+            previous_buffer = buf
+          end
+
+          buf = nil
+          while(
+            ( not @buffer_stack.empty? ) and
+            ( not @buffers.values.include?( buf ) ) or
+            ( @buffers.key( buf ) == del_buffer_key )
+          ) do
+            buf = @buffer_stack.pop
+          end
+          if @buffers.values.include?( buf )
+            to_switch_to = buf
+          end
+
+          if to_switch_to
+            switchTo( to_switch_to )
+          elsif previous_buffer
+            switchTo( previous_buffer )
+          else
+            # No buffers left.  Open a new blank one.
+            openFile
+          end
+
+          @buffers.delete del_buffer_key
+          save_session
+
+          updateStatusLine
+          updateContextLine
+        end
+      else
+        log "No such buffer: #{buffer.name}"
+      end
+
+      choice
     end
 
     def collapseWhitespace
@@ -293,15 +294,15 @@ module Diakonos
     end
 
     def delete_line_to_klipper
-        removed_text = @current_buffer.deleteLine
-        if removed_text
-          send_to_klipper [ removed_text, "" ]
-        end
+      removed_text = @current_buffer.deleteLine
+      if removed_text
+        send_to_klipper [ removed_text, "" ]
+      end
     end
 
     def deleteLine
-        removed_text = @current_buffer.deleteLine
-        @clipboard.addClip( [ removed_text, "" ] ) if removed_text
+      removed_text = @current_buffer.deleteLine
+      @clipboard.addClip( [ removed_text, "" ] ) if removed_text
     end
 
     def delete_to( char = nil )
@@ -337,42 +338,42 @@ module Diakonos
     end
 
     def delete_to_EOL_to_klipper
-        removed_text = @current_buffer.deleteToEOL
-        if removed_text
-          send_to_klipper removed_text
-        end
+      removed_text = @current_buffer.deleteToEOL
+      if removed_text
+        send_to_klipper removed_text
+      end
     end
 
     def deleteToEOL
-        removed_text = @current_buffer.deleteToEOL
-        @clipboard.addClip( removed_text ) if removed_text
+      removed_text = @current_buffer.deleteToEOL
+      @clipboard.addClip( removed_text ) if removed_text
     end
 
     def evaluate( code_ = nil )
-        if code_.nil?
-            if @current_buffer.changing_selection
-                selected_text = @current_buffer.copySelection[ 0 ]
-            end
-            code = getUserInput( "Ruby code: ", @rlh_general, ( selected_text or "" ), ::Diakonos::Functions.public_instance_methods )
-        else
-            code = code_
+      if code_.nil?
+        if @current_buffer.changing_selection
+          selected_text = @current_buffer.copySelection[ 0 ]
         end
+        code = getUserInput( "Ruby code: ", @rlh_general, ( selected_text or "" ), ::Diakonos::Functions.public_instance_methods )
+      else
+        code = code_
+      end
 
-        if code
-            begin
-                eval code
-            rescue Exception => e
-                showException(
-                    e,
-                    [
-                        "The code given to evaluate has a syntax error.",
-                        "The code given to evaluate refers to a Diakonos command which does not exist, or is misspelled.",
-                        "The code given to evaluate refers to a Diakonos command with missing arguments.",
-                        "The code given to evaluate refers to a variable or method which does not exist.",
-                    ]
-                )
-            end
+      if code
+        begin
+          eval code
+        rescue Exception => e
+          showException(
+            e,
+            [
+              "The code given to evaluate has a syntax error.",
+              "The code given to evaluate refers to a Diakonos command which does not exist, or is misspelled.",
+              "The code given to evaluate refers to a Diakonos command with missing arguments.",
+              "The code given to evaluate refers to a variable or method which does not exist.",
+            ]
+          )
         end
+      end
     end
 
     # Worker method for find function.
@@ -730,7 +731,7 @@ module Diakonos
               URI.parse( 'http://dh.purepistos.net/' ),
               { 'q' => selected }
             )
-          # TODO: let them choose "never" and "always"
+            # TODO: let them choose "never" and "always"
           end
 
           closeFile error_file
@@ -741,38 +742,38 @@ module Diakonos
     end
 
     def indent
-        if( @current_buffer.changing_selection )
-            @do_display = false
-            mark = @current_buffer.selection_mark
-            if mark.end_col > 0
-                end_row = mark.end_row
-            else
-                end_row = mark.end_row - 1
-            end
-            (mark.start_row..end_row).each do |row|
-                @current_buffer.indent row, Buffer::DONT_DISPLAY
-            end
-            @do_display = true
-            @current_buffer.display
+      if( @current_buffer.changing_selection )
+        @do_display = false
+        mark = @current_buffer.selection_mark
+        if mark.end_col > 0
+          end_row = mark.end_row
         else
-            @current_buffer.indent
+          end_row = mark.end_row - 1
         end
+        (mark.start_row..end_row).each do |row|
+          @current_buffer.indent row, Buffer::DONT_DISPLAY
+        end
+        @do_display = true
+        @current_buffer.display
+      else
+        @current_buffer.indent
+      end
     end
 
     def insertSpaces( num_spaces )
-        if num_spaces > 0
-            @current_buffer.deleteSelection
-            @current_buffer.insertString( " " * num_spaces )
-            cursorRight( Buffer::STILL_TYPING, num_spaces )
-        end
+      if num_spaces > 0
+        @current_buffer.deleteSelection
+        @current_buffer.insertString( " " * num_spaces )
+        cursorRight( Buffer::STILL_TYPING, num_spaces )
+      end
     end
 
     def insertTab
-        typeCharacter( TAB )
+      typeCharacter( TAB )
     end
 
     def joinLines
-        @current_buffer.joinLines( @current_buffer.currentRow, Buffer::STRIP_LINE )
+      @current_buffer.joinLines( @current_buffer.currentRow, Buffer::STRIP_LINE )
     end
 
     def list_buffers
@@ -788,40 +789,40 @@ module Diakonos
     end
 
     def loadScript( name_ = nil )
-        if name_.nil?
-            name = getUserInput( "File to load as script: ", @rlh_files )
-        else
-            name = name_
+      if name_.nil?
+        name = getUserInput( "File to load as script: ", @rlh_files )
+      else
+        name = name_
+      end
+
+      if name
+        thread = Thread.new( name ) do |f|
+          begin
+            load( f )
+          rescue Exception => e
+            showException(
+              e,
+              [
+                "The filename given does not exist.",
+                "The filename given is not accessible or readable.",
+                "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursorBOL instead of $diakonos.cursorBOL",
+                "The loaded script has syntax errors.",
+                "The loaded script references objects or object members which do not exist."
+              ]
+            )
+          end
+          setILine "Loaded script '#{name}'."
         end
 
-        if name
-            thread = Thread.new( name ) do |f|
-                begin
-                    load( f )
-                rescue Exception => e
-                    showException(
-                        e,
-                        [
-                            "The filename given does not exist.",
-                            "The filename given is not accessible or readable.",
-                            "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursorBOL instead of $diakonos.cursorBOL",
-                            "The loaded script has syntax errors.",
-                            "The loaded script references objects or object members which do not exist."
-                        ]
-                    )
-                end
-                setILine "Loaded script '#{name}'."
-            end
-
-            loop do
-                if thread.status != "run"
-                    break
-                else
-                    sleep 0.1
-                end
-            end
-            thread.join
+        loop do
+          if thread.status != "run"
+            break
+          else
+            sleep 0.1
+          end
         end
+        thread.join
+      end
     end
 
     def load_session( session_id = nil )
@@ -857,7 +858,7 @@ module Diakonos
     end
 
     def newFile
-        openFile
+      openFile
     end
 
     # Returns the buffer of the opened file, or nil.
@@ -999,86 +1000,86 @@ module Diakonos
     def operateOnString(
         ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'str.' )
     )
-        if ruby_code
-            str = @current_buffer.selected_string
-            if str and not str.empty?
-                @current_buffer.paste eval( ruby_code )
-            end
+      if ruby_code
+        str = @current_buffer.selected_string
+        if str and not str.empty?
+          @current_buffer.paste eval( ruby_code )
         end
+      end
     end
 
     def operateOnLines(
         ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'lines.collect { |l| l }' )
     )
-        if ruby_code
-            lines = @current_buffer.selected_text
-            if lines and not lines.empty?
-                if lines[ -1 ].empty?
-                    lines.pop
-                    popped = true
-                end
-                new_lines = eval( ruby_code )
-                if popped
-                    new_lines << ''
-                end
-                @current_buffer.paste new_lines
-            end
+      if ruby_code
+        lines = @current_buffer.selected_text
+        if lines and not lines.empty?
+          if lines[ -1 ].empty?
+            lines.pop
+            popped = true
+          end
+          new_lines = eval( ruby_code )
+          if popped
+            new_lines << ''
+          end
+          @current_buffer.paste new_lines
         end
+      end
     end
 
     def operateOnEachLine(
         ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'line.' )
     )
-        if ruby_code
-            lines = @current_buffer.selected_text
-            if lines and not lines.empty?
-                if lines[ -1 ].empty?
-                    lines.pop
-                    popped = true
-                end
-                new_lines = eval( "lines.collect { |line| #{ruby_code} }" )
-                if popped
-                    new_lines << ''
-                end
-                @current_buffer.paste new_lines
-            end
+      if ruby_code
+        lines = @current_buffer.selected_text
+        if lines and not lines.empty?
+          if lines[ -1 ].empty?
+            lines.pop
+            popped = true
+          end
+          new_lines = eval( "lines.collect { |line| #{ruby_code} }" )
+          if popped
+            new_lines << ''
+          end
+          @current_buffer.paste new_lines
         end
+      end
     end
 
     def pageUp
-        if @current_buffer.pitchView( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
-            cursorBOF
-        end
-        updateStatusLine
-        updateContextLine
+      if @current_buffer.pitchView( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+        cursorBOF
+      end
+      updateStatusLine
+      updateContextLine
     end
 
     def pageDown
-        if @current_buffer.pitchView( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
-            @current_buffer.cursorToEOF
-        end
-        updateStatusLine
-        updateContextLine
+      if @current_buffer.pitchView( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+        @current_buffer.cursorToEOF
+      end
+      updateStatusLine
+      updateContextLine
     end
 
     def parsedIndent
-        if( @current_buffer.changing_selection )
-            @do_display = false
-            mark = @current_buffer.selection_mark
-            (mark.start_row..mark.end_row).each do |row|
-                @current_buffer.parsedIndent row, Buffer::DONT_DISPLAY
-            end
-            @do_display = true
-            @current_buffer.display
-        else
-            @current_buffer.parsedIndent
+      if( @current_buffer.changing_selection )
+        @do_display = false
+        mark = @current_buffer.selection_mark
+        (mark.start_row..mark.end_row).each do |row|
+          @current_buffer.parsedIndent row, Buffer::DONT_DISPLAY
         end
-        updateStatusLine
-        updateContextLine
+        @do_display = true
+        @current_buffer.display
+      else
+        @current_buffer.parsedIndent
+      end
+      updateStatusLine
+      updateContextLine
     end
 
     def paste
-        @current_buffer.paste @clipboard.clip
+      @current_buffer.paste @clipboard.clip
     end
 
     def paste_from_klipper
@@ -1088,30 +1089,30 @@ module Diakonos
     end
 
     def playMacro( name = nil )
-        macro, input_history = @macros[ name ]
-        if input_history
-            @macro_input_history = input_history.deep_clone
-            if macro
-                @playing_macro = true
-                macro.each do |command|
-                    eval command
-                end
-                @playing_macro = false
-                @macro_input_history = nil
-            end
+      macro, input_history = @macros[ name ]
+      if input_history
+        @macro_input_history = input_history.deep_clone
+        if macro
+          @playing_macro = true
+          macro.each do |command|
+            eval command
+          end
+          @playing_macro = false
+          @macro_input_history = nil
         end
+      end
     end
 
     def popTag
-        tag = @tag_stack.pop
-        if tag
-            if not switchTo( @buffers[ tag[ 0 ] ] )
-                openFile( tag[ 0 ] )
-            end
-            @current_buffer.cursorTo( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
-        else
-            setILine "Tag stack empty."
+      tag = @tag_stack.pop
+      if tag
+        if not switchTo( @buffers[ tag[ 0 ] ] )
+          openFile( tag[ 0 ] )
         end
+        @current_buffer.cursorTo( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
+      else
+        setILine "Tag stack empty."
+      end
     end
 
     def print_mapped_function
@@ -1125,43 +1126,43 @@ module Diakonos
     end
 
     def quit
-        @quitting = true
-        to_all = nil
-        @buffers.each_value do |buffer|
-            if buffer.modified?
-                switchTo buffer
-                closure_choice = closeFile( buffer, to_all )
-                case closure_choice
-                    when CHOICE_CANCEL
-                        @quitting = false
-                        break
-                    when CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL
-                        to_all = closure_choice
-                end
-            end
+      @quitting = true
+      to_all = nil
+      @buffers.each_value do |buffer|
+        if buffer.modified?
+          switchTo buffer
+          closure_choice = closeFile( buffer, to_all )
+          case closure_choice
+          when CHOICE_CANCEL
+            @quitting = false
+            break
+          when CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL
+            to_all = closure_choice
+          end
         end
+      end
     end
 
     def removeNamedBookmark( name_ = nil )
-        if name_.nil?
-            name = getUserInput "Bookmark name: "
-        else
-            name = name_
-        end
+      if name_.nil?
+        name = getUserInput "Bookmark name: "
+      else
+        name = name_
+      end
 
-        if name
-            bookmark = @bookmarks.delete name
-            setILine "Removed bookmark #{bookmark.to_s}."
-        end
+      if name
+        bookmark = @bookmarks.delete name
+        setILine "Removed bookmark #{bookmark.to_s}."
+      end
     end
 
     def removeSelection
-        @current_buffer.removeSelection
-        updateStatusLine
+      @current_buffer.removeSelection
+      updateStatusLine
     end
 
     def repeatLast
-        eval @last_commands[ -1 ] if not @last_commands.empty?
+      eval @last_commands[ -1 ] if not @last_commands.empty?
     end
 
     # If the prompt is non-nil, ask the user yes or no question first.
@@ -1193,25 +1194,25 @@ module Diakonos
     end
 
     def saveFile( buffer = @current_buffer )
-        buffer.save
-        runHookProcs( :after_save, buffer )
+      buffer.save
+      runHookProcs( :after_save, buffer )
     end
 
     def saveFileAs
-        if @current_buffer and @current_buffer.name
-            path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-            file = getUserInput( "Filename: ", @rlh_files, path )
-        else
-            file = getUserInput( "Filename: ", @rlh_files )
+      if @current_buffer and @current_buffer.name
+        path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+        file = getUserInput( "Filename: ", @rlh_files, path )
+      else
+        file = getUserInput( "Filename: ", @rlh_files )
+      end
+      if file
+        old_name = @current_buffer.name
+        if @current_buffer.save( file, PROMPT_OVERWRITE )
+          @buffers.delete old_name
+          @buffers[ @current_buffer.name ] = @current_buffer
+          save_session
         end
-        if file
-            old_name = @current_buffer.name
-            if @current_buffer.save( file, PROMPT_OVERWRITE )
-                @buffers.delete old_name
-                @buffers[ @current_buffer.name ] = @current_buffer
-                save_session
-            end
-        end
+      end
     end
 
     def select_all
@@ -1246,57 +1247,57 @@ module Diakonos
     end
 
     def scrollDown
-        @current_buffer.pitchView( @settings[ "view.scroll_amount" ] || 1 )
-        updateStatusLine
-        updateContextLine
+      @current_buffer.pitchView( @settings[ "view.scroll_amount" ] || 1 )
+      updateStatusLine
+      updateContextLine
     end
 
     def scrollUp
-        if @settings[ "view.scroll_amount" ]
-            @current_buffer.pitchView( -@settings[ "view.scroll_amount" ] )
-        else
-            @current_buffer.pitchView( -1 )
-        end
-        updateStatusLine
-        updateContextLine
+      if @settings[ "view.scroll_amount" ]
+        @current_buffer.pitchView( -@settings[ "view.scroll_amount" ] )
+      else
+        @current_buffer.pitchView( -1 )
+      end
+      updateStatusLine
+      updateContextLine
     end
 
     def searchAndReplace( case_sensitive = CASE_INSENSITIVE )
-        find( "down", case_sensitive, nil, ASK_REPLACEMENT )
+      find( "down", case_sensitive, nil, ASK_REPLACEMENT )
     end
 
     def seek( regexp_source, dir_str = "down" )
-        if regexp_source
-            direction = dir_str.toDirection
-            regexp = Regexp.new( regexp_source )
-            @current_buffer.seek( regexp, direction )
-        end
+      if regexp_source
+        direction = dir_str.toDirection
+        regexp = Regexp.new( regexp_source )
+        @current_buffer.seek( regexp, direction )
+      end
     end
 
     def setBufferType( type_ = nil )
-        if type_.nil?
-            type = getUserInput "Content type: "
-        else
-            type = type_
-        end
+      if type_.nil?
+        type = getUserInput "Content type: "
+      else
+        type = type_
+      end
 
-        if type
-            if @current_buffer.setType( type )
-                updateStatusLine
-                updateContextLine
-            end
+      if type
+        if @current_buffer.setType( type )
+          updateStatusLine
+          updateContextLine
         end
+      end
     end
 
     # If read_only is nil, the read_only state of the current buffer is toggled.
     # Otherwise, the read_only state of the current buffer is set to read_only.
     def setReadOnly( read_only = nil )
-        if read_only
-            @current_buffer.read_only = read_only
-        else
-            @current_buffer.read_only = ( not @current_buffer.read_only )
-        end
-        updateStatusLine
+      if read_only
+        @current_buffer.read_only = read_only
+      else
+        @current_buffer.read_only = ( not @current_buffer.read_only )
+      end
+      updateStatusLine
     end
 
     def set_session_dir
@@ -1311,117 +1312,117 @@ module Diakonos
     end
 
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
-        if command_.nil?
-            command = getUserInput( "Command: ", @rlh_shell )
-        else
-            command = command_
-        end
+      if command_.nil?
+        command = getUserInput( "Command: ", @rlh_shell )
+      else
+        command = command_
+      end
 
-        if command
-            command = subShellVariables( command )
+      if command
+        command = subShellVariables( command )
 
-            result_file = "#{@diakonos_home}/#{result_filename}"
-            File.open( result_file , "w" ) do |f|
-                f.puts command
-                f.puts
-                Curses::close_screen
+        result_file = "#{@diakonos_home}/#{result_filename}"
+        File.open( result_file , "w" ) do |f|
+          f.puts command
+          f.puts
+          Curses::close_screen
 
-                stdin, stdout, stderr = Open3.popen3( command )
-                t1 = Thread.new do
-                    stdout.each_line do |line|
-                        f.puts line
-                    end
-                end
-                t2 = Thread.new do
-                    stderr.each_line do |line|
-                        f.puts line
-                    end
-                end
-
-                t1.join
-                t2.join
-
-                Curses::init_screen
-                refreshAll
+          stdin, stdout, stderr = Open3.popen3( command )
+          t1 = Thread.new do
+            stdout.each_line do |line|
+              f.puts line
             end
-            openFile result_file
+          end
+          t2 = Thread.new do
+            stderr.each_line do |line|
+              f.puts line
+            end
+          end
+
+          t1.join
+          t2.join
+
+          Curses::init_screen
+          refreshAll
         end
+        openFile result_file
+      end
     end
 
     def execute( command_ = nil )
-        if command_.nil?
-            command = getUserInput( "Command: ", @rlh_shell )
+      if command_.nil?
+        command = getUserInput( "Command: ", @rlh_shell )
+      else
+        command = command_
+      end
+
+      if command
+        command = subShellVariables( command )
+
+        Curses::close_screen
+
+        success = system( command )
+        if not success
+          result = "Could not execute: #{command}"
         else
-            command = command_
+          result = "Return code: #{$?}"
         end
 
-        if command
-            command = subShellVariables( command )
+        Curses::init_screen
+        refreshAll
 
-            Curses::close_screen
-
-            success = system( command )
-            if not success
-                result = "Could not execute: #{command}"
-            else
-                result = "Return code: #{$?}"
-            end
-
-            Curses::init_screen
-            refreshAll
-
-            setILine result
-        end
+        setILine result
+      end
     end
 
     def pasteShellResult( command_ = nil )
-        if command_.nil?
-            command = getUserInput( "Command: ", @rlh_shell )
-        else
-            command = command_
+      if command_.nil?
+        command = getUserInput( "Command: ", @rlh_shell )
+      else
+        command = command_
+      end
+
+      if command
+        command = subShellVariables( command )
+
+        Curses::close_screen
+
+        begin
+          @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
+        rescue Exception => e
+          debugLog e.message
+          debugLog e.backtrace.join( "\n\t" )
+          showException e
         end
 
-        if command
-            command = subShellVariables( command )
-
-            Curses::close_screen
-
-            begin
-                @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
-            rescue Exception => e
-                debugLog e.message
-                debugLog e.backtrace.join( "\n\t" )
-                showException e
-            end
-
-            Curses::init_screen
-            refreshAll
-        end
+        Curses::init_screen
+        refreshAll
+      end
     end
 
     # Send the Diakonos job to background, as if with Ctrl-Z
     def suspend
-        Curses::close_screen
-        Process.kill( "SIGSTOP", $PID )
-        Curses::init_screen
-        refreshAll
+      Curses::close_screen
+      Process.kill( "SIGSTOP", $PID )
+      Curses::init_screen
+      refreshAll
     end
 
     def toggleMacroRecording( name = nil )
-        if @macro_history
-            stopRecordingMacro
-        else
-            startRecordingMacro( name )
-        end
+      if @macro_history
+        stopRecordingMacro
+      else
+        startRecordingMacro( name )
+      end
     end
 
     def switchToBufferNumber( buffer_number_ )
-        buffer_number = buffer_number_.to_i
-        return if buffer_number < 1
-        buffer_name = bufferNumberToName( buffer_number )
-        if buffer_name
-            switchTo( @buffers[ buffer_name ] )
-        end
+      buffer_number = buffer_number_.to_i
+      return if buffer_number < 1
+      buffer_name = bufferNumberToName( buffer_number )
+      if buffer_name
+        switchTo( @buffers[ buffer_name ] )
+      end
     end
 
     def switchToNextBuffer
