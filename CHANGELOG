@@ -8,6 +8,7 @@ Diakonos Changelog
 - Added line numbering settings.
 - Added go_block_previous, go_block_next (Ctrl-PageUp, Ctrl-PageDown).
 - Added go_block_outer, go_block_inner (Alt-PageUp, Alt-PageDown).
+- Added find.show_context_after setting.
 - Several bugs fixed.
 
 0.8.7

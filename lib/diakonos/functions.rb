@@ -377,7 +377,7 @@ module Diakonos
 
     # Worker method for find function.
     def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
-      return if( regexp_source.nil? or regexp_source.empty? )
+      return  if regexp_source.nil? || regexp_source.empty?
 
       rs_array = regexp_source.newlineSplit
       regexps = Array.new
@@ -413,11 +413,12 @@ module Diakonos
 
       @current_buffer.find(
         regexps,
-        :direction    => direction,
-        :replacement  => replacement,
-        :starting_row => starting_row,
-        :starting_col => starting_col,
-        :quiet        => quiet
+        :direction          => direction,
+        :replacement        => replacement,
+        :starting_row       => starting_row,
+        :starting_col       => starting_col,
+        :quiet              => quiet,
+        :show_context_after => @settings[ 'find.show_context_after' ],
       )
       @last_search_regexps = regexps
     end
