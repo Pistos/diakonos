@@ -419,7 +419,7 @@ module Diakonos
         :starting_row       => starting_row,
         :starting_col       => starting_col,
         :quiet              => quiet,
-        :show_context_after => @settings[ 'find.show_context_after' ],
+        :show_context_after => @settings[ 'find.show_context_after' ]
       )
       @last_search_regexps = regexps
     end
