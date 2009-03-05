@@ -492,109 +492,111 @@ module Diakonos
     end
 
     def display
-        return if not @diakonos.do_display
+      return if not @diakonos.do_display
 
-        Thread.new do
-            #if $profiling
-                #RubyProf.start
-            #end
+      Thread.new do
+        #if $profiling
+        #RubyProf.start
+        #end
 
-            if @diakonos.display_mutex.try_lock
-                begin
-                    Curses::curs_set 0
+        if @diakonos.display_mutex.try_lock
+          begin
+            Curses::curs_set 0
 
-                    @continued_format_class = nil
+            @continued_format_class = nil
 
-                    @pen_down = true
+            @pen_down = true
 
-                    # First, we have to "draw" off-screen, in order to check for opening of
-                    # multi-line highlights.
+            # First, we have to "draw" off-screen, in order to check for opening of
+            # multi-line highlights.
 
-                    # So, first look backwards from the @top_line to find the first opening
-                    # regexp match, if any.
-                    index = @top_line - 1
-                    @lines[ [ 0, @top_line - @settings[ "view.lookback" ] ].max...@top_line ].reverse_each do |line|
-                        open_index = -1
-                        open_token_class = nil
-                        open_match_text = nil
+            # So, first look backwards from the @top_line to find the first opening
+            # regexp match, if any.
+            index = @top_line - 1
+            @lines[ [ 0, @top_line - @settings[ "view.lookback" ] ].max...@top_line ].reverse_each do |line|
+              open_index = -1
+              open_token_class = nil
+              open_match_text = nil
 
-                        open_index, open_token_class, open_match_text = findOpeningMatch( line )
+              open_index, open_token_class, open_match_text = findOpeningMatch( line )
 
-                        if open_token_class
-                            @pen_down = false
-                            @lines[ index...@top_line ].each do |line|
-                                printLine line
-                            end
-                            @pen_down = true
-
-                            break
-                        end
-
-                        index = index - 1
-                    end
-
-                    # Draw each on-screen line.
-                    y = 0
-                    @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
-                        if @win_line_numbers
-                          @win_line_numbers.setpos( y, 0 )
-                          @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
-                          n = ( @top_line+row+1 ).to_s
-                          @win_line_numbers.addstr(
-                            @settings[ 'view.line_numbers.number_format' ] % [
-                              n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min..-1 ]
-                            ] )
-                        end
-                        @win_main.setpos( y, 0 )
-                        printLine line.expandTabs( @tab_size )
-                        @win_main.setpos( y, 0 )
-                        paintMarks @top_line + row
-                        y += 1
-                    end
-
-                    # Paint the empty space below the file if the file is too short to fit in one screen.
-                    ( y...@diakonos.main_window_height ).each do |y|
-                        @win_main.setpos( y, 0 )
-                        @win_main.attrset @default_formatting
-                        linestr = " " * Curses::cols
-                        if @settings[ "view.nonfilelines.visible" ]
-                            linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
-                        end
-
-                        @win_main.addstr linestr
-                    end
-
-                    if @win_line_numbers
-                      @win_line_numbers.refresh
-                    end
-                    @win_main.setpos( @last_screen_y , @last_screen_x )
-                    @win_main.refresh
-
-                    if @language != @original_language
-                        setLanguage( @original_language )
-                    end
-
-                    Curses::curs_set 1
-                rescue Exception => e
-                    @diakonos.log( "Display Exception:" )
-                    @diakonos.log( e.message )
-                    @diakonos.log( e.backtrace.join( "\n" ) )
-                    showException e
+              if open_token_class
+                @pen_down = false
+                @lines[ index...@top_line ].each do |line|
+                  printLine line
                 end
-                @diakonos.display_mutex.unlock
-                @diakonos.displayDequeue
-            else
-                @diakonos.displayEnqueue( self )
+                @pen_down = true
+
+                break
+              end
+
+              index = index - 1
             end
 
-            #if $profiling
-                #result = RubyProf.stop
-                #printer = RubyProf::GraphHtmlPrinter.new( result )
-                #File.open( "#{ENV['HOME']}/svn/diakonos/profiling/diakonos-profile-#{Time.now.to_i}.html", 'w' ) do |f|
-                    #printer.print( f )
-                #end
-            #end
+            # Draw each on-screen line.
+            y = 0
+            @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
+              if @win_line_numbers
+                @win_line_numbers.setpos( y, 0 )
+                @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
+                n = ( @top_line+row+1 ).to_s
+                @win_line_numbers.addstr(
+                  @settings[ 'view.line_numbers.number_format' ] % [
+                    n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min..-1 ]
+                  ]
+                )
+              end
+              @win_main.setpos( y, 0 )
+              printLine line.expandTabs( @tab_size )
+              @win_main.setpos( y, 0 )
+              paintMarks @top_line + row
+              y += 1
+            end
+
+            # Paint the empty space below the file if the file is too short to fit in one screen.
+            ( y...@diakonos.main_window_height ).each do |y|
+              @win_main.setpos( y, 0 )
+              @win_main.attrset @default_formatting
+              linestr = " " * Curses::cols
+              if @settings[ "view.nonfilelines.visible" ]
+                linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
+              end
+
+              @win_main.addstr linestr
+            end
+
+            if @win_line_numbers
+              @win_line_numbers.refresh
+            end
+            @win_main.setpos( @last_screen_y , @last_screen_x )
+            @win_main.refresh
+
+            if @language != @original_language
+              setLanguage( @original_language )
+            end
+
+            Curses::curs_set 1
+          rescue Exception => e
+            @diakonos.log( "Display Exception:" )
+            @diakonos.log( e.message )
+            @diakonos.log( e.backtrace.join( "\n" ) )
+            showException e
+          end
+
+          @diakonos.display_mutex.unlock
+          @diakonos.displayDequeue
+        else
+          @diakonos.displayEnqueue( self )
         end
+
+        #if $profiling
+          #result = RubyProf.stop
+          #printer = RubyProf::GraphHtmlPrinter.new( result )
+          #File.open( "#{ENV['HOME']}/svn/diakonos/profiling/diakonos-profile-#{Time.now.to_i}.html", 'w' ) do |f|
+            #printer.print( f )
+          #end
+        #end
+      end
 
     end
 

@@ -141,6 +141,7 @@ module Diakonos
         command, arg = line.split( /\s+/, 2 )
         next if command.nil?
         command = command.downcase
+
         case command
         when "include"
           parseConfigurationFile arg.subHome
@@ -208,8 +209,8 @@ module Diakonos
             @unindenters[ $1 ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.preventers(\.case_insensitive)?$/,
-          /^lang\.(.+?)\.indent\.ignore(\.case_insensitive)?$/,
-          /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
+            /^lang\.(.+?)\.indent\.ignore(\.case_insensitive)?$/,
+            /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
           case_insensitive = ( $2 != nil )
           if case_insensitive
             @settings[ command ] = Regexp.new( arg, Regexp::IGNORECASE )
@@ -224,38 +225,36 @@ module Diakonos
           @closers[ $1 ] ||= Hash.new
           @closers[ $1 ][ $2 ] ||= Hash.new
           @closers[ $1 ][ $2 ][ $3.to_sym ] = case $3
-        when 'regexp'
-          Regexp.new arg
-        when 'closer'
-          begin
-            eval( "Proc.new " + arg )
-          rescue Exception => e
-            showException(
-              e,
-              [
-                "Failed to process Proc for #{command}.",
-              ]
-            )
+          when 'regexp'
+            Regexp.new arg
+          when 'closer'
+            begin
+              eval( "Proc.new " + arg )
+            rescue Exception => e
+              showException(
+                e,
+                [ "Failed to process Proc for #{command}.", ]
+              )
+            end
           end
-        end
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
-          /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
-          "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
-          'suppress_welcome', 'strip_trailing_whitespace_on_save',
-          'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
-          'find.show_context_after'
+            /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
+            "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
+            'suppress_welcome', 'strip_trailing_whitespace_on_save',
+            'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
+            'find.show_context_after'
           @settings[ command ] = arg.to_b
         when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
           @settings[ command ] = arg.toFormatting
         when "logfile"
           @logfilename = arg.subHome
         when "context.separator", "status.left", "status.right", "status.filler",
-          "status.modified_str", "status.unnamed_str", "status.selecting_str",
-          "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
-          /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
-          /^lang\.(.+?)\.column_delimiters$/,
-          "view.nonfilelines.character",
-          'interaction.blink_string', 'diff_command', 'session.default_session'
+            "status.modified_str", "status.unnamed_str", "status.selecting_str",
+            "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
+            /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
+            /^lang\.(.+?)\.column_delimiters$/,
+            "view.nonfilelines.character",
+            'interaction.blink_string', 'diff_command', 'session.default_session'
           @settings[ command ] = arg
         when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format'
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
@@ -264,8 +263,8 @@ module Diakonos
         when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/
           @settings[ command ] = arg.to_i
         when "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
-          "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
-          'view.line_numbers.width'
+            "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
+            'view.line_numbers.width'
           @settings[ command ] = arg.to_i
         when "view.jump.x", "view.jump.y"
           value = arg.to_i
