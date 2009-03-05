@@ -11,7 +11,7 @@ module Diakonos
   EOL_ALT_LAST_CHAR = 3
 
   class Diakonos
-    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf
+    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers
 
     def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
@@ -92,6 +92,7 @@ module Diakonos
       @token_regexps       = Hash.new
       @close_token_regexps = Hash.new
       @token_formats       = Hash.new
+      @column_markers      = Hash.new { |h,k| h[ k ] = Hash.new }
       @indenters           = Hash.new
       @unindenters         = Hash.new
       @filemasks           = Hash.new
@@ -244,10 +245,10 @@ module Diakonos
             'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
             'find.show_context_after'
           @settings[ command ] = arg.to_b
-        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format',
-            /view\.column_markers\.(.+?)\.format/
-          debugLog "Setting #{command} to #{arg} (#{arg.toFormatting.inspect})"
+        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
           @settings[ command ] = arg.toFormatting
+        when /view\.column_markers\.(.+?)\.format/
+          @column_markers[ $1 ][ :format ] = arg.toFormatting
         when "logfile"
           @logfilename = arg.subHome
         when "context.separator", "status.left", "status.right", "status.filler",
@@ -268,12 +269,10 @@ module Diakonos
             "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
             'view.line_numbers.width'
           @settings[ command ] = arg.to_i
-        when "view.jump.x", "view.jump.y", /view\.column_markers\.(.+?)\.column/
-          value = arg.to_i
-          if value < 1
-            value = 1
-          end
-          @settings[ command ] = value
+        when "view.jump.x", "view.jump.y"
+          @settings[ command ] = [ arg.to_i, 1 ].max
+        when /view\.column_markers\.(.+?)\.column/
+          @column_markers[ $1 ][ :column ] = [ arg.to_i, 1 ].max
         when "bol_behaviour", "bol_behavior"
           case arg.downcase
           when "zero"

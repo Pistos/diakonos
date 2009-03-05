@@ -393,15 +393,14 @@ module Diakonos
     end
 
     def paint_column_markers
-      @settings.each do |setting,value|
-        next  if setting !~ /view\.column_markers\.(.+?)\.column/
-        name = $1
-        column = value
+      @diakonos.column_markers.each_value do |data|
+        $diakonos.debugLog data.inspect
+        column = data[ :column ]
         next  if column > Curses::cols - @left_column || column - @left_column < 0
 
         ( 0...@diakonos.main_window_height ).each do |row|
           @win_main.setpos( row, column - @left_column )
-          @win_main.attrset @settings[ "view.column_markers.#{name}.format" ]
+          @win_main.attrset data[ :format ]
           @win_main.addstr @lines[ @top_line + row ][ column + @left_column ] || ' '
         end
       end
