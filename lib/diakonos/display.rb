@@ -392,6 +392,21 @@ module Diakonos
       end
     end
 
+    def paint_column_markers
+      @settings.each do |setting,value|
+        next  if setting !~ /view\.column_markers\.(.+?)\.column/
+        name = $1
+        column = value
+        next  if column > Curses::cols - @left_column || column - @left_column < 0
+
+        ( 0...@diakonos.main_window_height ).each do |row|
+          @win_main.setpos( row, column - @left_column )
+          @win_main.attrset @settings[ "view.column_markers.#{name}.format" ]
+          @win_main.addstr @lines[ @top_line + row ][ column + @left_column ] || ' '
+        end
+      end
+    end
+
     def printString( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
       return  if not @pen_down
       return  if string.nil?
@@ -495,9 +510,6 @@ module Diakonos
       return if not @diakonos.do_display
 
       Thread.new do
-        #if $profiling
-        #RubyProf.start
-        #end
 
         if @diakonos.display_mutex.try_lock
           begin
@@ -565,6 +577,8 @@ module Diakonos
               @win_main.addstr linestr
             end
 
+            paint_column_markers
+
             if @win_line_numbers
               @win_line_numbers.refresh
             end
@@ -589,13 +603,6 @@ module Diakonos
           @diakonos.displayEnqueue( self )
         end
 
-        #if $profiling
-          #result = RubyProf.stop
-          #printer = RubyProf::GraphHtmlPrinter.new( result )
-          #File.open( "#{ENV['HOME']}/svn/diakonos/profiling/diakonos-profile-#{Time.now.to_i}.html", 'w' ) do |f|
-            #printer.print( f )
-          #end
-        #end
       end
 
     end

@@ -244,7 +244,9 @@ module Diakonos
             'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
             'find.show_context_after'
           @settings[ command ] = arg.to_b
-        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
+        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format',
+            /view\.column_markers\.(.+?)\.format/
+          debugLog "Setting #{command} to #{arg} (#{arg.toFormatting.inspect})"
           @settings[ command ] = arg.toFormatting
         when "logfile"
           @logfilename = arg.subHome
@@ -266,7 +268,7 @@ module Diakonos
             "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
             'view.line_numbers.width'
           @settings[ command ] = arg.to_i
-        when "view.jump.x", "view.jump.y"
+        when "view.jump.x", "view.jump.y", /view\.column_markers\.(.+?)\.column/
           value = arg.to_i
           if value < 1
             value = 1

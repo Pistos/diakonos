@@ -10,6 +10,7 @@ Diakonos Changelog
 - Added go_block_previous, go_block_next (Ctrl-PageUp, Ctrl-PageDown).
 - Added go_block_outer, go_block_inner (Alt-PageUp, Alt-PageDown).
 - Added find.show_context_after setting.
+- Added view.column_markers.
 - Several bugs fixed.
 
 0.8.7
