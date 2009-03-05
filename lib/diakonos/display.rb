@@ -394,8 +394,8 @@ module Diakonos
 
     def paint_column_markers
       @diakonos.column_markers.each_value do |data|
-        $diakonos.debugLog data.inspect
         column = data[ :column ]
+        next  if column.nil?
         next  if column > Curses::cols - @left_column || column - @left_column < 0
 
         ( 0...@diakonos.main_window_height ).each do |row|
