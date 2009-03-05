@@ -102,11 +102,11 @@ module Diakonos
             case c
             when ENTER
               retval = default
-            when ?0..?9
+            when '0'.ord..'9'.ord
               if @choice_iterations < 1
-                @choice_iterations = ( c - ?0 )
+                @choice_iterations = ( c - '0'.ord )
               else
-                @choice_iterations = @choice_iterations * 10 + ( c - ?0 )
+                @choice_iterations = @choice_iterations * 10 + ( c - '0'.ord )
               end
             else
               choices.each do |choice|
