@@ -640,7 +640,7 @@ class Buffer
         if @settings[ 'delete_newline_on_delete_to_eol' ] and col == @lines[ row ].size
           next_line = @lines.delete_at( row + 1 )
           @lines[ row ] << next_line
-          retval = ''
+          retval = [ "\n" ]
         else
           retval = [ @lines[ row ][ col..-1 ] ]
           @lines[ row ] = @lines[ row ][ 0...col ]
@@ -1264,15 +1264,16 @@ class Buffer
     # each successive element must match against lines following the first
     # element.
     def find( regexps, options = {} )
-        return if regexps.nil?
+        return  if regexps.nil?
         regexp = regexps[ 0 ]
-        return if regexp.nil? or regexp == //
+        return  if regexp.nil? || regexp == //
 
         direction = options[ :direction ]
         replacement = options[ :replacement ]
         auto_choice = options[ :auto_choice ]
         from_row = options[ :starting_row ] || @last_row
         from_col = options[ :starting_col ] || @last_col
+        show_context_after = options[ :show_context_after ]
 
         if direction == :opposite
             case @last_search_direction
@@ -1431,6 +1432,12 @@ class Buffer
             else
                 anchorSelection( finding.start_row, finding.start_col, DONT_DISPLAY )
                 cursorTo( finding.end_row, finding.end_col )
+            end
+            if show_context_after
+              watermark = Curses::lines / 6
+              if @last_row - @top_line > watermark
+                pitchView( @last_row - @top_line - watermark )
+              end
             end
 
             @changing_selection = false

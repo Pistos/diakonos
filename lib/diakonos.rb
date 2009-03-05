@@ -66,7 +66,7 @@ require 'diakonos/vendor/fuzzy_file_finder'
 module Diakonos
 
   VERSION       = '0.8.8'
-  LAST_MODIFIED = 'February 27, 2009'
+  LAST_MODIFIED = 'March 4, 2009'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -557,53 +557,6 @@ module Diakonos
       # Thank you to pgas from irc.freenode.net#bash for help with this.
       `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
       true
-    end
-
-    # Worker method for find function.
-    def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
-      return if( regexp_source.nil? or regexp_source.empty? )
-
-      rs_array = regexp_source.newlineSplit
-      regexps = Array.new
-      exception_thrown = nil
-
-      rs_array.each do |source|
-        begin
-          warning_verbosity = $VERBOSE
-          $VERBOSE = nil
-          regexps << Regexp.new(
-            source,
-            case_sensitive ? nil : Regexp::IGNORECASE
-          )
-          $VERBOSE = warning_verbosity
-        rescue RegexpError => e
-          if not exception_thrown
-            exception_thrown = e
-            source = Regexp.escape( source )
-            retry
-          else
-            raise e
-          end
-        end
-      end
-
-      if replacement == ASK_REPLACEMENT
-        replacement = getUserInput( "Replace with: ", @rlh_search )
-      end
-
-      if exception_thrown and not quiet
-        setILine( "Searching literally; #{exception_thrown.message}" )
-      end
-
-      @current_buffer.find(
-        regexps,
-        :direction    => direction,
-        :replacement  => replacement,
-        :starting_row => starting_row,
-        :starting_col => starting_col,
-        :quiet        => quiet
-      )
-      @last_search_regexps = regexps
     end
 
     def settings
