@@ -1400,6 +1400,26 @@ module Diakonos
       end
     end
 
+    def spawn( command_ = nil )
+      if command_.nil?
+        command = getUserInput( "Command: ", @rlh_shell )
+      else
+        command = command_
+      end
+
+      return  if command.nil?
+
+      command = subShellVariables( command )
+
+      Thread.new do
+        if system( command )
+          setILine "Return code #{$?} from '#{command}'"
+        else
+          setILine "Error code #{$?} executing '#{command}'"
+        end
+      end
+    end
+
     # Send the Diakonos job to background, as if with Ctrl-Z
     def suspend
       Curses::close_screen
@@ -1418,7 +1438,7 @@ module Diakonos
 
     def switchToBufferNumber( buffer_number_ )
       buffer_number = buffer_number_.to_i
-      return if buffer_number < 1
+      return  if buffer_number < 1
       buffer_name = bufferNumberToName( buffer_number )
       if buffer_name
         switchTo( @buffers[ buffer_name ] )

@@ -457,7 +457,7 @@ module Diakonos
 
       # Get user input, sub it in
       if retval =~ /\$i/
-        user_input = getUserInput( "Argument: ", @rlh_shell )
+        user_input = getUserInput( "Argument: ", @rlh_shell, @current_buffer.selected_string )
         retval.gsub!( /\$i/, user_input )
       end
 
