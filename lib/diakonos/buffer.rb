@@ -927,7 +927,8 @@ class Buffer
         delta = 0
         line = @lines[ row ]
         for i in 0...col
-            if line[ i ] == TAB
+            # One comparison for Ruby 1.9, the other for 1.8.
+            if line[ i ] == "\t" || line[ i ] == TAB
                 delta += ( @tab_size - ( (i+delta) % @tab_size ) ) - 1
             end
         end
