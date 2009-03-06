@@ -100,6 +100,7 @@ module Diakonos
       @closers             = Hash.new
 
       @settings = Hash.new
+      @setting_strings = Hash.new
       # Setup some defaults
       @settings[ "context.format" ] = Curses::A_REVERSE
 
@@ -139,9 +140,18 @@ module Diakonos
         # Skip comments
         next  if line[ 0 ] == ?#
 
-        command, arg = line.split( /\s+/, 2 )
-        next  if command.nil?
+        if line =~ /^\s*(\S+)\s*=\s*(\S+)\s*$/
+          # Inheritance
+          command, arg = $1, @setting_strings[ $2 ]
+        end
+
+        if arg.nil?
+          command, arg = line.split( /\s+/, 2 )
+          next  if command.nil?
+        end
         command = command.downcase
+
+        @setting_strings[ command ] = arg
 
         case command
         when "include"
