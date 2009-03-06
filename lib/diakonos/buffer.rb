@@ -1061,15 +1061,19 @@ class Buffer
     end
 
     def parsedIndent( row = @last_row, do_display = DO_DISPLAY )
-      if row == 0
+      if row == 0 || @lines[ row ] =~ @settings[ "lang.#{@language}.indent.not_indented" ]
         level = 0
       else
         # Look upwards for the nearest line on which to base this line's indentation.
         i = 1
-        while ( @lines[ row - i ] =~ /^[\s#{@indent_ignore_charset}]*$/ ) or
-          ( @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.ignore" ] )
+        while (
+          @lines[ row - i ] =~ /^[\s#{@indent_ignore_charset}]*$/ ||
+          @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.ignore" ] ||
+          @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.not_indented" ]
+        )
           i += 1
         end
+
         if row - i < 0
           level = 0
         else

@@ -217,8 +217,7 @@ module Diakonos
           else
             @unindenters[ $1 ] = Regexp.new arg
           end
-        when /^lang\.(.+?)\.indent\.preventers(\.case_insensitive)?$/,
-            /^lang\.(.+?)\.indent\.ignore(\.case_insensitive)?$/,
+        when /^lang\.(.+?)\.indent\.(?:preventers|ignore|not_indented)(\.case_insensitive)?$/,
             /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
           case_insensitive = ( $2 != nil )
           if case_insensitive
