@@ -439,64 +439,6 @@ module Diakonos
       end
     end
 
-    def subShellVariables( string )
-      return nil if string.nil?
-
-      retval = string
-      retval = retval.subHome
-
-      # Current buffer filename
-      retval.gsub!( /\$f/, ( $1 or "" ) + ( @current_buffer.name or "" ) )
-
-      # space-separated list of all buffer filenames
-      name_array = Array.new
-      @buffers.each_value do |b|
-        name_array.push b.name
-      end
-      retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )
-
-      # Get user input, sub it in
-      if retval =~ /\$i/
-        user_input = getUserInput( "Argument: ", @rlh_shell, @current_buffer.selected_string )
-        retval.gsub!( /\$i/, user_input )
-      end
-
-      # Current clipboard text
-      if retval =~ /\$c/
-        clip_filename = @diakonos_home + "/clip.txt"
-        File.open( clip_filename, "w" ) do |clipfile|
-          if @clipboard.clip
-            clipfile.puts( @clipboard.clip.join( "\n" ) )
-          end
-        end
-        retval.gsub!( /\$c/, clip_filename )
-      end
-
-      # Current klipper (KDE clipboard) text
-      if retval =~ /\$k/
-        clip_filename = @diakonos_home + "/clip.txt"
-        File.open( clip_filename, "w" ) do |clipfile|
-          clipfile.puts( `dcop klipper klipper getClipboardContents` )
-        end
-        retval.gsub!( /\$k/, clip_filename )
-      end
-
-      # Currently selected text
-      if retval =~ /\$s/
-        text_filename = @diakonos_home + "/selected.txt"
-
-        File.open( text_filename, "w" ) do |textfile|
-          selected_text = @current_buffer.selected_text
-          if selected_text
-            textfile.puts( selected_text.join( "\n" ) )
-          end
-        end
-        retval.gsub!( /\$s/, text_filename )
-      end
-
-      retval
-    end
-
     def startRecordingMacro( name = nil )
       return if @macro_history
       @macro_name = name
