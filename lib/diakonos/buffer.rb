@@ -395,7 +395,7 @@ class Buffer
             @last_modification_check = File.mtime( @name )
             saved = true
 
-            if @name == @diakonos.diakonos_conf
+            if @name =~ /#{@diakonos.diakonos_home}\/.*\.conf/
               @diakonos.loadConfiguration
               @diakonos.initializeDisplay
             end
