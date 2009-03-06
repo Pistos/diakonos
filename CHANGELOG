@@ -13,6 +13,9 @@ Diakonos Changelog
 - Added find.show_context_after setting.
 - Added view.column_markers.
 - Added lang.____.indent.not_indented setting.
+- Introduced $d shell variable: current buffer's directory.
+- $f and $d now expand to absolute paths.
+- Added git diff (F9).
 - Several bugs fixed.
 
 0.8.7
