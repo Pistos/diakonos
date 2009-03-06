@@ -56,7 +56,7 @@ module Diakonos
       end
 
       @diakonos_conf = ( @config_filename or ( @diakonos_home + '/diakonos.conf' ) )
-      existent += 1 if FileTest.exists? @diakonos_conf
+      existent += 1  if FileTest.exists? @diakonos_conf
 
       if existent < 1
         if @testing
@@ -87,7 +87,7 @@ module Diakonos
         end
       end
 
-      @logfilename = @diakonos_home + "/diakonos.log"
+      @logfilename         = @diakonos_home + "/diakonos.log"
       @keychains           = Hash.new
       @token_regexps       = Hash.new
       @close_token_regexps = Hash.new
@@ -132,15 +132,15 @@ module Diakonos
     end
 
     def parseConfigurationFile( filename )
-      return if not FileTest.exists? filename
+      return  if ! FileTest.exists? filename
 
-      lines = IO.readlines( filename ).collect { |l| l.chomp }
-      lines.each do |line|
+      IO.foreach( filename ) do |line|
+        line.chomp!
         # Skip comments
-        next if line[ 0 ] == ?#
+        next  if line[ 0 ] == ?#
 
         command, arg = line.split( /\s+/, 2 )
-        next if command.nil?
+        next  if command.nil?
         command = command.downcase
 
         case command
@@ -159,7 +159,7 @@ module Diakonos
               if code
                 keystrokes.concat code
               else
-                puts "unknown keystring: #{ks_str}"
+                puts "Unknown keystring: #{ks_str}"
               end
             end
             if function_and_args.nil?
@@ -172,9 +172,7 @@ module Diakonos
               )
             end
           end
-        when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/
-          getTokenRegexp( @token_regexps, arg, Regexp.last_match )
-        when /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
+        when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/, /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
           getTokenRegexp( @token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/
           getTokenRegexp( @close_token_regexps, arg, Regexp.last_match )
@@ -263,9 +261,8 @@ module Diakonos
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
         when "status.vars"
           @settings[ command ] = arg.split( /\s+/ )
-        when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/
-          @settings[ command ] = arg.to_i
-        when "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
+        when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/,
+            "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
             "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
             'view.line_numbers.width'
           @settings[ command ] = arg.to_i
