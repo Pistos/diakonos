@@ -1061,43 +1061,42 @@ class Buffer
     end
 
     def parsedIndent( row = @last_row, do_display = DO_DISPLAY )
-        if row == 0
-            level = 0
-        else
-            # Look upwards for the nearest line on which to base this line's indentation.
-            i = 1
-            while ( @lines[ row - i ] =~ /^[\s#{@indent_ignore_charset}]*$/ ) or
-                  ( @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.ignore" ] )
-                i += 1
-            end
-            if row - i < 0
-                level = 0
-            else
-                prev_line = @lines[ row - i ]
-                level = indentation_level( row - i )
-
-                line = @lines[ row ]
-                if @preventers
-                    prev_line = prev_line.gsub( @preventers, "" )
-                    line = line.gsub( @preventers, "" )
-                end
-
-                indenter_index = ( prev_line =~ @indenters )
-                if indenter_index
-                    level += 1
-                    unindenter_index = (prev_line =~ @unindenters)
-                    if unindenter_index and unindenter_index != indenter_index
-                        level += -1
-                    end
-                end
-                if line =~ @unindenters
-                    level += -1
-                end
-            end
+      if row == 0
+        level = 0
+      else
+        # Look upwards for the nearest line on which to base this line's indentation.
+        i = 1
+        while ( @lines[ row - i ] =~ /^[\s#{@indent_ignore_charset}]*$/ ) or
+          ( @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.ignore" ] )
+          i += 1
         end
+        if row - i < 0
+          level = 0
+        else
+          prev_line = @lines[ row - i ]
+          level = indentation_level( row - i )
 
-        setIndent( row, level, do_display )
+          line = @lines[ row ]
+          if @preventers
+            prev_line = prev_line.gsub( @preventers, "" )
+            line = line.gsub( @preventers, "" )
+          end
 
+          indenter_index = ( prev_line =~ @indenters )
+          if indenter_index
+            level += 1
+            unindenter_index = (prev_line =~ @unindenters)
+            if unindenter_index and unindenter_index != indenter_index
+              level += -1
+            end
+          end
+          if line =~ @unindenters
+            level += -1
+          end
+        end
+      end
+
+      setIndent( row, level, do_display )
     end
 
     def indent( row = @last_row, do_display = DO_DISPLAY )
