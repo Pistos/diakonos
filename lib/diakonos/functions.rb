@@ -1312,13 +1312,14 @@ module Diakonos
     end
 
     def subShellVariables( string )
-      return nil if string.nil?
+      return  if string.nil?
 
-      retval = string
-      retval = retval.subHome
+      retval = string.subHome
 
       # Current buffer filename
-      retval.gsub!( /\$f/, ( $1 or "" ) + ( @current_buffer.name or "" ) )
+      retval.gsub!( /\$f/, ( $1 or "" ) + File.expand_path( @current_buffer.name || "" ) )
+      # Current buffer dir
+      retval.gsub!( /\$d/, ( $1 or "" ) + File.dirname( File.expand_path( @current_buffer.name || '' ) ) )
 
       # space-separated list of all buffer filenames
       name_array = Array.new
