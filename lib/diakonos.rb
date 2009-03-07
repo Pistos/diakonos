@@ -32,6 +32,7 @@ require 'diakonos/string'
 require 'diakonos/fixnum'
 require 'diakonos/bignum'
 
+require 'diakonos/version'
 require 'diakonos/config'
 require 'diakonos/functions'
 require 'diakonos/help'
@@ -64,9 +65,6 @@ require 'diakonos/vendor/fuzzy_file_finder'
 #end
 
 module Diakonos
-
-  VERSION       = '0.8.8'
-  LAST_MODIFIED = 'March 6, 2009'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
