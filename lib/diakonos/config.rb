@@ -38,37 +38,19 @@ module Diakonos
     def loadConfiguration
       # Set defaults first
 
-      existent = 0
-      conf_dirs = [
-        '/usr/local/etc/diakonos.conf',
-        '/usr/etc/diakonos.conf',
-        '/etc/diakonos.conf',
-        '/usr/local/share/diakonos/diakonos.conf',
-        '/usr/share/diakonos/diakonos.conf'
-      ]
+      conf_dir = INSTALL_SETTINGS[ :conf_dir ]
+      @global_diakonos_conf = "#{conf_dir}/diakonos.conf"
+      @diakonos_conf = @config_filename || "#{@diakonos_home}/diakonos.conf"
 
-      conf_dirs.each do |conf_dir|
-        @global_diakonos_conf = conf_dir
-        if FileTest.exists? @global_diakonos_conf
-          existent += 1
-          break
-        end
-      end
-
-      @diakonos_conf = ( @config_filename or ( @diakonos_home + '/diakonos.conf' ) )
-      existent += 1  if FileTest.exists? @diakonos_conf
-
-      if existent < 1
+      if ! FileTest.exists?( @global_diakonos_conf ) && ! FileTest.exists?( @diakonos_conf )
         if @testing
           File.open( @diakonos_conf, 'w' ) do |f|
             f.puts File.read( './diakonos.conf' )
           end
         else
           puts "diakonos.conf not found in any of:"
-          conf_dirs.each do |conf_dir|
-            puts "   #{conf_dir}"
-          end
-          puts "   ~/.diakonos/"
+          puts "  #{conf_dir}"
+          puts "  #{@diakonos_home}"
           puts "At least one configuration file must exist."
           $stdout.puts "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
           answer = $stdin.gets
@@ -82,7 +64,7 @@ module Diakonos
         end
 
         if not FileTest.exists?( @diakonos_conf )
-          puts "Terminating..."
+          puts "Terminating due to lack of configuration file."
           exit 1
         end
       end
