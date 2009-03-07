@@ -3,6 +3,7 @@ Diakonos Changelog
 
 0.8.8
 
+- New installation and uninstallation method: tarball + install.rb.
 - "Remove word" functionality (Ctrl-W) added to readline.
 - Added block selection mode (Alt-Shift-M B; Alt-Shift-M N).
 - Added line numbering settings.
