@@ -1,53 +1,8 @@
 module Diakonos
   class Diakonos
     def init_help
-      @base_help_dir = "#{@diakonos_home}/help"
-      mkdir @base_help_dir
-
-      @help_dir = "#{@diakonos_home}/help/#{VERSION}"
-      if not File.exist?( @help_dir ) or Dir[ "#{@help_dir}/*" ].size == 0
-        if @testing
-          `cp -r ./help #{@help_dir}`
-        else
-          puts "Help files for this Diakonos version were not found (#{@help_dir})."
-          puts "Would you like to download the help files right now from the Diakonos website? (y/n)"
-          answer = $stdin.gets
-          case answer
-          when /^y/i
-            if not fetch_help
-              $stderr.puts "Failed to get help for version #{VERSION}."
-              sleep 2
-            end
-          end
-        end
-      end
-
+      @help_dir = INSTALL_SETTINGS[ :help_dir ]
       @help_tags = `grep -h Tags #{@help_dir}/* | cut -d ' ' -f 2-`.split.uniq
-    end
-
-    def fetch_help
-      require 'open-uri'
-      success = false
-      puts "Fetching help documents for version #{VERSION}..."
-
-      filename = "diakonos-help-#{VERSION}.tar.gz"
-      uri = "http://purepistos.net/diakonos/#{filename}"
-      tarball = "#{@base_help_dir}/#{filename}"
-      begin
-        open( uri ) do |http|
-          bytes = http.read
-          File.open( tarball, 'w' ) do |f|
-            f.print bytes
-          end
-        end
-        mkdir @help_dir
-        `tar zxf #{tarball} -C #{@base_help_dir}`
-        success = true
-      rescue OpenURI::HTTPError => e
-        $stderr.puts "Failed to fetch from #{uri} ."
-      end
-
-      success
     end
 
     def open_help_buffer

@@ -85,6 +85,7 @@ module Diakonos
     :prefix   => '#{@prefix}',
     :bin_dir  => '#{@bin_dir}',
     :doc_dir  => '#{@doc_dir}',
+    :help_dir => '#{@help_dir}',
     :conf_dir => '#{@conf_dir}',
     :lib_dir  => '#{@lib_dir}',
     :installed => {
@@ -156,9 +157,10 @@ end
 
       # Documentation
       dir = "#{@doc_dir}/#{@versioned_package}"
-      mkdir_ "#{dir}/help"
+      @help_dir = "#{dir}/help"
+      mkdir_ @help_dir
       cp_ %w( README CHANGELOG LICENCE ), dir
-      cp_ Dir[ 'help/*' ], "#{dir}/help"
+      cp_ Dir[ 'help/*' ], @help_dir
 
       write_installation_settings
     end
