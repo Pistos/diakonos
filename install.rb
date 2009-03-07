@@ -81,15 +81,15 @@ module Diakonos
       File.open( installation_file, 'w' ) do |f|
         f.puts %|
 module Diakonos
-  INSTALL_SETINGS = {
+  INSTALL_SETTINGS = {
     :prefix   => '#{@prefix}',
     :bin_dir  => '#{@bin_dir}',
     :doc_dir  => '#{@doc_dir}',
     :conf_dir => '#{@conf_dir}',
     :lib_dir  => '#{@lib_dir}',
     :installed => {
-      :files => #{@installed_files.pretty_inspect},
-      :dirs => #{@installed_dirs.pretty_inspect},
+      :files => #{@installed_files.pretty_inspect.strip},
+      :dirs => #{@installed_dirs.pretty_inspect.strip},
     },
   }
 end

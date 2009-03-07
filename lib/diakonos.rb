@@ -33,6 +33,7 @@ require 'diakonos/fixnum'
 require 'diakonos/bignum'
 
 require 'diakonos/version'
+require 'diakonos/installation'
 require 'diakonos/config'
 require 'diakonos/functions'
 require 'diakonos/help'
@@ -58,11 +59,6 @@ require 'diakonos/readline'
 
 require 'diakonos/vendor/fuzzy_file_finder'
 
-#$profiling = true
-
-#if $profiling
-  #require 'ruby-prof'
-#end
 
 module Diakonos
 
@@ -218,6 +214,10 @@ module Diakonos
           @session_to_load = session_filepath_for( argv.shift )
         when '--test', '--testing'
           @testing = true
+        when '--uninstall'
+          uninstall
+        when '--uninstall-without-confirmation'
+          uninstall false
         else
           # a name of a file to open
           @files.push arg
@@ -234,6 +234,7 @@ module Diakonos
       puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
       puts "\t-ro <file>\tLoad file as read-only"
       puts "\t-s, --load-session <session identifier>\tLoad a session"
+      puts "\t--uninstall[-without-confirmation]\tUninstall Diakonos"
     end
     protected :printUsage
 
@@ -376,6 +377,35 @@ module Diakonos
 
         @debug.close
       end
+    end
+
+    def uninstall( confirm = true )
+      inst = ::Diakonos::INSTALL_SETTINGS[ :installed ]
+
+      if confirm
+        puts inst[ :files ].join( "\n" )
+        puts inst[ :dirs ].map { |d| "#{d}/" }.join( "\n" )
+        puts
+        puts "The above files and directories will be removed.  Proceed?  (y/n)"
+        answer = $stdin.gets
+        case answer
+        when /^y/i
+          puts "Deleting..."
+        when /^n/i
+          puts "Uninstallation aborted."
+          exit 1
+        end
+      end
+
+      require 'fileutils'
+      inst[ :files ].each do |f|
+        FileUtils.rm f
+      end
+      inst[ :dirs ].sort { |d1,d2| d2.length <=> d1.length }.each do |d|
+        FileUtils.rm_r d
+      end
+
+      exit 0
     end
 
     def showClips
