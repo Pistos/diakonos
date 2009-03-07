@@ -112,15 +112,28 @@ end
     def mkdir_( dir )
       begin
         mkdir_p dir, :mode => 0755
-      rescue Errno::EEXIST => e
-        # Do nothing if already exists
+      rescue Errno::EEXIST
+        # Don't panic if the directory already exists
       end
       @installed_dirs << dir
     end
 
     def install_( source, dest )
-      install source, dest, :mode => 0755
-      @installed_files << "#{dest}/#{File.basename(source)}"
+      # Rewrite bang line
+      current_interpreter = File.readlink( "/proc/#{Process.pid}/exe" )
+      tmp = "diakonos-#{rand(9999999)}.tmp"
+      command = %{/bin/bash -c 'cat <( echo "#!#{current_interpreter}" ) <( tail -n +2 #{source} ) > #{tmp}'}
+      if @verbose
+        puts command
+      end
+      if ! @pretend
+        system command
+      end
+
+      installed = "#{dest}/#{File.basename(source)}"
+      install tmp, installed, :mode => 0755
+      rm_f tmp
+      @installed_files << installed
     end
 
     def run
