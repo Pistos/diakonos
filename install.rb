@@ -167,3 +167,9 @@ end
 
 installer = Diakonos::Installer.new
 installer.run
+
+puts %{
+Thank you for installing Diakonos!  You can uninstall Diakonos by executing:
+
+  diakonos --uninstall
+}
