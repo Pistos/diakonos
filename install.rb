@@ -68,10 +68,10 @@ module Diakonos
 
     def print_usage_and_exit
       puts "#{$0} [options]"
-      puts "    -h / --help          show usage"
-      puts "    --prefix <path>      set installation prefix (default #{@prefix})"
+      puts "    -h / --help          show usage (can be used with other options to preview paths)"
       puts "    -v / --verbose       print each step"
       puts "    -p / --pretend       don't actually do anything"
+      puts "    --prefix <path>      set installation prefix (default #{@prefix})"
       puts "    --bin-dir <path>     set executable installation dir (default <prefix>/#{@bin_suffix})"
       puts "    --doc-dir <path>     set documentation installation dir (default <prefix>/#{@doc_suffix})"
       puts "    --conf-dir <path>    set configuration installation dir (default <prefix>/#{@conf_suffix})"
