@@ -218,6 +218,9 @@ module Diakonos
           uninstall
         when '--uninstall-without-confirmation'
           uninstall false
+        when '--version'
+          puts "Diakonos #{::Diakonos::VERSION} (#{::Diakonos::LAST_MODIFIED})"
+          exit 0
         else
           # a name of a file to open
           @files.push arg
