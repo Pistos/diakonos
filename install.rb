@@ -9,13 +9,14 @@ module Diakonos
 
     def initialize( argv = ARGV.dup )
       @prefix = '/usr'
-      @conf_dir = '/etc'
       @lib_dir = $LOAD_PATH.grep( /site_ruby/ ).first
+      @conf_dir = nil
       @bin_dir = nil
       @doc_dir = nil
       @verbose = false
       @pretend = false
       @bin_suffix = 'bin'
+      @conf_suffix = '../etc'
       @doc_suffix = 'share/doc'
 
       while argv.any?
@@ -42,6 +43,7 @@ module Diakonos
 
       @bin_dir ||= "#{@prefix}/#{@bin_suffix}"
       @doc_dir ||= "#{@prefix}/#{@doc_suffix}"
+      @conf_dir ||= "#{@prefix}/#{@conf_suffix}"
 
       @versioned_package = "diakonos-#{Diakonos::VERSION}"
 
@@ -67,7 +69,7 @@ module Diakonos
       puts "    -p / --pretend       don't actually do anything"
       puts "    --bin-dir <path>     set executable installation dir (default <prefix>/#{@bin_suffix})"
       puts "    --doc-dir <path>     set documentation installation dir (default <prefix>/#{@doc_suffix})"
-      puts "    --conf-dir <path>    set configuration installation dir (default #{@conf_dir})"
+      puts "    --conf-dir <path>    set configuration installation dir (default <prefix>/#{@conf_suffix})"
       puts "    --lib-dir <path>     set library installation dir (default on this system: #{@lib_dir})"
       exit 2
     end
