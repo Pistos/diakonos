@@ -67,26 +67,13 @@ while args.length > 0
     end
 end
 
-tarball_files = [
-    'lib',
-    'bin',
-    'test',
-    'README',
-    'LICENCE',
-    'CHANGELOG',
-    'setup.rb',
-    'diakonos.conf',
-    'Rakefile',
-    'home-on-save.rb',
-]
-
 puts "git tag and export..."
 doCommand "git tag -a v#{version} -m 'Tagged Diakonos version #{version}.'"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | bzip2 > diakonos-#{version}.tar.bz2"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | gzip > diakonos-#{version}.tar.gz"
 
 puts "Building gem..."
-doCommand( "gem build gemspecs/diakonos-#{version}.gemspec -v" )
+doCommand( "gem build diakonos.gemspec -v" )
 
 puts "MD5 sums:"
 doCommand( "md5sum diakonos-#{version}.gem" )
