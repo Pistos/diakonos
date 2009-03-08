@@ -8,6 +8,7 @@ module Diakonos
   class Installer
 
     def initialize( argv = ARGV.dup )
+      want_help = false
       @prefix = '/usr'
       @lib_dir = $LOAD_PATH.grep( /site_ruby/ ).first
       @conf_dir = nil
@@ -23,7 +24,7 @@ module Diakonos
         arg = argv.shift
         case arg
         when '-h', '--help'
-          print_usage_and_exit
+          want_help = true
         when '--prefix'
           @prefix = argv.shift
         when '-p', '--pretend', '--dry-run'
@@ -46,6 +47,10 @@ module Diakonos
       @conf_dir ||= "#{@prefix}/#{@conf_suffix}"
 
       @versioned_package = "diakonos-#{Diakonos::VERSION}"
+
+      if want_help
+        print_usage_and_exit
+      end
 
       if @pretend
         puts "(Dry run only; not actually writing any files or directories)"
