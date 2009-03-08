@@ -386,8 +386,9 @@ module Diakonos
       inst = ::Diakonos::INSTALL_SETTINGS[ :installed ]
 
       if confirm
-        puts inst[ :files ].join( "\n" )
-        puts inst[ :dirs ].map { |d| "#{d}/" }.join( "\n" )
+        puts inst[ :files ].sort.join( "\n" )
+        puts
+        puts inst[ :dirs ].sort.map { |d| "#{d}/" }.join( "\n" )
         puts
         puts "The above files and directories will be removed.  Proceed?  (y/n)"
         answer = $stdin.gets
