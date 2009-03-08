@@ -75,7 +75,7 @@ module Diakonos
     def write_installation_settings
       installation_file = "#{@lib_dir}/diakonos/installation.rb"
       if @verbose
-        puts "Write installation settings to #{installation_file}"
+        puts "Writing installation settings to #{installation_file}"
       end
       return  if @pretend
       File.open( installation_file, 'w' ) do |f|
@@ -143,7 +143,8 @@ end
 
       dir = "#{@lib_dir}/diakonos"
       mkdir_ dir
-      cp_ Dir[ 'lib/diakonos/*.rb' ], dir
+      lib_files = Dir[ 'lib/diakonos/*.rb' ].reject { |f| f =~ /installation\.rb/ }
+      cp_ lib_files, dir
 
       dir = "#{@lib_dir}/diakonos/vendor"
       mkdir_ dir
@@ -171,10 +172,11 @@ installer = Diakonos::Installer.new
 installer.run
 
 puts %{
-
 Diakonos #{Diakonos::VERSION} (#{Diakonos::LAST_MODIFIED}) installed.
 Diakonos can be uninstalled by running:
 
   diakonos --uninstall
+
+Thank you for installing Diakonos.  Have a stupendous day!  :)
 
 }
