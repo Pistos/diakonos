@@ -3,66 +3,51 @@ Diakonos
 ========
 
 
+DOWNLOAD
+========
+
+The latest stable tarballs can be acquired from
+
+  http://purepistos.net/diakonos
+
+The latest development code can be obtained from github:
+
+  git clone git://github.com/Pistos/diakonos.git
+
+
 INSTALLATION
 ============
 
-There are three ways to install Diakonos:
-  * by rubygems (recommended)
-  * from the tarball using setup.rb
-  * manual file copy
+ruby install.rb --help
+ruby install.rb [installation parameters]
 
-=== Installing via Rubygems ===
+You may need root privileges on the system in order to install to system-wide
+places like /usr .  However, Diakonos runs perfectly well in userspace, such
+as under ~/usr .
 
-Since version 0.8.3, this is the recommended way of installing Diakonos.
-Run the following command as a user with appropriate permissions:
 
-  gem install diakonos
+UNINSTALLATION
+==============
 
-=== Installing from tarball using setup.rb ===
+  diakonos --uninstall
 
-First obtain the diakonos tarball.  This can be found at
-http://purepistos.net/diakonos .  Unpack the tarball somewhere.
-cd into the unpacked directory.
-
-To install, run
-
-  ruby setup.rb
-
-If you want to set options like the installation directories:
-
-  ruby setup.rb --help
-
-By default, the installer copies bin/diakonos into a system-wide bin directory,
-such as /usr/bin; and copies lib/* into the system-wide ruby library path,
-such as /usr/lib/ruby/site_ruby/1.8 .  You may need root privileges on the
-system in order to install to system-wide places like /usr/bin .
-
-=== Installing from tarball by manual copy ===
-
-First obtain the diakonos tarball.  This can be found at
-http://purepistos.net/diakonos .
-
-To manually install, copy the contents of the lib directory into some place
-where Ruby searches for libraries.  The bin/diakonos program can be run from
-anywhere, such as ~/bin/ or /usr/local/bin/.
-
-----------------------------------------------------------------
 
 USAGE
 =====
 
+Run with any of these:
+
   diakonos
-
-or
-
   diakonos <filename> [filename...]
+  diakonos -m <regexp>
 
 or, for other options and arguments,
 
   diakonos --help
 
-For help using Diakonos, simply press F1 from within the editor to use the
-interactive help system.
+For help using Diakonos, simply press F1 or Shift-F1 from within the editor to
+use the interactive help system.
+
 
 ----------------------------------------------------------------
 
