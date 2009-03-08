@@ -47,6 +47,11 @@ module Diakonos
 
       @versioned_package = "diakonos-#{Diakonos::VERSION}"
 
+      if @pretend
+        puts "(Dry run only; not actually writing any files or directories)"
+        puts
+      end
+
       if @verbose && @pretend
         self.extend FileUtils::DryRun
       elsif @verbose
