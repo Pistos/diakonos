@@ -6,6 +6,8 @@ module Diakonos
     attr_reader :win_main, :display_mutex, :win_line_numbers
 
     def cleanup_display
+      return  if @testing
+
       @win_main.close if @win_main
       @win_status.close if @win_status
       @win_interaction.close if @win_interaction
@@ -18,23 +20,25 @@ module Diakonos
     def initializeDisplay
       cleanup_display
 
-      Curses::init_screen
-      Curses::nonl
-      Curses::raw
-      Curses::noecho
+      if ! @testing
+        Curses::init_screen
+        Curses::nonl
+        Curses::raw
+        Curses::noecho
 
-      if Curses::has_colors?
-        Curses::start_color
-        Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
-        @colour_pairs.each do |cp|
-          Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
+        if Curses::has_colors?
+          Curses::start_color
+          Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
+          @colour_pairs.each do |cp|
+            Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
+          end
         end
       end
 
@@ -46,12 +50,15 @@ module Diakonos
         @win_main = ::Diakonos::Window.new( main_window_height, Curses::cols, 0, 0 )
         @win_line_numbers = nil
       end
-      @win_main.keypad( true )
       @win_status = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
-      @win_status.keypad( true )
       @win_status.attrset @settings[ 'status.format' ]
       @win_interaction = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
-      @win_interaction.keypad( true )
+
+      if ! @testing
+        @win_main.keypad( true )
+        @win_status.keypad( true )
+        @win_interaction.keypad( true )
+      end
 
       if @settings[ 'context.visible' ]
         if @settings[ 'context.combined' ]
