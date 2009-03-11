@@ -742,7 +742,9 @@ module Diakonos
     end
 
     def indent
-      if( @current_buffer.changing_selection )
+      if ! @current_buffer.changing_selection
+        @current_buffer.indent
+      else
         @do_display = false
         mark = @current_buffer.selection_mark
         if mark.end_col > 0
@@ -755,8 +757,6 @@ module Diakonos
         end
         @do_display = true
         @current_buffer.display
-      else
-        @current_buffer.indent
       end
     end
 
