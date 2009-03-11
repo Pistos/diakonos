@@ -2,23 +2,21 @@ require 'spec/preparation'
 
 describe 'A Diakonos::Buffer' do
   SAMPLE_FILE = File.dirname( File.expand_path( __FILE__ ) ) + '/sample-file.rb'
+  TEMP_FILE = File.dirname( File.expand_path( __FILE__ ) ) + '/temp-file.rb'
 
   before do
     @d = $diakonos
-    @d.openFile( SAMPLE_FILE )
     @b = Diakonos::Buffer.new( @d, SAMPLE_FILE, SAMPLE_FILE )
   end
 
   after do
   end
 
-  it 'can put a selection in a clipboard' do
-    @d.anchorSelection
-    @d.cursorDown
-    @d.cursorDown
-    @d.cursorDown
-    @d.copySelection
-    @d.clipboard.clip.should.equal(
+  it 'can provide selected text' do
+    @b.anchorSelection( 0, 0 )
+    @b.cursorTo( 3, 0 )
+    clip = @b.copySelection
+    clip.should.equal(
       [
         "#!/usr/bin/env ruby",
         "",
@@ -65,5 +63,37 @@ describe 'A Diakonos::Buffer' do
     @b.indentation_level( 18 ).should.equal 0
     @b.indentation_level( 19 ).should.equal 0
     @b.indentation_level( 20 ).should.equal 0
+  end
+
+  def indent_rows( from_row = 0, to_row = 20 )
+    (from_row..to_row).each do |row|
+      @b.parsedIndent row, ::Diakonos::Buffer::DONT_DISPLAY
+    end
+  end
+
+  it 'can indent smartly' do
+    indent_rows
+    @b.saveCopy TEMP_FILE
+    File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
+
+    @b.cursorTo( 0, 0 )
+    @b.insertString "   "
+    @b.cursorTo( 5, 0 )
+    @b.insertString "   "
+    @b.cursorTo( 7, 0 )
+    @b.insertString "   "
+    @b.cursorTo( 8, 0 )
+    @b.insertString "   "
+    @b.cursorTo( 14, 0 )
+    @b.insertString "   "
+    @b.cursorTo( 20, 0 )
+    @b.insertString "   "
+
+    @b.saveCopy TEMP_FILE
+    File.read( TEMP_FILE ).should.not.equal File.read( SAMPLE_FILE )
+
+    indent_rows
+    @b.saveCopy TEMP_FILE
+    File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
   end
 end
