@@ -54,6 +54,15 @@ describe 'A String' do
   end
 
   it 'knows its own indentation level' do
+    s = ""
+    s.indentation_level( 4, true ).should.equal 0
+    s.indentation_level( 4, false ).should.equal 0
+    s = "  "
+    s.indentation_level( 4, true ).should.equal 0
+    s.indentation_level( 4, false ).should.equal 0
+    s = "    "
+    s.indentation_level( 4, true ).should.equal 0
+    s.indentation_level( 4, false ).should.equal 0
     s = "x"
     s.indentation_level( 4, true ).should.equal 0
     s.indentation_level( 4, false ).should.equal 0

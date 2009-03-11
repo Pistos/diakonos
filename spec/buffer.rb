@@ -50,8 +50,8 @@ describe 'A Diakonos::Buffer' do
     @b.indentation_level( 3 ).should.equal 0
     @b.indentation_level( 4 ).should.equal 0
     @b.indentation_level( 5 ).should.equal 1
-    @b.indentation_level( 6 ).should.equal 2
-    @b.indentation_level( 7 ).should.equal 2
+    @b.indentation_level( 6 ).should.equal 0
+    @b.indentation_level( 7 ).should.equal 1
     @b.indentation_level( 8 ).should.equal 2
     @b.indentation_level( 9 ).should.equal 2
     @b.indentation_level( 10 ).should.equal 1

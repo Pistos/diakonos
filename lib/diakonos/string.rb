@@ -176,7 +176,7 @@ class String
     def indentation_level( indent_size, indent_roundup, tab_size = Diakonos::DEFAULT_TAB_SIZE, indent_ignore_charset = nil )
       if indent_ignore_charset.nil?
         level = 0
-        if self =~ /^([\s]+)/
+        if self =~ /^([\s]+)\S$/
           whitespace = $1.expandTabs( tab_size )
           level = whitespace.length / indent_size
           if indent_roundup and ( whitespace.length % indent_size > 0 )
@@ -185,8 +185,8 @@ class String
         end
       else
         if self =~ /^[\s#{indent_ignore_charset}]*$/ or self == ""
-          level = -1
-        elsif self =~ /^([\s#{indent_ignore_charset}]+)/
+          level = 0
+        elsif self =~ /^([\s#{indent_ignore_charset}]+)[^\s#{indent_ignore_charset}]/
           whitespace = $1.expandTabs( tab_size )
           level = whitespace.length / indent_size
           if indent_roundup and ( whitespace.length % indent_size > 0 )
