@@ -367,30 +367,7 @@ class Buffer
           end
 
           if proceed
-            File.open( name, "w" ) do |f|
-              @lines[ 0..-2 ].each do |line|
-                if @settings[ 'strip_trailing_whitespace_on_save' ]
-                  line.rstrip!
-                end
-                f.puts line
-              end
-
-              line = @lines[ -1 ]
-              if @settings[ 'strip_trailing_whitespace_on_save' ]
-                line.rstrip!
-              end
-              if line != ""
-                # No final newline character
-                f.print line
-                f.print "\n" if @settings[ "eof_newline" ]
-              end
-
-              if @settings[ 'strip_trailing_whitespace_on_save' ]
-                if @last_col > @lines[ @last_row ].size
-                  cursorTo @last_row, @lines[ @last_row ].size
-                end
-              end
-            end
+            saveCopy name
             @name = name
             @last_modification_check = File.mtime( @name )
             saved = true
@@ -419,16 +396,28 @@ class Buffer
 
       File.open( name, "w" ) do |f|
         @lines[ 0..-2 ].each do |line|
+          if @settings[ 'strip_trailing_whitespace_on_save' ]
+            line.rstrip!
+          end
           f.puts line
         end
-        if @lines[ -1 ] != ""
+
+        line = @lines[ -1 ]
+        if @settings[ 'strip_trailing_whitespace_on_save' ]
+          line.rstrip!
+        end
+        if line != ""
           # No final newline character
-          f.print @lines[ -1 ]
+          f.print line
           f.print "\n" if @settings[ "eof_newline" ]
         end
-      end
 
-      true
+        if @settings[ 'strip_trailing_whitespace_on_save' ]
+          if @last_col > @lines[ @last_row ].size
+            cursorTo @last_row, @lines[ @last_row ].size
+          end
+        end
+      end
     end
 
     def replaceChar( c )
