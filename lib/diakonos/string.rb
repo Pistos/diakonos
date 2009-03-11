@@ -177,7 +177,6 @@ class String
       if indent_ignore_charset.nil?
         level = 0
         if self =~ /^([\s]+)/
-          #whitespace = $1.gsub( /\t/, ' ' * tab_size )
           whitespace = $1.expandTabs( tab_size )
           level = whitespace.length / indent_size
           if indent_roundup and ( whitespace.length % indent_size > 0 )
@@ -188,7 +187,6 @@ class String
         if self =~ /^[\s#{indent_ignore_charset}]*$/ or self == ""
           level = -1
         elsif self =~ /^([\s#{indent_ignore_charset}]+)/
-          #whitespace = $1.gsub( /\t/, ' ' * tab_size )
           whitespace = $1.expandTabs( tab_size )
           level = whitespace.length / indent_size
           if indent_roundup and ( whitespace.length % indent_size > 0 )
