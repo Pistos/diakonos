@@ -3,16 +3,18 @@
 # This is only a sample file used in the tests.
 
 class Sample
+  attr_reader :x, :y
+
   def initialize
     @x = 1
     @y = 2
   end
 
-  def printout
-    puts x
-    puts y
+  def inspection
+    x.inspect
+    y.inspect
   end
 end
 
 s = Sample.new
-s.printout
+s.inspection
