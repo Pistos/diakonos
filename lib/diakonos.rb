@@ -53,7 +53,6 @@ require 'diakonos/bookmark'
 require 'diakonos/ctag'
 require 'diakonos/finding'
 require 'diakonos/buffer'
-require 'diakonos/window'
 require 'diakonos/clipboard'
 require 'diakonos/readline'
 
@@ -87,7 +86,7 @@ module Diakonos
 
     attr_reader :diakonos_home, :script_dir, :clipboard,
       :list_filename, :hooks, :indenters, :unindenters, :closers,
-      :last_commands, :there_was_non_movement, :do_display
+      :last_commands, :there_was_non_movement, :do_display, :testing
 
     include ::Diakonos::Functions
 
@@ -248,6 +247,8 @@ module Diakonos
     # -----------------------------------------------------------------------
 
     def start
+      require 'diakonos/window'
+
       initializeDisplay
 
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
@@ -373,6 +374,8 @@ module Diakonos
         rescue SignalException => e
           debugLog "Terminated by signal (#{e.message})"
         end
+
+        cleanup_display
 
         if pid_session?
           File.delete @session[ 'filename' ]

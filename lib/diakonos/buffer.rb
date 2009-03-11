@@ -504,8 +504,6 @@ class Buffer
           if /%_/ === str
             find( [ /%_/ ], :direction => :down, :replacement => '', :auto_choice => CHOICE_YES_AND_STOP )
           end
-        else
-          @diakonos.log h[ :regexp ].inspect + " does not match '#{line}'"
         end
       end
     end

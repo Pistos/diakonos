@@ -5,12 +5,18 @@ module Diakonos
   class Diakonos
     attr_reader :win_main, :display_mutex, :win_line_numbers
 
-    def initializeDisplay
+    def cleanup_display
       @win_main.close if @win_main
       @win_status.close if @win_status
       @win_interaction.close if @win_interaction
       @win_context.close if @win_context
       @win_line_numbers.close  if @win_line_numbers
+
+      Curses::close_screen
+    end
+
+    def initializeDisplay
+      cleanup_display
 
       Curses::init_screen
       Curses::nonl
@@ -506,7 +512,7 @@ module Diakonos
     end
 
     def display
-      return if not @diakonos.do_display
+      return  if ! @diakonos.do_display
 
       Thread.new do
 

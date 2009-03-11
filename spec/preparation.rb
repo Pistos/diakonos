@@ -3,3 +3,6 @@ $LOAD_PATH.unshift "#{__DIR__}/../lib"
 
 require 'bacon'
 require 'diakonos'
+
+$diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
+$diakonos.start
