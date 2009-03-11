@@ -33,18 +33,18 @@ module Diakonos
       end
 
       if settings[ 'view.line_numbers' ]
-        @win_line_numbers = Curses::Window.new( main_window_height, settings[ 'view.line_numbers.width' ], 0, 0 )
+        @win_line_numbers = ::Diakonos::Window.new( main_window_height, settings[ 'view.line_numbers.width' ], 0, 0 )
         @win_line_numbers.keypad( true )
-        @win_main = Curses::Window.new( main_window_height, Curses::cols - settings[ 'view.line_numbers.width' ], 0, settings[ 'view.line_numbers.width' ] )
+        @win_main = ::Diakonos::Window.new( main_window_height, Curses::cols - settings[ 'view.line_numbers.width' ], 0, settings[ 'view.line_numbers.width' ] )
       else
-        @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
+        @win_main = ::Diakonos::Window.new( main_window_height, Curses::cols, 0, 0 )
         @win_line_numbers = nil
       end
       @win_main.keypad( true )
-      @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
+      @win_status = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
       @win_status.keypad( true )
       @win_status.attrset @settings[ 'status.format' ]
-      @win_interaction = Curses::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
+      @win_interaction = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
       @win_interaction.keypad( true )
 
       if @settings[ 'context.visible' ]
@@ -53,7 +53,7 @@ module Diakonos
         else
           pos = 3
         end
-        @win_context = Curses::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
+        @win_context = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
         @win_context.keypad( true )
       else
         @win_context = nil
