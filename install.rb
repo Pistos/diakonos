@@ -115,10 +115,10 @@ end
       case source
         when Array
           source.each do |f|
-            @installed_files << "#{dest}/#{File.basename(f)}"
+            @installed_files << File.expand_path( "#{dest}/#{File.basename(f)}" )
           end
         else
-          @installed_files << "#{dest}/#{File.basename(source)}"
+          @installed_files << File.expand_path( "#{dest}/#{File.basename(source)}" )
       end
     end
 
@@ -143,7 +143,7 @@ end
         system command
       end
 
-      installed = "#{dest}/#{File.basename(source)}"
+      installed = File.expand_path( "#{dest}/#{File.basename(source)}" )
       install tmp, installed, :mode => 0755
       rm_f tmp
       @installed_files << installed
