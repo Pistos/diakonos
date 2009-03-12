@@ -1043,7 +1043,7 @@ class Buffer
         @indent_size,
         @indent_roundup,
         @tab_size,
-        use_indent_ignore ? @indent_ignore_charset : ''
+        use_indent_ignore ? @indent_ignore_charset : nil
       )
     end
 

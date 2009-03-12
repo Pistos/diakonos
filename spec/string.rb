@@ -58,11 +58,11 @@ describe 'A String' do
     s.indentation_level( 4, true ).should.equal 0
     s.indentation_level( 4, false ).should.equal 0
     s = "  "
-    s.indentation_level( 4, true ).should.equal 0
+    s.indentation_level( 4, true ).should.equal 1
     s.indentation_level( 4, false ).should.equal 0
     s = "    "
-    s.indentation_level( 4, true ).should.equal 0
-    s.indentation_level( 4, false ).should.equal 0
+    s.indentation_level( 4, true ).should.equal 1
+    s.indentation_level( 4, false ).should.equal 1
     s = "x"
     s.indentation_level( 4, true ).should.equal 0
     s.indentation_level( 4, false ).should.equal 0
