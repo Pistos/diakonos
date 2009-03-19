@@ -5,8 +5,7 @@ describe 'A Diakonos::Buffer' do
   TEMP_FILE = File.dirname( File.expand_path( __FILE__ ) ) + '/temp-file.rb'
 
   before do
-    @d = $diakonos
-    @b = Diakonos::Buffer.new( @d, SAMPLE_FILE, SAMPLE_FILE )
+    @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
   end
 
   after do
@@ -96,4 +95,14 @@ describe 'A Diakonos::Buffer' do
     @b.saveCopy TEMP_FILE
     File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
   end
+
+  it 'can paste an Array of Strings' do
+    lines = @b.to_a
+    @b.cursorTo( 0, 0 )
+    new_lines = [ 'line 1', 'line 2' ]
+    @b.paste( new_lines + [ '' ] )
+    lines2 = @b.to_a
+    lines2.should.equal( new_lines + lines )
+  end
+
 end
