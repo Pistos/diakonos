@@ -4,19 +4,21 @@ Diakonos Changelog
 0.8.8
 
 - New installation and uninstallation method: tarball + install.rb.
-- "Remove word" functionality (Ctrl-W) added to readline.
+- Added configuration setting inheritance.
 - Added block selection mode (Alt-Shift-M B; Alt-Shift-M N).
 - Added line numbering settings.
 - Added spawn function.
 - Added go_block_previous, go_block_next (Ctrl-PageUp, Ctrl-PageDown).
 - Added go_block_outer, go_block_inner (Alt-PageUp, Alt-PageDown).
-- Added configuration setting inheritance.
+- "Remove word" functionality (Ctrl-W) added to readline.
 - Added find.show_context_after setting.
 - Added view.column_markers.
 - Added lang.____.indent.not_indented setting.
 - Introduced $d shell variable: current buffer's directory.
 - $f and $d now expand to absolute paths.
 - Added git diff (F9).
+- Ruby 1.9 support smoothed out.  Ruby 1.8 support being deprecated.
+- Support for non-ASCII encodings tentatively confirmed.
 - Several bugs fixed.
 
 0.8.7
