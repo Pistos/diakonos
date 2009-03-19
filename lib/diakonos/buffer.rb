@@ -154,6 +154,10 @@ class Buffer
         @lines.length
     end
 
+    def to_a
+      @lines.dup
+    end
+
     def modified?
       @modified
     end
