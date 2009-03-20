@@ -54,5 +54,10 @@ describe 'A Diakonos::Clipboard' do
     c.clip.should.equal y
     c.appendToClip( [ 'another line' ] ).should.be.true
     c.clip.should.equal [ 'line with newline', 'another line' ]
+
+    c.addClip( [ 'line1', '' ] ).should.be.true
+    c.clip.should.equal [ 'line1', '' ]
+    c.appendToClip( [ 'line2', '' ] ).should.be.true
+    c.clip.should.equal [ 'line1', 'line2', '' ]
   end
 end
