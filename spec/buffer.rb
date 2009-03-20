@@ -6,6 +6,7 @@ describe 'A Diakonos::Buffer' do
 
   before do
     @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
+    @b.cursorTo( 0, 0 )
   end
 
   after do
@@ -75,7 +76,6 @@ describe 'A Diakonos::Buffer' do
     @b.saveCopy TEMP_FILE
     File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
 
-    @b.cursorTo( 0, 0 )
     @b.insertString "   "
     @b.cursorTo( 5, 0 )
     @b.insertString "   "
@@ -98,11 +98,16 @@ describe 'A Diakonos::Buffer' do
 
   it 'can paste an Array of Strings' do
     lines = @b.to_a
-    @b.cursorTo( 0, 0 )
     new_lines = [ 'line 1', 'line 2' ]
     @b.paste( new_lines + [ '' ] )
     lines2 = @b.to_a
     lines2.should.equal( new_lines + lines )
+  end
+
+  it 'can delete a line' do
+    original_lines = @b.to_a
+    @b.deleteLine.should.equal '#!/usr/bin/env ruby'
+    @b.to_a.should.equal original_lines[ 1..-1 ]
   end
 
 end
