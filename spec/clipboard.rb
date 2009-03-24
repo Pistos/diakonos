@@ -57,7 +57,9 @@ describe 'A Diakonos::Clipboard' do
 
     c.addClip( [ 'line1', '' ] ).should.be.true
     c.clip.should.equal [ 'line1', '' ]
+    c.appendToClip( [ '', '' ] ).should.be.true
+    c.clip.should.equal [ 'line1', '', '' ]
     c.appendToClip( [ 'line2', '' ] ).should.be.true
-    c.clip.should.equal [ 'line1', 'line2', '' ]
+    c.clip.should.equal [ 'line1', '', 'line2', '' ]
   end
 end
