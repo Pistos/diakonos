@@ -1236,7 +1236,7 @@ module Diakonos
           new_col = columnOf( text[ -1 ].length )
         when :block
           @lines[ row...( row + text.length ) ] = @lines[ row...( row + text.length ) ].collect.with_index { |line,index|
-            pre = line[ 0...col ].rjust( col )
+            pre = line[ 0...col ].ljust( col )
             post = line[ col..-1 ]
             "#{pre}#{text[ index ]}#{post}"
           }
