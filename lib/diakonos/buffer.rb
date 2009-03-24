@@ -1,9 +1,9 @@
 module Diakonos
 
-class Buffer
+  class Buffer
     attr_reader :name, :key, :original_language, :changing_selection, :read_only,
-        :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col,
-        :selection_mode
+      :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col,
+      :selection_mode
     attr_writer :desired_column, :read_only
 
     SELECTION = 0  # Selection mark is the first element of the @text_marks array
@@ -33,125 +33,125 @@ class Buffer
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, key, read_only = false )
-        @diakonos = diakonos
-        @name = name
-        @key = key
-        @modified = false
-        @last_modification_check = Time.now
+      @diakonos = diakonos
+      @name = name
+      @key = key
+      @modified = false
+      @last_modification_check = Time.now
 
-        @buffer_states = Array.new
-        @cursor_states = Array.new
-        if @name
-            @name = @name.subHome
-            if FileTest.exists? @name
-                @lines = IO.readlines( @name )
-                if ( @lines.length == 0 ) or ( @lines[ -1 ][ -1..-1 ] == "\n" )
-                    @lines.push ""
-                end
-                @lines = @lines.collect do |line|
-                    line.chomp
-                end
-            else
-                @lines = Array.new
-                @lines[ 0 ] = ""
-            end
+      @buffer_states = Array.new
+      @cursor_states = Array.new
+      if @name
+        @name = @name.subHome
+        if FileTest.exists? @name
+          @lines = IO.readlines( @name )
+          if ( @lines.length == 0 ) or ( @lines[ -1 ][ -1..-1 ] == "\n" )
+            @lines.push ""
+          end
+          @lines = @lines.collect do |line|
+            line.chomp
+          end
         else
-            @lines = Array.new
-            @lines[ 0 ] = ""
+          @lines = Array.new
+          @lines[ 0 ] = ""
         end
-        @current_buffer_state = 0
+      else
+        @lines = Array.new
+        @lines[ 0 ] = ""
+      end
+      @current_buffer_state = 0
 
-        @top_line = 0
-        @left_column = 0
-        @desired_column = 0
-        @mark_anchor = nil
-        @text_marks = Array.new
-        @selection_mode = :normal
-        @last_search_regexps = nil
-        @highlight_regexp = nil
-        @last_search = nil
-        @changing_selection = false
-        @typing = false
-        @last_col = 0
-        @last_screen_col = 0
-        @last_screen_y = 0
-        @last_screen_x = 0
-        @last_row = 0
-        @read_only = read_only
-        @bookmarks = Array.new
-        @lang_stack = Array.new
-        @cursor_stack = Array.new
-        @cursor_stack_pointer = nil
+      @top_line = 0
+      @left_column = 0
+      @desired_column = 0
+      @mark_anchor = nil
+      @text_marks = Array.new
+      @selection_mode = :normal
+      @last_search_regexps = nil
+      @highlight_regexp = nil
+      @last_search = nil
+      @changing_selection = false
+      @typing = false
+      @last_col = 0
+      @last_screen_col = 0
+      @last_screen_y = 0
+      @last_screen_x = 0
+      @last_row = 0
+      @read_only = read_only
+      @bookmarks = Array.new
+      @lang_stack = Array.new
+      @cursor_stack = Array.new
+      @cursor_stack_pointer = nil
 
-        configure
+      configure
 
-        if @settings[ "convert_tabs" ]
-            tabs_subbed = false
-            @lines.collect! do |line|
-                new_line = line.expandTabs( @tab_size )
-                tabs_subbed = ( tabs_subbed or new_line != line )
-                # Return value for collect:
-                new_line
-            end
-            @modified = ( @modified or tabs_subbed )
-            if tabs_subbed
-                @diakonos.setILine "(spaces substituted for tab characters)"
-            end
+      if @settings[ "convert_tabs" ]
+        tabs_subbed = false
+        @lines.collect! do |line|
+          new_line = line.expandTabs( @tab_size )
+          tabs_subbed = ( tabs_subbed or new_line != line )
+          # Return value for collect:
+          new_line
         end
+        @modified = ( @modified or tabs_subbed )
+        if tabs_subbed
+          @diakonos.setILine "(spaces substituted for tab characters)"
+        end
+      end
 
-        @buffer_states[ @current_buffer_state ] = @lines
-        @cursor_states[ @current_buffer_state ] = [ @last_row, @last_col ]
+      @buffer_states[ @current_buffer_state ] = @lines
+      @cursor_states[ @current_buffer_state ] = [ @last_row, @last_col ]
     end
 
     def configure(
-            language = (
-                @diakonos.getLanguageFromShaBang( @lines[ 0 ] ) or
-                @diakonos.getLanguageFromName( @name ) or
-                LANG_TEXT
-            )
-        )
-        reset_display
-        setLanguage language
-        @original_language = @language
+      language = (
+        @diakonos.getLanguageFromShaBang( @lines[ 0 ] ) or
+        @diakonos.getLanguageFromName( @name ) or
+        LANG_TEXT
+      )
+    )
+      reset_display
+      setLanguage language
+      @original_language = @language
     end
 
     def reset_display
-        @win_main = @diakonos.win_main
-        @win_line_numbers = @diakonos.win_line_numbers
+      @win_main = @diakonos.win_main
+      @win_line_numbers = @diakonos.win_line_numbers
     end
 
     def setLanguage( language )
-        @settings = @diakonos.settings
-        @language = language
-        @token_regexps = ( @diakonos.token_regexps[ @language ] or Hash.new )
-        @close_token_regexps = ( @diakonos.close_token_regexps[ @language ] or Hash.new )
-        @token_formats = ( @diakonos.token_formats[ @language ] or Hash.new )
-        @indenters = @diakonos.indenters[ @language ]
-        @unindenters = @diakonos.unindenters[ @language ]
-        @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
-        @closers = @diakonos.closers[ @language ] || Hash.new
-        @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
-        @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] or 4 )
-        @indent_roundup = @settings[ "lang.#{@language}.indent.roundup" ].nil? ? true : @settings[ "lang.#{@language}.indent.roundup" ]
-        @indent_closers = @settings[ "lang.#{@language}.indent.closers" ].nil? ? false : @settings[ "lang.#{@language}.indent.closers" ]
-        @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or Curses::A_NORMAL )
-        @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or Curses::A_REVERSE )
-        @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
-        @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or DEFAULT_TAB_SIZE )
+      @settings = @diakonos.settings
+      @language = language
+      @token_regexps = ( @diakonos.token_regexps[ @language ] or Hash.new )
+      @close_token_regexps = ( @diakonos.close_token_regexps[ @language ] or Hash.new )
+      @token_formats = ( @diakonos.token_formats[ @language ] or Hash.new )
+      @indenters = @diakonos.indenters[ @language ]
+      @unindenters = @diakonos.unindenters[ @language ]
+      @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
+      @closers = @diakonos.closers[ @language ] || Hash.new
+      @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
+      @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] or 4 )
+      @indent_roundup = @settings[ "lang.#{@language}.indent.roundup" ].nil? ? true : @settings[ "lang.#{@language}.indent.roundup" ]
+      @indent_closers = @settings[ "lang.#{@language}.indent.closers" ].nil? ? false : @settings[ "lang.#{@language}.indent.closers" ]
+      @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or Curses::A_NORMAL )
+      @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or Curses::A_REVERSE )
+      @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
+      @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or DEFAULT_TAB_SIZE )
     end
     protected :setLanguage
 
     def [] ( arg )
-        @lines[ arg ]
+      @lines[ arg ]
     end
 
     def == (other)
-        return false if other.nil?
-        key == other.key
+      return false if other.nil?
+      key == other.key
     end
 
     def length
-        @lines.length
+      @lines.length
     end
 
     def to_a
@@ -163,65 +163,65 @@ class Buffer
     end
 
     def nice_name
-        @name || @settings[ "status.unnamed_str" ]
+      @name || @settings[ "status.unnamed_str" ]
     end
 
     def findOpeningMatch( line, match_close = true, bos_allowed = true )
-        open_index = line.length
-        open_token_class = nil
-        open_match_text = nil
-        match = nil
-        match_text = nil
-        @token_regexps.each do |token_class,regexp|
-            if match = regexp.match( line )
-                if match.length > 1
-                    index = match.begin 1
-                    match_text = match[ 1 ]
-                    whole_match_index = match.begin 0
-                else
-                    whole_match_index = index = match.begin( 0 )
-                    match_text = match[ 0 ]
-                end
-                if ( not regexp.uses_bos ) or ( bos_allowed and ( whole_match_index == 0 ) )
-                    if index < open_index
-                        if ( ( not match_close ) or @close_token_regexps[ token_class ] )
-                            open_index = index
-                            open_token_class = token_class
-                            open_match_text = match_text
-                        end
-                    end
-                end
+      open_index = line.length
+      open_token_class = nil
+      open_match_text = nil
+      match = nil
+      match_text = nil
+      @token_regexps.each do |token_class,regexp|
+        if match = regexp.match( line )
+          if match.length > 1
+            index = match.begin 1
+            match_text = match[ 1 ]
+            whole_match_index = match.begin 0
+          else
+            whole_match_index = index = match.begin( 0 )
+            match_text = match[ 0 ]
+          end
+          if ( not regexp.uses_bos ) or ( bos_allowed and ( whole_match_index == 0 ) )
+            if index < open_index
+              if ( ( not match_close ) or @close_token_regexps[ token_class ] )
+                open_index = index
+                open_token_class = token_class
+                open_match_text = match_text
+              end
             end
+          end
         end
+      end
 
-        [ open_index, open_token_class, open_match_text ]
+      [ open_index, open_token_class, open_match_text ]
     end
 
     def findClosingMatch( line_, regexp, bos_allowed = true, start_at = 0 )
-        close_match_text = nil
-        close_index = nil
-        if start_at > 0
-            line = line_[ start_at..-1 ]
+      close_match_text = nil
+      close_index = nil
+      if start_at > 0
+        line = line_[ start_at..-1 ]
+      else
+        line = line_
+      end
+      line.scan( regexp ) do |m|
+        match = Regexp.last_match
+        if match.length > 1
+          index = match.begin 1
+          match_text = match[ 1 ]
         else
-            line = line_
+          index = match.begin 0
+          match_text = match[ 0 ]
         end
-        line.scan( regexp ) do |m|
-            match = Regexp.last_match
-            if match.length > 1
-                index = match.begin 1
-                match_text = match[ 1 ]
-            else
-                index = match.begin 0
-                match_text = match[ 0 ]
-            end
-            if ( not regexp.uses_bos ) or ( bos_allowed and ( index == 0 ) )
-                close_index = index
-                close_match_text = match_text
-                break
-            end
+        if ( not regexp.uses_bos ) or ( bos_allowed and ( index == 0 ) )
+          close_index = index
+          close_match_text = match_text
+          break
         end
+      end
 
-        [ close_index, close_match_text ]
+      [ close_index, close_match_text ]
     end
     protected :findClosingMatch
 
@@ -328,11 +328,11 @@ class Buffer
 
     # For debugging purposes
     def quotedOrNil( str )
-        if str.nil?
-            "nil"
-        else
-            "'#{str}'"
-        end
+      if str.nil?
+        "nil"
+      else
+        "'#{str}'"
+      end
     end
 
     def save( filename = nil, prompt_overwrite = DONT_PROMPT_OVERWRITE )
@@ -603,42 +603,42 @@ class Buffer
     end
 
     def deleteLine
-        removeSelection( DONT_DISPLAY )  if selection_mark
+      removeSelection( DONT_DISPLAY )  if selection_mark
 
-        row = @last_row
-        takeSnapshot
-        retval = nil
-        if @lines.length == 1
-            retval = @lines[ 0 ]
-            @lines[ 0 ] = ""
-        else
-            retval = @lines[ row ]
-            @lines.delete_at row
-        end
-        cursorTo( row, 0 )
-        setModified
+      row = @last_row
+      takeSnapshot
+      retval = nil
+      if @lines.length == 1
+        retval = @lines[ 0 ]
+        @lines[ 0 ] = ""
+      else
+        retval = @lines[ row ]
+        @lines.delete_at row
+      end
+      cursorTo( row, 0 )
+      setModified
 
-        retval
+      retval
     end
 
     def deleteToEOL
-        removeSelection( DONT_DISPLAY )  if selection_mark
+      removeSelection( DONT_DISPLAY )  if selection_mark
 
-        row = @last_row
-        col = @last_col
+      row = @last_row
+      col = @last_col
 
-        takeSnapshot
-        if @settings[ 'delete_newline_on_delete_to_eol' ] and col == @lines[ row ].size
-          next_line = @lines.delete_at( row + 1 )
-          @lines[ row ] << next_line
-          retval = [ "\n" ]
-        else
-          retval = [ @lines[ row ][ col..-1 ] ]
-          @lines[ row ] = @lines[ row ][ 0...col ]
-        end
-        setModified
+      takeSnapshot
+      if @settings[ 'delete_newline_on_delete_to_eol' ] and col == @lines[ row ].size
+        next_line = @lines.delete_at( row + 1 )
+        @lines[ row ] << next_line
+        retval = [ "\n" ]
+      else
+        retval = [ @lines[ row ][ col..-1 ] ]
+        @lines[ row ] = @lines[ row ][ 0...col ]
+      end
+      setModified
 
-        retval
+      retval
     end
 
     def delete_to( char )
@@ -667,25 +667,25 @@ class Buffer
     end
 
     def carriageReturn
-        takeSnapshot
-        row = @last_row
-        col = @last_col
-        @lines = @lines[ 0...row ] +
-            [ @lines[ row ][ 0...col ] ] +
-            [ @lines[ row ][ col..-1 ] ] +
-            @lines[ (row+1)..-1 ]
-        cursorTo( row + 1, 0 )
-        parsedIndent if @auto_indent
-        setModified
+      takeSnapshot
+      row = @last_row
+      col = @last_col
+      @lines = @lines[ 0...row ] +
+        [ @lines[ row ][ 0...col ] ] +
+        [ @lines[ row ][ col..-1 ] ] +
+        @lines[ (row+1)..-1 ]
+      cursorTo( row + 1, 0 )
+      parsedIndent if @auto_indent
+      setModified
     end
 
     def lineAt( y )
-        row = @top_line + y
-        if row < 0
-            nil
-        else
-            @lines[ row ]
-        end
+      row = @top_line + y
+      if row < 0
+        nil
+      else
+        @lines[ row ]
+      end
     end
 
     def current_line
@@ -694,265 +694,265 @@ class Buffer
 
     # Returns true iff the given column, x, is less than the length of the given line, y.
     def inLine( x, y )
-        x + @left_column < lineAt( y ).length
+      x + @left_column < lineAt( y ).length
     end
 
     # Translates the window column, x, to a buffer-relative column index.
     def columnOf( x )
-        @left_column + x
+      @left_column + x
     end
 
     # Translates the window row, y, to a buffer-relative row index.
     def rowOf( y )
-        @top_line + y
+      @top_line + y
     end
 
     # Returns nil if the row is off-screen.
     def rowToY( row )
-        return nil if row.nil?
-        y = row - @top_line
-        y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
-        y
+      return nil if row.nil?
+      y = row - @top_line
+      y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
+      y
     end
 
     # Returns nil if the column is off-screen.
     def columnToX( col )
-        return nil if col.nil?
-        x = col - @left_column
-        x = nil if ( x < 0 ) or ( x > @left_column + Curses::cols - 1 )
-        x
+      return nil if col.nil?
+      x = col - @left_column
+      x = nil if ( x < 0 ) or ( x > @left_column + Curses::cols - 1 )
+      x
     end
 
     def currentRow
-        @last_row
+      @last_row
     end
 
     def currentColumn
-        @last_col
+      @last_col
     end
 
     # Returns the amount the view was actually panned.
     def panView( x = 1, do_display = DO_DISPLAY )
-        old_left_column = @left_column
-        @left_column = [ @left_column + x, 0 ].max
-        recordMarkStartAndEnd
-        display if do_display
-        @left_column - old_left_column
+      old_left_column = @left_column
+      @left_column = [ @left_column + x, 0 ].max
+      recordMarkStartAndEnd
+      display if do_display
+      @left_column - old_left_column
     end
 
     # Returns the amount the view was actually pitched.
     def pitchView( y = 1, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )
-        old_top_line = @top_line
-        new_top_line = @top_line + y
+      old_top_line = @top_line
+      new_top_line = @top_line + y
 
-        if new_top_line < 0
-            @top_line = 0
-        elsif new_top_line + @diakonos.main_window_height > @lines.length
-            @top_line = [ @lines.length - @diakonos.main_window_height, 0 ].max
-        else
-            @top_line = new_top_line
-        end
+      if new_top_line < 0
+        @top_line = 0
+      elsif new_top_line + @diakonos.main_window_height > @lines.length
+        @top_line = [ @lines.length - @diakonos.main_window_height, 0 ].max
+      else
+        @top_line = new_top_line
+      end
 
-        old_row = @last_row
-        old_col = @last_col
+      old_row = @last_row
+      old_col = @last_col
 
-        changed = ( @top_line - old_top_line )
-        if changed != 0 and do_pitch_cursor
-            @last_row += changed
-        end
+      changed = ( @top_line - old_top_line )
+      if changed != 0 and do_pitch_cursor
+        @last_row += changed
+      end
 
-        height = [ @diakonos.main_window_height, @lines.length ].min
+      height = [ @diakonos.main_window_height, @lines.length ].min
 
+      @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
+      if @last_row - @top_line < @settings[ "view.margin.y" ]
+        @last_row = @top_line + @settings[ "view.margin.y" ]
         @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
-        if @last_row - @top_line < @settings[ "view.margin.y" ]
-            @last_row = @top_line + @settings[ "view.margin.y" ]
-            @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
-        elsif @top_line + height - 1 - @last_row < @settings[ "view.margin.y" ]
-            @last_row = @top_line + height - 1 - @settings[ "view.margin.y" ]
-            @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
-        end
-        @last_col = @last_col.fit( @left_column, [ @left_column + Curses::cols - 1, @lines[ @last_row ].length ].min )
-        @last_screen_y = @last_row - @top_line
-        @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
+      elsif @top_line + height - 1 - @last_row < @settings[ "view.margin.y" ]
+        @last_row = @top_line + height - 1 - @settings[ "view.margin.y" ]
+        @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
+      end
+      @last_col = @last_col.fit( @left_column, [ @left_column + Curses::cols - 1, @lines[ @last_row ].length ].min )
+      @last_screen_y = @last_row - @top_line
+      @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
 
-        recordMarkStartAndEnd
+      recordMarkStartAndEnd
 
-        if changed != 0
-            if not @changing_selection and selecting?
-                removeSelection( DONT_DISPLAY )
-            end
-
-            highlightMatches
-            if @diakonos.there_was_non_movement
-                pushCursorState( old_top_line, old_row, old_col )
-            end
+      if changed != 0
+        if not @changing_selection and selecting?
+          removeSelection( DONT_DISPLAY )
         end
 
-        display if do_display
+        highlightMatches
+        if @diakonos.there_was_non_movement
+          pushCursorState( old_top_line, old_row, old_col )
+        end
+      end
 
-        changed
+      display if do_display
+
+      changed
     end
 
     def pushCursorState( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
-        new_state = {
-            :top_line => top_line,
-            :row => row,
-            :col => col
-        }
-        if not @cursor_stack.include? new_state
-            @cursor_stack << new_state
-            if clear_stack_pointer
-                @cursor_stack_pointer = nil
-            end
-            @diakonos.clearNonMovementFlag
+      new_state = {
+        :top_line => top_line,
+        :row => row,
+        :col => col
+      }
+      if not @cursor_stack.include? new_state
+        @cursor_stack << new_state
+        if clear_stack_pointer
+          @cursor_stack_pointer = nil
         end
+        @diakonos.clearNonMovementFlag
+      end
     end
 
     # Returns true iff the cursor changed positions in the buffer.
     def cursorTo( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = ADJUST_ROW )
-        old_last_row = @last_row
-        old_last_col = @last_col
+      old_last_row = @last_row
+      old_last_col = @last_col
 
-        row = row.fit( 0, @lines.length - 1 )
+      row = row.fit( 0, @lines.length - 1 )
 
-        if col < 0
-            if adjust_row
-                if row > 0
-                    row = row - 1
-                    col = @lines[ row ].length
-                else
-                    col = 0
-                end
-            else
-                col = 0
-            end
-        elsif col > @lines[ row ].length
-            if adjust_row
-                if row < @lines.length - 1
-                    row = row + 1
-                    col = 0
-                else
-                    col = @lines[ row ].length
-                end
-            else
-                col = @lines[ row ].length
-            end
-        end
-
+      if col < 0
         if adjust_row
-            @desired_column = col
+          if row > 0
+            row = row - 1
+            col = @lines[ row ].length
+          else
+            col = 0
+          end
         else
-            goto_col = [ @desired_column, @lines[ row ].length ].min
-            if col < goto_col
-                col = goto_col
-            end
+          col = 0
         end
-
-        new_col = tabExpandedColumn( col, row )
-        view_changed = showCharacter( row, new_col )
-        @last_screen_y = row - @top_line
-        @last_screen_x = new_col - @left_column
-
-        @typing = false if stopped_typing
-        @last_row = row
-        @last_col = col
-        @last_screen_col = new_col
-        changed = ( @last_row != old_last_row or @last_col != old_last_col )
-        if changed
-            recordMarkStartAndEnd
-
-            removed = false
-            if not @changing_selection and selecting?
-                removeSelection( DONT_DISPLAY )
-                removed = true
-            end
-            if removed or ( do_display and ( selecting? or view_changed ) )
-                display
-            else
-                @diakonos.display_mutex.synchronize do
-                    @win_main.setpos( @last_screen_y, @last_screen_x )
-                end
-            end
-            @diakonos.updateStatusLine
-            @diakonos.updateContextLine
-
-            @diakonos.remember_buffer self
+      elsif col > @lines[ row ].length
+        if adjust_row
+          if row < @lines.length - 1
+            row = row + 1
+            col = 0
+          else
+            col = @lines[ row ].length
+          end
+        else
+          col = @lines[ row ].length
         end
+      end
 
-        changed
+      if adjust_row
+        @desired_column = col
+      else
+        goto_col = [ @desired_column, @lines[ row ].length ].min
+        if col < goto_col
+          col = goto_col
+        end
+      end
+
+      new_col = tabExpandedColumn( col, row )
+      view_changed = showCharacter( row, new_col )
+      @last_screen_y = row - @top_line
+      @last_screen_x = new_col - @left_column
+
+      @typing = false if stopped_typing
+      @last_row = row
+      @last_col = col
+      @last_screen_col = new_col
+      changed = ( @last_row != old_last_row or @last_col != old_last_col )
+      if changed
+        recordMarkStartAndEnd
+
+        removed = false
+        if not @changing_selection and selecting?
+          removeSelection( DONT_DISPLAY )
+          removed = true
+        end
+        if removed or ( do_display and ( selecting? or view_changed ) )
+          display
+        else
+          @diakonos.display_mutex.synchronize do
+            @win_main.setpos( @last_screen_y, @last_screen_x )
+          end
+        end
+        @diakonos.updateStatusLine
+        @diakonos.updateContextLine
+
+        @diakonos.remember_buffer self
+      end
+
+      changed
     end
 
     def cursorReturn( direction )
-        delta = 0
-        if @cursor_stack_pointer.nil?
-            pushCursorState( @top_line, @last_row, @last_col, DONT_CLEAR_STACK_POINTER )
-            delta = 1
-        end
-        case direction
-            when :forward
-                @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
-            #when :backward
-            else
-                @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
-        end
+      delta = 0
+      if @cursor_stack_pointer.nil?
+        pushCursorState( @top_line, @last_row, @last_col, DONT_CLEAR_STACK_POINTER )
+        delta = 1
+      end
+      case direction
+      when :forward
+        @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
+        #when :backward
+      else
+        @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
+      end
 
-        return_pointer = @cursor_stack_pointer
+      return_pointer = @cursor_stack_pointer
 
-        if @cursor_stack_pointer < 0
-            return_pointer = @cursor_stack_pointer = 0
-        elsif @cursor_stack_pointer >= @cursor_stack.length
-            return_pointer = @cursor_stack_pointer = @cursor_stack.length - 1
-        else
-            cursor_state = @cursor_stack[ @cursor_stack_pointer ]
-            if cursor_state
-                pitchView( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
-                cursorTo( cursor_state[ :row ], cursor_state[ :col ] )
-                @diakonos.updateStatusLine
-            end
+      if @cursor_stack_pointer < 0
+        return_pointer = @cursor_stack_pointer = 0
+      elsif @cursor_stack_pointer >= @cursor_stack.length
+        return_pointer = @cursor_stack_pointer = @cursor_stack.length - 1
+      else
+        cursor_state = @cursor_stack[ @cursor_stack_pointer ]
+        if cursor_state
+          pitchView( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
+          cursorTo( cursor_state[ :row ], cursor_state[ :col ] )
+          @diakonos.updateStatusLine
         end
+      end
 
-        [ return_pointer, @cursor_stack.size ]
+      [ return_pointer, @cursor_stack.size ]
     end
 
     def tabExpandedColumn( col, row )
-        delta = 0
-        line = @lines[ row ]
-        for i in 0...col
-            # One comparison for Ruby 1.9, the other for 1.8.
-            if line[ i ] == "\t" || line[ i ] == TAB
-                delta += ( @tab_size - ( (i+delta) % @tab_size ) ) - 1
-            end
+      delta = 0
+      line = @lines[ row ]
+      for i in 0...col
+        # One comparison for Ruby 1.9, the other for 1.8.
+        if line[ i ] == "\t" || line[ i ] == TAB
+          delta += ( @tab_size - ( (i+delta) % @tab_size ) ) - 1
         end
-        col + delta
+      end
+      col + delta
     end
 
     def cursorToEOF
-        cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
+      cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
 
     def cursorToBOL
-        row = @last_row
-        case @settings[ "bol_behaviour" ]
-            when BOL_ZERO
-                col = 0
-            when BOL_FIRST_CHAR
-                col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
-            when BOL_ALT_ZERO
-                if @last_col == 0
-                    col = ( @lines[ row ] =~ /\S/ )
-                else
-                    col = 0
-                end
-            #when BOL_ALT_FIRST_CHAR
-            else
-                first_char_col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
-                if @last_col == first_char_col
-                    col = 0
-                else
-                    col = first_char_col
-                end
+      row = @last_row
+      case @settings[ "bol_behaviour" ]
+      when BOL_ZERO
+        col = 0
+      when BOL_FIRST_CHAR
+        col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
+      when BOL_ALT_ZERO
+        if @last_col == 0
+          col = ( @lines[ row ] =~ /\S/ )
+        else
+          col = 0
         end
-        cursorTo( row, col, DO_DISPLAY )
+        #when BOL_ALT_FIRST_CHAR
+      else
+        first_char_col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
+        if @last_col == first_char_col
+          col = 0
+        else
+          col = first_char_col
+        end
+      end
+      cursorTo( row, col, DO_DISPLAY )
     end
 
     def cursorToEOL
@@ -982,64 +982,64 @@ class Buffer
 
     # Top of view
     def cursorToTOV
-        cursorTo( rowOf( 0 ), @last_col, DO_DISPLAY )
+      cursorTo( rowOf( 0 ), @last_col, DO_DISPLAY )
     end
     # Bottom of view
     def cursorToBOV
-        cursorTo( rowOf( 0 + @diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
+      cursorTo( rowOf( 0 + @diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
     end
 
     # col and row are given relative to the buffer, not any window or screen.
     # Returns true if the view changed positions.
     def showCharacter( row, col )
-        old_top_line = @top_line
-        old_left_column = @left_column
+      old_top_line = @top_line
+      old_left_column = @left_column
 
-        while row < @top_line + @settings[ "view.margin.y" ]
-            amount = (-1) * @settings[ "view.jump.y" ]
-            break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
-        end
-        while row > @top_line + @diakonos.main_window_height - 1 - @settings[ "view.margin.y" ]
-            amount = @settings[ "view.jump.y" ]
-            break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
-        end
+      while row < @top_line + @settings[ "view.margin.y" ]
+        amount = (-1) * @settings[ "view.jump.y" ]
+        break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
+      end
+      while row > @top_line + @diakonos.main_window_height - 1 - @settings[ "view.margin.y" ]
+        amount = @settings[ "view.jump.y" ]
+        break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
+      end
 
-        while col < @left_column + @settings[ "view.margin.x" ]
-            amount = (-1) * @settings[ "view.jump.x" ]
-            break if( panView( amount, DONT_DISPLAY ) != amount )
-        end
-        while col > @left_column + @diakonos.main_window_width - @settings[ "view.margin.x" ] - 2
-            amount = @settings[ "view.jump.x" ]
-            break if( panView( amount, DONT_DISPLAY ) != amount )
-        end
+      while col < @left_column + @settings[ "view.margin.x" ]
+        amount = (-1) * @settings[ "view.jump.x" ]
+        break if( panView( amount, DONT_DISPLAY ) != amount )
+      end
+      while col > @left_column + @diakonos.main_window_width - @settings[ "view.margin.x" ] - 2
+        amount = @settings[ "view.jump.x" ]
+        break if( panView( amount, DONT_DISPLAY ) != amount )
+      end
 
-        @top_line != old_top_line or @left_column != old_left_column
+      @top_line != old_top_line or @left_column != old_left_column
     end
 
     def setIndent( row, level, do_display = DO_DISPLAY )
-        @lines[ row ] =~ /^([\s#{@indent_ignore_charset}]*)(.*)$/
-        current_indent_text = ( $1 or "" )
-        rest = ( $2 or "" )
-        current_indent_text.gsub!( /\t/, ' ' * @tab_size )
-        indentation = @indent_size * [ level, 0 ].max
-        if current_indent_text.length >= indentation
-            indent_text = current_indent_text[ 0...indentation ]
-        else
-            indent_text = current_indent_text + " " * ( indentation - current_indent_text.length )
-        end
-        if @settings[ "lang.#{@language}.indent.using_tabs" ]
-            num_tabs = 0
-            indent_text.gsub!( / {#{@tab_size}}/ ) { |match|
-                num_tabs += 1
-                "\t"
-            }
-            indentation -= num_tabs * ( @tab_size - 1 )
-        end
+      @lines[ row ] =~ /^([\s#{@indent_ignore_charset}]*)(.*)$/
+      current_indent_text = ( $1 or "" )
+      rest = ( $2 or "" )
+      current_indent_text.gsub!( /\t/, ' ' * @tab_size )
+      indentation = @indent_size * [ level, 0 ].max
+      if current_indent_text.length >= indentation
+        indent_text = current_indent_text[ 0...indentation ]
+      else
+        indent_text = current_indent_text + " " * ( indentation - current_indent_text.length )
+      end
+      if @settings[ "lang.#{@language}.indent.using_tabs" ]
+        num_tabs = 0
+        indent_text.gsub!( / {#{@tab_size}}/ ) { |match|
+          num_tabs += 1
+          "\t"
+        }
+        indentation -= num_tabs * ( @tab_size - 1 )
+      end
 
-        takeSnapshot( TYPING ) if do_display
-        @lines[ row ] = indent_text + rest
-        cursorTo( row, indentation ) if do_display
-        setModified
+      takeSnapshot( TYPING ) if do_display
+      @lines[ row ] = indent_text + rest
+      cursorTo( row, indentation ) if do_display
+      setModified
     end
 
     def indentation_level( row, use_indent_ignore = USE_INDENT_IGNORE )
@@ -1105,29 +1105,29 @@ class Buffer
     end
 
     def anchorSelection( row = @last_row, col = @last_col, do_display = DO_DISPLAY )
-        @mark_anchor = ( @mark_anchor or Hash.new )
-        @mark_anchor[ "row" ] = row
-        @mark_anchor[ "col" ] = col
-        recordMarkStartAndEnd
-        @changing_selection = true
-        display  if do_display
+      @mark_anchor = ( @mark_anchor or Hash.new )
+      @mark_anchor[ "row" ] = row
+      @mark_anchor[ "col" ] = col
+      recordMarkStartAndEnd
+      @changing_selection = true
+      display  if do_display
     end
 
     def removeSelection( do_display = DO_DISPLAY )
-        return  if selection_mark.nil?
-        @mark_anchor = nil
-        recordMarkStartAndEnd
-        @changing_selection = false
-        @last_finding = nil
-        display  if do_display
+      return  if selection_mark.nil?
+      @mark_anchor = nil
+      recordMarkStartAndEnd
+      @changing_selection = false
+      @last_finding = nil
+      display  if do_display
     end
 
     def toggleSelection
-        if @changing_selection
-            removeSelection
-        else
-            anchorSelection
-        end
+      if @changing_selection
+        removeSelection
+      else
+        anchorSelection
+      end
     end
 
     def copySelection
@@ -1259,231 +1259,231 @@ class Buffer
     # each successive element must match against lines following the first
     # element.
     def find( regexps, options = {} )
-        return  if regexps.nil?
-        regexp = regexps[ 0 ]
-        return  if regexp.nil? || regexp == //
+      return  if regexps.nil?
+      regexp = regexps[ 0 ]
+      return  if regexp.nil? || regexp == //
 
-        direction = options[ :direction ]
-        replacement = options[ :replacement ]
-        auto_choice = options[ :auto_choice ]
-        from_row = options[ :starting_row ] || @last_row
-        from_col = options[ :starting_col ] || @last_col
-        show_context_after = options[ :show_context_after ]
+      direction          = options[ :direction ]
+      replacement        = options[ :replacement ]
+      auto_choice        = options[ :auto_choice ]
+      from_row           = options[ :starting_row ] || @last_row
+      from_col           = options[ :starting_col ] || @last_col
+      show_context_after = options[ :show_context_after ]
 
-        if direction == :opposite
-            case @last_search_direction
-                when :up
-                    direction = :down
-                else
-                    direction = :up
-            end
-        end
-        @last_search_regexps = regexps
-        @last_search_direction = direction
-
-        finding = nil
-        wrapped = false
-        match = nil
-
-        catch :found do
-
-            if direction == :down
-                # Check the current row first.
-
-                if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) + 1 )
-                  match = Regexp.last_match
-                  found_text = match[ 0 ]
-                  finding = Finding.new( from_row, index, from_row, index + found_text.length )
-                  if finding.match( regexps, @lines )
-                    throw :found
-                  else
-                    finding = nil
-                  end
-                end
-
-                # Check below the cursor.
-
-                ( (from_row + 1)...@lines.length ).each do |i|
-                    if index = @lines[ i ].index( regexp )
-                      match = Regexp.last_match
-                      found_text = match[ 0 ]
-                      finding = Finding.new( i, index, i, index + found_text.length )
-                      if finding.match( regexps, @lines )
-                        throw :found
-                      else
-                        finding = nil
-                      end
-                    end
-                end
-
-                # Wrap around.
-
-                wrapped = true
-
-                ( 0...from_row ).each do |i|
-                    if index = @lines[ i ].index( regexp )
-                      match = Regexp.last_match
-                      found_text = match[ 0 ]
-                      finding = Finding.new( i, index, i, index + found_text.length )
-                      if finding.match( regexps, @lines )
-                        throw :found
-                      else
-                        finding = nil
-                      end
-                    end
-                end
-
-                # And finally, the other side of the current row.
-
-                #if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) - 1 )
-                if index = @lines[ from_row ].index( regexp )
-                    if index <= ( @last_finding ? @last_finding.start_col : from_col )
-                      match = Regexp.last_match
-                      found_text = match[ 0 ]
-                      finding = Finding.new( from_row, index, from_row, index + found_text.length )
-                      if finding.match( regexps, @lines )
-                        throw :found
-                      else
-                        finding = nil
-                      end
-                    end
-                end
-
-            elsif direction == :up
-                # Check the current row first.
-
-                col_to_check = ( @last_finding ? @last_finding.end_col : from_col ) - 1
-                if ( col_to_check >= 0 ) and ( index = @lines[ from_row ][ 0...col_to_check ].rindex( regexp ) )
-                  match = Regexp.last_match
-                  found_text = match[ 0 ]
-                  finding = Finding.new( from_row, index, from_row, index + found_text.length )
-                  if finding.match( regexps, @lines )
-                    throw :found
-                  else
-                    finding = nil
-                  end
-                end
-
-                # Check above the cursor.
-
-                (from_row - 1).downto( 0 ) do |i|
-                    if index = @lines[ i ].rindex( regexp )
-                      match = Regexp.last_match
-                      found_text = match[ 0 ]
-                      finding = Finding.new( i, index, i, index + found_text.length )
-                      if finding.match( regexps, @lines )
-                        throw :found
-                      else
-                        finding = nil
-                      end
-                    end
-                end
-
-                # Wrap around.
-
-                wrapped = true
-
-                (@lines.length - 1).downto(from_row + 1) do |i|
-                    if index = @lines[ i ].rindex( regexp )
-                      match = Regexp.last_match
-                      found_text = match[ 0 ]
-                      finding = Finding.new( i, index, i, index + found_text.length )
-                      if finding.match( regexps, @lines )
-                        throw :found
-                      else
-                        finding = nil
-                      end
-                    end
-                end
-
-                # And finally, the other side of the current row.
-
-                search_col = ( @last_finding ? @last_finding.start_col : from_col ) + 1
-                if index = @lines[ from_row ].rindex( regexp )
-                    if index > search_col
-                      match = Regexp.last_match
-                      found_text = match[ 0 ]
-                      finding = Finding.new( from_row, index, from_row, index + found_text.length )
-                      if finding.match( regexps, @lines )
-                        throw :found
-                      else
-                        finding = nil
-                      end
-                    end
-                end
-            end
-        end
-
-        if finding
-            if wrapped and not options[ :quiet ]
-              @diakonos.setILine( "(search wrapped around BOF/EOF)" )
-            end
-
-            removeSelection( DONT_DISPLAY )
-            @last_finding = finding
-            if @settings[ "found_cursor_start" ]
-                anchorSelection( finding.end_row, finding.end_col, DONT_DISPLAY )
-                cursorTo( finding.start_row, finding.start_col )
-            else
-                anchorSelection( finding.start_row, finding.start_col, DONT_DISPLAY )
-                cursorTo( finding.end_row, finding.end_col )
-            end
-            if show_context_after
-              watermark = Curses::lines / 6
-              if @last_row - @top_line > watermark
-                pitchView( @last_row - @top_line - watermark )
-              end
-            end
-
-            @changing_selection = false
-
-            if regexps.length == 1
-                @highlight_regexp = regexp
-                highlightMatches
-            else
-                clearMatches
-            end
-            display
-
-            if replacement
-              # Substitute placeholders (e.g. \1) in str for the group matches of the last match.
-              actual_replacement = replacement.dup
-              actual_replacement.gsub!( /\\(\\|\d+)/ ) { |m|
-                ref = $1
-                if ref == "\\"
-                  "\\"
-                else
-                  match[ ref.to_i ]
-                end
-              }
-
-              choice = auto_choice || @diakonos.getChoice(
-                "Replace?",
-                [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
-                CHOICE_YES
-              )
-              case choice
-              when CHOICE_YES
-                paste [ actual_replacement ]
-                find( regexps, :direction => direction, :replacement => replacement )
-              when CHOICE_ALL
-                replaceAll( regexp, replacement )
-              when CHOICE_NO
-                find( regexps, :direction => direction, :replacement => replacement )
-              when CHOICE_CANCEL
-                # Do nothing further.
-              when CHOICE_YES_AND_STOP
-                paste [ actual_replacement ]
-                # Do nothing further.
-              end
-            end
+      if direction == :opposite
+        case @last_search_direction
+        when :up
+          direction = :down
         else
-          removeSelection DONT_DISPLAY
-          clearMatches DO_DISPLAY
-          if not options[ :quiet ]
-            @diakonos.setILine "/#{regexp.source}/ not found."
+          direction = :up
+        end
+      end
+      @last_search_regexps = regexps
+      @last_search_direction = direction
+
+      finding = nil
+      wrapped = false
+      match = nil
+
+      catch :found do
+
+        if direction == :down
+          # Check the current row first.
+
+          if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) + 1 )
+            match = Regexp.last_match
+            found_text = match[ 0 ]
+            finding = Finding.new( from_row, index, from_row, index + found_text.length )
+            if finding.match( regexps, @lines )
+              throw :found
+            else
+              finding = nil
+            end
+          end
+
+          # Check below the cursor.
+
+          ( (from_row + 1)...@lines.length ).each do |i|
+            if index = @lines[ i ].index( regexp )
+              match = Regexp.last_match
+              found_text = match[ 0 ]
+              finding = Finding.new( i, index, i, index + found_text.length )
+              if finding.match( regexps, @lines )
+                throw :found
+              else
+                finding = nil
+              end
+            end
+          end
+
+          # Wrap around.
+
+          wrapped = true
+
+          ( 0...from_row ).each do |i|
+            if index = @lines[ i ].index( regexp )
+              match = Regexp.last_match
+              found_text = match[ 0 ]
+              finding = Finding.new( i, index, i, index + found_text.length )
+              if finding.match( regexps, @lines )
+                throw :found
+              else
+                finding = nil
+              end
+            end
+          end
+
+          # And finally, the other side of the current row.
+
+          #if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) - 1 )
+          if index = @lines[ from_row ].index( regexp )
+            if index <= ( @last_finding ? @last_finding.start_col : from_col )
+              match = Regexp.last_match
+              found_text = match[ 0 ]
+              finding = Finding.new( from_row, index, from_row, index + found_text.length )
+              if finding.match( regexps, @lines )
+                throw :found
+              else
+                finding = nil
+              end
+            end
+          end
+
+        elsif direction == :up
+          # Check the current row first.
+
+          col_to_check = ( @last_finding ? @last_finding.end_col : from_col ) - 1
+          if ( col_to_check >= 0 ) and ( index = @lines[ from_row ][ 0...col_to_check ].rindex( regexp ) )
+            match = Regexp.last_match
+            found_text = match[ 0 ]
+            finding = Finding.new( from_row, index, from_row, index + found_text.length )
+            if finding.match( regexps, @lines )
+              throw :found
+            else
+              finding = nil
+            end
+          end
+
+          # Check above the cursor.
+
+          (from_row - 1).downto( 0 ) do |i|
+            if index = @lines[ i ].rindex( regexp )
+              match = Regexp.last_match
+              found_text = match[ 0 ]
+              finding = Finding.new( i, index, i, index + found_text.length )
+              if finding.match( regexps, @lines )
+                throw :found
+              else
+                finding = nil
+              end
+            end
+          end
+
+          # Wrap around.
+
+          wrapped = true
+
+          (@lines.length - 1).downto(from_row + 1) do |i|
+            if index = @lines[ i ].rindex( regexp )
+              match = Regexp.last_match
+              found_text = match[ 0 ]
+              finding = Finding.new( i, index, i, index + found_text.length )
+              if finding.match( regexps, @lines )
+                throw :found
+              else
+                finding = nil
+              end
+            end
+          end
+
+          # And finally, the other side of the current row.
+
+          search_col = ( @last_finding ? @last_finding.start_col : from_col ) + 1
+          if index = @lines[ from_row ].rindex( regexp )
+            if index > search_col
+              match = Regexp.last_match
+              found_text = match[ 0 ]
+              finding = Finding.new( from_row, index, from_row, index + found_text.length )
+              if finding.match( regexps, @lines )
+                throw :found
+              else
+                finding = nil
+              end
+            end
           end
         end
+      end
+
+      if finding
+        if wrapped and not options[ :quiet ]
+          @diakonos.setILine( "(search wrapped around BOF/EOF)" )
+        end
+
+        removeSelection( DONT_DISPLAY )
+        @last_finding = finding
+        if @settings[ "found_cursor_start" ]
+          anchorSelection( finding.end_row, finding.end_col, DONT_DISPLAY )
+          cursorTo( finding.start_row, finding.start_col )
+        else
+          anchorSelection( finding.start_row, finding.start_col, DONT_DISPLAY )
+          cursorTo( finding.end_row, finding.end_col )
+        end
+        if show_context_after
+          watermark = Curses::lines / 6
+          if @last_row - @top_line > watermark
+            pitchView( @last_row - @top_line - watermark )
+          end
+        end
+
+        @changing_selection = false
+
+        if regexps.length == 1
+          @highlight_regexp = regexp
+          highlightMatches
+        else
+          clearMatches
+        end
+        display
+
+        if replacement
+          # Substitute placeholders (e.g. \1) in str for the group matches of the last match.
+          actual_replacement = replacement.dup
+          actual_replacement.gsub!( /\\(\\|\d+)/ ) { |m|
+            ref = $1
+            if ref == "\\"
+              "\\"
+            else
+              match[ ref.to_i ]
+            end
+          }
+
+          choice = auto_choice || @diakonos.getChoice(
+            "Replace?",
+            [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
+            CHOICE_YES
+          )
+          case choice
+          when CHOICE_YES
+            paste [ actual_replacement ]
+            find( regexps, :direction => direction, :replacement => replacement )
+          when CHOICE_ALL
+            replaceAll( regexp, replacement )
+          when CHOICE_NO
+            find( regexps, :direction => direction, :replacement => replacement )
+          when CHOICE_CANCEL
+            # Do nothing further.
+          when CHOICE_YES_AND_STOP
+            paste [ actual_replacement ]
+            # Do nothing further.
+          end
+        end
+      else
+        removeSelection DONT_DISPLAY
+        clearMatches DO_DISPLAY
+        if not options[ :quiet ]
+          @diakonos.setILine "/#{regexp.source}/ not found."
+        end
+      end
     end
 
     def replaceAll( regexp, replacement )
@@ -1524,73 +1524,73 @@ class Buffer
     end
 
     def seek( regexp, direction = :down )
-        return if regexp.nil? or regexp == //
+      return if regexp.nil? or regexp == //
 
-        found_row = nil
-        found_col = nil
-        found_text = nil
-        wrapped = false
+      found_row = nil
+      found_col = nil
+      found_text = nil
+      wrapped = false
 
-        catch :found do
-            if direction == :down
-                # Check the current row first.
+      catch :found do
+        if direction == :down
+          # Check the current row first.
 
-                index, match_text = @lines[ @last_row ].group_index( regexp, @last_col + 1 )
-                if index
-                    found_row = @last_row
-                    found_col = index
-                    found_text = match_text
-                    throw :found
-                end
+          index, match_text = @lines[ @last_row ].group_index( regexp, @last_col + 1 )
+          if index
+            found_row = @last_row
+            found_col = index
+            found_text = match_text
+            throw :found
+          end
 
-                # Check below the cursor.
+          # Check below the cursor.
 
-                ( (@last_row + 1)...@lines.length ).each do |i|
-                    index, match_text = @lines[ i ].group_index( regexp )
-                    if index
-                        found_row = i
-                        found_col = index
-                        found_text = match_text
-                        throw :found
-                    end
-                end
-
-            else
-                # Check the current row first.
-
-                #col_to_check = ( @last_found_col or @last_col ) - 1
-                col_to_check = @last_col - 1
-                if col_to_check >= 0
-                    index, match_text = @lines[ @last_row ].group_rindex( regexp, col_to_check )
-                    if index
-                        found_row = @last_row
-                        found_col = index
-                        found_text = match_text
-                        throw :found
-                    end
-                end
-
-                # Check above the cursor.
-
-                (@last_row - 1).downto( 0 ) do |i|
-                    index, match_text = @lines[ i ].group_rindex( regexp )
-                    if index
-                        found_row = i
-                        found_col = index
-                        found_text = match_text
-                        throw :found
-                    end
-                end
+          ( (@last_row + 1)...@lines.length ).each do |i|
+            index, match_text = @lines[ i ].group_index( regexp )
+            if index
+              found_row = i
+              found_col = index
+              found_text = match_text
+              throw :found
             end
-        end
+          end
 
-        if found_text
-            #@last_found_row = found_row
-            #@last_found_col = found_col
-            cursorTo( found_row, found_col )
+        else
+          # Check the current row first.
 
-            display
+          #col_to_check = ( @last_found_col or @last_col ) - 1
+          col_to_check = @last_col - 1
+          if col_to_check >= 0
+            index, match_text = @lines[ @last_row ].group_rindex( regexp, col_to_check )
+            if index
+              found_row = @last_row
+              found_col = index
+              found_text = match_text
+              throw :found
+            end
+          end
+
+          # Check above the cursor.
+
+          (@last_row - 1).downto( 0 ) do |i|
+            index, match_text = @lines[ i ].group_rindex( regexp )
+            if index
+              found_row = i
+              found_col = index
+              found_text = match_text
+              throw :found
+            end
+          end
         end
+      end
+
+      if found_text
+        #@last_found_row = found_row
+        #@last_found_col = found_col
+        cursorTo( found_row, found_col )
+
+        display
+      end
     end
 
     # Returns an Array of results, where each result is a String usually
@@ -1606,49 +1606,49 @@ class Buffer
     end
 
     def setModified( do_display = DO_DISPLAY )
-        if @read_only
-            @diakonos.setILine "Warning: Modifying a read-only file."
-        end
+      if @read_only
+        @diakonos.setILine "Warning: Modifying a read-only file."
+      end
 
-        fmod = false
-        if not @modified
-            @modified = true
-            fmod = file_modified?
-        end
+      fmod = false
+      if not @modified
+        @modified = true
+        fmod = file_modified?
+      end
 
-        reverted = false
-        if fmod
-            reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
-        end
+      reverted = false
+      if fmod
+        reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+      end
 
-        if not reverted
-            clearMatches
-            if do_display
-                @diakonos.updateStatusLine
-                display
-            end
+      if not reverted
+        clearMatches
+        if do_display
+          @diakonos.updateStatusLine
+          display
         end
+      end
     end
 
     # Check if the file which is being edited has been modified since
     # the last time we checked it; return true if so, false otherwise.
     def file_modified?
-        modified = false
+      modified = false
 
-        if @name
-            begin
-                mtime = File.mtime( @name )
+      if @name
+        begin
+          mtime = File.mtime( @name )
 
-                if mtime > @last_modification_check
-                    modified = true
-                    @last_modification_check = mtime
-                end
-            rescue Errno::ENOENT
-                # Ignore if file doesn't exist
-            end
+          if mtime > @last_modification_check
+            modified = true
+            @last_modification_check = mtime
+          end
+        rescue Errno::ENOENT
+          # Ignore if file doesn't exist
         end
+      end
 
-        modified
+      modified
     end
 
     # Compares MD5 sums of buffer and actual file on disk.
@@ -1666,38 +1666,38 @@ class Buffer
     end
 
     def takeSnapshot( typing = false )
-        take_snapshot = false
-        if @typing != typing
-            @typing = typing
-            # If we just started typing, take a snapshot, but don't continue
-            # taking snapshots for every keystroke
-            if typing
-                take_snapshot = true
-            end
+      take_snapshot = false
+      if @typing != typing
+        @typing = typing
+        # If we just started typing, take a snapshot, but don't continue
+        # taking snapshots for every keystroke
+        if typing
+          take_snapshot = true
         end
-        if not @typing
-            take_snapshot = true
-        end
+      end
+      if not @typing
+        take_snapshot = true
+      end
 
-        if take_snapshot
-            undo_size = 0
-            @buffer_states[ 1..-1 ].each do |state|
-                undo_size += state.length
-            end
-            while ( ( undo_size + @lines.length ) >= @settings[ "max_undo_lines" ] ) and @buffer_states.length > 1
-                @cursor_states.pop
-                popped_state = @buffer_states.pop
-                undo_size = undo_size - popped_state.length
-            end
-            if @current_buffer_state > 0
-                @buffer_states.unshift @lines.deep_clone
-                @cursor_states.unshift [ @last_row, @last_col ]
-            end
-            @buffer_states.unshift @lines.deep_clone
-            @cursor_states.unshift [ @last_row, @last_col ]
-            @current_buffer_state = 0
-            @lines = @buffer_states[ @current_buffer_state ]
+      if take_snapshot
+        undo_size = 0
+        @buffer_states[ 1..-1 ].each do |state|
+          undo_size += state.length
         end
+        while ( ( undo_size + @lines.length ) >= @settings[ "max_undo_lines" ] ) and @buffer_states.length > 1
+          @cursor_states.pop
+          popped_state = @buffer_states.pop
+          undo_size = undo_size - popped_state.length
+        end
+        if @current_buffer_state > 0
+          @buffer_states.unshift @lines.deep_clone
+          @cursor_states.unshift [ @last_row, @last_col ]
+        end
+        @buffer_states.unshift @lines.deep_clone
+        @cursor_states.unshift [ @last_row, @last_col ]
+        @current_buffer_state = 0
+        @lines = @buffer_states[ @current_buffer_state ]
+      end
     end
 
     def undo
@@ -1865,80 +1865,81 @@ class Buffer
     end
 
     def goToPreviousBookmark
-        cur_pos = Bookmark.new( self, @last_row, @last_col )
-        # There's no reverse_find method, so, we have to do this manually.
-        prev = nil
-        @bookmarks.reverse_each do |bm|
-            if bm < cur_pos
-                prev = bm
-                break
-            end
+      cur_pos = Bookmark.new( self, @last_row, @last_col )
+      # There's no reverse_find method, so, we have to do this manually.
+      prev = nil
+      @bookmarks.reverse_each do |bm|
+        if bm < cur_pos
+          prev = bm
+          break
         end
-        if prev
-            cursorTo( prev.row, prev.col, DO_DISPLAY )
-        end
+      end
+      if prev
+        cursorTo( prev.row, prev.col, DO_DISPLAY )
+      end
     end
 
     def toggleBookmark
-        bookmark = Bookmark.new( self, @last_row, @last_col )
-        existing = @bookmarks.find do |bm|
-            bm == bookmark
-        end
-        if existing
-            @bookmarks.delete existing
-            @diakonos.setILine "Bookmark #{existing.to_s} deleted."
-        else
-            @bookmarks.push bookmark
-            @bookmarks.sort
-            @diakonos.setILine "Bookmark #{bookmark.to_s} set."
-        end
+      bookmark = Bookmark.new( self, @last_row, @last_col )
+      existing = @bookmarks.find do |bm|
+        bm == bookmark
+      end
+      if existing
+        @bookmarks.delete existing
+        @diakonos.setILine "Bookmark #{existing.to_s} deleted."
+      else
+        @bookmarks.push bookmark
+        @bookmarks.sort
+        @diakonos.setILine "Bookmark #{bookmark.to_s} set."
+      end
     end
 
     def context
-        retval = Array.new
-        row = @last_row
+      retval = Array.new
+      row = @last_row
+      clevel = indentation_level( row )
+      while row > 0 and clevel < 0
+        row = row - 1
         clevel = indentation_level( row )
-        while row > 0 and clevel < 0
-            row = row - 1
-            clevel = indentation_level( row )
+      end
+      clevel = 0 if clevel < 0
+      while row > 0
+        row = row - 1
+        line = @lines[ row ]
+        if line !~ @settings[ "lang.#{@language}.context.ignore" ]
+          level = indentation_level( row )
+          if level < clevel and level > -1
+            retval.unshift line
+            clevel = level
+            break if clevel == 0
+          end
         end
-        clevel = 0 if clevel < 0
-        while row > 0
-            row = row - 1
-            line = @lines[ row ]
-            if line !~ @settings[ "lang.#{@language}.context.ignore" ]
-                level = indentation_level( row )
-                if level < clevel and level > -1
-                    retval.unshift line
-                    clevel = level
-                    break if clevel == 0
-                end
-            end
-        end
-        retval
+      end
+      retval
     end
 
     def setType( type )
-        if type
-            configure( type )
-            display
-            true
-        end
+      if type
+        configure( type )
+        display
+        true
+      end
     end
 
     def wordUnderCursor
-        word = nil
+      word = nil
 
-        @lines[ @last_row ].scan( /\w+/ ) do |match_text|
-            last_match = Regexp.last_match
-            if last_match.begin( 0 ) <= @last_col and @last_col < last_match.end( 0 )
-                word = match_text
-                break
-            end
+      @lines[ @last_row ].scan( /\w+/ ) do |match_text|
+        last_match = Regexp.last_match
+        if last_match.begin( 0 ) <= @last_col and @last_col < last_match.end( 0 )
+          word = match_text
+          break
         end
+      end
 
-        word
+      word
     end
-end
+
+  end
 
 end
