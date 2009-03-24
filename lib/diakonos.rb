@@ -539,6 +539,19 @@ module Diakonos
     def settings
       @settings.merge @session[ 'settings' ]
     end
+
+    def escape_quotes( str )
+      temp = ''
+      str.each_byte do |b|
+        if b == 39
+          temp << 39
+          temp << 92
+          temp << 39
+        end
+        temp << b
+      end
+      temp
+    end
   end
 
 end

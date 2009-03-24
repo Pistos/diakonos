@@ -273,8 +273,8 @@ module Diakonos
       removed_text = @current_buffer.deleteLine
       if removed_text
         if @last_commands[ -1 ] =~ /^delete_and_store_line_to_klipper/
-          clip_filename = write_to_clip_file( removed_text << "\n" )
-          `clipping="$(dcop klipper klipper getClipboardContents)\n$(cat #{clip_filename};printf "_")"; dcop klipper klipper setClipboardContents "${clipping%_}"`
+          new_clip = escape_quotes( `dcop klipper klipper getClipboardContents`.chomp + removed_text + "\n" )
+          `dcop klipper klipper setClipboardContents '#{new_clip}'`
         else
           send_to_klipper [ removed_text, "" ]
         end
