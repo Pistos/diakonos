@@ -453,7 +453,7 @@ module Diakonos
       elsif starting_row and starting_col
         @current_buffer.clearMatches
         if @settings[ 'find.return_on_abort' ]
-          @current_buffer.cursorTo starting_row, starting_col
+          @current_buffer.cursorTo starting_row, starting_col, Buffer::DO_DISPLAY
         end
       end
     end
