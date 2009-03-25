@@ -1,0 +1,41 @@
+# Deleting Text
+
+## Common Deletion
+
+Diakonos behaves just as you would expect when you press <Delete> or
+<Backspace>; they delete the current and previous character respectively.
+
+When text is selected, pressing <Delete> or <Backspace> will delete the
+selected text.  Selecting text and then typing (or pasting) will also delete
+the selected text (and then process what was typed or pasted).
+
+## Deleting a Line
+
+<Ctrl-K> will delete the current line, regardless of where on the line the
+cursor is.
+
+## Deleting Part of a Line
+
+<Ctrl-Alt-K> will delete all the text from the cursor to the end of the current
+line.
+
+You can delete from the cursor up to a certain character by pressing <Ctrl-D-T>
+(mnemonic: "Delete Till").  Diakonos will prompt you for a character, and then
+delete everything from the cursor to the first instance of that character to
+the right of the cursor.  For example, pressing <Ctrl-D-T-.> will delete up to
+the next period.
+
+You can delete all text in between a pair of the same character by pressing
+<Ctrl-D-I> (mnemonic: "Delete Inside" or "Delete In Between").  Diakonos will
+prompt you for a character, and then delete between the closest pair of that
+character.  For example, situating the cursor inside a string inside some
+source code, then pressing <Ctrl-D-I-"> will deleted the contents of the
+string.  That is:
+
+  my_string = "this is a string"
+
+would become
+
+  my_string = ""
+
+Tags: delete deleting text deletion remove removal removing line
