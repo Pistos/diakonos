@@ -1,0 +1,16 @@
+# Ruby Compatibility
+
+## Ruby 1.9
+
+Usage to date has shown that Diakonos is fully compatible with Ruby 1.9.
+There are no known problems.  If you encounter any issues when running
+Diakonos under Ruby 1.9, please report them in IRC or with the issue tracker.
+
+## Ruby 1.8
+
+Support for Ruby 1.8 was dropped as of Diakonos version 0.8.8.  Diakonos 0.8.8
+and later may still run under Ruby 1.8, but no development effort is being
+spent ensuring operability under Ruby 1.8.
+
+
+Tags: ruby 1.9 1.8 19 18 compatible compatibility problems issues version
