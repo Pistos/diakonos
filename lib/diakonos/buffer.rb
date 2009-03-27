@@ -644,12 +644,28 @@ module Diakonos
     def delete_to( char )
       removeSelection( DONT_DISPLAY )  if selection_mark
       takeSnapshot
-      index = @lines[ @last_row ].index( char, @last_col+1 )
-      if index
-        retval = @lines[ @last_row ].slice!( @last_col, index - @last_col )
-        setModified
-        retval
+
+      first_row = row = @last_row
+      retval = nil
+      while row < @lines.length && retval.nil?
+        index = @lines[ row ].index( char, @last_col+1 )
+        if index
+          if row == first_row
+            retval = [ @lines[ row ].slice!( @last_col, index - @last_col ) ]
+          else
+            pre_head = @lines[ first_row ][ 0...@last_col ]
+            post_tail = @lines[ row ][ index..-1 ]
+            head = @lines[ first_row ].slice!( @last_col..-1 )
+            tail = @lines[ row ].slice!( 0...index )
+            retval = [ head ] + @lines.slice!( first_row + 1, row - first_row ) + [ tail ]
+            @lines[ first_row ] = pre_head + post_tail
+          end
+          setModified
+        end
+        row += 1
       end
+
+      retval
     end
 
     def delete_to_and_from( char )

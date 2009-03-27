@@ -314,7 +314,7 @@ module Diakonos
       if char
         removed_text = @current_buffer.delete_to char
         if removed_text
-          @clipboard.addClip( [ removed_text ] )
+          @clipboard.addClip removed_text
         else
           setILine "'#{char}' not found."
         end
