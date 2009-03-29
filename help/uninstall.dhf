@@ -1,0 +1,18 @@
+# Uninstalling Diakonos
+
+To uninstall Diakonos, simply run diakonos with an --uninstall switch:
+
+  diakonos --uninstall
+
+Diakonos will list all the files and directories that will be removed from your
+system, and prompt you for confirmation.  Diakonos does not install hidden
+files that are not shown to you.
+
+The only other Diakonos-related files on your system will be under your home
+directory, inside ~/.diakonos . These are not uninstalled, to allow you to
+upgrade Diakonos and preserve your settings and customizations.  The
+~/.diakonos directory can be removed manually, or even edited if you are an
+advanced user.
+
+
+Tags: install installing installation uninstall uninstalling uninstallation remove removal removing
