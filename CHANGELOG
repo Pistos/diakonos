@@ -17,6 +17,7 @@ Diakonos Changelog
 - Introduced $d shell variable: current buffer's directory.
 - $f and $d now expand to absolute paths.
 - delete_to and delete_to_and_from can now operate over multiple lines.
+- delete_to_and_from can now delete between matching brackets.
 - Added git diff (F9).
 - Ruby 1.9 support smoothed out.  Ruby 1.8 support being deprecated.
 - Support for non-ASCII encodings tentatively confirmed.

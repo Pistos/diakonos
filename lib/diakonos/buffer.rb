@@ -676,19 +676,39 @@ module Diakonos
     def delete_to_and_from( char )
       removeSelection( DONT_DISPLAY )  if selection_mark
 
+      start_char = end_char = char
+      case char
+        when '('
+          end_char = ')'
+        when '{'
+          end_char = '}'
+        when '['
+          end_char = ']'
+        when '<'
+          end_char = '>'
+        when ')'
+          start_char = '('
+        when '}'
+          start_char = '{'
+        when ']'
+          start_char = '['
+        when '>'
+          start_char = '<'
+      end
+
       row = @last_row
-      start_index = @lines[ @last_row ].rindex( char, @last_col )
+      start_index = @lines[ @last_row ].rindex( start_char, @last_col )
       while row > 0 && start_index.nil?
         row -= 1
-        start_index = @lines[ row ].rindex( char )
+        start_index = @lines[ row ].rindex( start_char )
       end
       start_row = row
 
       row = @last_row
-      end_index = @lines[ row ].index( char, @last_col+1 )
+      end_index = @lines[ row ].index( end_char, @last_col+1 )
       while row < @lines.length - 1 && end_index.nil?
         row += 1
-        end_index = @lines[ row ].index( char )
+        end_index = @lines[ row ].index( end_char )
       end
       end_row = row
 
