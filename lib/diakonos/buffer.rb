@@ -641,44 +641,60 @@ module Diakonos
       retval
     end
 
+    def delete_from_to( row_from, col_from, row_to, col_to )
+      takeSnapshot
+      if row_to == row_from
+        retval = [ @lines[ row_to ].slice!( col_from, col_to - col_from ) ]
+      else
+        pre_head = @lines[ row_from ][ 0...col_from ]
+        post_tail = @lines[ row_to ][ col_to..-1 ]
+        head = @lines[ row_from ].slice!( col_from..-1 )
+        tail = @lines[ row_to ].slice!( 0...col_to )
+        retval = [ head ] + @lines.slice!( row_from + 1, row_to - row_from ) + [ tail ]
+        @lines[ row_from ] = pre_head + post_tail
+      end
+      setModified
+      retval
+    end
+
     def delete_to( char )
       removeSelection( DONT_DISPLAY )  if selection_mark
-      takeSnapshot
 
       first_row = row = @last_row
-      retval = nil
-      while row < @lines.length && retval.nil?
-        index = @lines[ row ].index( char, @last_col+1 )
-        if index
-          if row == first_row
-            retval = [ @lines[ row ].slice!( @last_col, index - @last_col ) ]
-          else
-            pre_head = @lines[ first_row ][ 0...@last_col ]
-            post_tail = @lines[ row ][ index..-1 ]
-            head = @lines[ first_row ].slice!( @last_col..-1 )
-            tail = @lines[ row ].slice!( 0...index )
-            retval = [ head ] + @lines.slice!( first_row + 1, row - first_row ) + [ tail ]
-            @lines[ first_row ] = pre_head + post_tail
-          end
-          setModified
-        end
+      index = @lines[ @last_row ].index( char, @last_col+1 )
+
+      while row < @lines.length - 1 && index.nil?
         row += 1
+        index = @lines[ row ].index( char )
       end
 
-      retval
+      if index
+        delete_from_to( first_row, @last_col, row, index )
+      end
     end
 
     def delete_to_and_from( char )
       removeSelection( DONT_DISPLAY )  if selection_mark
-      takeSnapshot
-      index_before = @lines[ @last_row ].rindex( char, @last_col )
-      index_after = @lines[ @last_row ].index( char, @last_col+1 )
-      if index_before && index_after
-        index_before += 1
-        retval = @lines[ @last_row ].slice!( index_before, index_after - index_before )
-        cursorTo( @last_row, index_before )
-        setModified
-        retval
+
+      row = @last_row
+      start_index = @lines[ @last_row ].rindex( char, @last_col )
+      while row > 0 && start_index.nil?
+        row -= 1
+        start_index = @lines[ row ].rindex( char )
+      end
+      start_row = row
+
+      row = @last_row
+      end_index = @lines[ row ].index( char, @last_col+1 )
+      while row < @lines.length - 1 && end_index.nil?
+        row += 1
+        end_index = @lines[ row ].index( char )
+      end
+      end_row = row
+
+      if start_index && end_index
+        cursorTo( start_row, start_index+1 )
+        delete_from_to( start_row, start_index+1, end_row, end_index )
       end
     end
 
