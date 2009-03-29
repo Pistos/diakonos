@@ -1,0 +1,15 @@
+# Column Markers
+
+You can define column markers using the view.column_markers.* settings.  You
+might use a column marker as a visual cue to help you not exceed a certain line
+length.  You can set up as many column markers as you like.
+
+## Example of a column marker
+
+view.column_markers.margin.column 80
+view.column_markers.margin.format 9
+
+Adding these lines to your configuration would set up a column marker named
+'margin'.  The name 'margin' is arbitrary; use whatever string you want for your
+markers.  The 'margin' marker would highlight the 80th column using the format
+code 9 (white on red in the default 16-colour configuration).
