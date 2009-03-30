@@ -13,15 +13,21 @@ module Diakonos
       end
     end
 
+    # Begins selecting text by anchoring (marking) the start of a selection.
     def anchorSelection
       @current_buffer.anchorSelection
       updateStatusLine
     end
 
+    # Move one character left, then delete one character.
+    #
+    # @see Diakonos::Buffer#delete
     def backspace
       delete  if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
     end
 
+    # Insert a carriage return (newline) at the current cursor location.
+    # Deletes any currently selected text.
     def carriageReturn
       @current_buffer.carriageReturn
       @current_buffer.deleteSelection
@@ -52,6 +58,8 @@ module Diakonos
       end
     end
 
+    # Removes the highlighting from any text that matches the most recent
+    # search.
     def clearMatches
       @current_buffer.clearMatches Buffer::DO_DISPLAY
     end
@@ -60,7 +68,15 @@ module Diakonos
       @current_buffer.close_code
     end
 
-    # Returns the choice the user made, or nil if the user was not prompted to choose.
+    # Closes a buffer.
+    #
+    # @param [Diakonos::Buffer] buffer
+    #   The buffer to close.  If no buffer is provided, defaults to the current buffer.
+    # @param [Fixnum] to_all
+    #   the CHOICE to assume for the prompt.
+    # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
+    # @see Diakonos::CHOICE_YES
+    # @see Diakonos::CHOICE_NO
     def closeFile( buffer = @current_buffer, to_all = nil )
       return nil if buffer.nil?
 
