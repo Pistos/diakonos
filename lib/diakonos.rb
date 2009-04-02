@@ -393,7 +393,7 @@ module Diakonos
         puts
         puts inst[ :dirs ].sort.map { |d| "#{d}/" }.join( "\n" )
         puts
-        puts "The above files and directories will be removed.  Proceed?  (y/n)"
+        puts "The above files will be removed.  The above directories will be removed if they are empty.  Proceed?  (y/n)"
         answer = $stdin.gets
         case answer
         when /^y/i
@@ -409,7 +409,11 @@ module Diakonos
         FileUtils.rm f
       end
       inst[ :dirs ].sort { |d1,d2| d2.length <=> d1.length }.each do |d|
-        FileUtils.rm_r d
+        begin
+          FileUtils.rmdir d
+        rescue Errno::ENOTEMPTY
+          $stderr.puts "(#{d} not empty -- not removed)"
+        end
       end
 
       exit 0
