@@ -3,6 +3,7 @@
 require './lib/diakonos/version.rb'
 require 'fileutils'
 require 'pp'
+require 'rbconfig'
 
 module Diakonos
   class Installer
@@ -133,9 +134,9 @@ end
 
     def install_( source, dest )
       # Rewrite bang line
-      current_interpreter = File.readlink( "/proc/#{Process.pid}/exe" )
+      ruby = File.join( RbConfig::CONFIG.values_at( 'bindir', 'ruby_install_name' ) )
       tmp = "diakonos-#{rand(9999999)}.tmp"
-      command = %{/bin/bash -c 'cat <( echo "#!#{current_interpreter}" ) <( tail -n +2 #{source} ) > #{tmp}'}
+      command = %{/bin/bash -c 'cat <( echo "#!#{ruby}" ) <( tail -n +2 #{source} ) > #{tmp}'}
       if @verbose
         puts command
       end
