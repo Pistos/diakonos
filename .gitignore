@@ -1,2 +1,4 @@
 *.gem
 spec/temp-file.rb
+*.tar.bz2
+*.tar.gz
