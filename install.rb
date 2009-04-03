@@ -100,7 +100,7 @@ module Diakonos
     end
 
     def write_installation_settings
-      installation_file = File.join( @lib_dir, 'diakonos', 'installation.rb' )
+      installation_file = File.join( @dest_dir, @lib_dir, 'diakonos', 'installation.rb' )
       if @verbose
         puts "Writing installation settings to #{installation_file}"
       end
