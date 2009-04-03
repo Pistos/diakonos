@@ -412,7 +412,9 @@ module Diakonos
         begin
           FileUtils.rmdir d
         rescue Errno::ENOTEMPTY
-          $stderr.puts "(#{d} not empty -- not removed)"
+        end
+        if File.exists? d
+          $stderr.puts "(#{d} not removed)"
         end
       end
 
