@@ -1,8 +1,4 @@
 class String
-    def subHome
-      gsub( /~/, ENV[ "HOME" ] )
-    end
-
     def keyCode
       retval = nil
       case downcase

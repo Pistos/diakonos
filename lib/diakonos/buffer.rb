@@ -42,7 +42,7 @@ module Diakonos
       @buffer_states = Array.new
       @cursor_states = Array.new
       if @name
-        @name = @name.subHome
+        @name = File.expand_path( @name )
         if FileTest.exists? @name
           @lines = IO.readlines( @name )
           if ( @lines.length == 0 ) or ( @lines[ -1 ][ -1..-1 ] == "\n" )
@@ -337,7 +337,7 @@ module Diakonos
 
     def save( filename = nil, prompt_overwrite = DONT_PROMPT_OVERWRITE )
       if filename
-        name = filename.subHome
+        name = File.expand_path( filename )
       else
         name = @name
       end
@@ -396,7 +396,7 @@ module Diakonos
     def saveCopy( filename )
       return false if filename.nil?
 
-      name = filename.subHome
+      name = File.expand_path( filename )
 
       File.open( name, "w" ) do |f|
         @lines[ 0..-2 ].each do |line|

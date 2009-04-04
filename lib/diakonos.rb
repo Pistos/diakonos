@@ -91,7 +91,7 @@ module Diakonos
     include ::Diakonos::Functions
 
     def initialize( argv = [] )
-      @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
+      @diakonos_home = File.expand_path( ( ENV[ 'HOME' ] || '' ) + '/.diakonos' )
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir

@@ -1,13 +1,6 @@
 require 'spec/preparation'
 
 describe 'A String' do
-  it 'can substitute the user\'s home directory' do
-    "/test".subHome.should.equal "/test"
-    "~/test".subHome.should.equal "#{ENV[ 'HOME' ]}/test"
-    "/this/is/~/test".subHome.should.equal "/this/is/#{ENV[ 'HOME' ]}/test"
-    "~".subHome.should.equal ENV[ 'HOME' ]
-  end
-
   it 'can be interpreted as and converted to a boolean' do
     "true".to_b.should.be.true
     "True".to_b.should.be.true

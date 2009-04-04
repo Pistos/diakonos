@@ -208,7 +208,7 @@ module Diakonos
         len = @input.length
         matches = @completion_array.find_all { |el| el[ 0...len ] == @input and len <= el.length }
       else
-        matches = Dir.glob( ( @input.subHome() + "*" ).gsub( /\*\*/, "*" ) )
+        matches = Dir.glob( ( File.expand_path( @input ) + "*" ).gsub( /\*\*/, "*" ) )
         if @on_dirs == :accept_dirs
           matches = matches.select { |m| File.directory? m }
         end

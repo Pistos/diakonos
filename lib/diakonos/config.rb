@@ -148,7 +148,7 @@ module Diakonos
 
         case command
         when "include"
-          parseConfigurationFile arg.subHome
+          parseConfigurationFile File.expand_path( arg )
         when "key"
           if arg
             if /  / === arg
@@ -250,7 +250,7 @@ module Diakonos
         when /view\.column_markers\.(.+?)\.format/
           @column_markers[ $1 ][ :format ] = arg.toFormatting
         when "logfile"
-          @logfilename = arg.subHome
+          @logfilename = File.expand_path( arg )
         when "context.separator", "status.left", "status.right", "status.filler",
             "status.modified_str", "status.unnamed_str", "status.selecting_str",
             "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
