@@ -1,4 +1,78 @@
 module Diakonos
+  module Keying
+    def self.keycode_for( str )
+      retval = nil
+      case str.downcase
+      when "down"
+        retval = Curses::KEY_DOWN
+      when "up"
+        retval = Curses::KEY_UP
+      when "left"
+        retval = Curses::KEY_LEFT
+      when "right"
+        retval = Curses::KEY_RIGHT
+      when "home"
+        retval = Curses::KEY_HOME
+      when "end"
+        retval = Curses::KEY_END
+      when "insert", "ins"
+        retval = Curses::KEY_IC
+      when "delete", "del"
+        retval = Curses::KEY_DC
+      when "backspace"
+        retval = ::Diakonos::BACKSPACE
+      when "tab"
+        retval = 9
+      when "pageup", "page-up"
+        retval = Curses::KEY_PPAGE
+      when "pagedown", "page-down"
+        retval = Curses::KEY_NPAGE
+      when "enter", "return"
+        retval = ::Diakonos::ENTER
+      when "numpad7", "keypad7", "kp-7"
+        retval = Curses::KEY_A1
+      when "numpad9", "keypad9", "kp-9"
+        retval = Curses::KEY_A3
+      when "numpad5", "keypad5", "kp-5"
+        retval = Curses::KEY_B2
+      when "numpad1", "keypad1", "kp-1"
+        retval = Curses::KEY_C1
+      when "numpad3", "keypad3", "kp-3"
+        retval = Curses::KEY_C3
+      when "escape", "esc"
+        retval = ::Diakonos::ESCAPE
+      when "space"
+        retval = 32
+      when "ctrl+space"
+        retval = 0
+      when "find"
+        retval = Curses::KEY_FIND
+      when "select"
+        retval = Curses::KEY_SELECT
+      when "suspend"
+        retval = Curses::KEY_SUSPEND
+      when /^f(\d\d?)$/
+        retval = Curses::KEY_F0 + $1.to_i
+      when /^ctrl\+[a-gi-z]$/
+        retval = str.downcase[ -1 ].ord - 96
+      when /^ctrl\+h$/
+        retval = ::Diakonos::CTRL_H
+      when /^alt\+(.)$/
+        retval = [ ::Diakonos::ESCAPE, $1[ 0 ].ord ]
+      when /^ctrl\+alt\+(.)$/, /^alt\+ctrl\+(.)$/
+        retval = [ ::Diakonos::ESCAPE, str.downcase[ -1 ].ord - 96 ]
+      when /^keycode(\d+)$/
+        retval = $1.to_i
+      when /^.$/
+        retval = str[ 0 ].ord
+      end
+      if retval.class != Array
+        retval = [ retval ]
+      end
+      retval
+    end
+  end
+
   class Diakonos
     def capture_keychain( c, context )
       if c == ENTER

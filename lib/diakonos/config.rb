@@ -158,7 +158,7 @@ module Diakonos
             end
             keystrokes = Array.new
             keystrings.split( /\s+/ ).each do |ks_str|
-              code = ks_str.keyCode
+              code = Keying.keycode_for( ks_str )
               if code
                 keystrokes.concat code
               else
