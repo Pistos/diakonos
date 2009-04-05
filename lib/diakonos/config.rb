@@ -189,8 +189,8 @@ module Diakonos
         when /^colou?r$/
           number, fg, bg = arg.split( /\s+/ )
           number = number.to_i
-          fg = fg.toColourConstant
-          bg = bg.toColourConstant
+          fg = Display.to_colour_constant( fg )
+          bg = Display.to_colour_constant( bg )
           @colour_pairs << {
             :number => number,
             :fg => fg,

@@ -1,5 +1,27 @@
 module Diakonos
   module Display
+    def self.to_colour_constant( str )
+      case str.downcase
+      when "black", "0"
+        Curses::COLOR_BLACK
+      when "red", "1"
+        Curses::COLOR_RED
+      when "green", "2"
+        Curses::COLOR_GREEN
+      when "yellow", "brown", "3"
+        Curses::COLOR_YELLOW
+      when "blue", "4"
+        Curses::COLOR_BLUE
+      when "magenta", "purple", "5"
+        Curses::COLOR_MAGENTA
+      when "cyan", "6"
+        Curses::COLOR_CYAN
+      when "white", "7"
+        Curses::COLOR_WHITE
+      else
+        str.to_i
+      end
+    end
 
     def self.to_formatting( str )
       formatting = Curses::A_NORMAL
