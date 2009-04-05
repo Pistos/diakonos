@@ -8,10 +8,10 @@ module Diakonos
     def cleanup_display
       return  if @testing
 
-      @win_main.close if @win_main
-      @win_status.close if @win_status
-      @win_interaction.close if @win_interaction
-      @win_context.close if @win_context
+      @win_main.close          if @win_main
+      @win_status.close        if @win_status
+      @win_interaction.close   if @win_interaction
+      @win_context.close       if @win_context
       @win_line_numbers.close  if @win_line_numbers
 
       Curses::close_screen
