@@ -183,9 +183,9 @@ module Diakonos
           language = $1
           token_class = $2
           @token_formats[ language ] = ( @token_formats[ language ] or Hash.new )
-          @token_formats[ language ][ token_class ] = arg.toFormatting
+          @token_formats[ language ][ token_class ] = Display.to_formatting( arg )
         when /^lang\.(.+?)\.format\..+$/
-          @settings[ command ] = arg.toFormatting
+          @settings[ command ] = Display.to_formatting( arg )
         when /^colou?r$/
           number, fg, bg = arg.split( /\s+/ )
           number = number.to_i
@@ -246,9 +246,9 @@ module Diakonos
             'find.show_context_after'
           @settings[ command ] = arg.to_b
         when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
-          @settings[ command ] = arg.toFormatting
+          @settings[ command ] = Display.to_formatting( arg )
         when /view\.column_markers\.(.+?)\.format/
-          @column_markers[ $1 ][ :format ] = arg.toFormatting
+          @column_markers[ $1 ][ :format ] = Display.to_formatting( arg )
         when "logfile"
           @logfilename = File.expand_path( arg )
         when "context.separator", "status.left", "status.right", "status.filler",
