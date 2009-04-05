@@ -3,44 +3,49 @@ module Diakonos
 
     def self.to_formatting( str )
       formatting = Curses::A_NORMAL
+
       str.split( /\s+/ ).each do |format|
-        case format.downcase
-        when "normal"
+        colour_number = format.to_i
+        if colour_number > Curses::COLOR_WHITE
+          formatting |= Curses::color_pair( colour_number )
+        elsif format.downcase == 'normal'
           formatting = Curses::A_NORMAL
-        when "black", "0"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_BLACK )
-        when "red", "1"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_RED )
-        when "green", "2"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_GREEN )
-        when "yellow", "brown", "3"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_YELLOW )
-        when "blue", "4"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_BLUE )
-        when "magenta", "purple", "5"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_MAGENTA )
-        when "cyan", "6"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_CYAN )
-        when "white", "7"
-          formatting = formatting | Curses::color_pair( Curses::COLOR_WHITE )
-        when "standout", "s", "so"
-          formatting = formatting | Curses::A_STANDOUT
-        when "underline", "u", "un", "ul"
-          formatting = formatting | Curses::A_UNDERLINE
-        when "reverse", "r", "rev", "inverse", "i", "inv"
-          formatting = formatting | Curses::A_REVERSE
-        when "blink", "bl", "blinking"
-          formatting = formatting | Curses::A_BLINK
-        when "dim", "d"
-          formatting = formatting | Curses::A_DIM
-        when "bold", "b", "bo"
-          formatting = formatting | Curses::A_BOLD
         else
-          if ( colour_number = format.to_i ) > Curses::COLOR_WHITE
-            formatting = formatting | Curses::color_pair( colour_number )
+          formatting |= case format.downcase
+          when "black", "0"
+            Curses::color_pair( Curses::COLOR_BLACK )
+          when "red", "1"
+            Curses::color_pair( Curses::COLOR_RED )
+          when "green", "2"
+            Curses::color_pair( Curses::COLOR_GREEN )
+          when "yellow", "brown", "3"
+            Curses::color_pair( Curses::COLOR_YELLOW )
+          when "blue", "4"
+            Curses::color_pair( Curses::COLOR_BLUE )
+          when "magenta", "purple", "5"
+            Curses::color_pair( Curses::COLOR_MAGENTA )
+          when "cyan", "6"
+            Curses::color_pair( Curses::COLOR_CYAN )
+          when "white", "7"
+            Curses::color_pair( Curses::COLOR_WHITE )
+          when "standout", "s", "so"
+            Curses::A_STANDOUT
+          when "underline", "u", "un", "ul"
+            Curses::A_UNDERLINE
+          when "reverse", "r", "rev", "inverse", "i", "inv"
+            Curses::A_REVERSE
+          when "blink", "bl", "blinking"
+            Curses::A_BLINK
+          when "dim", "d"
+            Curses::A_DIM
+          when "bold", "b", "bo"
+            Curses::A_BOLD
+          else
+            0
           end
         end
       end
+
       formatting
     end
 
