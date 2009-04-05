@@ -158,11 +158,11 @@ module Diakonos
             end
             keystrokes = Array.new
             keystrings.split( /\s+/ ).each do |ks_str|
-              code = Keying.keycode_for( ks_str )
-              if code.empty?
+              codes = Keying.keycodes_for( ks_str )
+              if codes.empty?
                 puts "Unknown keystring: #{ks_str}"
               else
-                keystrokes.concat code
+                keystrokes.concat codes
               end
             end
             if function_and_args.nil?

@@ -1,6 +1,6 @@
 module Diakonos
   module Keying
-    def self.keycode_for( str )
+    def self.keycodes_for( str )
       retval = case str.downcase
       when "down"
         Curses::KEY_DOWN
