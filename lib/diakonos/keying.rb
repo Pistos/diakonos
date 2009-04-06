@@ -70,11 +70,24 @@ module Diakonos
   end
 
   class Diakonos
+    def keychain_str_for( array )
+      chain_str = ""
+      array.each do |key|
+        key_str = key.keyString
+        if key_str
+          chain_str << key_str + " "
+        else
+          chain_str << key.to_s + " "
+        end
+      end
+      chain_str.strip
+    end
+
     def capture_keychain( c, context )
       if c == ENTER
         @capturing_keychain = false
         @current_buffer.deleteSelection
-        str = context.to_keychain_s.strip
+        str = keychain_str_for( context )
         @current_buffer.insertString str
         cursorRight( Buffer::STILL_TYPING, str.length )
       else
@@ -88,9 +101,9 @@ module Diakonos
 
         partial_keychain = @keychains.getNode( keychain_pressed )
         if partial_keychain
-          setILine( "Part of existing keychain: " + keychain_pressed.to_keychain_s + "..." )
+          setILine( "Part of existing keychain: " + keychain_str_for( keychain_pressed ) + "..." )
         else
-          setILine keychain_pressed.to_keychain_s + "..."
+          setILine keychain_str_for( keychain_pressed ) + "..."
         end
         processKeystroke( keychain_pressed )
       end
@@ -108,14 +121,14 @@ module Diakonos
 
         if function_and_args
           function, args = function_and_args
-          setILine "#{keychain_pressed.to_keychain_s.strip}  ->  #{function}( #{args} )"
+          setILine "#{keychain_str_for( keychain_pressed )}  ->  #{function}( #{args} )"
         else
           partial_keychain = @keychains.getNode( keychain_pressed )
           if partial_keychain
-            setILine( "Several mappings start with: " + keychain_pressed.to_keychain_s + "..." )
+            setILine( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
             processKeystroke( keychain_pressed )
           else
-            setILine "There is no mapping for " + keychain_pressed.to_keychain_s
+            setILine "There is no mapping for " + keychain_str_for( keychain_pressed )
           end
         end
       end
@@ -174,10 +187,10 @@ module Diakonos
         else
           partial_keychain = @keychains.getNode( keychain_pressed )
           if partial_keychain
-            setILine( keychain_pressed.to_keychain_s + "..." )
+            setILine( keychain_str_for( keychain_pressed ) + "..." )
             processKeystroke( keychain_pressed )
           else
-            setILine "Nothing assigned to #{keychain_pressed.to_keychain_s}"
+            setILine "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
           end
         end
       end
