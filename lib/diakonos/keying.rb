@@ -117,58 +117,56 @@ module Diakonos
     end
 
     def self.key_string_for( num )
-      if num.class == Fixnum
-        retval = KEYSTRINGS[ num ]
-      end
+      retval = KEYSTRINGS[ num ]
       if retval.nil?
-        case num
+        retval = case num
         when Curses::KEY_DOWN
-          retval = "down"
+          "down"
         when Curses::KEY_UP
-          retval = "up"
+          "up"
         when Curses::KEY_LEFT
-          retval = "left"
+          "left"
         when Curses::KEY_RIGHT
-          retval = "right"
+          "right"
         when Curses::KEY_HOME
-          retval = "home"
+          "home"
         when Curses::KEY_END
-          retval = "end"
+          "end"
         when Curses::KEY_IC
-          retval = "insert"
+          "insert"
         when Curses::KEY_DC
-          retval = "delete"
+          "delete"
         when Curses::KEY_PPAGE
-          retval = "page-up"
+          "page-up"
         when Curses::KEY_NPAGE
-          retval = "page-down"
+          "page-down"
         when Curses::KEY_A1
-          retval = "numpad7"
+          "numpad7"
         when Curses::KEY_A3
-          retval = "numpad9"
+          "numpad9"
         when Curses::KEY_B2
-          retval = "numpad5"
+          "numpad5"
         when Curses::KEY_C1
-          retval = "numpad1"
+          "numpad1"
         when Curses::KEY_C3
-          retval = "numpad3"
+          "numpad3"
         when Curses::KEY_FIND
-          retval = "find"
+          "find"
         when Curses::KEY_SELECT
-          retval = "select"
+          "select"
         when Curses::KEY_SUSPEND
-          retval = "suspend"
+          "suspend"
         when Curses::KEY_F0..(Curses::KEY_F0 + 24)
-          retval = "f" + (self - Curses::KEY_F0).to_s
+          "f" + (self - Curses::KEY_F0).to_s
         when CTRL_H
-          retval = "ctrl+h"
+          "ctrl+h"
         when Curses::KEY_RESIZE
-          retval = "resize"
+          "resize"
         when RESIZE2
-          retval = "resize2"
+          "resize2"
         end
       end
-      if retval.nil? and num.class == Fixnum
+      if retval.nil? && num.class == Fixnum
         retval = "keycode#{num}"
       end
       retval
