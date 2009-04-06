@@ -561,22 +561,20 @@ module Diakonos
     end
 
     def direction_of( str, default = :down )
-      direction = nil
-      case self
+      case str
       when "up"
-        direction = :up
+        :up
       when /other/
-        direction = :opposite
+        :opposite
       when "down"
-        direction = :down
+        :down
       when "forward"
-        direction = :forward
+        :forward
       when "backward"
-        direction = :backward
+        :backward
       else
-        direction = default
+        default
       end
-      direction
     end
 
   end
