@@ -1,8 +1,9 @@
 require 'spec/preparation'
 
 describe 'A Diakonos::Buffer' do
-  SAMPLE_FILE = File.dirname( File.expand_path( __FILE__ ) ) + '/sample-file.rb'
-  TEMP_FILE = File.dirname( File.expand_path( __FILE__ ) ) + '/temp-file.rb'
+  TEST_DIR = File.dirname( File.expand_path( __FILE__ ) )
+  SAMPLE_FILE = TEST_DIR + '/sample-file.rb'
+  TEMP_FILE = TEST_DIR + '/temp-file.rb'
 
   before do
     @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
@@ -63,6 +64,40 @@ describe 'A Diakonos::Buffer' do
     @b.indentation_level( 18 ).should.equal 0
     @b.indentation_level( 19 ).should.equal 0
     @b.indentation_level( 20 ).should.equal 0
+
+    indentation_file = File.join( TEST_DIR, 'test-files', 'indentation.test1' )
+    b2 = Diakonos::Buffer.new( $diakonos, indentation_file, indentation_file )
+    indentation_file = File.join( TEST_DIR, 'test-files', 'indentation.test2' )
+    b3 = Diakonos::Buffer.new( $diakonos, indentation_file, indentation_file )
+
+    b2.indentation_level( 0 ).should.equal 0
+    b3.indentation_level( 0 ).should.equal 0
+    b2.indentation_level( 1 ).should.equal 0
+    b3.indentation_level( 1 ).should.equal 0
+    b2.indentation_level( 2 ).should.equal 1
+    b3.indentation_level( 2 ).should.equal 0
+    b2.indentation_level( 3 ).should.equal 1
+    b3.indentation_level( 3 ).should.equal 1
+    b2.indentation_level( 4 ).should.equal 2
+    b3.indentation_level( 4 ).should.equal 1
+    b2.indentation_level( 5 ).should.equal 2
+    b3.indentation_level( 5 ).should.equal 2
+    b2.indentation_level( 6 ).should.equal 2
+    b3.indentation_level( 6 ).should.equal 2
+    b2.indentation_level( 7 ).should.equal 4
+    b3.indentation_level( 7 ).should.equal 4
+    b2.indentation_level( 8 ).should.equal 3
+    b3.indentation_level( 8 ).should.equal 2
+    b2.indentation_level( 9 ).should.equal 3
+    b3.indentation_level( 9 ).should.equal 3
+    b2.indentation_level( 10 ).should.equal 4
+    b3.indentation_level( 10 ).should.equal 4
+    b2.indentation_level( 11 ).should.equal 5
+    b3.indentation_level( 11 ).should.equal 4
+    b2.indentation_level( 12 ).should.equal 5
+    b3.indentation_level( 12 ).should.equal 4
+    b2.indentation_level( 13 ).should.equal 5
+    b3.indentation_level( 13 ).should.equal 5
   end
 
   def indent_rows( from_row = 0, to_row = 20 )

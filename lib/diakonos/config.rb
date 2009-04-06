@@ -299,7 +299,6 @@ module Diakonos
         end
       end
     end
-    protected :parseConfigurationFile
 
   end
 end

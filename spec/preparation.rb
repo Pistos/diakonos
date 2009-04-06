@@ -6,3 +6,4 @@ require 'diakonos'
 
 $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
 $diakonos.start
+$diakonos.parseConfigurationFile( File.join( __DIR__, 'test-files', 'test.conf' ) )

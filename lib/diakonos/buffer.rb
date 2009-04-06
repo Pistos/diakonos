@@ -1095,12 +1095,32 @@ module Diakonos
     end
 
     def indentation_level( row, use_indent_ignore = USE_INDENT_IGNORE )
-      @lines[ row ].indentation_level(
-        @indent_size,
-        @indent_roundup,
-        @tab_size,
-        use_indent_ignore ? @indent_ignore_charset : nil
-      )
+      line = @lines[ row ]
+
+      if use_indent_ignore
+        if line =~ /^[\s#{@indent_ignore_charset}]*$/ or line == ""
+          level = 0
+        elsif line =~ /^([\s#{@indent_ignore_charset}]+)[^\s#{@indent_ignore_charset}]/
+          whitespace = $1.expandTabs( @tab_size )
+          level = whitespace.length / @indent_size
+          if @indent_roundup && ( whitespace.length % @indent_size > 0 )
+            level += 1
+          end
+        else
+          level = 0
+        end
+      else
+        level = 0
+        if line =~ /^([\s]+)/
+          whitespace = $1.expandTabs( @tab_size )
+          level = whitespace.length / @indent_size
+          if @indent_roundup && ( whitespace.length % @indent_size > 0 )
+            level += 1
+          end
+        end
+      end
+
+      level
     end
 
     def parsedIndent( row = @last_row, do_display = DO_DISPLAY )

@@ -46,57 +46,6 @@ describe 'A String' do
     "foobar".to_b.should.be.false
   end
 
-  it 'knows its own indentation level' do
-    s = ""
-    s.indentation_level( 4, true ).should.equal 0
-    s.indentation_level( 4, false ).should.equal 0
-    s = "  "
-    s.indentation_level( 4, true ).should.equal 1
-    s.indentation_level( 4, false ).should.equal 0
-    s = "    "
-    s.indentation_level( 4, true ).should.equal 1
-    s.indentation_level( 4, false ).should.equal 1
-    s = "x"
-    s.indentation_level( 4, true ).should.equal 0
-    s.indentation_level( 4, false ).should.equal 0
-    s = "  x"
-    s.indentation_level( 4, true ).should.equal 1
-    s.indentation_level( 4, false ).should.equal 0
-    s = "    x"
-    s.indentation_level( 4, true ).should.equal 1
-    s.indentation_level( 4, false ).should.equal 1
-    s = "      x"
-    s.indentation_level( 4, true ).should.equal 2
-    s.indentation_level( 4, false ).should.equal 1
-    s = "        x"
-    s.indentation_level( 4, true ).should.equal 2
-    s.indentation_level( 4, false ).should.equal 2
-    s = "\tx"
-    s.indentation_level( 4, true, 8 ).should.equal 2
-    s.indentation_level( 4, false, 8 ).should.equal 2
-    s = "\t\tx"
-    s.indentation_level( 4, true, 8 ).should.equal 4
-    s.indentation_level( 4, false, 8 ).should.equal 4
-    s = "\t  x"
-    s.indentation_level( 4, true, 8 ).should.equal 3
-    s.indentation_level( 4, false, 8 ).should.equal 2
-    s = "\t    x"
-    s.indentation_level( 4, true, 8 ).should.equal 3
-    s.indentation_level( 4, false, 8 ).should.equal 3
-    s = "\t  \tx"
-    s.indentation_level( 4, true, 8 ).should.equal 4
-    s.indentation_level( 4, false, 8 ).should.equal 4
-    s = "\t  \t  x"
-    s.indentation_level( 4, true, 8 ).should.equal 5
-    s.indentation_level( 4, false, 8 ).should.equal 4
-    s = "\t  \t   x"
-    s.indentation_level( 4, true, 8 ).should.equal 5
-    s.indentation_level( 4, false, 8 ).should.equal 4
-    s = "\t  \t    x"
-    s.indentation_level( 4, true, 8 ).should.equal 5
-    s.indentation_level( 4, false, 8 ).should.equal 5
-  end
-
   it 'can expand its tabs' do
     s = "              "
     s.expandTabs( 8 ).should.equal s

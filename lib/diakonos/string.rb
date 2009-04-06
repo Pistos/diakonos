@@ -8,33 +8,6 @@ class String
       end
     end
 
-    def indentation_level( indent_size, indent_roundup, tab_size = Diakonos::DEFAULT_TAB_SIZE, indent_ignore_charset = nil )
-      if indent_ignore_charset.nil?
-        level = 0
-        if self =~ /^([\s]+)/
-          whitespace = $1.expandTabs( tab_size )
-          level = whitespace.length / indent_size
-          if indent_roundup and ( whitespace.length % indent_size > 0 )
-            level += 1
-          end
-        end
-      else
-        if self =~ /^[\s#{indent_ignore_charset}]*$/ or self == ""
-          level = 0
-        elsif self =~ /^([\s#{indent_ignore_charset}]+)[^\s#{indent_ignore_charset}]/
-          whitespace = $1.expandTabs( tab_size )
-          level = whitespace.length / indent_size
-          if indent_roundup and ( whitespace.length % indent_size > 0 )
-            level += 1
-          end
-        else
-          level = 0
-        end
-      end
-
-      level
-    end
-
     def expandTabs( tab_size = Diakonos::DEFAULT_TAB_SIZE )
       s = dup
       while s.sub!( /\t/ ) { |match_text|
