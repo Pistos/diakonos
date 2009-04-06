@@ -8,12 +8,11 @@ class String
       end
     end
 
-    def expandTabs( tab_size = Diakonos::DEFAULT_TAB_SIZE )
+    def expandTabs( tab_size )
       s = dup
       while s.sub!( /\t/ ) { |match_text|
         match = Regexp.last_match
         index = match.begin( 0 )
-        # Return value for block:
         " " * ( tab_size - ( index % tab_size ) )
       }
       end
