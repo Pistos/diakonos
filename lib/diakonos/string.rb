@@ -117,10 +117,6 @@ class String
       [ i, match_text ]
     end
 
-    def movement?
-      self =~ /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/
-    end
-
     # Backport of Ruby 1.9's String#ord into Ruby 1.8
     if ! method_defined?( :ord )
       def ord
