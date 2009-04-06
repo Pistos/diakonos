@@ -267,7 +267,7 @@ module Diakonos
     end
 
     def cursorReturn( dir_str = "backward" )
-      stack_pointer, stack_size = @current_buffer.cursorReturn( dir_str.toDirection( :backward ) )
+      stack_pointer, stack_size = @current_buffer.cursorReturn( direction_of( dir_str, :backward ) )
       setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
@@ -441,7 +441,7 @@ module Diakonos
     end
 
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
-      direction = dir_str.toDirection
+      direction = direction_of( dir_str )
       if regexp_source_.nil?
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copySelection[ 0 ]
@@ -476,7 +476,7 @@ module Diakonos
 
     def findAgain( dir_str = nil )
       if dir_str
-        direction = dir_str.toDirection
+        direction = direction_of( dir_str )
         @current_buffer.findAgain( @last_search_regexps, direction )
       else
         @current_buffer.findAgain( @last_search_regexps )
@@ -497,7 +497,7 @@ module Diakonos
         search_term = search_term_
       end
       if search_term
-        direction = dir_str.toDirection
+        direction = direction_of( dir_str )
         regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
         @current_buffer.find( regexp, :direction => direction )
         @last_search_regexps = regexp
@@ -1284,7 +1284,7 @@ module Diakonos
 
     def seek( regexp_source, dir_str = "down" )
       if regexp_source
-        direction = dir_str.toDirection
+        direction = direction_of( dir_str )
         regexp = Regexp.new( regexp_source )
         @current_buffer.seek( regexp, direction )
       end

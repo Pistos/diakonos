@@ -1,23 +1,4 @@
 class String
-    def toDirection( default = :down )
-      direction = nil
-      case self
-      when "up"
-        direction = :up
-      when /other/
-        direction = :opposite
-      when "down"
-        direction = :down
-      when "forward"
-        direction = :forward
-      when "backward"
-        direction = :backward
-      else
-        direction = default
-      end
-      direction
-    end
-
     def to_b
       case downcase
       when "true", "t", "1", "yes", "y", "on", "+"
