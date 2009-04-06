@@ -47,7 +47,6 @@ require 'diakonos/buffer-management'
 require 'diakonos/sessions'
 require 'diakonos/grep'
 
-require 'diakonos/keycode'
 require 'diakonos/text-mark'
 require 'diakonos/bookmark'
 require 'diakonos/ctag'
