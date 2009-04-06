@@ -18,10 +18,6 @@ class String
       direction
     end
 
-    def to_a
-      [ self ]
-    end
-
     def to_b
       case downcase
       when "true", "t", "1", "yes", "y", "on", "+"
