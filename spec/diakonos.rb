@@ -1,9 +1,6 @@
 require 'spec/preparation'
 
 describe 'Diakonos' do
-  TEST_DIR = File.join( File.dirname( File.expand_path( __FILE__ ) ), 'test-files' )
-  SAMPLE_FILE = File.join( TEST_DIR, '/sample-file.rb' )
-  TEMP_FILE = File.join( TEST_DIR, '/temp-file.rb' )
 
   before do
     @d = $diakonos
