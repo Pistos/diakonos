@@ -1,9 +1,9 @@
 require 'spec/preparation'
 
 describe 'A Diakonos::Buffer' do
-  TEST_DIR = File.dirname( File.expand_path( __FILE__ ) )
-  SAMPLE_FILE = TEST_DIR + '/sample-file.rb'
-  TEMP_FILE = TEST_DIR + '/temp-file.rb'
+  TEST_DIR = File.join( File.dirname( File.expand_path( __FILE__ ) ), 'test-files' )
+  SAMPLE_FILE = File.join( TEST_DIR, '/sample-file.rb' )
+  TEMP_FILE = File.join( TEST_DIR, '/temp-file.rb' )
 
   before do
     @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
@@ -65,9 +65,9 @@ describe 'A Diakonos::Buffer' do
     @b.indentation_level( 19 ).should.equal 0
     @b.indentation_level( 20 ).should.equal 0
 
-    indentation_file = File.join( TEST_DIR, 'test-files', 'indentation.test1' )
+    indentation_file = File.join( TEST_DIR, 'indentation.test1' )
     b2 = Diakonos::Buffer.new( $diakonos, indentation_file, indentation_file )
-    indentation_file = File.join( TEST_DIR, 'test-files', 'indentation.test2' )
+    indentation_file = File.join( TEST_DIR, 'indentation.test2' )
     b3 = Diakonos::Buffer.new( $diakonos, indentation_file, indentation_file )
 
     b2.indentation_level( 0 ).should.equal 0
