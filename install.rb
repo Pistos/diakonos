@@ -131,9 +131,15 @@ end
     end
 
     def cp_( source, dest )
-      cp source, File.join( @dest_dir, dest )
-      Array( source ).each do |file|
-        @installed_files << File.expand_path( File.join( dest, File.basename( file ) ) )
+      Array( source ).each do |item|
+        if File.directory? item
+          dir = "#{dest}/#{File.basename( item )}"
+          mkdir_ dir
+          cp_ Dir[ "#{item}/*" ], dir
+        else
+          cp item, File.join( @dest_dir, dest )
+          @installed_files << File.expand_path( File.join( dest, File.basename( item ) ) )
+        end
       end
     end
 
@@ -173,12 +179,8 @@ end
 
       dir = "#{@lib_dir}/diakonos"
       mkdir_ dir
-      lib_files = Dir[ 'lib/diakonos/*.rb' ].reject { |f| f =~ /installation\.rb/ }
+      lib_files = Dir[ 'lib/diakonos/*' ].reject { |f| f =~ /installation\.rb/ }
       cp_ lib_files, dir
-
-      dir = "#{@lib_dir}/diakonos/vendor"
-      mkdir_ dir
-      cp_ Dir[ 'lib/diakonos/vendor/*.rb' ], dir
 
       # Configuration
       mkdir_ @conf_dir
