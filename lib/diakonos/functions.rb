@@ -1330,7 +1330,7 @@ module Diakonos
     def subShellVariables( string )
       return  if string.nil?
 
-      retval = File.expand_path( string )
+      retval = string.dup
 
       # Current buffer filename
       retval.gsub!( /\$f/, ( $1 or "" ) + File.expand_path( @current_buffer.name || "" ) )
