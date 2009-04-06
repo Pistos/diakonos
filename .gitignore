@@ -1,6 +1,6 @@
 *.gem
 *.tar.bz2
 *.tar.gz
-spec/temp-file.rb
+spec/test-files/temp-file.rb
 .yardoc
 doc
