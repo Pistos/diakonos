@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.8.9
+
+- Numerous internal refactorings and reorganizations.
+
 0.8.8
 
 - New installation and uninstallation method: tarball + install.rb.
