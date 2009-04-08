@@ -28,7 +28,7 @@ module Diakonos
             end
           end
         end
-      rescue OpenURI::HTTPError => e
+      rescue SocketError, OpenURI::HTTPError => e
         $stderr.puts "Failed to fetch from #{location}."
       end
 
