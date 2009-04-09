@@ -1,6 +1,65 @@
 module Diakonos
 
   class Buffer
+
+    def findOpeningMatch( line, match_close = true, bos_allowed = true )
+      open_index = line.length
+      open_token_class = nil
+      open_match_text = nil
+      match = nil
+      match_text = nil
+      @token_regexps.each do |token_class,regexp|
+        if match = regexp.match( line )
+          if match.length > 1
+            index = match.begin 1
+            match_text = match[ 1 ]
+            whole_match_index = match.begin 0
+          else
+            whole_match_index = index = match.begin( 0 )
+            match_text = match[ 0 ]
+          end
+          if ( not regexp.uses_bos ) or ( bos_allowed and ( whole_match_index == 0 ) )
+            if index < open_index
+              if ( ( not match_close ) or @close_token_regexps[ token_class ] )
+                open_index = index
+                open_token_class = token_class
+                open_match_text = match_text
+              end
+            end
+          end
+        end
+      end
+
+      [ open_index, open_token_class, open_match_text ]
+    end
+
+    def findClosingMatch( line_, regexp, bos_allowed = true, start_at = 0 )
+      close_match_text = nil
+      close_index = nil
+      if start_at > 0
+        line = line_[ start_at..-1 ]
+      else
+        line = line_
+      end
+      line.scan( regexp ) do |m|
+        match = Regexp.last_match
+        if match.length > 1
+          index = match.begin 1
+          match_text = match[ 1 ]
+        else
+          index = match.begin 0
+          match_text = match[ 0 ]
+        end
+        if ( not regexp.uses_bos ) or ( bos_allowed and ( index == 0 ) )
+          close_index = index
+          close_match_text = match_text
+          break
+        end
+      end
+
+      [ close_index, close_match_text ]
+    end
+
     # Prints text to the screen, truncating where necessary.
     # Returns nil if the string is completely off-screen.
     # write_cursor_col is buffer-relative, not screen-relative
