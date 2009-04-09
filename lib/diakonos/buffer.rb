@@ -237,20 +237,6 @@ module Diakonos
       end
     end
 
-    def selected_lines
-      selection = selection_mark
-      if selection
-        if selection.end_col == 0
-          end_row = selection.end_row - 1
-        else
-          end_row = selection.end_row
-        end
-        @lines[ selection.start_row..end_row ]
-      else
-        [ @lines[ @last_row ] ]
-      end
-    end
-
     def columnize( delimiter = /=>?|:|,/, num_spaces_padding = 1 )
       takeSnapshot
 
