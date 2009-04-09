@@ -52,6 +52,7 @@ require 'diakonos/bookmark'
 require 'diakonos/ctag'
 require 'diakonos/finding'
 require 'diakonos/buffer'
+require 'diakonos/buffer/display'
 require 'diakonos/clipboard'
 require 'diakonos/readline'
 
