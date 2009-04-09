@@ -59,6 +59,7 @@ require 'diakonos/buffer/indentation'
 require 'diakonos/buffer/file'
 require 'diakonos/buffer/searching'
 require 'diakonos/buffer/selection'
+require 'diakonos/buffer/undo'
 require 'diakonos/clipboard'
 require 'diakonos/readline'
 
