@@ -611,7 +611,7 @@ module Diakonos
     end
 
     def goToTagUnderCursor
-      goToTag @current_buffer.wordUnderCursor
+      goToTag @current_buffer.word_under_cursor
     end
 
     def grep( regexp_source = nil )

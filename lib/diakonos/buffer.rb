@@ -634,7 +634,7 @@ module Diakonos
       end
     end
 
-    def wordUnderCursor
+    def word_under_cursor
       word = nil
 
       @lines[ @last_row ].scan( /\w+/ ) do |match_text|
