@@ -202,6 +202,103 @@ module Diakonos
       cursorTo( line || @last_row, column || 0, do_display )
     end
 
+    def go_block_outer
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      passed = false
+      new_level = initial_level
+      ( 0...@last_row ).reverse_each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if ! passed
+          passed = ( level < initial_level )
+          new_level = level
+        else
+          if level < new_level
+            new_row = ( row+1..@last_row ).find { |r|
+              ! @lines[ r ].strip.empty?
+            }
+            break
+          end
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_inner
+      initial_level = indentation_level( @last_row )
+      new_row = @lines.length
+      ( @last_row...@lines.length ).each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if level > initial_level
+          new_row = row
+          break
+        elsif level < initial_level
+          new_row = @last_row
+          break
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_next
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      passed = false
+      ( @last_row+1...@lines.length ).each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if ! passed
+          if level < initial_level
+            passed = true
+          end
+        else
+          if level == initial_level
+            new_row = row
+            break
+          elsif level < initial_level - 1
+            break
+          end
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
+    def go_block_previous
+      initial_level = indentation_level( @last_row )
+      new_row = @last_row
+      passed = false   # search for unindent
+      passed2 = false  # search for reindent
+      ( 0...@last_row ).reverse_each do |row|
+        next  if @lines[ row ].strip.empty?
+        level = indentation_level( row )
+        if ! passed
+          if level < initial_level
+            passed = true
+          end
+        else
+          if ! passed2
+            if level >= initial_level
+              new_row = row
+              passed2 = true
+            elsif level <= initial_level - 2
+              # No previous block
+              break
+            end
+          else
+            if level < initial_level
+              new_row = ( row+1..@last_row ).find { |r|
+                ! @lines[ r ].strip.empty?
+              }
+              break
+            end
+          end
+        end
+      end
+      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+    end
+
   end
 
 end
