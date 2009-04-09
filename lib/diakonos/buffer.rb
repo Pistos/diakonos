@@ -166,15 +166,6 @@ module Diakonos
       @name || @settings[ "status.unnamed_str" ]
     end
 
-    # For debugging purposes
-    def quotedOrNil( str )
-      if str.nil?
-        "nil"
-      else
-        "'#{str}'"
-      end
-    end
-
     def save( filename = nil, prompt_overwrite = DONT_PROMPT_OVERWRITE )
       if filename
         name = File.expand_path( filename )
