@@ -198,6 +198,10 @@ module Diakonos
       @top_line != old_top_line or @left_column != old_left_column
     end
 
+    def goToLine( line = nil, column = nil, do_display = DO_DISPLAY )
+      cursorTo( line || @last_row, column || 0, do_display )
+    end
+
   end
 
 end

@@ -602,50 +602,6 @@ module Diakonos
       goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
     end
 
-    def goToLine( line = nil, column = nil, do_display = DO_DISPLAY )
-      cursorTo( line || @last_row, column || 0, do_display )
-    end
-
-    def goToNextBookmark
-      cur_pos = Bookmark.new( self, @last_row, @last_col )
-      next_bm = @bookmarks.find do |bm|
-        bm > cur_pos
-      end
-      if next_bm
-        cursorTo( next_bm.row, next_bm.col, DO_DISPLAY )
-      end
-    end
-
-    def goToPreviousBookmark
-      cur_pos = Bookmark.new( self, @last_row, @last_col )
-      # There's no reverse_find method, so, we have to do this manually.
-      prev = nil
-      @bookmarks.reverse_each do |bm|
-        if bm < cur_pos
-          prev = bm
-          break
-        end
-      end
-      if prev
-        cursorTo( prev.row, prev.col, DO_DISPLAY )
-      end
-    end
-
-    def toggleBookmark
-      bookmark = Bookmark.new( self, @last_row, @last_col )
-      existing = @bookmarks.find do |bm|
-        bm == bookmark
-      end
-      if existing
-        @bookmarks.delete existing
-        @diakonos.setILine "Bookmark #{existing.to_s} deleted."
-      else
-        @bookmarks.push bookmark
-        @bookmarks.sort
-        @diakonos.setILine "Bookmark #{bookmark.to_s} set."
-      end
-    end
-
     def context
       retval = Array.new
       row = @last_row
