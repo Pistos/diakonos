@@ -197,13 +197,13 @@ module Diakonos
       else
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.getLeaf( keychain_pressed )
+        function_and_args = @keychains.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
         end
 
-        partial_keychain = @keychains.getNode( keychain_pressed )
+        partial_keychain = @keychains.get_node( keychain_pressed )
         if partial_keychain
           setILine( "Part of existing keychain: " + keychain_str_for( keychain_pressed ) + "..." )
         else
@@ -221,13 +221,13 @@ module Diakonos
       else
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.getLeaf( keychain_pressed )
+        function_and_args = @keychains.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
           setILine "#{keychain_str_for( keychain_pressed )}  ->  #{function}( #{args} )"
         else
-          partial_keychain = @keychains.getNode( keychain_pressed )
+          partial_keychain = @keychains.get_node( keychain_pressed )
           if partial_keychain
             setILine( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
             processKeystroke( keychain_pressed )
@@ -261,7 +261,7 @@ module Diakonos
         end
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.getLeaf( keychain_pressed )
+        function_and_args = @keychains.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
@@ -289,7 +289,7 @@ module Diakonos
             showException e
           end
         else
-          partial_keychain = @keychains.getNode( keychain_pressed )
+          partial_keychain = @keychains.get_node( keychain_pressed )
           if partial_keychain
             setILine( keychain_str_for( keychain_pressed ) + "..." )
             processKeystroke( keychain_pressed )

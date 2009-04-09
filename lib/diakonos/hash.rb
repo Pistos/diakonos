@@ -3,11 +3,11 @@ class Hash
   # This method deletes a path of hash keys, with each step in the path
   # being a recursively deeper key in a hash tree.
   # Returns the possibly modified hash.
-  def deleteKeyPath( path )
+  def delete_key_path( path )
     if path.length > 1
       subtree = self[ path[ 0 ] ]
-      if subtree.respond_to?( :deleteKeyPath )
-        subtree.deleteKeyPath( path[ 1..-1 ] )
+      if subtree.respond_to?( :delete_key_path )
+        subtree.delete_key_path( path[ 1..-1 ] )
         if subtree.empty?
           delete( path[ 0 ] )
         end
@@ -19,13 +19,13 @@ class Hash
     self
   end
 
-  def setKeyPath( path, leaf )
+  def set_key_path( path, leaf )
     if path.length > 1
       node = self[ path[ 0 ] ]
-      if not node.respond_to?( :setKeyPath )
+      if not node.respond_to?( :set_key_path )
         node = self[ path[ 0 ] ] = Hash.new
       end
-      node.setKeyPath( path[ 1..-1 ], leaf )
+      node.set_key_path( path[ 1..-1 ], leaf )
     elsif path.length == 1
       self[ path[ 0 ] ] = leaf
     end
@@ -33,11 +33,11 @@ class Hash
     self
   end
 
-  def getNode( path )
+  def get_node( path )
     node = self[ path[ 0 ] ]
     if path.length > 1
-      if node and node.respond_to?( :getNode )
-        return node.getNode( path[ 1..-1 ] )
+      if node and node.respond_to?( :get_node )
+        return node.get_node( path[ 1..-1 ] )
       end
     elsif path.length == 1
       return node
@@ -46,9 +46,9 @@ class Hash
     nil
   end
 
-  def getLeaf( path )
-    node = getNode( path )
-    if node.respond_to?( :getNode )
+  def get_leaf( path )
+    node = get_node( path )
+    if node.respond_to?( :get_node )
       # Only want a leaf node
       nil
     else

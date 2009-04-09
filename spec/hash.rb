@@ -4,23 +4,23 @@ describe 'A Hash' do
   it 'can delete a key path' do
     g = {}
     h = g.deep_clone
-    h.deleteKeyPath( [] ).should.equal( {} )
+    h.delete_key_path( [] ).should.equal( {} )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'test' ] ).should.equal( {} )
+    h.delete_key_path( [ 'test' ] ).should.equal( {} )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'test', 'test2' ] ).should.equal( {} )
+    h.delete_key_path( [ 'test', 'test2' ] ).should.equal( {} )
 
     g = { 'a' => 'x' }
     h = g.deep_clone
-    h.deleteKeyPath( [] ).should.equal( { 'a' => 'x' } )
+    h.delete_key_path( [] ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'test' ] ).should.equal( { 'a' => 'x' } )
+    h.delete_key_path( [ 'test' ] ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'test', 'test2' ] ).should.equal( { 'a' => 'x' } )
+    h.delete_key_path( [ 'test', 'test2' ] ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a' ] ).should.equal( {} )
+    h.delete_key_path( [ 'a' ] ).should.equal( {} )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'b' ] ).should.equal( { 'a' => 'x' } )
+    h.delete_key_path( [ 'a', 'b' ] ).should.equal( { 'a' => 'x' } )
 
     g = {
       'a' => {
@@ -28,17 +28,17 @@ describe 'A Hash' do
       }
     }
     h = g.deep_clone
-    h.deleteKeyPath( [] ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.delete_key_path( [] ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'z' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.delete_key_path( [ 'z' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'z', 'zz' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.delete_key_path( [ 'z', 'zz' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'b', 'c' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.delete_key_path( [ 'a', 'b', 'c' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a' ] ).should.equal( {} )
+    h.delete_key_path( [ 'a' ] ).should.equal( {} )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'b' ] ).should.equal( {} )
+    h.delete_key_path( [ 'a', 'b' ] ).should.equal( {} )
 
     g = {
       'a' => {
@@ -47,19 +47,19 @@ describe 'A Hash' do
       }
     }
     h = g.deep_clone
-    h.deleteKeyPath( [] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
+    h.delete_key_path( [] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'z' ] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
+    h.delete_key_path( [ 'z' ] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'z', 'zz' ] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
+    h.delete_key_path( [ 'z', 'zz' ] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'b', 'c' ] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
+    h.delete_key_path( [ 'a', 'b', 'c' ] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a' ] ).should.equal( {} )
+    h.delete_key_path( [ 'a' ] ).should.equal( {} )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'b' ] ).should.equal( { 'a' => { 'c' => 'y' } } )
+    h.delete_key_path( [ 'a', 'b' ] ).should.equal( { 'a' => { 'c' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'c' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.delete_key_path( [ 'a', 'c' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
 
     g = {
       'a' => {
@@ -70,97 +70,97 @@ describe 'A Hash' do
       }
     }
     h = g.deep_clone
-    h.deleteKeyPath( [] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
+    h.delete_key_path( [] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'z' ] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
+    h.delete_key_path( [ 'z' ] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'z', 'zz' ] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
+    h.delete_key_path( [ 'z', 'zz' ] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'b', 'c' ] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
+    h.delete_key_path( [ 'a', 'b', 'c' ] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a' ] ).should.equal( { 'c' => { 'd' => 'y' } } )
+    h.delete_key_path( [ 'a' ] ).should.equal( { 'c' => { 'd' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'c' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.delete_key_path( [ 'c' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'a', 'b' ] ).should.equal( { 'c' => { 'd' => 'y' } } )
+    h.delete_key_path( [ 'a', 'b' ] ).should.equal( { 'c' => { 'd' => 'y' } } )
     h = g.deep_clone
-    h.deleteKeyPath( [ 'c', 'd' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.delete_key_path( [ 'c', 'd' ] ).should.equal( { 'a' => { 'b' => 'x' } } )
   end
 
   it 'can set a key path' do
     g = {}
     h = g.deep_clone
-    h.setKeyPath( [], 'x' ).should.equal( {} )
+    h.set_key_path( [], 'x' ).should.equal( {} )
     h = g.deep_clone
-    h.setKeyPath( [ 'a' ], 'x' ).should.equal( { 'a' => 'x' } )
+    h.set_key_path( [ 'a' ], 'x' ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
-    h.setKeyPath( [ 'a', 'b' ], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.set_key_path( [ 'a', 'b' ], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
 
     g = { 'a' => 'x' }
     h = g.deep_clone
-    h.setKeyPath( [], 'x' ).should.equal( { 'a' => 'x' } )
+    h.set_key_path( [], 'x' ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
-    h.setKeyPath( [ 'a' ], 'x' ).should.equal( { 'a' => 'x' } )
+    h.set_key_path( [ 'a' ], 'x' ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
-    h.setKeyPath( [ 'a', 'b' ], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.set_key_path( [ 'a', 'b' ], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
 
     g = { 'c' => 'y' }
     h = g.deep_clone
-    h.setKeyPath( [], 'x' ).should.equal( { 'c' => 'y' } )
+    h.set_key_path( [], 'x' ).should.equal( { 'c' => 'y' } )
     h = g.deep_clone
-    h.setKeyPath( [ 'a' ], 'x' ).should.equal( { 'c' => 'y', 'a' => 'x' } )
+    h.set_key_path( [ 'a' ], 'x' ).should.equal( { 'c' => 'y', 'a' => 'x' } )
     h = g.deep_clone
-    h.setKeyPath( [ 'a', 'b' ], 'x' ).should.equal( { 'c' => 'y', 'a' => { 'b' => 'x' } } )
+    h.set_key_path( [ 'a', 'b' ], 'x' ).should.equal( { 'c' => 'y', 'a' => { 'b' => 'x' } } )
 
     g = { 'a' => { 'b' => 'x' } }
     h = g.deep_clone
-    h.setKeyPath( [], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
+    h.set_key_path( [], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
-    h.setKeyPath( [ 'a' ], 'x' ).should.equal( { 'a' => 'x' } )
+    h.set_key_path( [ 'a' ], 'x' ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
-    h.setKeyPath( [ 'c' ], 'y' ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => 'y' } )
+    h.set_key_path( [ 'c' ], 'y' ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => 'y' } )
     h = g.deep_clone
-    h.setKeyPath( [ 'c', 'd' ], 'y' ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
+    h.set_key_path( [ 'c', 'd' ], 'y' ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
   end
 
   it 'can get a node' do
     h = {}
-    h.getNode( [] ).should.be.nil
-    h.getNode( [ 'a' ] ).should.be.nil
-    h.getNode( [ 'a', 'b' ] ).should.be.nil
+    h.get_node( [] ).should.be.nil
+    h.get_node( [ 'a' ] ).should.be.nil
+    h.get_node( [ 'a', 'b' ] ).should.be.nil
 
     h = { 'a' => 'x' }
-    h.getNode( [] ).should.be.nil
-    h.getNode( [ 'b' ] ).should.be.nil
-    h.getNode( [ 'a' ] ).should.equal( 'x' )
+    h.get_node( [] ).should.be.nil
+    h.get_node( [ 'b' ] ).should.be.nil
+    h.get_node( [ 'a' ] ).should.equal( 'x' )
 
     h = { 'a' => { 'b' => 'x' } }
-    h.getNode( [] ).should.be.nil
-    h.getNode( [ 'b' ] ).should.be.nil
-    h.getNode( [ 'a' ] ).should.equal( { 'b' => 'x' } )
-    h.getNode( [ 'a', 'b', 'c' ] ).should.be.nil
-    h.getNode( [ 'a', 'c' ] ).should.be.nil
-    h.getNode( [ 'a', 'b' ] ).should.equal( 'x' )
+    h.get_node( [] ).should.be.nil
+    h.get_node( [ 'b' ] ).should.be.nil
+    h.get_node( [ 'a' ] ).should.equal( { 'b' => 'x' } )
+    h.get_node( [ 'a', 'b', 'c' ] ).should.be.nil
+    h.get_node( [ 'a', 'c' ] ).should.be.nil
+    h.get_node( [ 'a', 'b' ] ).should.equal( 'x' )
   end
 
   it 'can get a leaf' do
     h = {}
-    h.getLeaf( [] ).should.be.nil
-    h.getLeaf( [ 'a' ] ).should.be.nil
-    h.getLeaf( [ 'a', 'b' ] ).should.be.nil
+    h.get_leaf( [] ).should.be.nil
+    h.get_leaf( [ 'a' ] ).should.be.nil
+    h.get_leaf( [ 'a', 'b' ] ).should.be.nil
 
     h = { 'a' => 'x' }
-    h.getLeaf( [] ).should.be.nil
-    h.getLeaf( [ 'b' ] ).should.be.nil
-    h.getLeaf( [ 'a' ] ).should.equal( 'x' )
+    h.get_leaf( [] ).should.be.nil
+    h.get_leaf( [ 'b' ] ).should.be.nil
+    h.get_leaf( [ 'a' ] ).should.equal( 'x' )
 
     h = { 'a' => { 'b' => 'x' } }
-    h.getLeaf( [] ).should.be.nil
-    h.getLeaf( [ 'b' ] ).should.be.nil
-    h.getLeaf( [ 'a' ] ).should.be.nil
-    h.getLeaf( [ 'a', 'b', 'c' ] ).should.be.nil
-    h.getLeaf( [ 'a', 'c' ] ).should.be.nil
-    h.getLeaf( [ 'a', 'b' ] ).should.equal( 'x' )
+    h.get_leaf( [] ).should.be.nil
+    h.get_leaf( [ 'b' ] ).should.be.nil
+    h.get_leaf( [ 'a' ] ).should.be.nil
+    h.get_leaf( [ 'a', 'b', 'c' ] ).should.be.nil
+    h.get_leaf( [ 'a', 'c' ] ).should.be.nil
+    h.get_leaf( [ 'a', 'b' ] ).should.equal( 'x' )
   end
 
   it 'can list leaves' do

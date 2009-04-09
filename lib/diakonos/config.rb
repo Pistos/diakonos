@@ -166,10 +166,10 @@ module Diakonos
               end
             end
             if function_and_args.nil?
-              @keychains.deleteKeyPath( keystrokes )
+              @keychains.delete_key_path( keystrokes )
             else
               function, function_args = function_and_args.split( /\s+/, 2 )
-              @keychains.setKeyPath(
+              @keychains.set_key_path(
                 keystrokes,
                 [ function, function_args ]
               )
