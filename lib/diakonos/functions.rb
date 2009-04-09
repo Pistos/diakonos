@@ -785,7 +785,7 @@ module Diakonos
     end
 
     def insertTab
-      typeCharacter( TAB )
+      type_character TAB
     end
 
     def joinLines

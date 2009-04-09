@@ -209,7 +209,7 @@ module Diakonos
         else
           setILine keychain_str_for( keychain_pressed ) + "..."
         end
-        processKeystroke( keychain_pressed )
+        process_keystroke( keychain_pressed )
       end
     end
 
@@ -230,7 +230,7 @@ module Diakonos
           partial_keychain = @keychains.get_node( keychain_pressed )
           if partial_keychain
             setILine( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
-            processKeystroke( keychain_pressed )
+            process_keystroke( keychain_pressed )
           else
             setILine "There is no mapping for " + keychain_str_for( keychain_pressed )
           end
@@ -240,7 +240,7 @@ module Diakonos
 
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
-    def processKeystroke( context = [] )
+    def process_keystroke( context = [] )
       c = @win_main.getch.ord
 
       if @capturing_keychain
@@ -252,10 +252,10 @@ module Diakonos
         if context.empty?
           if c > 31 and c < 255 and c != BACKSPACE
             if @macro_history
-              @macro_history.push "typeCharacter #{c}"
+              @macro_history.push "type_character #{c}"
             end
             @there_was_non_movement = true
-            typeCharacter c
+            type_character c
             return
           end
         end
@@ -292,16 +292,16 @@ module Diakonos
           partial_keychain = @keychains.get_node( keychain_pressed )
           if partial_keychain
             setILine( keychain_str_for( keychain_pressed ) + "..." )
-            processKeystroke( keychain_pressed )
+            process_keystroke( keychain_pressed )
           else
             setILine "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
           end
         end
       end
     end
-    protected :processKeystroke
+    protected :process_keystroke
 
-    def typeCharacter( c )
+    def type_character( c )
       @current_buffer.deleteSelection( Buffer::DONT_DISPLAY )
       @current_buffer.insertChar c
       cursorRight( Buffer::STILL_TYPING )

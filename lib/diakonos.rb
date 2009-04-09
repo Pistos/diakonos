@@ -376,7 +376,7 @@ module Diakonos
         begin
           # Main keyboard loop.
           while not @quitting
-            processKeystroke
+            process_keystroke
             @win_main.refresh
           end
         rescue SignalException => e
