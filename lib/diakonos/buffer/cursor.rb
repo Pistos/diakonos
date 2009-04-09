@@ -299,6 +299,21 @@ module Diakonos
       goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
     end
 
+    def pushCursorState( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
+      new_state = {
+        :top_line => top_line,
+        :row => row,
+        :col => col
+      }
+      if not @cursor_stack.include? new_state
+        @cursor_stack << new_state
+        if clear_stack_pointer
+          @cursor_stack_pointer = nil
+        end
+        @diakonos.clearNonMovementFlag
+      end
+    end
+
   end
 
 end
