@@ -8,7 +8,7 @@ class String
       end
     end
 
-    def expandTabs( tab_size )
+    def expand_tabs( tab_size )
       s = dup
       while s.sub!( /\t/ ) { |match_text|
         match = Regexp.last_match
@@ -19,7 +19,7 @@ class String
       s
     end
 
-    def newlineSplit
+    def newline_split
       retval = split( /\\n/ )
       if self =~ /\\n$/
         retval << ""

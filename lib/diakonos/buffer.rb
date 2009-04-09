@@ -88,7 +88,7 @@ module Diakonos
       if @settings[ "convert_tabs" ]
         tabs_subbed = false
         @lines.collect! do |line|
-          new_line = line.expandTabs( @tab_size )
+          new_line = line.expand_tabs( @tab_size )
           tabs_subbed = ( tabs_subbed or new_line != line )
           # Return value for collect:
           new_line

@@ -47,7 +47,7 @@ module Diakonos
         if line =~ /^[\s#{@indent_ignore_charset}]*$/ or line == ""
           level = 0
         elsif line =~ /^([\s#{@indent_ignore_charset}]+)[^\s#{@indent_ignore_charset}]/
-          whitespace = $1.expandTabs( @tab_size )
+          whitespace = $1.expand_tabs( @tab_size )
           level = whitespace.length / @indent_size
           if @indent_roundup && ( whitespace.length % @indent_size > 0 )
             level += 1
@@ -58,7 +58,7 @@ module Diakonos
       else
         level = 0
         if line =~ /^([\s]+)/
-          whitespace = $1.expandTabs( @tab_size )
+          whitespace = $1.expand_tabs( @tab_size )
           level = whitespace.length / @indent_size
           if @indent_roundup && ( whitespace.length % @indent_size > 0 )
             level += 1

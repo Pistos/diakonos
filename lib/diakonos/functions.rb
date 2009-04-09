@@ -396,7 +396,7 @@ module Diakonos
     def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
       return  if regexp_source.nil? || regexp_source.empty?
 
-      rs_array = regexp_source.newlineSplit
+      rs_array = regexp_source.newline_split
       regexps = Array.new
       exception_thrown = nil
 

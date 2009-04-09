@@ -48,19 +48,19 @@ describe 'A String' do
 
   it 'can expand its tabs' do
     s = "              "
-    s.expandTabs( 8 ).should.equal s
+    s.expand_tabs( 8 ).should.equal s
     s = "\t"
-    s.expandTabs( 8 ).should.equal " " * 8
+    s.expand_tabs( 8 ).should.equal " " * 8
     s = "\t\t"
-    s.expandTabs( 8 ).should.equal " " * 8*2
+    s.expand_tabs( 8 ).should.equal " " * 8*2
     s = "\t  \t"
-    s.expandTabs( 8 ).should.equal " " * 8*2
+    s.expand_tabs( 8 ).should.equal " " * 8*2
     s = "\t  \t  "
-    s.expandTabs( 8 ).should.equal " " * (8*2 + 2)
+    s.expand_tabs( 8 ).should.equal " " * (8*2 + 2)
     s = "\t        \t"
-    s.expandTabs( 8 ).should.equal " " * 8*3
+    s.expand_tabs( 8 ).should.equal " " * 8*3
     s = "\t         \t"
-    s.expandTabs( 8 ).should.equal " " * 8*3
+    s.expand_tabs( 8 ).should.equal " " * 8*3
   end
 
   it 'knows the index of a first matching regexp group' do

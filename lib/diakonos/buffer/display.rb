@@ -103,7 +103,7 @@ module Diakonos
     def paintMarks( row )
       string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
       return  if string.nil? or string == ""
-      string = string.expandTabs( @tab_size )
+      string = string.expand_tabs( @tab_size )
       cury = @win_main.cury
       curx = @win_main.curx
 
@@ -311,7 +311,7 @@ module Diakonos
                 )
               end
               @win_main.setpos( y, 0 )
-              printLine line.expandTabs( @tab_size )
+              printLine line.expand_tabs( @tab_size )
               @win_main.setpos( y, 0 )
               paintMarks @top_line + row
               y += 1
