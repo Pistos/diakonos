@@ -91,6 +91,41 @@ module Diakonos
       end
     end
 
+    # Check if the file which is being edited has been modified since
+    # the last time we checked it; return true if so, false otherwise.
+    def file_modified?
+      modified = false
+
+      if @name
+        begin
+          mtime = File.mtime( @name )
+
+          if mtime > @last_modification_check
+            modified = true
+            @last_modification_check = mtime
+          end
+        rescue Errno::ENOENT
+          # Ignore if file doesn't exist
+        end
+      end
+
+      modified
+    end
+
+    # Compares MD5 sums of buffer and actual file on disk.
+    # Returns true if there is no file on disk.
+    def file_different?
+      if @name
+        Digest::MD5.hexdigest(
+          @lines.join( "\n" )
+        ) != Digest::MD5.hexdigest(
+          File.read( @name )
+        )
+      else
+        true
+      end
+    end
+
   end
 
 end
