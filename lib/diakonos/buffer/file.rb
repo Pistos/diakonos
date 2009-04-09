@@ -126,6 +126,31 @@ module Diakonos
       end
     end
 
+    def setModified( do_display = DO_DISPLAY )
+      if @read_only
+        @diakonos.setILine "Warning: Modifying a read-only file."
+      end
+
+      fmod = false
+      if not @modified
+        @modified = true
+        fmod = file_modified?
+      end
+
+      reverted = false
+      if fmod
+        reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+      end
+
+      if not reverted
+        clearMatches
+        if do_display
+          @diakonos.updateStatusLine
+          display
+        end
+      end
+    end
+
   end
 
 end
