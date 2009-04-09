@@ -293,7 +293,7 @@ module Diakonos
         session_files.each_with_index do |session_file,index|
           session_buffers << openFile( session_file )
 
-          choice = getChoice(
+          choice = get_choice(
             "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
             [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ]
           )

@@ -37,7 +37,7 @@ module Diakonos
 
   class Diakonos
     # completion_array is the array of strings that tab completion can use
-    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, do_complete = DONT_COMPLETE, on_dirs = :go_into_dirs, &block )
+    def get_user_input( prompt, history = @rlh_general, initial_text = "", completion_array = nil, do_complete = DONT_COMPLETE, on_dirs = :go_into_dirs, &block )
       if @playing_macro
         retval = @macro_input_history.shift
       else
@@ -50,7 +50,7 @@ module Diakonos
       retval
     end
 
-    def interactionBlink( message = nil )
+    def interaction_blink( message = nil )
       terminateMessage
       setILine @settings[ 'interaction.blink_string' ]
       sleep @settings[ 'interaction.blink_duration' ]
@@ -59,7 +59,7 @@ module Diakonos
 
     # choices should be an array of CHOICE_* constants.
     # default is what is returned when Enter is pressed.
-    def getChoice( prompt, choices, default = nil )
+    def get_choice( prompt, choices, default = nil )
       retval = @iterated_choice
       if retval
         @choice_iterations -= 1
@@ -96,7 +96,7 @@ module Diakonos
           pageUp
         else
           if @message_expiry and Time.now < @message_expiry
-            interactionBlink
+            interaction_blink
             showMessage msg
           else
             case c
@@ -118,7 +118,7 @@ module Diakonos
             end
 
             if retval.nil?
-              interactionBlink( msg )
+              interaction_blink( msg )
             end
           end
         end

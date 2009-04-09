@@ -2,7 +2,7 @@ module Diakonos
   module Functions
     def addNamedBookmark( name_ = nil )
       if name_.nil?
-        name = getUserInput "Bookmark name: "
+        name = get_user_input "Bookmark name: "
       else
         name = name_
       end
@@ -35,14 +35,14 @@ module Diakonos
 
     def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
       if key_.nil?
-        key = getUserInput( "Setting: " )
+        key = get_user_input( "Setting: " )
       else
         key = key_
       end
 
       if key
         if value.nil?
-          value = getUserInput( "Value: " )
+          value = get_user_input( "Value: " )
         end
         case @settings[ key ]
         when String
@@ -91,7 +91,7 @@ module Diakonos
               if @quitting
                 choices.concat [ CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL ]
               end
-              choice = getChoice(
+              choice = get_choice(
                 "Save changes to #{buffer.nice_name}?",
                 choices,
                 CHOICE_CANCEL
@@ -173,7 +173,7 @@ module Diakonos
 
     def columnize( delimiter = nil, num_spaces_padding = 0 )
       if delimiter.nil?
-        delimiter = getUserInput(
+        delimiter = get_user_input(
           "Column delimiter (regexp): ",
           @rlh_general,
           @settings[ "lang.#{@current_buffer.original_language}.column_delimiters" ] || ''
@@ -370,7 +370,7 @@ module Diakonos
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copySelection[ 0 ]
         end
-        code = getUserInput( "Ruby code: ", @rlh_general, ( selected_text or "" ), ::Diakonos::Functions.public_instance_methods )
+        code = get_user_input( "Ruby code: ", @rlh_general, ( selected_text or "" ), ::Diakonos::Functions.public_instance_methods )
       else
         code = code_
       end
@@ -421,7 +421,7 @@ module Diakonos
       end
 
       if replacement == ASK_REPLACEMENT
-        replacement = getUserInput( "Replace with: ", @rlh_search )
+        replacement = get_user_input( "Replace with: ", @rlh_search )
       end
 
       if exception_thrown and not quiet
@@ -448,7 +448,7 @@ module Diakonos
         end
         starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 
-        regexp_source = getUserInput(
+        regexp_source = get_user_input(
           "Search regexp: ",
           @rlh_search,
           ( selected_text or "" )
@@ -492,7 +492,7 @@ module Diakonos
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copySelection[ 0 ]
         end
-        search_term = getUserInput( "Search for: ", @rlh_search, ( selected_text or "" ) )
+        search_term = get_user_input( "Search for: ", @rlh_search, ( selected_text or "" ) )
       else
         search_term = search_term_
       end
@@ -518,7 +518,7 @@ module Diakonos
     end
 
     def goToLineAsk
-      input = getUserInput( "Go to [line number|+lines][,column number]: " )
+      input = get_user_input( "Go to [line number|+lines][,column number]: " )
       if input
         row = nil
 
@@ -547,7 +547,7 @@ module Diakonos
 
     def goToNamedBookmark( name_ = nil )
       if name_.nil?
-        name = getUserInput "Bookmark name: "
+        name = get_user_input "Bookmark name: "
       else
         name = name_
       end
@@ -580,7 +580,7 @@ module Diakonos
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copySelection[ 0 ]
         end
-        tag_name = getUserInput( "Tag name: ", @rlh_general, ( selected_text or "" ), @tags.keys )
+        tag_name = get_user_input( "Tag name: ", @rlh_general, ( selected_text or "" ), @tags.keys )
       else
         tag_name = tag_
       end
@@ -628,7 +628,7 @@ module Diakonos
 
     def grep_dir( regexp_source = nil, dir = nil )
       if dir.nil?
-        dir = getUserInput( "Grep directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
+        dir = get_user_input( "Grep directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
         return if dir.nil?
       end
       dir = File.expand_path( dir )
@@ -639,7 +639,7 @@ module Diakonos
       end
       starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 
-      selected = getUserInput(
+      selected = get_user_input(
         "Grep regexp: ",
         @rlh_search,
         regexp_source || selected_text || ""
@@ -695,7 +695,7 @@ module Diakonos
       open_help_buffer
       matching_docs = nil
 
-      selected = getUserInput(
+      selected = get_user_input(
         "Search terms: ",
         @rlh_help,
         prefill,
@@ -734,7 +734,7 @@ module Diakonos
           end
           error_file = openFile @error_filename
 
-          choice = getChoice(
+          choice = get_choice(
             "Send your search terms to purepistos.net to help improve Diakonos?",
             [ CHOICE_YES, CHOICE_NO ]
           )
@@ -797,7 +797,7 @@ module Diakonos
         f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
       end
       openListBuffer
-      filename = getUserInput( "Switch to buffer: " )
+      filename = get_user_input( "Switch to buffer: " )
       buffer = @buffers[ filename ]
       if buffer
         switchTo buffer
@@ -806,7 +806,7 @@ module Diakonos
 
     def loadScript( name_ = nil )
       if name_.nil?
-        name = getUserInput( "File to load as script: ", @rlh_files )
+        name = get_user_input( "File to load as script: ", @rlh_files )
       else
         name = name_
       end
@@ -843,7 +843,7 @@ module Diakonos
 
     def load_session( session_id = nil )
       if session_id.nil?
-        session_id = getUserInput( "Session: ", @rlh_sessions, @session_dir, nil, DO_COMPLETE )
+        session_id = get_user_input( "Session: ", @rlh_sessions, @session_dir, nil, DO_COMPLETE )
       end
       return if session_id.nil? or session_id.empty?
 
@@ -866,7 +866,7 @@ module Diakonos
     end
 
     def name_session
-      name = getUserInput( 'Session name: ' )
+      name = get_user_input( 'Session name: ' )
       if name
         new_session "#{@session_dir}/#{name}"
         save_session
@@ -896,7 +896,7 @@ module Diakonos
           existing_buffer.file_different?
         )
           show_buffer_file_diff( existing_buffer ) do
-            choice = getChoice(
+            choice = get_choice(
               "Load on-disk version of #{existing_buffer.nice_name}?",
               [ CHOICE_YES, CHOICE_NO ]
             )
@@ -926,7 +926,7 @@ module Diakonos
         )
           file_type = `/usr/bin/file -L #{filename}`
           if file_type !~ /text/ and file_type !~ /empty$/
-            choice = getChoice(
+            choice = get_choice(
               "#{filename} does not appear to be readable.  Try to open it anyway?",
               [ CHOICE_YES, CHOICE_NO ],
               CHOICE_NO
@@ -979,7 +979,7 @@ module Diakonos
           openListBuffer
         }
       end
-      file = getUserInput( "Filename: ", @rlh_files, prefill, &finder_block )
+      file = get_user_input( "Filename: ", @rlh_files, prefill, &finder_block )
 
       if file
         openFile file
@@ -989,7 +989,7 @@ module Diakonos
     end
 
     def open_matching_files( regexp = nil, search_root = nil )
-      regexp ||= getUserInput( "Regexp: ", @rlh_search )
+      regexp ||= get_user_input( "Regexp: ", @rlh_search )
       return if regexp.nil?
 
       if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
@@ -997,13 +997,13 @@ module Diakonos
       else
         prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
       end
-      search_root ||= getUserInput( "Search within: ", @rlh_files, prefill )
+      search_root ||= get_user_input( "Search within: ", @rlh_files, prefill )
       return if search_root.nil?
 
       files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
       if files.any?
         if files.size > 5
-            choice = getChoice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
+            choice = get_choice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
             return if choice == CHOICE_NO
         end
         files.each do |f|
@@ -1014,7 +1014,7 @@ module Diakonos
     end
 
     def operateOnString(
-        ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'str.' )
+        ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'str.' )
     )
       if ruby_code
         str = @current_buffer.selected_string
@@ -1025,7 +1025,7 @@ module Diakonos
     end
 
     def operateOnLines(
-        ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'lines.collect { |l| l }' )
+        ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'lines.collect { |l| l }' )
     )
       if ruby_code
         lines = @current_buffer.selected_text
@@ -1044,7 +1044,7 @@ module Diakonos
     end
 
     def operateOnEachLine(
-        ruby_code = getUserInput( 'Ruby code: ', @rlh_general, 'line.' )
+        ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'line.' )
     )
       if ruby_code
         lines = @current_buffer.selected_text
@@ -1161,7 +1161,7 @@ module Diakonos
 
     def removeNamedBookmark( name_ = nil )
       if name_.nil?
-        name = getUserInput "Bookmark name: "
+        name = get_user_input "Bookmark name: "
       else
         name = name_
       end
@@ -1187,7 +1187,7 @@ module Diakonos
 
       if prompt
         show_buffer_file_diff do
-          choice = getChoice(
+          choice = get_choice(
             prompt,
             [ CHOICE_YES, CHOICE_NO ]
           )
@@ -1217,9 +1217,9 @@ module Diakonos
     def saveFileAs
       if @current_buffer and @current_buffer.name
         path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-        file = getUserInput( "Filename: ", @rlh_files, path )
+        file = get_user_input( "Filename: ", @rlh_files, path )
       else
-        file = getUserInput( "Filename: ", @rlh_files )
+        file = get_user_input( "Filename: ", @rlh_files )
       end
       if file
         old_name = @current_buffer.name
@@ -1237,13 +1237,13 @@ module Diakonos
 
     def select_block( beginning = nil, ending = nil, including_ending = true )
       if beginning.nil?
-        input = getUserInput( "Start at regexp: " )
+        input = get_user_input( "Start at regexp: " )
         if input
           beginning = Regexp.new input
         end
       end
       if beginning and ending.nil?
-        input = getUserInput( "End before regexp: " )
+        input = get_user_input( "End before regexp: " )
         if input
           ending = Regexp.new input
         end
@@ -1292,7 +1292,7 @@ module Diakonos
 
     def setBufferType( type_ = nil )
       if type_.nil?
-        type = getUserInput "Content type: "
+        type = get_user_input "Content type: "
       else
         type = type_
       end
@@ -1317,7 +1317,7 @@ module Diakonos
     end
 
     def set_session_dir
-      path = getUserInput( "Session directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
+      path = get_user_input( "Session directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
       if path
         @session[ 'dir' ] = File.expand_path( path )
         save_session
@@ -1346,7 +1346,7 @@ module Diakonos
 
       # Get user input, sub it in
       if retval =~ /\$i/
-        user_input = getUserInput( "Argument: ", @rlh_shell, @current_buffer.selected_string )
+        user_input = get_user_input( "Argument: ", @rlh_shell, @current_buffer.selected_string )
         retval.gsub!( /\$i/, user_input )
       end
 
@@ -1388,7 +1388,7 @@ module Diakonos
 
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
       if command_.nil?
-        command = getUserInput( "Command: ", @rlh_shell )
+        command = get_user_input( "Command: ", @rlh_shell )
       else
         command = command_
       end
@@ -1426,7 +1426,7 @@ module Diakonos
 
     def execute( command_ = nil )
       if command_.nil?
-        command = getUserInput( "Command: ", @rlh_shell )
+        command = get_user_input( "Command: ", @rlh_shell )
       else
         command = command_
       end
@@ -1452,7 +1452,7 @@ module Diakonos
 
     def pasteShellResult( command_ = nil )
       if command_.nil?
-        command = getUserInput( "Command: ", @rlh_shell )
+        command = get_user_input( "Command: ", @rlh_shell )
       else
         command = command_
       end
@@ -1477,7 +1477,7 @@ module Diakonos
 
     def spawn( command_ = nil )
       if command_.nil?
-        command = getUserInput( "Command: ", @rlh_shell )
+        command = get_user_input( "Command: ", @rlh_shell )
       else
         command = command_
       end
@@ -1558,7 +1558,7 @@ module Diakonos
     end
 
     def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
-      key = key_ || getUserInput( "Setting: " )
+      key = key_ || get_user_input( "Setting: " )
       return  if key.nil?
 
       value = nil

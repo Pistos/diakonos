@@ -39,7 +39,7 @@ module Diakonos
       end
       starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 
-      selected = getUserInput(
+      selected = get_user_input(
         "Grep regexp: ",
         @rlh_search,
         regexp_source || selected_text || ""

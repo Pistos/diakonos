@@ -205,7 +205,7 @@ module Diakonos
             end
           }
 
-          choice = auto_choice || @diakonos.getChoice(
+          choice = auto_choice || @diakonos.get_choice(
             "Replace?",
             [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
             CHOICE_YES
