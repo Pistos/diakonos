@@ -10,7 +10,7 @@ module Diakonos
           @buffer_stack.push @current_buffer
         end
         @current_buffer = buffer
-        runHookProcs( :after_buffer_switch, buffer )
+        run_hook_procs( :after_buffer_switch, buffer )
         updateStatusLine
         updateContextLine
         buffer.display

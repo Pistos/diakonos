@@ -941,7 +941,7 @@ module Diakonos
 
         if do_open
           buffer = Buffer.new( self, filename, buffer_key, read_only )
-          runHookProcs( :after_open, buffer )
+          run_hook_procs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
           save_session
           if switch_to( buffer )
@@ -1211,7 +1211,7 @@ module Diakonos
 
     def saveFile( buffer = @current_buffer )
       buffer.save
-      runHookProcs( :after_save, buffer )
+      run_hook_procs( :after_save, buffer )
     end
 
     def saveFileAs

@@ -367,7 +367,7 @@ module Diakonos
           eval @post_load_script
         end
 
-        runHookProcs :after_startup
+        run_hook_procs :after_startup
 
         if not @settings[ 'suppress_welcome' ]
           openFile "#{@help_dir}/welcome.dhf"
