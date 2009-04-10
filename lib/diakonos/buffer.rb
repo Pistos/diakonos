@@ -171,7 +171,7 @@ module Diakonos
       col = @last_col
       takeSnapshot( TYPING )
       @lines[ row ][ col ] = c
-      setModified
+      set_modified
     end
 
     def insertChar( c )
@@ -180,7 +180,7 @@ module Diakonos
       takeSnapshot( TYPING )
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
-      setModified
+      set_modified
     end
 
     def insertString( str )
@@ -189,7 +189,7 @@ module Diakonos
       takeSnapshot( TYPING )
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
-      setModified
+      set_modified
     end
 
     def joinLines( row = @last_row, strip = DONT_STRIP_LINE )
@@ -199,7 +199,7 @@ module Diakonos
         next_line = ' ' + next_line.strip
       end
       @lines[ row ] << next_line
-      setModified
+      set_modified
     end
 
     def close_code
@@ -233,7 +233,7 @@ module Diakonos
         takeSnapshot( TYPING )
         @lines[ @last_row ] = new_line
         cursorTo( @last_row, @last_col - ( head.length - new_head.length ) )
-        setModified
+        set_modified
       end
     end
 
@@ -272,7 +272,7 @@ module Diakonos
       end
 
       if one_modified
-        setModified
+        set_modified
       end
     end
 
@@ -286,7 +286,7 @@ module Diakonos
         one_modified ||= ( line != old_line )
       end
       if one_modified
-        setModified
+        set_modified
       end
     end
 
@@ -302,7 +302,7 @@ module Diakonos
         one_modified ||= ( line != old_line )
       end
       if one_modified
-        setModified
+        set_modified
       end
     end
 
@@ -316,7 +316,7 @@ module Diakonos
         @lines[ (row+1)..-1 ]
       cursorTo( row + 1, 0 )
       parsedIndent if @auto_indent
-      setModified
+      set_modified
     end
 
     def lineAt( y )
@@ -461,7 +461,7 @@ module Diakonos
       end
       if @lines[ start_row...end_row ] != lines
         @lines[ start_row...end_row ] = lines
-        setModified
+        set_modified
       end
     end
 

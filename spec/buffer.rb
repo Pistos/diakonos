@@ -105,7 +105,7 @@ describe 'A Diakonos::Buffer' do
 
   it 'can indent smartly' do
     indent_rows
-    @b.saveCopy TEMP_FILE
+    @b.save_copy TEMP_FILE
     File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
 
     @b.insertString "   "
@@ -120,11 +120,11 @@ describe 'A Diakonos::Buffer' do
     @b.cursorTo( 20, 0 )
     @b.insertString "   "
 
-    @b.saveCopy TEMP_FILE
+    @b.save_copy TEMP_FILE
     File.read( TEMP_FILE ).should.not.equal File.read( SAMPLE_FILE )
 
     indent_rows
-    @b.saveCopy TEMP_FILE
+    @b.save_copy TEMP_FILE
     File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
   end
 

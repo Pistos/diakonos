@@ -209,9 +209,9 @@ module Diakonos
         end
       end
 
-      cursorTo( start_row, start_col )
-      remove_selection( DONT_DISPLAY )
-      setModified( do_display )
+      cursorTo start_row, start_col
+      remove_selection DONT_DISPLAY
+      set_modified do_display
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
@@ -269,7 +269,7 @@ module Diakonos
 
       end
 
-      setModified
+      set_modified
     end
 
   end

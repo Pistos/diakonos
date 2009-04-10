@@ -38,7 +38,7 @@ module Diakonos
           end
 
           if proceed
-            saveCopy name
+            save_copy name
             @name = name
             @last_modification_check = File.mtime( @name )
             saved = true
@@ -60,7 +60,7 @@ module Diakonos
     end
 
     # Returns true on successful write.
-    def saveCopy( filename )
+    def save_copy( filename )
       return false if filename.nil?
 
       name = File.expand_path( filename )
@@ -126,7 +126,7 @@ module Diakonos
       end
     end
 
-    def setModified( do_display = DO_DISPLAY )
+    def set_modified( do_display = DO_DISPLAY )
       if @read_only
         @diakonos.setILine "Warning: Modifying a read-only file."
       end

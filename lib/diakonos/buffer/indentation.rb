@@ -37,7 +37,7 @@ module Diakonos
       takeSnapshot( TYPING ) if do_display
       @lines[ row ] = indent_text + rest
       cursorTo( row, indentation ) if do_display
-      setModified
+      set_modified
     end
 
     def indentation_level( row, use_indent_ignore = USE_INDENT_IGNORE )

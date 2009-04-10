@@ -240,7 +240,7 @@ module Diakonos
       @lines = @lines.collect { |line|
         line.gsub( regexp, replacement )
       }
-      setModified
+      set_modified
       clearMatches
       display
     end

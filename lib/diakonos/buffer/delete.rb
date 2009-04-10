@@ -20,7 +20,7 @@ module Diakonos
           else
             takeSnapshot( TYPING )
             @lines[ row ] = line[ 0...col ] + line[ (col + 1)..-1 ]
-            setModified
+            set_modified
           end
         end
       end
@@ -40,7 +40,7 @@ module Diakonos
         @lines.delete_at row
       end
       cursorTo( row, 0 )
-      setModified
+      set_modified
 
       retval
     end
@@ -60,7 +60,7 @@ module Diakonos
         retval = [ @lines[ row ][ col..-1 ] ]
         @lines[ row ] = @lines[ row ][ 0...col ]
       end
-      setModified
+      set_modified
 
       retval
     end
@@ -77,7 +77,7 @@ module Diakonos
         retval = [ head ] + @lines.slice!( row_from + 1, row_to - row_from ) + [ tail ]
         @lines[ row_from ] = pre_head + post_tail
       end
-      setModified
+      set_modified
       retval
     end
 

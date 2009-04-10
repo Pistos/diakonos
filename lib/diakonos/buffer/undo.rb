@@ -43,7 +43,7 @@ module Diakonos
         @lines = @buffer_states[ @current_buffer_state ]
         cursorTo( @cursor_states[ @current_buffer_state - 1 ][ 0 ], @cursor_states[ @current_buffer_state - 1 ][ 1 ] )
         @diakonos.setILine "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-        setModified
+        set_modified
       end
     end
 
@@ -54,7 +54,7 @@ module Diakonos
         @lines = @buffer_states[ @current_buffer_state ]
         cursorTo( @cursor_states[ @current_buffer_state ][ 0 ], @cursor_states[ @current_buffer_state ][ 1 ] )
         @diakonos.setILine "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-        setModified
+        set_modified
       end
     end
 
