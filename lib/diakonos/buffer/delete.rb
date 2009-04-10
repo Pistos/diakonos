@@ -26,7 +26,7 @@ module Diakonos
       end
     end
 
-    def deleteLine
+    def delete_line
       remove_selection( DONT_DISPLAY )  if selection_mark
 
       row = @last_row
@@ -45,7 +45,7 @@ module Diakonos
       retval
     end
 
-    def deleteToEOL
+    def delete_to_eol
       remove_selection( DONT_DISPLAY )  if selection_mark
 
       row = @last_row

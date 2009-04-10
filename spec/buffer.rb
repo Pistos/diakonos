@@ -138,7 +138,7 @@ describe 'A Diakonos::Buffer' do
 
   it 'can delete a line' do
     original_lines = @b.to_a
-    @b.deleteLine.should.equal '#!/usr/bin/env ruby'
+    @b.delete_line.should.equal '#!/usr/bin/env ruby'
     @b.to_a.should.equal original_lines[ 1..-1 ]
   end
 

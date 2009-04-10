@@ -286,7 +286,7 @@ module Diakonos
     end
 
     def delete_and_store_line_to_klipper
-      removed_text = @current_buffer.deleteLine
+      removed_text = @current_buffer.delete_line
       if removed_text
         if @last_commands[ -1 ] =~ /^delete_and_store_line_to_klipper/
           new_clip = escape_quotes( `dcop klipper klipper getClipboardContents`.chomp + removed_text + "\n" )
@@ -298,7 +298,7 @@ module Diakonos
     end
 
     def deleteAndStoreLine
-      removed_text = @current_buffer.deleteLine
+      removed_text = @current_buffer.delete_line
       if removed_text
         clip = [ removed_text, "" ]
         if @last_commands[ -1 ] =~ /^deleteAndStoreLine/
@@ -310,14 +310,14 @@ module Diakonos
     end
 
     def delete_line_to_klipper
-      removed_text = @current_buffer.deleteLine
+      removed_text = @current_buffer.delete_line
       if removed_text
         send_to_klipper [ removed_text, "" ]
       end
     end
 
     def deleteLine
-      removed_text = @current_buffer.deleteLine
+      removed_text = @current_buffer.delete_line
       @clipboard.add_clip( [ removed_text, "" ] ) if removed_text
     end
 
@@ -354,14 +354,14 @@ module Diakonos
     end
 
     def delete_to_EOL_to_klipper
-      removed_text = @current_buffer.deleteToEOL
+      removed_text = @current_buffer.delete_to_eol
       if removed_text
         send_to_klipper removed_text
       end
     end
 
     def deleteToEOL
-      removed_text = @current_buffer.deleteToEOL
+      removed_text = @current_buffer.delete_to_eol
       @clipboard.add_clip( removed_text ) if removed_text
     end
 
