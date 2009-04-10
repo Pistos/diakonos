@@ -142,7 +142,7 @@ module Diakonos
       @settings[ "status.vars" ].each do |var|
         case var
         when "buffer_number"
-          var_array.push bufferToNumber( @current_buffer )
+          var_array.push buffer_to_number( @current_buffer )
         when "col"
           var_array.push( @current_buffer.last_screen_col + 1 )
         when "filename"

@@ -146,9 +146,9 @@ module Diakonos
           end
 
           if to_switch_to
-            switchTo( to_switch_to )
+            switch_to( to_switch_to )
           elsif previous_buffer
-            switchTo( previous_buffer )
+            switch_to( previous_buffer )
           else
             # No buffers left.  Open a new blank one.
             openFile
@@ -555,7 +555,7 @@ module Diakonos
       if name
         bookmark = @bookmarks[ name ]
         if bookmark
-          switchTo( bookmark.buffer )
+          switch_to( bookmark.buffer )
           bookmark.buffer.cursorTo( bookmark.row, bookmark.col, Buffer::DO_DISPLAY )
         else
           setILine "No bookmark named '#{name}'."
@@ -594,7 +594,7 @@ module Diakonos
         end
         @last_tag = tag
         @tag_stack.push [ @current_buffer.name, @current_buffer.last_row, @current_buffer.last_col ]
-        if switchTo( @buffers[ tag.file ] )
+        if switch_to( @buffers[ tag.file ] )
           #@current_buffer.goToLine( 0 )
         else
           openFile( tag.file )
@@ -800,7 +800,7 @@ module Diakonos
       filename = get_user_input( "Switch to buffer: " )
       buffer = @buffers[ filename ]
       if buffer
-        switchTo buffer
+        switch_to buffer
       end
     end
 
@@ -944,7 +944,7 @@ module Diakonos
           runHookProcs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
           save_session
-          if switchTo( buffer )
+          if switch_to( buffer )
             if line_number
               @current_buffer.goToLine( line_number, 0 )
             elsif last_row && last_col
@@ -1122,7 +1122,7 @@ module Diakonos
     def popTag
       tag = @tag_stack.pop
       if tag
-        if not switchTo( @buffers[ tag[ 0 ] ] )
+        if not switch_to( @buffers[ tag[ 0 ] ] )
           openFile( tag[ 0 ] )
         end
         @current_buffer.cursorTo( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
@@ -1146,7 +1146,7 @@ module Diakonos
       to_all = nil
       @buffers.each_value do |buffer|
         if buffer.modified?
-          switchTo buffer
+          switch_to buffer
           closure_choice = closeFile( buffer, to_all )
           case closure_choice
           when CHOICE_CANCEL
@@ -1514,9 +1514,9 @@ module Diakonos
     def switchToBufferNumber( buffer_number_ )
       buffer_number = buffer_number_.to_i
       return  if buffer_number < 1
-      buffer_name = bufferNumberToName( buffer_number )
+      buffer_name = buffer_number_to_name( buffer_number )
       if buffer_name
-        switchTo( @buffers[ buffer_name ] )
+        switch_to( @buffers[ buffer_name ] )
       end
     end
 
@@ -1525,12 +1525,12 @@ module Diakonos
         @buffer_history_pointer += 1
         if @buffer_history_pointer >= @buffer_history_pointer.size
           @buffer_history_pointer = @buffer_history_pointer.size - 1
-          switchToBufferNumber( bufferToNumber( @current_buffer ) + 1 )
+          switchToBufferNumber( buffer_to_number( @current_buffer ) + 1 )
         else
-          switchTo @buffer_history[ @buffer_history_pointer ]
+          switch_to @buffer_history[ @buffer_history_pointer ]
         end
       else
-        switchToBufferNumber( bufferToNumber( @current_buffer ) + 1 )
+        switchToBufferNumber( buffer_to_number( @current_buffer ) + 1 )
       end
     end
 
@@ -1539,12 +1539,12 @@ module Diakonos
         @buffer_history_pointer -= 1
         if @buffer_history_pointer < 0
           @buffer_history_pointer = 0
-          switchToBufferNumber( bufferToNumber( @current_buffer ) - 1 )
+          switchToBufferNumber( buffer_to_number( @current_buffer ) - 1 )
         else
-          switchTo @buffer_history[ @buffer_history_pointer ]
+          switch_to @buffer_history[ @buffer_history_pointer ]
         end
       else
-        switchToBufferNumber( bufferToNumber( @current_buffer ) - 1 )
+        switchToBufferNumber( buffer_to_number( @current_buffer ) - 1 )
       end
     end
 

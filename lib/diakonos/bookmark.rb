@@ -18,7 +18,7 @@ module Diakonos
 
     def <=> (other)
       return nil if other.nil?
-      comparison = ( $diakonos.bufferToNumber( @buffer ) <=> $diakonos.bufferToNumber( other.buffer ) )
+      comparison = ( $diakonos.buffer_to_number( @buffer ) <=> $diakonos.buffer_to_number( other.buffer ) )
       return comparison if comparison != 0
       comparison = ( @row <=> other.row )
       return comparison if comparison != 0
