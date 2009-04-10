@@ -2,7 +2,7 @@ module Diakonos
 
   class Buffer
 
-    def findOpeningMatch( line, match_close = true, bos_allowed = true )
+    def find_opening_match( line, match_close = true, bos_allowed = true )
       open_index = line.length
       open_token_class = nil
       open_match_text = nil
@@ -33,7 +33,7 @@ module Diakonos
       [ open_index, open_token_class, open_match_text ]
     end
 
-    def findClosingMatch( line_, regexp, bos_allowed = true, start_at = 0 )
+    def find_closing_match( line_, regexp, bos_allowed = true, start_at = 0 )
       close_match_text = nil
       close_index = nil
       if start_at > 0
@@ -63,7 +63,7 @@ module Diakonos
     # Prints text to the screen, truncating where necessary.
     # Returns nil if the string is completely off-screen.
     # write_cursor_col is buffer-relative, not screen-relative
-    def truncateOffScreen( string, write_cursor_col )
+    def truncate_off_screen( string, write_cursor_col )
       retval = string
 
       # Truncate based on left edge of display area
@@ -100,7 +100,7 @@ module Diakonos
       end
     end
 
-    def paintMarks( row )
+    def paint_marks( row )
       string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
       return  if string.nil? or string == ""
       string = string.expand_tabs( @tab_size )
@@ -158,7 +158,7 @@ module Diakonos
       end
     end
 
-    def printString( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
+    def print_string( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
       return  if not @pen_down
       return  if string.nil?
 
@@ -170,43 +170,43 @@ module Diakonos
     # the left-most column of the correct on-screen row.
     # It merely unintelligently prints the characters on the current curses line,
     # refusing to print characters of the in-buffer line which are offscreen.
-    def printLine( line )
+    def print_line( line )
       i = 0
       substr = nil
       index = nil
       while i < line.length
         substr = line[ i..-1 ]
         if @continued_format_class
-          close_index, close_match_text = findClosingMatch( substr, @close_token_regexps[ @continued_format_class ], i == 0 )
+          close_index, close_match_text = find_closing_match( substr, @close_token_regexps[ @continued_format_class ], i == 0 )
 
           if close_match_text.nil?
-            printString truncateOffScreen( substr, i )
-            printPaddingFrom( line.length )
+            print_string truncate_off_screen( substr, i )
+            print_padding_from( line.length )
             i = line.length
           else
             end_index = close_index + close_match_text.length
-            printString truncateOffScreen( substr[ 0...end_index ], i )
+            print_string truncate_off_screen( substr[ 0...end_index ], i )
             @continued_format_class = nil
             i += end_index
           end
         else
-          first_index, first_token_class, first_word = findOpeningMatch( substr, MATCH_ANY, i == 0 )
+          first_index, first_token_class, first_word = find_opening_match( substr, MATCH_ANY, i == 0 )
 
           if @lang_stack.length > 0
             prev_lang, close_token_class = @lang_stack[ -1 ]
-            close_index, close_match_text = findClosingMatch( substr, @diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
+            close_index, close_match_text = find_closing_match( substr, @diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
             if close_match_text and close_index <= first_index
               if close_index > 0
                 # Print any remaining text in the embedded language
-                printString truncateOffScreen( substr[ 0...close_index ], i )
+                print_string truncate_off_screen( substr[ 0...close_index ], i )
                 i += substr[ 0...close_index ].length
               end
 
               @lang_stack.pop
               setLanguage prev_lang
 
-              printString(
-                truncateOffScreen( substr[ close_index...(close_index + close_match_text.length) ], i ),
+              print_string(
+                truncate_off_screen( substr[ close_index...(close_index + close_match_text.length) ], i ),
                 @token_formats[ close_token_class ]
               )
               i += close_match_text.length
@@ -219,10 +219,10 @@ module Diakonos
           if first_word
             if first_index > 0
               # Print any preceding text in the default format
-              printString truncateOffScreen( substr[ 0...first_index ], i )
+              print_string truncate_off_screen( substr[ 0...first_index ], i )
               i += substr[ 0...first_index ].length
             end
-            printString( truncateOffScreen( first_word, i ), @token_formats[ first_token_class ] )
+            print_string( truncate_off_screen( first_word, i ), @token_formats[ first_token_class ] )
             i += first_word.length
             if @close_token_regexps[ first_token_class ]
               if change_to = @settings[ "lang.#{@language}.tokens.#{first_token_class}.change_to" ]
@@ -233,17 +233,17 @@ module Diakonos
               end
             end
           else
-            printString truncateOffScreen( substr, i )
+            print_string truncate_off_screen( substr, i )
             i += substr.length
             break
           end
         end
       end
 
-      printPaddingFrom i
+      print_padding_from i
     end
 
-    def printPaddingFrom( col )
+    def print_padding_from( col )
       return  if not @pen_down
 
       if col < @left_column
@@ -253,7 +253,7 @@ module Diakonos
       end
 
       if remainder > 0
-        printString( " " * remainder )
+        print_string( " " * remainder )
       end
     end
 
@@ -282,12 +282,12 @@ module Diakonos
               open_token_class = nil
               open_match_text = nil
 
-              open_index, open_token_class, open_match_text = findOpeningMatch( line )
+              open_index, open_token_class, open_match_text = find_opening_match( line )
 
               if open_token_class
                 @pen_down = false
                 @lines[ index...@top_line ].each do |line|
-                  printLine line
+                  print_line line
                 end
                 @pen_down = true
 
@@ -311,9 +311,9 @@ module Diakonos
                 )
               end
               @win_main.setpos( y, 0 )
-              printLine line.expand_tabs( @tab_size )
+              print_line line.expand_tabs( @tab_size )
               @win_main.setpos( y, 0 )
-              paintMarks @top_line + row
+              paint_marks @top_line + row
               y += 1
             end
 
