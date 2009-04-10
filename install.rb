@@ -33,6 +33,7 @@ module Diakonos
       @lib_suffix  = strip_prefix( rconfig[ 'sitelibdir' ] )
       @conf_dir    = rconfig[ 'sysconfdir' ]
       @doc_suffix  = strip_prefix( rconfig[ 'docdir' ].sub( /\$\(PACKAGE\)/, "diakonos-#{Diakonos::VERSION}" ) )
+      @data_suffix = strip_prefix( File.join(rconfig[ 'datadir' ], 'diakonos') )
 
       while argv.any?
         arg = argv.shift
@@ -47,6 +48,8 @@ module Diakonos
           @conf_dir = argv.shift
         when '--doc-dir'
           @doc_dir = argv.shift
+        when '--help-dir'
+          @help_dir = argv.shift
         when '--lib-dir'
           @lib_dir = argv.shift
         when '-v', '--verbose'
@@ -61,6 +64,7 @@ module Diakonos
       @bin_dir  ||= File.join( @prefix, @bin_suffix )
       @lib_dir  ||= File.join( @prefix, @lib_suffix )
       @doc_dir  ||= File.join( @prefix, @doc_suffix )
+      @help_dir ||= File.join( @prefix, @data_suffix, 'help' )
 
       if want_help
         print_usage_and_exit
@@ -191,7 +195,6 @@ end
       install_ 'bin/diakonos', @bin_dir
 
       # Documentation
-      @help_dir = "#{@doc_dir}/help"
       mkdir_ @help_dir
       cp_ %w( README CHANGELOG LICENCE ), @doc_dir
       cp_ Dir[ 'help/*' ], @help_dir
