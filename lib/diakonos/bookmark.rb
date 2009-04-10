@@ -30,13 +30,7 @@ class Bookmark
     def > (other)
         ( ( self <=> other ) > 0 )
     end
-    
-    def incRow( increment )
-        row += increment
-    end
-    def incCol( increment )
-        col += increment
-    end
+
     def shift( row_inc, col_inc )
         row += row_inc
         col += col_inc
