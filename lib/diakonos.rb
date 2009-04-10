@@ -380,7 +380,7 @@ module Diakonos
             @win_main.refresh
           end
         rescue SignalException => e
-          debugLog "Terminated by signal (#{e.message})"
+          debug_log "Terminated by signal (#{e.message})"
         end
 
         cleanup_display
@@ -483,8 +483,8 @@ module Diakonos
         end
         openFile( @error_filename )
       rescue Exception => e2
-        debugLog "EXCEPTION: #{e.message}"
-        debugLog "\t#{e.backtrace}"
+        debug_log "EXCEPTION: #{e.message}"
+        debug_log "\t#{e.backtrace}"
       end
     end
 

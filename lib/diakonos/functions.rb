@@ -1465,8 +1465,8 @@ module Diakonos
         begin
           @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
         rescue Exception => e
-          debugLog e.message
-          debugLog e.backtrace.join( "\n\t" )
+          debug_log e.message
+          debug_log e.backtrace.join( "\n\t" )
           showException e
         end
 

@@ -284,8 +284,8 @@ module Diakonos
               @there_was_non_movement = !( /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ === to_eval )
             end
           rescue Exception => e
-            debugLog e.message
-            debugLog e.backtrace.join( "\n\t" )
+            debug_log e.message
+            debug_log e.backtrace.join( "\n\t" )
             showException e
           end
         else
