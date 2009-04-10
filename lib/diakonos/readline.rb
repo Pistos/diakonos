@@ -177,7 +177,7 @@ module Diakonos
         end
       end
 
-      @diakonos.closeListBuffer
+      @diakonos.close_list_buffer
 
       @history[ -1 ] = @input
     end
@@ -275,7 +275,7 @@ module Diakonos
           f.puts "(no matches)"
         end
       end
-      @diakonos.openListBuffer
+      @diakonos.open_list_buffer
       @window.setpos( @window.cury, @window.curx )
     end
 

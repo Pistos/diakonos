@@ -666,7 +666,7 @@ module Diakonos
           list.puts grep_results.join( join_str )
         end
 
-        list_buffer = openListBuffer
+        list_buffer = open_list_buffer
         regexp = nil
         begin
           list_buffer.highlightMatches Regexp.new( input )
@@ -708,7 +708,7 @@ module Diakonos
           list.puts matching_docs.join( "\n" )
         end
 
-        openListBuffer
+        open_list_buffer
       }
 
       close_help_buffer
@@ -796,7 +796,7 @@ module Diakonos
       with_list_file do |f|
         f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
       end
-      openListBuffer
+      open_list_buffer
       filename = get_user_input( "Switch to buffer: " )
       buffer = @buffers[ filename ]
       if buffer
@@ -976,7 +976,7 @@ module Diakonos
           with_list_file do |list|
             list.puts matches.map { |m| m[ :path ] }
           end
-          openListBuffer
+          open_list_buffer
         }
       end
       file = get_user_input( "Filename: ", @rlh_files, prefill, &finder_block )
