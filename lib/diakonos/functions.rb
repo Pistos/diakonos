@@ -189,7 +189,7 @@ module Diakonos
     end
 
     def copySelection
-      @clipboard.addClip @current_buffer.copySelection
+      @clipboard.add_clip @current_buffer.copySelection
       removeSelection
     end
 
@@ -272,7 +272,7 @@ module Diakonos
     end
 
     def cutSelection
-      delete  if @clipboard.addClip( @current_buffer.copySelection )
+      delete  if @clipboard.add_clip( @current_buffer.copySelection )
     end
 
     def cut_selection_to_klipper
@@ -302,9 +302,9 @@ module Diakonos
       if removed_text
         clip = [ removed_text, "" ]
         if @last_commands[ -1 ] =~ /^deleteAndStoreLine/
-          @clipboard.appendToClip clip
+          @clipboard.append_to_clip clip
         else
-          @clipboard.addClip clip
+          @clipboard.add_clip clip
         end
       end
     end
@@ -318,7 +318,7 @@ module Diakonos
 
     def deleteLine
       removed_text = @current_buffer.deleteLine
-      @clipboard.addClip( [ removed_text, "" ] ) if removed_text
+      @clipboard.add_clip( [ removed_text, "" ] ) if removed_text
     end
 
     def delete_to( char = nil )
@@ -330,7 +330,7 @@ module Diakonos
       if char
         removed_text = @current_buffer.delete_to char
         if removed_text
-          @clipboard.addClip removed_text
+          @clipboard.add_clip removed_text
         else
           setILine "'#{char}' not found."
         end
@@ -346,7 +346,7 @@ module Diakonos
       if char
         removed_text = @current_buffer.delete_to_and_from char
         if removed_text
-          @clipboard.addClip( [ removed_text ] )
+          @clipboard.add_clip( [ removed_text ] )
         else
           setILine "'#{char}' not found."
         end
@@ -362,7 +362,7 @@ module Diakonos
 
     def deleteToEOL
       removed_text = @current_buffer.deleteToEOL
-      @clipboard.addClip( removed_text ) if removed_text
+      @clipboard.add_clip( removed_text ) if removed_text
     end
 
     def evaluate( code_ = nil )
