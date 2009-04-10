@@ -1,4 +1,4 @@
-~module Diakonos
+module Diakonos
 
   class Diakonos
 
