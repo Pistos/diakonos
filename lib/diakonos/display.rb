@@ -100,7 +100,7 @@ module Diakonos
     end
 
     def redraw
-      loadConfiguration
+      load_configuration
       initializeDisplay
       updateStatusLine
       updateContextLine

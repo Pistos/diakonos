@@ -35,7 +35,7 @@ module Diakonos
       found
     end
 
-    def loadConfiguration
+    def load_configuration
       # Set defaults first
 
       conf_dir = INSTALL_SETTINGS[ :conf_dir ]
@@ -103,8 +103,8 @@ module Diakonos
       @colour_pairs = Array.new
 
       begin
-        parseConfigurationFile( @global_diakonos_conf )
-        parseConfigurationFile( @diakonos_conf )
+        parse_configuration_file @global_diakonos_conf
+        parse_configuration_file @diakonos_conf
 
         # Session settings override config file settings.
 
@@ -125,7 +125,7 @@ module Diakonos
       end
     end
 
-    def parseConfigurationFile( filename )
+    def parse_configuration_file( filename )
       return  if ! FileTest.exists? filename
 
       IO.foreach( filename ) do |line|
@@ -148,7 +148,7 @@ module Diakonos
 
         case command
         when "include"
-          parseConfigurationFile File.expand_path( arg )
+          parse_configuration_file File.expand_path( arg )
         when "key"
           if arg
             if /  / === arg

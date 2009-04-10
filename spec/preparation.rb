@@ -19,4 +19,4 @@ end
 
 $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
 $diakonos.start
-$diakonos.parseConfigurationFile( File.join( __DIR__, 'test-files', 'test.conf' ) )
+$diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )

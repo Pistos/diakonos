@@ -127,7 +127,7 @@ module Diakonos
       @win_line_numbers = nil
       @buffers = BufferHash.new
 
-      loadConfiguration
+      load_configuration
 
       @quitting    = false
       @untitled_id = 0

@@ -44,7 +44,7 @@ module Diakonos
             saved = true
 
             if @name =~ /#{@diakonos.diakonos_home}\/.*\.conf/
-              @diakonos.loadConfiguration
+              @diakonos.load_configuration
               @diakonos.initializeDisplay
             end
 
