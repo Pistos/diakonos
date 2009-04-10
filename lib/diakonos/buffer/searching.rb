@@ -167,13 +167,13 @@ module Diakonos
           @diakonos.setILine( "(search wrapped around BOF/EOF)" )
         end
 
-        removeSelection( DONT_DISPLAY )
+        remove_selection( DONT_DISPLAY )
         @last_finding = finding
         if @settings[ "found_cursor_start" ]
-          anchorSelection( finding.end_row, finding.end_col, DONT_DISPLAY )
+          anchor_selection( finding.end_row, finding.end_col, DONT_DISPLAY )
           cursorTo( finding.start_row, finding.start_col )
         else
-          anchorSelection( finding.start_row, finding.start_col, DONT_DISPLAY )
+          anchor_selection( finding.start_row, finding.start_col, DONT_DISPLAY )
           cursorTo( finding.end_row, finding.end_col )
         end
         if show_context_after
@@ -226,7 +226,7 @@ module Diakonos
           end
         end
       else
-        removeSelection DONT_DISPLAY
+        remove_selection DONT_DISPLAY
         clearMatches DO_DISPLAY
         if not options[ :quiet ]
           @diakonos.setILine "/#{regexp.source}/ not found."

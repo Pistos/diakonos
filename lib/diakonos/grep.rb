@@ -35,7 +35,7 @@ module Diakonos
     def grep_( regexp_source, *buffers )
       original_buffer = @current_buffer
       if @current_buffer.changing_selection
-        selected_text = @current_buffer.copySelection[ 0 ]
+        selected_text = @current_buffer.copy_selection[ 0 ]
       end
       starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 

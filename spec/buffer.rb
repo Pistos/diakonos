@@ -11,9 +11,9 @@ describe 'A Diakonos::Buffer' do
   end
 
   it 'can provide selected text' do
-    @b.anchorSelection( 0, 0 )
+    @b.anchor_selection( 0, 0 )
     @b.cursorTo( 3, 0 )
-    clip = @b.copySelection
+    clip = @b.copy_selection
     clip.should.equal(
       [
         "#!/usr/bin/env ruby",

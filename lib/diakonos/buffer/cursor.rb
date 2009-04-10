@@ -53,11 +53,11 @@ module Diakonos
       @last_screen_col = new_col
       changed = ( @last_row != old_last_row or @last_col != old_last_col )
       if changed
-        recordMarkStartAndEnd
+        record_mark_start_and_end
 
         removed = false
         if not @changing_selection and selecting?
-          removeSelection( DONT_DISPLAY )
+          remove_selection( DONT_DISPLAY )
           removed = true
         end
         if removed or ( do_display and ( selecting? or view_changed ) )

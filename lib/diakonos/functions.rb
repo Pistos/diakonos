@@ -15,7 +15,7 @@ module Diakonos
 
     # Begins selecting text by anchoring (marking) the start of a selection.
     def anchorSelection
-      @current_buffer.anchorSelection
+      @current_buffer.anchor_selection
       updateStatusLine
     end
 
@@ -30,7 +30,7 @@ module Diakonos
     # Deletes any currently selected text.
     def carriageReturn
       @current_buffer.carriageReturn
-      @current_buffer.deleteSelection
+      @current_buffer.delete_selection
     end
 
     def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
@@ -189,7 +189,7 @@ module Diakonos
     end
 
     def copySelection
-      @clipboard.add_clip @current_buffer.copySelection
+      @clipboard.add_clip @current_buffer.copy_selection
       removeSelection
     end
 
@@ -272,7 +272,7 @@ module Diakonos
     end
 
     def cutSelection
-      delete  if @clipboard.add_clip( @current_buffer.copySelection )
+      delete  if @clipboard.add_clip( @current_buffer.copy_selection )
     end
 
     def cut_selection_to_klipper
@@ -368,7 +368,7 @@ module Diakonos
     def evaluate( code_ = nil )
       if code_.nil?
         if @current_buffer.changing_selection
-          selected_text = @current_buffer.copySelection[ 0 ]
+          selected_text = @current_buffer.copy_selection[ 0 ]
         end
         code = get_user_input( "Ruby code: ", @rlh_general, ( selected_text or "" ), ::Diakonos::Functions.public_instance_methods )
       else
@@ -444,7 +444,7 @@ module Diakonos
       direction = direction_of( dir_str )
       if regexp_source_.nil?
         if @current_buffer.changing_selection
-          selected_text = @current_buffer.copySelection[ 0 ]
+          selected_text = @current_buffer.copy_selection[ 0 ]
         end
         starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 
@@ -456,7 +456,7 @@ module Diakonos
           if input.length > 1
             find_ direction, case_sensitive, input, nil, starting_row, starting_col, QUIET
           else
-            @current_buffer.removeSelection Buffer::DONT_DISPLAY
+            @current_buffer.remove_selection Buffer::DONT_DISPLAY
             @current_buffer.clearMatches Buffer::DO_DISPLAY
           end
         }
@@ -490,7 +490,7 @@ module Diakonos
     def findExact( dir_str = "down", search_term_ = nil )
       if search_term_.nil?
         if @current_buffer.changing_selection
-          selected_text = @current_buffer.copySelection[ 0 ]
+          selected_text = @current_buffer.copy_selection[ 0 ]
         end
         search_term = get_user_input( "Search for: ", @rlh_search, ( selected_text or "" ) )
       else
@@ -578,7 +578,7 @@ module Diakonos
 
       if tag_.nil?
         if @current_buffer.changing_selection
-          selected_text = @current_buffer.copySelection[ 0 ]
+          selected_text = @current_buffer.copy_selection[ 0 ]
         end
         tag_name = get_user_input( "Tag name: ", @rlh_general, ( selected_text or "" ), @tags.keys )
       else
@@ -635,7 +635,7 @@ module Diakonos
 
       original_buffer = @current_buffer
       if @current_buffer.changing_selection
-        selected_text = @current_buffer.copySelection[ 0 ]
+        selected_text = @current_buffer.copy_selection[ 0 ]
       end
       starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 
@@ -778,7 +778,7 @@ module Diakonos
 
     def insertSpaces( num_spaces )
       if num_spaces > 0
-        @current_buffer.deleteSelection
+        @current_buffer.delete_selection
         @current_buffer.insertString( " " * num_spaces )
         cursorRight( Buffer::STILL_TYPING, num_spaces )
       end
@@ -1173,7 +1173,7 @@ module Diakonos
     end
 
     def removeSelection
-      @current_buffer.removeSelection
+      @current_buffer.remove_selection
       updateStatusLine
     end
 
@@ -1553,7 +1553,7 @@ module Diakonos
     end
 
     def toggleSelection
-      @current_buffer.toggleSelection
+      @current_buffer.toggle_selection
       updateStatusLine
     end
 

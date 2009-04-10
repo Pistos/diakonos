@@ -221,7 +221,7 @@ module Diakonos
 
     def collapseWhitespace
       if selection_mark
-        removeSelection DONT_DISPLAY
+        remove_selection DONT_DISPLAY
       end
 
       line = @lines[ @last_row ]
@@ -375,7 +375,7 @@ module Diakonos
     def panView( x = 1, do_display = DO_DISPLAY )
       old_left_column = @left_column
       @left_column = [ @left_column + x, 0 ].max
-      recordMarkStartAndEnd
+      record_mark_start_and_end
       display if do_display
       @left_column - old_left_column
     end
@@ -415,11 +415,11 @@ module Diakonos
       @last_screen_y = @last_row - @top_line
       @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
 
-      recordMarkStartAndEnd
+      record_mark_start_and_end
 
       if changed != 0
         if not @changing_selection and selecting?
-          removeSelection( DONT_DISPLAY )
+          remove_selection( DONT_DISPLAY )
         end
 
         highlightMatches

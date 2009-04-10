@@ -190,7 +190,7 @@ module Diakonos
     def capture_keychain( c, context )
       if c == ENTER
         @capturing_keychain = false
-        @current_buffer.deleteSelection
+        @current_buffer.delete_selection
         str = keychain_str_for( context )
         @current_buffer.insertString str
         cursorRight( Buffer::STILL_TYPING, str.length )
@@ -216,7 +216,7 @@ module Diakonos
     def capture_mapping( c, context )
       if c == ENTER
         @capturing_mapping = false
-        @current_buffer.deleteSelection
+        @current_buffer.delete_selection
         setILine
       else
         keychain_pressed = context.concat [ c ]
@@ -302,7 +302,7 @@ module Diakonos
     protected :process_keystroke
 
     def type_character( c )
-      @current_buffer.deleteSelection( Buffer::DONT_DISPLAY )
+      @current_buffer.delete_selection( Buffer::DONT_DISPLAY )
       @current_buffer.insertChar c
       cursorRight( Buffer::STILL_TYPING )
     end

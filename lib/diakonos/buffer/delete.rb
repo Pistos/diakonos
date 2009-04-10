@@ -5,7 +5,7 @@ module Diakonos
     # x and y are given window-relative, not buffer-relative.
     def delete
       if selection_mark
-        deleteSelection
+        delete_selection
       else
         row = @last_row
         col = @last_col
@@ -27,7 +27,7 @@ module Diakonos
     end
 
     def deleteLine
-      removeSelection( DONT_DISPLAY )  if selection_mark
+      remove_selection( DONT_DISPLAY )  if selection_mark
 
       row = @last_row
       takeSnapshot
@@ -46,7 +46,7 @@ module Diakonos
     end
 
     def deleteToEOL
-      removeSelection( DONT_DISPLAY )  if selection_mark
+      remove_selection( DONT_DISPLAY )  if selection_mark
 
       row = @last_row
       col = @last_col
@@ -82,7 +82,7 @@ module Diakonos
     end
 
     def delete_to( char )
-      removeSelection( DONT_DISPLAY )  if selection_mark
+      remove_selection( DONT_DISPLAY )  if selection_mark
 
       first_row = row = @last_row
       index = @lines[ @last_row ].index( char, @last_col+1 )
@@ -98,7 +98,7 @@ module Diakonos
     end
 
     def delete_to_and_from( char )
-      removeSelection( DONT_DISPLAY )  if selection_mark
+      remove_selection( DONT_DISPLAY )  if selection_mark
 
       start_char = end_char = char
       case char

@@ -4,7 +4,7 @@ module Diakonos
 
     # @mark_start[ "col" ] is inclusive,
     # @mark_end[ "col" ] is exclusive.
-    def recordMarkStartAndEnd
+    def record_mark_start_and_end
       if @mark_anchor.nil?
         @text_marks[ SELECTION ] = nil
         return
@@ -71,7 +71,7 @@ module Diakonos
 
     def select_all
       selection_mode_normal
-      anchorSelection( 0, 0, DONT_DISPLAY )
+      anchor_selection( 0, 0, DONT_DISPLAY )
       cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
 
@@ -96,40 +96,40 @@ module Diakonos
           if include_ending
             end_row += 1
           end
-          anchorSelection( start_row, 0, DONT_DISPLAY )
+          anchor_selection( start_row, 0, DONT_DISPLAY )
           cursorTo( end_row, 0 )
           display
         end
       end
     end
 
-    def anchorSelection( row = @last_row, col = @last_col, do_display = DO_DISPLAY )
+    def anchor_selection( row = @last_row, col = @last_col, do_display = DO_DISPLAY )
       @mark_anchor = ( @mark_anchor or Hash.new )
       @mark_anchor[ "row" ] = row
       @mark_anchor[ "col" ] = col
-      recordMarkStartAndEnd
+      record_mark_start_and_end
       @changing_selection = true
       display  if do_display
     end
 
-    def removeSelection( do_display = DO_DISPLAY )
+    def remove_selection( do_display = DO_DISPLAY )
       return  if selection_mark.nil?
       @mark_anchor = nil
-      recordMarkStartAndEnd
+      record_mark_start_and_end
       @changing_selection = false
       @last_finding = nil
       display  if do_display
     end
 
-    def toggleSelection
+    def toggle_selection
       if @changing_selection
-        removeSelection
+        remove_selection
       else
-        anchorSelection
+        anchor_selection
       end
     end
 
-    def copySelection
+    def copy_selection
       selected_text
     end
 
@@ -182,7 +182,7 @@ module Diakonos
       @selection_mode = :normal
     end
 
-    def deleteSelection( do_display = DO_DISPLAY )
+    def delete_selection( do_display = DO_DISPLAY )
       return  if @text_marks[ SELECTION ].nil?
 
       takeSnapshot
@@ -210,7 +210,7 @@ module Diakonos
       end
 
       cursorTo( start_row, start_col )
-      removeSelection( DONT_DISPLAY )
+      remove_selection( DONT_DISPLAY )
       setModified( do_display )
     end
 
@@ -229,7 +229,7 @@ module Diakonos
 
       takeSnapshot
 
-      deleteSelection( DONT_DISPLAY )
+      delete_selection( DONT_DISPLAY )
 
       row = @last_row
       col = @last_col
