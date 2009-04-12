@@ -2,7 +2,7 @@ module Diakonos
 
   class Buffer
 
-    def tabExpandedColumn( col, row )
+    def tab_expanded_column( col, row )
       delta = 0
       line = @lines[ row ]
       for i in 0...col
@@ -14,7 +14,7 @@ module Diakonos
       col + delta
     end
 
-    def setIndent( row, level, do_display = DO_DISPLAY )
+    def set_indent( row, level, do_display = DO_DISPLAY )
       @lines[ row ] =~ /^([\s#{@indent_ignore_charset}]*)(.*)$/
       current_indent_text = ( $1 or "" )
       rest = ( $2 or "" )
@@ -69,7 +69,7 @@ module Diakonos
       level
     end
 
-    def parsedIndent( row = @last_row, do_display = DO_DISPLAY )
+    def parsed_indent( row = @last_row, do_display = DO_DISPLAY )
       if row == 0 || @lines[ row ] =~ @settings[ "lang.#{@language}.indent.not_indented" ]
         level = 0
       else
@@ -109,17 +109,17 @@ module Diakonos
         end
       end
 
-      setIndent( row, level, do_display )
+      set_indent( row, level, do_display )
     end
 
     def indent( row = @last_row, do_display = DO_DISPLAY )
       level = indentation_level( row, DONT_USE_INDENT_IGNORE )
-      setIndent( row, level + 1, do_display )
+      set_indent( row, level + 1, do_display )
     end
 
     def unindent( row = @last_row, do_display = DO_DISPLAY )
       level = indentation_level( row, DONT_USE_INDENT_IGNORE )
-      setIndent( row, level - 1, do_display )
+      set_indent( row, level - 1, do_display )
     end
 
   end

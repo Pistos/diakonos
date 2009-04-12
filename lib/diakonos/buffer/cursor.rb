@@ -42,7 +42,7 @@ module Diakonos
         end
       end
 
-      new_col = tabExpandedColumn( col, row )
+      new_col = tab_expanded_column( col, row )
       view_changed = show_character( row, new_col )
       @last_screen_y = row - @top_line
       @last_screen_x = new_col - @left_column

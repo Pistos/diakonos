@@ -315,7 +315,7 @@ module Diakonos
         [ @lines[ row ][ col..-1 ] ] +
         @lines[ (row+1)..-1 ]
       cursor_to( row + 1, 0 )
-      parsedIndent if @auto_indent
+      parsed_indent  if @auto_indent
       set_modified
     end
 
@@ -413,7 +413,7 @@ module Diakonos
       end
       @last_col = @last_col.fit( @left_column, [ @left_column + Curses::cols - 1, @lines[ @last_row ].length ].min )
       @last_screen_y = @last_row - @top_line
-      @last_screen_x = tabExpandedColumn( @last_col, @last_row ) - @left_column
+      @last_screen_x = tab_expanded_column( @last_col, @last_row ) - @left_column
 
       record_mark_start_and_end
 

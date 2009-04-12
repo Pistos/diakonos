@@ -89,10 +89,10 @@ module Diakonos
 
     # Worker function for painting only part of a row.
     def paint_single_row_mark( row, text_mark, string, curx, cury )
-      expanded_col = tabExpandedColumn( text_mark.start_col, row )
+      expanded_col = tab_expanded_column( text_mark.start_col, row )
       if expanded_col < @left_column + Curses::cols
         left = [ expanded_col - @left_column, 0 ].max
-        right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
+        right = tab_expanded_column( text_mark.end_col, row ) - @left_column
         if left < right
           @win_main.setpos( cury, curx + left )
           @win_main.addstr string[ left...right ]
@@ -120,14 +120,14 @@ module Diakonos
           elsif row == text_mark.start_row and row == text_mark.end_row
             paint_single_row_mark( row, text_mark, string, curx, cury )
           elsif row == text_mark.start_row
-            expanded_col = tabExpandedColumn( text_mark.start_col, row )
+            expanded_col = tab_expanded_column( text_mark.start_col, row )
             if expanded_col < @left_column + Curses::cols
               left = [ expanded_col - @left_column, 0 ].max
               @win_main.setpos( cury, curx + left )
               @win_main.addstr string[ left..-1 ]
             end
           elsif row == text_mark.end_row
-            right = tabExpandedColumn( text_mark.end_col, row ) - @left_column
+            right = tab_expanded_column( text_mark.end_col, row ) - @left_column
             @win_main.setpos( cury, curx )
             @win_main.addstr string[ 0...right ]
           else
