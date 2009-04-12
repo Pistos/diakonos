@@ -201,7 +201,7 @@ module Diakonos
 
     # Returns true iff the cursor changed positions
     def cursorDown
-      @current_buffer.cursorTo(
+      @current_buffer.cursor_to(
         @current_buffer.last_row + 1,
         @current_buffer.last_col,
         Buffer::DO_DISPLAY,
@@ -212,7 +212,7 @@ module Diakonos
 
     # Returns true iff the cursor changed positions
     def cursorLeft( stopped_typing = Buffer::STOPPED_TYPING )
-      @current_buffer.cursorTo(
+      @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col - 1,
         Buffer::DO_DISPLAY,
@@ -221,7 +221,7 @@ module Diakonos
     end
 
     def cursorRight( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
-      @current_buffer.cursorTo(
+      @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col + amount,
         Buffer::DO_DISPLAY,
@@ -231,7 +231,7 @@ module Diakonos
 
     # Returns true iff the cursor changed positions
     def cursorUp
-      @current_buffer.cursorTo(
+      @current_buffer.cursor_to(
         @current_buffer.last_row - 1,
         @current_buffer.last_col,
         Buffer::DO_DISPLAY,
@@ -241,33 +241,33 @@ module Diakonos
     end
 
     def cursorBOF
-      @current_buffer.cursorTo( 0, 0, Buffer::DO_DISPLAY )
+      @current_buffer.cursor_to( 0, 0, Buffer::DO_DISPLAY )
     end
 
     def cursorBOL
-      @current_buffer.cursorToBOL
+      @current_buffer.cursor_to_bol
     end
 
     def cursorEOL
-      @current_buffer.cursorToEOL
+      @current_buffer.cursor_to_eol
     end
 
     def cursorEOF
-      @current_buffer.cursorToEOF
+      @current_buffer.cursor_to_eof
     end
 
     # Top of view
     def cursorTOV
-      @current_buffer.cursorToTOV
+      @current_buffer.cursor_to_tov
     end
 
     # Bottom of view
     def cursorBOV
-      @current_buffer.cursorToBOV
+      @current_buffer.cursor_to_bov
     end
 
     def cursorReturn( dir_str = "backward" )
-      stack_pointer, stack_size = @current_buffer.cursorReturn( direction_of( dir_str, :backward ) )
+      stack_pointer, stack_size = @current_buffer.cursor_return( direction_of( dir_str, :backward ) )
       setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
@@ -469,7 +469,7 @@ module Diakonos
       elsif starting_row and starting_col
         @current_buffer.clearMatches
         if @settings[ 'find.return_on_abort' ]
-          @current_buffer.cursorTo starting_row, starting_col, Buffer::DO_DISPLAY
+          @current_buffer.cursor_to starting_row, starting_col, Buffer::DO_DISPLAY
         end
       end
     end
@@ -540,7 +540,7 @@ module Diakonos
         end
 
         if row
-          @current_buffer.goToLine( row, col )
+          @current_buffer.go_to_line( row, col )
         end
       end
     end
@@ -556,7 +556,7 @@ module Diakonos
         bookmark = @bookmarks[ name ]
         if bookmark
           switch_to( bookmark.buffer )
-          bookmark.buffer.cursorTo( bookmark.row, bookmark.col, Buffer::DO_DISPLAY )
+          bookmark.buffer.cursor_to( bookmark.row, bookmark.col, Buffer::DO_DISPLAY )
         else
           setILine "No bookmark named '#{name}'."
         end
@@ -595,13 +595,13 @@ module Diakonos
         @last_tag = tag
         @tag_stack.push [ @current_buffer.name, @current_buffer.last_row, @current_buffer.last_col ]
         if switch_to( @buffers[ tag.file ] )
-          #@current_buffer.goToLine( 0 )
+          #@current_buffer.go_to_line( 0 )
         else
           openFile( tag.file )
         end
         line_number = tag.command.to_i
         if line_number > 0
-          @current_buffer.goToLine( line_number - 1 )
+          @current_buffer.go_to_line( line_number - 1 )
         else
           find( "down", CASE_SENSITIVE, tag.command )
         end
@@ -682,7 +682,7 @@ module Diakonos
           openFile spl[ -1 ]
         end
       else
-        original_buffer.cursorTo starting_row, starting_col
+        original_buffer.cursor_to starting_row, starting_col
       end
     end
 
@@ -946,9 +946,9 @@ module Diakonos
           save_session
           if switch_to( buffer )
             if line_number
-              @current_buffer.goToLine( line_number, 0 )
+              @current_buffer.go_to_line( line_number, 0 )
             elsif last_row && last_col
-              @current_buffer.cursorTo( last_row, last_col, Buffer::DO_DISPLAY )
+              @current_buffer.cursor_to( last_row, last_col, Buffer::DO_DISPLAY )
             end
           end
         end
@@ -1072,7 +1072,7 @@ module Diakonos
 
     def pageDown
       if @current_buffer.pitchView( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
-        @current_buffer.cursorToEOF
+        @current_buffer.cursor_to_eof
       end
       updateStatusLine
       updateContextLine
@@ -1125,7 +1125,7 @@ module Diakonos
         if not switch_to( @buffers[ tag[ 0 ] ] )
           openFile( tag[ 0 ] )
         end
-        @current_buffer.cursorTo( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
+        @current_buffer.cursor_to( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
       else
         setILine "Tag stack empty."
       end

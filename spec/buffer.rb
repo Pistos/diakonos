@@ -4,7 +4,7 @@ describe 'A Diakonos::Buffer' do
 
   before do
     @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
-    @b.cursorTo( 0, 0 )
+    @b.cursor_to( 0, 0 )
   end
 
   after do
@@ -12,7 +12,7 @@ describe 'A Diakonos::Buffer' do
 
   it 'can provide selected text' do
     @b.anchor_selection( 0, 0 )
-    @b.cursorTo( 3, 0 )
+    @b.cursor_to( 3, 0 )
     clip = @b.copy_selection
     clip.should.equal(
       [
@@ -109,15 +109,15 @@ describe 'A Diakonos::Buffer' do
     File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
 
     @b.insertString "   "
-    @b.cursorTo( 5, 0 )
+    @b.cursor_to( 5, 0 )
     @b.insertString "   "
-    @b.cursorTo( 7, 0 )
+    @b.cursor_to( 7, 0 )
     @b.insertString "   "
-    @b.cursorTo( 8, 0 )
+    @b.cursor_to( 8, 0 )
     @b.insertString "   "
-    @b.cursorTo( 14, 0 )
+    @b.cursor_to( 14, 0 )
     @b.insertString "   "
-    @b.cursorTo( 20, 0 )
+    @b.cursor_to( 20, 0 )
     @b.insertString "   "
 
     @b.save_copy TEMP_FILE

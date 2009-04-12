@@ -70,7 +70,7 @@ module Diakonos
           openFile spl[ -1 ]
         end
       else
-        original_buffer.cursorTo starting_row, starting_col
+        original_buffer.cursor_to starting_row, starting_col
       end
     end
 

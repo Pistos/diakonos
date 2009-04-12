@@ -8,7 +8,7 @@ module Diakonos
         bm > cur_pos
       end
       if next_bm
-        cursorTo( next_bm.row, next_bm.col, DO_DISPLAY )
+        cursor_to( next_bm.row, next_bm.col, DO_DISPLAY )
       end
     end
 
@@ -23,7 +23,7 @@ module Diakonos
         end
       end
       if prev
-        cursorTo( prev.row, prev.col, DO_DISPLAY )
+        cursor_to( prev.row, prev.col, DO_DISPLAY )
       end
     end
 

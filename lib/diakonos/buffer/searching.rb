@@ -171,10 +171,10 @@ module Diakonos
         @last_finding = finding
         if @settings[ "found_cursor_start" ]
           anchor_selection( finding.end_row, finding.end_col, DONT_DISPLAY )
-          cursorTo( finding.start_row, finding.start_col )
+          cursor_to( finding.start_row, finding.start_col )
         else
           anchor_selection( finding.start_row, finding.start_col, DONT_DISPLAY )
-          cursorTo( finding.end_row, finding.end_col )
+          cursor_to( finding.end_row, finding.end_col )
         end
         if show_context_after
           watermark = Curses::lines / 6
@@ -335,7 +335,7 @@ module Diakonos
       if found_text
         #@last_found_row = found_row
         #@last_found_col = found_col
-        cursorTo( found_row, found_col )
+        cursor_to( found_row, found_col )
 
         display
       end

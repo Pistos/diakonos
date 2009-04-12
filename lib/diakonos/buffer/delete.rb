@@ -15,7 +15,7 @@ module Diakonos
             if row < @lines.length - 1
               # Delete newline, and concat next line
               joinLines( row )
-              cursorTo( @last_row, @last_col )
+              cursor_to( @last_row, @last_col )
             end
           else
             takeSnapshot( TYPING )
@@ -39,7 +39,7 @@ module Diakonos
         retval = @lines[ row ]
         @lines.delete_at row
       end
-      cursorTo( row, 0 )
+      cursor_to( row, 0 )
       set_modified
 
       retval
@@ -137,7 +137,7 @@ module Diakonos
       end_row = row
 
       if start_index && end_index
-        cursorTo( start_row, start_index+1 )
+        cursor_to( start_row, start_index+1 )
         delete_from_to( start_row, start_index+1, end_row, end_index )
       end
     end

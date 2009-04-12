@@ -211,7 +211,7 @@ module Diakonos
           str = h[ :closer ].call( lm ).to_s
           r, c = @last_row, @last_col
           paste str, @indent_closers
-          cursorTo r, c
+          cursor_to r, c
           if /%_/ === str
             find( [ /%_/ ], :direction => :down, :replacement => '', :auto_choice => CHOICE_YES_AND_STOP )
           end
@@ -232,7 +232,7 @@ module Diakonos
       if new_line != line
         takeSnapshot( TYPING )
         @lines[ @last_row ] = new_line
-        cursorTo( @last_row, @last_col - ( head.length - new_head.length ) )
+        cursor_to( @last_row, @last_col - ( head.length - new_head.length ) )
         set_modified
       end
     end
@@ -314,7 +314,7 @@ module Diakonos
         [ @lines[ row ][ 0...col ] ] +
         [ @lines[ row ][ col..-1 ] ] +
         @lines[ (row+1)..-1 ]
-      cursorTo( row + 1, 0 )
+      cursor_to( row + 1, 0 )
       parsedIndent if @auto_indent
       set_modified
     end
@@ -424,7 +424,7 @@ module Diakonos
 
         highlightMatches
         if @diakonos.there_was_non_movement
-          pushCursorState( old_top_line, old_row, old_col )
+          push_cursor_state( old_top_line, old_row, old_col )
         end
       end
 

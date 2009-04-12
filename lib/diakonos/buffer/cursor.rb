@@ -3,7 +3,7 @@ module Diakonos
   class Buffer
 
     # Returns true iff the cursor changed positions in the buffer.
-    def cursorTo( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = ADJUST_ROW )
+    def cursor_to( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = ADJUST_ROW )
       old_last_row = @last_row
       old_last_col = @last_col
 
@@ -43,7 +43,7 @@ module Diakonos
       end
 
       new_col = tabExpandedColumn( col, row )
-      view_changed = showCharacter( row, new_col )
+      view_changed = show_character( row, new_col )
       @last_screen_y = row - @top_line
       @last_screen_x = new_col - @left_column
 
@@ -76,10 +76,10 @@ module Diakonos
       changed
     end
 
-    def cursorReturn( direction )
+    def cursor_return( direction )
       delta = 0
       if @cursor_stack_pointer.nil?
-        pushCursorState( @top_line, @last_row, @last_col, DONT_CLEAR_STACK_POINTER )
+        push_cursor_state( @top_line, @last_row, @last_col, DONT_CLEAR_STACK_POINTER )
         delta = 1
       end
       case direction
@@ -100,7 +100,7 @@ module Diakonos
         cursor_state = @cursor_stack[ @cursor_stack_pointer ]
         if cursor_state
           pitchView( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
-          cursorTo( cursor_state[ :row ], cursor_state[ :col ] )
+          cursor_to( cursor_state[ :row ], cursor_state[ :col ] )
           @diakonos.updateStatusLine
         end
       end
@@ -108,11 +108,11 @@ module Diakonos
       [ return_pointer, @cursor_stack.size ]
     end
 
-    def cursorToEOF
-      cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
+    def cursor_to_eof
+      cursor_to( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
 
-    def cursorToBOL
+    def cursor_to_bol
       row = @last_row
       case @settings[ "bol_behaviour" ]
       when BOL_ZERO
@@ -134,10 +134,10 @@ module Diakonos
           col = first_char_col
         end
       end
-      cursorTo( row, col, DO_DISPLAY )
+      cursor_to( row, col, DO_DISPLAY )
     end
 
-    def cursorToEOL
+    def cursor_to_eol
       y = @win_main.cury
       end_col = lineAt( y ).length
       last_char_col = lineAt( y ).rstrip.length
@@ -159,21 +159,21 @@ module Diakonos
           col = end_col
         end
       end
-      cursorTo( @last_row, col, DO_DISPLAY )
+      cursor_to( @last_row, col, DO_DISPLAY )
     end
 
     # Top of view
-    def cursorToTOV
-      cursorTo( rowOf( 0 ), @last_col, DO_DISPLAY )
+    def cursor_to_tov
+      cursor_to( rowOf( 0 ), @last_col, DO_DISPLAY )
     end
     # Bottom of view
-    def cursorToBOV
-      cursorTo( rowOf( 0 + @diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
+    def cursor_to_bov
+      cursor_to( rowOf( 0 + @diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
     end
 
     # col and row are given relative to the buffer, not any window or screen.
     # Returns true if the view changed positions.
-    def showCharacter( row, col )
+    def show_character( row, col )
       old_top_line = @top_line
       old_left_column = @left_column
 
@@ -198,8 +198,8 @@ module Diakonos
       @top_line != old_top_line or @left_column != old_left_column
     end
 
-    def goToLine( line = nil, column = nil, do_display = DO_DISPLAY )
-      cursorTo( line || @last_row, column || 0, do_display )
+    def go_to_line( line = nil, column = nil, do_display = DO_DISPLAY )
+      cursor_to( line || @last_row, column || 0, do_display )
     end
 
     def go_block_outer
@@ -222,7 +222,7 @@ module Diakonos
           end
         end
       end
-      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+      go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
     end
 
     def go_block_inner
@@ -239,7 +239,7 @@ module Diakonos
           break
         end
       end
-      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+      go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
     end
 
     def go_block_next
@@ -262,7 +262,7 @@ module Diakonos
           end
         end
       end
-      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+      go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
     end
 
     def go_block_previous
@@ -296,10 +296,10 @@ module Diakonos
           end
         end
       end
-      goToLine( new_row, @lines[ new_row ].index( /\S/ ) )
+      go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
     end
 
-    def pushCursorState( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
+    def push_cursor_state( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
       new_state = {
         :top_line => top_line,
         :row => row,

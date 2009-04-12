@@ -85,7 +85,7 @@ module Diakonos
 
         if @settings[ 'strip_trailing_whitespace_on_save' ]
           if @last_col > @lines[ @last_row ].size
-            cursorTo @last_row, @lines[ @last_row ].size
+            cursor_to @last_row, @lines[ @last_row ].size
           end
         end
       end

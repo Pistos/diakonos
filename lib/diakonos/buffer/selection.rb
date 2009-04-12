@@ -72,7 +72,7 @@ module Diakonos
     def select_all
       selection_mode_normal
       anchor_selection( 0, 0, DONT_DISPLAY )
-      cursorTo( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
+      cursor_to( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
 
     def select( from_regexp, to_regexp, include_ending = true )
@@ -97,7 +97,7 @@ module Diakonos
             end_row += 1
           end
           anchor_selection( start_row, 0, DONT_DISPLAY )
-          cursorTo( end_row, 0 )
+          cursor_to( end_row, 0 )
           display
         end
       end
@@ -209,7 +209,7 @@ module Diakonos
         end
       end
 
-      cursorTo start_row, start_col
+      cursor_to start_row, start_col
       remove_selection DONT_DISPLAY
       set_modified do_display
     end
@@ -240,7 +240,7 @@ module Diakonos
         if do_parsed_indent
           parsedIndent row, DONT_DISPLAY
         end
-        cursorTo( @last_row, @last_col + text[ 0 ].length )
+        cursor_to( @last_row, @last_col + text[ 0 ].length )
       elsif text.length > 1
 
         case @selection_mode
@@ -265,7 +265,7 @@ module Diakonos
             parsedIndent r, DONT_DISPLAY
           end
         end
-        cursorTo( new_row, new_col )
+        cursor_to( new_row, new_col )
 
       end
 
