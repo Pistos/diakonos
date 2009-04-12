@@ -111,7 +111,7 @@ module Diakonos
       )
     )
       reset_display
-      setLanguage language
+      set_language language
       @original_language = @language
     end
 
@@ -120,7 +120,7 @@ module Diakonos
       @win_line_numbers = @diakonos.win_line_numbers
     end
 
-    def setLanguage( language )
+    def set_language( language )
       @settings = @diakonos.settings
       @language = language
       @token_regexps = ( @diakonos.token_regexps[ @language ] or Hash.new )
@@ -139,7 +139,7 @@ module Diakonos
       @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
       @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or DEFAULT_TAB_SIZE )
     end
-    protected :setLanguage
+    protected :set_language
 
     def [] ( arg )
       @lines[ arg ]
@@ -166,7 +166,7 @@ module Diakonos
       @name || @settings[ "status.unnamed_str" ]
     end
 
-    def replaceChar( c )
+    def replace_char( c )
       row = @last_row
       col = @last_col
       takeSnapshot( TYPING )
@@ -174,7 +174,7 @@ module Diakonos
       set_modified
     end
 
-    def insertChar( c )
+    def insert_char( c )
       row = @last_row
       col = @last_col
       takeSnapshot( TYPING )
@@ -183,7 +183,7 @@ module Diakonos
       set_modified
     end
 
-    def insertString( str )
+    def insert_string( str )
       row = @last_row
       col = @last_col
       takeSnapshot( TYPING )
@@ -192,7 +192,7 @@ module Diakonos
       set_modified
     end
 
-    def joinLines( row = @last_row, strip = DONT_STRIP_LINE )
+    def join_lines( row = @last_row, strip = DONT_STRIP_LINE )
       takeSnapshot( TYPING )
       next_line = @lines.delete_at( row + 1 )
       if strip
@@ -219,7 +219,7 @@ module Diakonos
       end
     end
 
-    def collapseWhitespace
+    def collapse_whitespace
       if selection_mark
         remove_selection DONT_DISPLAY
       end
@@ -306,7 +306,7 @@ module Diakonos
       end
     end
 
-    def carriageReturn
+    def carriage_return
       takeSnapshot
       row = @last_row
       col = @last_col
@@ -319,7 +319,7 @@ module Diakonos
       set_modified
     end
 
-    def lineAt( y )
+    def line_at( y )
       row = @top_line + y
       if row < 0
         nil
@@ -333,22 +333,22 @@ module Diakonos
     end
 
     # Returns true iff the given column, x, is less than the length of the given line, y.
-    def inLine( x, y )
-      x + @left_column < lineAt( y ).length
+    def in_line( x, y )
+      x + @left_column < line_at( y ).length
     end
 
     # Translates the window column, x, to a buffer-relative column index.
-    def columnOf( x )
+    def column_of( x )
       @left_column + x
     end
 
     # Translates the window row, y, to a buffer-relative row index.
-    def rowOf( y )
+    def row_of( y )
       @top_line + y
     end
 
     # Returns nil if the row is off-screen.
-    def rowToY( row )
+    def row_to_y( row )
       return nil if row.nil?
       y = row - @top_line
       y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
@@ -356,23 +356,23 @@ module Diakonos
     end
 
     # Returns nil if the column is off-screen.
-    def columnToX( col )
+    def column_to_x( col )
       return nil if col.nil?
       x = col - @left_column
       x = nil if ( x < 0 ) or ( x > @left_column + Curses::cols - 1 )
       x
     end
 
-    def currentRow
+    def current_row
       @last_row
     end
 
-    def currentColumn
+    def current_column
       @last_col
     end
 
     # Returns the amount the view was actually panned.
-    def panView( x = 1, do_display = DO_DISPLAY )
+    def pan_view( x = 1, do_display = DO_DISPLAY )
       old_left_column = @left_column
       @left_column = [ @left_column + x, 0 ].max
       record_mark_start_and_end
@@ -381,7 +381,7 @@ module Diakonos
     end
 
     # Returns the amount the view was actually pitched.
-    def pitchView( y = 1, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )
+    def pitch_view( y = 1, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )
       old_top_line = @top_line
       new_top_line = @top_line + y
 
@@ -489,7 +489,7 @@ module Diakonos
       retval
     end
 
-    def setType( type )
+    def set_type( type )
       if type
         configure( type )
         display

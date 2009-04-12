@@ -108,17 +108,17 @@ describe 'A Diakonos::Buffer' do
     @b.save_copy TEMP_FILE
     File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
 
-    @b.insertString "   "
+    @b.insert_string "   "
     @b.cursor_to( 5, 0 )
-    @b.insertString "   "
+    @b.insert_string "   "
     @b.cursor_to( 7, 0 )
-    @b.insertString "   "
+    @b.insert_string "   "
     @b.cursor_to( 8, 0 )
-    @b.insertString "   "
+    @b.insert_string "   "
     @b.cursor_to( 14, 0 )
-    @b.insertString "   "
+    @b.insert_string "   "
     @b.cursor_to( 20, 0 )
-    @b.insertString "   "
+    @b.insert_string "   "
 
     @b.save_copy TEMP_FILE
     File.read( TEMP_FILE ).should.not.equal File.read( SAMPLE_FILE )

@@ -248,7 +248,7 @@ module Diakonos
           @lines[ row ] = line[ 0...col ] + text[ 0 ]
           @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
           @lines[ row + 1, 0 ] = text[ 1..-2 ]
-          new_col = columnOf( text[ -1 ].length )
+          new_col = column_of( text[ -1 ].length )
         when :block
           @lines += [ '' ] * [ 0, ( row + text.length - @lines.length ) ].max
           @lines[ row...( row + text.length ) ] = @lines[ row...( row + text.length ) ].collect.with_index { |line,index|

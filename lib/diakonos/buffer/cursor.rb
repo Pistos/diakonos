@@ -99,7 +99,7 @@ module Diakonos
       else
         cursor_state = @cursor_stack[ @cursor_stack_pointer ]
         if cursor_state
-          pitchView( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
+          pitch_view( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
           cursor_to( cursor_state[ :row ], cursor_state[ :col ] )
           @diakonos.updateStatusLine
         end
@@ -139,8 +139,8 @@ module Diakonos
 
     def cursor_to_eol
       y = @win_main.cury
-      end_col = lineAt( y ).length
-      last_char_col = lineAt( y ).rstrip.length
+      end_col = line_at( y ).length
+      last_char_col = line_at( y ).rstrip.length
       case @settings[ 'eol_behaviour' ]
       when EOL_END
         col = end_col
@@ -164,11 +164,11 @@ module Diakonos
 
     # Top of view
     def cursor_to_tov
-      cursor_to( rowOf( 0 ), @last_col, DO_DISPLAY )
+      cursor_to( row_of( 0 ), @last_col, DO_DISPLAY )
     end
     # Bottom of view
     def cursor_to_bov
-      cursor_to( rowOf( 0 + @diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
+      cursor_to( row_of( 0 + @diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
     end
 
     # col and row are given relative to the buffer, not any window or screen.
@@ -179,20 +179,20 @@ module Diakonos
 
       while row < @top_line + @settings[ "view.margin.y" ]
         amount = (-1) * @settings[ "view.jump.y" ]
-        break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
+        break if( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
       end
       while row > @top_line + @diakonos.main_window_height - 1 - @settings[ "view.margin.y" ]
         amount = @settings[ "view.jump.y" ]
-        break if( pitchView( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
+        break if( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
       end
 
       while col < @left_column + @settings[ "view.margin.x" ]
         amount = (-1) * @settings[ "view.jump.x" ]
-        break if( panView( amount, DONT_DISPLAY ) != amount )
+        break if( pan_view( amount, DONT_DISPLAY ) != amount )
       end
       while col > @left_column + @diakonos.main_window_width - @settings[ "view.margin.x" ] - 2
         amount = @settings[ "view.jump.x" ]
-        break if( panView( amount, DONT_DISPLAY ) != amount )
+        break if( pan_view( amount, DONT_DISPLAY ) != amount )
       end
 
       @top_line != old_top_line or @left_column != old_left_column

@@ -179,7 +179,7 @@ module Diakonos
         if show_context_after
           watermark = Curses::lines / 6
           if @last_row - @top_line > watermark
-            pitchView( @last_row - @top_line - watermark )
+            pitch_view( @last_row - @top_line - watermark )
           end
         end
 

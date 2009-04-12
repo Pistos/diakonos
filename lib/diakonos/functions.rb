@@ -8,7 +8,7 @@ module Diakonos
       end
 
       if name
-        @bookmarks[ name ] = Bookmark.new( @current_buffer, @current_buffer.currentRow, @current_buffer.currentColumn, name )
+        @bookmarks[ name ] = Bookmark.new( @current_buffer, @current_buffer.current_row, @current_buffer.current_column, name )
         setILine "Added bookmark #{@bookmarks[ name ].to_s}."
       end
     end
@@ -29,7 +29,7 @@ module Diakonos
     # Insert a carriage return (newline) at the current cursor location.
     # Deletes any currently selected text.
     def carriageReturn
-      @current_buffer.carriageReturn
+      @current_buffer.carriage_return
       @current_buffer.delete_selection
     end
 
@@ -168,7 +168,7 @@ module Diakonos
     end
 
     def collapseWhitespace
-      @current_buffer.collapseWhitespace
+      @current_buffer.collapse_whitespace
     end
 
     def columnize( delimiter = nil, num_spaces_padding = 0 )
@@ -779,7 +779,7 @@ module Diakonos
     def insertSpaces( num_spaces )
       if num_spaces > 0
         @current_buffer.delete_selection
-        @current_buffer.insertString( " " * num_spaces )
+        @current_buffer.insert_string( " " * num_spaces )
         cursorRight( Buffer::STILL_TYPING, num_spaces )
       end
     end
@@ -789,7 +789,7 @@ module Diakonos
     end
 
     def joinLines
-      @current_buffer.joinLines( @current_buffer.currentRow, Buffer::STRIP_LINE )
+      @current_buffer.join_lines( @current_buffer.current_row, Buffer::STRIP_LINE )
     end
 
     def list_buffers
@@ -1063,7 +1063,7 @@ module Diakonos
     end
 
     def pageUp
-      if @current_buffer.pitchView( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+      if @current_buffer.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
         cursorBOF
       end
       updateStatusLine
@@ -1071,7 +1071,7 @@ module Diakonos
     end
 
     def pageDown
-      if @current_buffer.pitchView( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+      if @current_buffer.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
         @current_buffer.cursor_to_eof
       end
       updateStatusLine
@@ -1263,16 +1263,16 @@ module Diakonos
     end
 
     def scrollDown
-      @current_buffer.pitchView( @settings[ "view.scroll_amount" ] || 1 )
+      @current_buffer.pitch_view( @settings[ "view.scroll_amount" ] || 1 )
       updateStatusLine
       updateContextLine
     end
 
     def scrollUp
       if @settings[ "view.scroll_amount" ]
-        @current_buffer.pitchView( -@settings[ "view.scroll_amount" ] )
+        @current_buffer.pitch_view( -@settings[ "view.scroll_amount" ] )
       else
-        @current_buffer.pitchView( -1 )
+        @current_buffer.pitch_view( -1 )
       end
       updateStatusLine
       updateContextLine
@@ -1298,7 +1298,7 @@ module Diakonos
       end
 
       if type
-        if @current_buffer.setType( type )
+        if @current_buffer.set_type( type )
           updateStatusLine
           updateContextLine
         end

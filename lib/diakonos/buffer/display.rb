@@ -203,7 +203,7 @@ module Diakonos
               end
 
               @lang_stack.pop
-              setLanguage prev_lang
+              set_language prev_lang
 
               print_string(
                 truncate_off_screen( substr[ close_index...(close_index + close_match_text.length) ], i ),
@@ -227,7 +227,7 @@ module Diakonos
             if @close_token_regexps[ first_token_class ]
               if change_to = @settings[ "lang.#{@language}.tokens.#{first_token_class}.change_to" ]
                 @lang_stack.push [ @language, first_token_class ]
-                setLanguage change_to
+                set_language change_to
               else
                 @continued_format_class = first_token_class
               end
@@ -338,7 +338,7 @@ module Diakonos
             @win_main.refresh
 
             if @language != @original_language
-              setLanguage( @original_language )
+              set_language( @original_language )
             end
 
             Curses::curs_set 1

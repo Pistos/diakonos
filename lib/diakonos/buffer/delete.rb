@@ -14,7 +14,7 @@ module Diakonos
           if col == line.length
             if row < @lines.length - 1
               # Delete newline, and concat next line
-              joinLines( row )
+              join_lines( row )
               cursor_to( @last_row, @last_col )
             end
           else
