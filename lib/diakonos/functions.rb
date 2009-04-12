@@ -564,11 +564,11 @@ module Diakonos
     end
 
     def goToNextBookmark
-      @current_buffer.goToNextBookmark
+      @current_buffer.go_to_next_bookmark
     end
 
     def goToPreviousBookmark
-      @current_buffer.goToPreviousBookmark
+      @current_buffer.go_to_previous_bookmark
     end
 
     def goToTag( tag_ = nil )
@@ -1549,7 +1549,7 @@ module Diakonos
     end
 
     def toggleBookmark
-      @current_buffer.toggleBookmark
+      @current_buffer.toggle_bookmark
     end
 
     def toggleSelection

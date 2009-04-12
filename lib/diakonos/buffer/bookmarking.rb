@@ -2,7 +2,7 @@ module Diakonos
 
   class Buffer
 
-    def goToNextBookmark
+    def go_to_next_bookmark
       cur_pos = Bookmark.new( self, @last_row, @last_col )
       next_bm = @bookmarks.find do |bm|
         bm > cur_pos
@@ -12,7 +12,7 @@ module Diakonos
       end
     end
 
-    def goToPreviousBookmark
+    def go_to_previous_bookmark
       cur_pos = Bookmark.new( self, @last_row, @last_col )
       # There's no reverse_find method, so, we have to do this manually.
       prev = nil
@@ -27,7 +27,7 @@ module Diakonos
       end
     end
 
-    def toggleBookmark
+    def toggle_bookmark
       bookmark = Bookmark.new( self, @last_row, @last_col )
       existing = @bookmarks.find do |bm|
         bm == bookmark
