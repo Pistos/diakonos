@@ -350,9 +350,9 @@ module Diakonos
           end
 
           @diakonos.display_mutex.unlock
-          @diakonos.displayDequeue
+          @diakonos.display_dequeue
         else
-          @diakonos.displayEnqueue( self )
+          @diakonos.display_enqueue( self )
         end
 
       end

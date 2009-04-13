@@ -11,8 +11,8 @@ module Diakonos
         end
         @current_buffer = buffer
         run_hook_procs( :after_buffer_switch, buffer )
-        updateStatusLine
-        updateContextLine
+        update_status_line
+        update_context_line
         buffer.display
         switched = true
       end

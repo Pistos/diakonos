@@ -17,7 +17,7 @@ module Diakonos
       Curses::close_screen
     end
 
-    def initializeDisplay
+    def initialize_display
       if ! @testing
         cleanup_display
 
@@ -87,7 +87,7 @@ module Diakonos
       end
     end
 
-    def getTokenRegexp( hash, arg, match )
+    def get_token_regexp( hash, arg, match )
       language = match[ 1 ]
       token_class = match[ 2 ]
       case_insensitive = ( match[ 3 ] != nil )
@@ -101,9 +101,9 @@ module Diakonos
 
     def redraw
       load_configuration
-      initializeDisplay
-      updateStatusLine
-      updateContextLine
+      initialize_display
+      update_status_line
+      update_context_line
       @current_buffer.display
     end
 
@@ -123,7 +123,7 @@ module Diakonos
     end
 
     # Display text on the interaction line.
-    def setILine( string = "" )
+    def set_iline( string = "" )
       return  if @testing
       Curses::curs_set 0
       @win_interaction.setpos( 0, 0 )
@@ -137,7 +137,7 @@ module Diakonos
       @status_vars[ identifier ] = value
     end
 
-    def buildStatusLine( truncation = 0 )
+    def build_status_line( truncation = 0 )
       var_array = Array.new
       @settings[ "status.vars" ].each do |var|
         case var
@@ -206,14 +206,14 @@ module Diakonos
       end
       str
     end
-    protected :buildStatusLine
+    protected :build_status_line
 
-    def updateStatusLine
+    def update_status_line
       return  if @testing
 
-      str = buildStatusLine
+      str = build_status_line
       if str.length > Curses::cols
-        str = buildStatusLine( str.length - Curses::cols )
+        str = build_status_line( str.length - Curses::cols )
       end
       Curses::curs_set 0
       @win_status.setpos( 0, 0 )
@@ -222,7 +222,7 @@ module Diakonos
       Curses::curs_set 1
     end
 
-    def updateContextLine
+    def update_context_line
       return  if @testing
       return  if @win_context.nil?
 
@@ -271,13 +271,13 @@ module Diakonos
       @context_thread.priority = -2
     end
 
-    def displayEnqueue( buffer )
+    def display_enqueue( buffer )
       @display_queue_mutex.synchronize do
         @display_queue = buffer
       end
     end
 
-    def displayDequeue
+    def display_dequeue
       @display_queue_mutex.synchronize do
         if @display_queue
           Thread.new( @display_queue ) do |b|
@@ -297,12 +297,12 @@ module Diakonos
       @message_thread = Thread.new do
         time_left = @message_expiry - Time.now
         while time_left > 0
-          setILine "(#{time_left.round}) #{message}"
+          set_iline "(#{time_left.round}) #{message}"
           @win_main.setpos( @saved_main_y, @saved_main_x )
           sleep 1
           time_left = @message_expiry - Time.now
         end
-        setILine message
+        set_iline message
         @win_main.setpos( @saved_main_y, @saved_main_x )
       end
     end

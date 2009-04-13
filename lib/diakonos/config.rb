@@ -176,9 +176,9 @@ module Diakonos
             end
           end
         when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/, /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
-          getTokenRegexp( @token_regexps, arg, Regexp.last_match )
+          get_token_regexp( @token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/
-          getTokenRegexp( @close_token_regexps, arg, Regexp.last_match )
+          get_token_regexp( @close_token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.(.+?)\.format$/
           language = $1
           token_class = $2

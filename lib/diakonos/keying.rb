@@ -205,9 +205,9 @@ module Diakonos
 
         partial_keychain = @keychains.get_node( keychain_pressed )
         if partial_keychain
-          setILine( "Part of existing keychain: " + keychain_str_for( keychain_pressed ) + "..." )
+          set_iline( "Part of existing keychain: " + keychain_str_for( keychain_pressed ) + "..." )
         else
-          setILine keychain_str_for( keychain_pressed ) + "..."
+          set_iline keychain_str_for( keychain_pressed ) + "..."
         end
         process_keystroke( keychain_pressed )
       end
@@ -217,7 +217,7 @@ module Diakonos
       if c == ENTER
         @capturing_mapping = false
         @current_buffer.delete_selection
-        setILine
+        set_iline
       else
         keychain_pressed = context.concat [ c ]
 
@@ -225,14 +225,14 @@ module Diakonos
 
         if function_and_args
           function, args = function_and_args
-          setILine "#{keychain_str_for( keychain_pressed )}  ->  #{function}( #{args} )"
+          set_iline "#{keychain_str_for( keychain_pressed )}  ->  #{function}( #{args} )"
         else
           partial_keychain = @keychains.get_node( keychain_pressed )
           if partial_keychain
-            setILine( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
+            set_iline( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
             process_keystroke( keychain_pressed )
           else
-            setILine "There is no mapping for " + keychain_str_for( keychain_pressed )
+            set_iline "There is no mapping for " + keychain_str_for( keychain_pressed )
           end
         end
       end
@@ -265,7 +265,7 @@ module Diakonos
 
         if function_and_args
           function, args = function_and_args
-          setILine if not @settings[ "context.combined" ]
+          set_iline if not @settings[ "context.combined" ]
 
           if args
             to_eval = "#{function}( #{args} )"
@@ -291,10 +291,10 @@ module Diakonos
         else
           partial_keychain = @keychains.get_node( keychain_pressed )
           if partial_keychain
-            setILine( keychain_str_for( keychain_pressed ) + "..." )
+            set_iline( keychain_str_for( keychain_pressed ) + "..." )
             process_keystroke( keychain_pressed )
           else
-            setILine "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
+            set_iline "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
           end
         end
       end

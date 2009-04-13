@@ -25,7 +25,7 @@ module Diakonos
     end
 
     def redraw_prompt
-      @diakonos.setILine @prompt
+      @diakonos.set_iline @prompt
     end
 
     def call_block

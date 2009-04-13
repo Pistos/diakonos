@@ -164,7 +164,7 @@ module Diakonos
 
       if finding
         if wrapped and not options[ :quiet ]
-          @diakonos.setILine( "(search wrapped around BOF/EOF)" )
+          @diakonos.set_iline( "(search wrapped around BOF/EOF)" )
         end
 
         remove_selection( DONT_DISPLAY )
@@ -229,7 +229,7 @@ module Diakonos
         remove_selection DONT_DISPLAY
         clear_matches DO_DISPLAY
         if not options[ :quiet ]
-          @diakonos.setILine "/#{regexp.source}/ not found."
+          @diakonos.set_iline "/#{regexp.source}/ not found."
         end
       end
     end

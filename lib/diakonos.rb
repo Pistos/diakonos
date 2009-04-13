@@ -257,14 +257,14 @@ module Diakonos
     def start
       require 'diakonos/window'
 
-      initializeDisplay
+      initialize_display
 
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
         help_key = 'Shift-F1'
       else
         help_key = 'F1'
       end
-      setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
+      set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
       if @session_to_load
         pid_session = @session
@@ -360,8 +360,8 @@ module Diakonos
       if num_opened > 0
         switchToBufferNumber 1
 
-        updateStatusLine
-        updateContextLine
+        update_status_line
+        update_context_line
 
         if @post_load_script
           eval @post_load_script
@@ -493,7 +493,7 @@ module Diakonos
       @macro_name = name
       @macro_history = Array.new
       @macro_input_history = Array.new
-      setILine "Started macro recording."
+      set_iline "Started macro recording."
     end
     protected :startRecordingMacro
 
@@ -502,7 +502,7 @@ module Diakonos
       @macros[ @macro_name ] = [ @macro_history, @macro_input_history ]
       @macro_history = nil
       @macro_input_history = nil
-      setILine "Stopped macro recording."
+      set_iline "Stopped macro recording."
     end
     protected :stopRecordingMacro
 
@@ -527,7 +527,7 @@ module Diakonos
           @tags[ tag ].push CTag.new( file, command, kind, rest )
         end
       else
-        setILine "(tags file not found)"
+        set_iline "(tags file not found)"
       end
     end
 

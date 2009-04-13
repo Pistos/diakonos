@@ -45,16 +45,16 @@ module Diakonos
         if @macro_history
           @macro_input_history.push retval
         end
-        setILine
+        set_iline
       end
       retval
     end
 
     def interaction_blink( message = nil )
       terminateMessage
-      setILine @settings[ 'interaction.blink_string' ]
+      set_iline @settings[ 'interaction.blink_string' ]
       sleep @settings[ 'interaction.blink_duration' ]
-      setILine message if message
+      set_iline message if message
     end
 
     # choices should be an array of CHOICE_* constants.
@@ -82,7 +82,7 @@ module Diakonos
       if default.nil?
         showMessage msg
       else
-        setILine msg
+        set_iline msg
       end
 
       c = nil
@@ -125,7 +125,7 @@ module Diakonos
       end
 
       terminateMessage
-      setILine
+      set_iline
 
       if @choice_iterations > 0
         @choice_iterations -= 1

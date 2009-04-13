@@ -95,7 +95,7 @@ module Diakonos
         end
         @modified = ( @modified or tabs_subbed )
         if tabs_subbed
-          @diakonos.setILine "(spaces substituted for tab characters)"
+          @diakonos.set_iline "(spaces substituted for tab characters)"
         end
       end
 

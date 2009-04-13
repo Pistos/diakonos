@@ -9,14 +9,14 @@ module Diakonos
 
       if name
         @bookmarks[ name ] = Bookmark.new( @current_buffer, @current_buffer.current_row, @current_buffer.current_column, name )
-        setILine "Added bookmark #{@bookmarks[ name ].to_s}."
+        set_iline "Added bookmark #{@bookmarks[ name ].to_s}."
       end
     end
 
     # Begins selecting text by anchoring (marking) the start of a selection.
     def anchorSelection
       @current_buffer.anchor_selection
-      updateStatusLine
+      update_status_line
     end
 
     # Move one character left, then delete one character.
@@ -54,7 +54,7 @@ module Diakonos
         end
         @session[ 'settings' ][ key ] = value
         redraw  if do_redraw
-        setILine "#{key} = #{value}"
+        set_iline "#{key} = #{value}"
       end
     end
 
@@ -157,8 +157,8 @@ module Diakonos
           @buffers.delete del_buffer_key
           save_session
 
-          updateStatusLine
-          updateContextLine
+          update_status_line
+          update_context_line
         end
       else
         log "No such buffer: #{buffer.name}"
@@ -268,7 +268,7 @@ module Diakonos
 
     def cursorReturn( dir_str = "backward" )
       stack_pointer, stack_size = @current_buffer.cursor_return( direction_of( dir_str, :backward ) )
-      setILine( "Location: #{stack_pointer+1}/#{stack_size}" )
+      set_iline( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
     def cutSelection
@@ -323,32 +323,32 @@ module Diakonos
 
     def delete_to( char = nil )
       if char.nil?
-        setILine "Type character to delete to..."
+        set_iline "Type character to delete to..."
         char = @win_main.getch
-        setILine
+        set_iline
       end
       if char
         removed_text = @current_buffer.delete_to char
         if removed_text
           @clipboard.add_clip removed_text
         else
-          setILine "'#{char}' not found."
+          set_iline "'#{char}' not found."
         end
       end
     end
 
     def delete_to_and_from( char = nil )
       if char.nil?
-        setILine "Type character to delete to and from..."
+        set_iline "Type character to delete to and from..."
         char = @win_main.getch
-        setILine
+        set_iline
       end
       if char
         removed_text = @current_buffer.delete_to_and_from char
         if removed_text
           @clipboard.add_clip( [ removed_text ] )
         else
-          setILine "'#{char}' not found."
+          set_iline "'#{char}' not found."
         end
       end
     end
@@ -425,7 +425,7 @@ module Diakonos
       end
 
       if exception_thrown and not quiet
-        setILine( "Searching literally; #{exception_thrown.message}" )
+        set_iline( "Searching literally; #{exception_thrown.message}" )
       end
 
       @current_buffer.find(
@@ -558,7 +558,7 @@ module Diakonos
           switch_to( bookmark.buffer )
           bookmark.buffer.cursor_to( bookmark.row, bookmark.col, Buffer::DO_DISPLAY )
         else
-          setILine "No bookmark named '#{name}'."
+          set_iline "No bookmark named '#{name}'."
         end
       end
     end
@@ -606,7 +606,7 @@ module Diakonos
           find( "down", CASE_SENSITIVE, tag.command )
         end
       elsif tag_name
-        setILine "No such tag: '#{tag_name}'"
+        set_iline "No such tag: '#{tag_name}'"
       end
     end
 
@@ -688,7 +688,7 @@ module Diakonos
 
     def help( prefill = '' )
       if ! File.exist?( @help_dir ) || Dir[ "#{@help_dir}/*" ].size == 0
-        setILine 'There are no help files installed.'
+        set_iline 'There are no help files installed.'
         return
       end
 
@@ -827,7 +827,7 @@ module Diakonos
               ]
             )
           end
-          setILine "Loaded script '#{name}'."
+          set_iline "Loaded script '#{name}'."
         end
 
         loop do
@@ -849,7 +849,7 @@ module Diakonos
 
       path = session_filepath_for( session_id )
       if not File.exist?( path )
-        setILine "No such session: #{session_id}"
+        set_iline "No such session: #{session_id}"
       else
         if pid_session?( @session[ 'filename' ] )
           File.delete @session[ 'filename' ]
@@ -983,8 +983,8 @@ module Diakonos
 
       if file
         openFile file
-        updateStatusLine
-        updateContextLine
+        update_status_line
+        update_context_line
       end
     end
 
@@ -1066,16 +1066,16 @@ module Diakonos
       if @current_buffer.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
         cursorBOF
       end
-      updateStatusLine
-      updateContextLine
+      update_status_line
+      update_context_line
     end
 
     def pageDown
       if @current_buffer.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
         @current_buffer.cursor_to_eof
       end
-      updateStatusLine
-      updateContextLine
+      update_status_line
+      update_context_line
     end
 
     def parsedIndent
@@ -1090,8 +1090,8 @@ module Diakonos
       else
         @current_buffer.parsed_indent
       end
-      updateStatusLine
-      updateContextLine
+      update_status_line
+      update_context_line
     end
 
     def paste
@@ -1127,18 +1127,18 @@ module Diakonos
         end
         @current_buffer.cursor_to( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
       else
-        setILine "Tag stack empty."
+        set_iline "Tag stack empty."
       end
     end
 
     def print_mapped_function
       @capturing_mapping = true
-      setILine "Type any chain of keystrokes or key chords, or press Enter to stop."
+      set_iline "Type any chain of keystrokes or key chords, or press Enter to stop."
     end
 
     def printKeychain
       @capturing_keychain = true
-      setILine "Type any chain of keystrokes or key chords, then press Enter..."
+      set_iline "Type any chain of keystrokes or key chords, then press Enter..."
     end
 
     def quit
@@ -1168,13 +1168,13 @@ module Diakonos
 
       if name
         bookmark = @bookmarks.delete name
-        setILine "Removed bookmark #{bookmark.to_s}."
+        set_iline "Removed bookmark #{bookmark.to_s}."
       end
     end
 
     def removeSelection
       @current_buffer.remove_selection
-      updateStatusLine
+      update_status_line
     end
 
     def repeatLast
@@ -1255,17 +1255,17 @@ module Diakonos
 
     def selection_mode_block
       @current_buffer.selection_mode_block
-      updateStatusLine
+      update_status_line
     end
     def selection_mode_normal
       @current_buffer.selection_mode_normal
-      updateStatusLine
+      update_status_line
     end
 
     def scrollDown
       @current_buffer.pitch_view( @settings[ "view.scroll_amount" ] || 1 )
-      updateStatusLine
-      updateContextLine
+      update_status_line
+      update_context_line
     end
 
     def scrollUp
@@ -1274,8 +1274,8 @@ module Diakonos
       else
         @current_buffer.pitch_view( -1 )
       end
-      updateStatusLine
-      updateContextLine
+      update_status_line
+      update_context_line
     end
 
     def searchAndReplace( case_sensitive = CASE_INSENSITIVE )
@@ -1299,8 +1299,8 @@ module Diakonos
 
       if type
         if @current_buffer.set_type( type )
-          updateStatusLine
-          updateContextLine
+          update_status_line
+          update_context_line
         end
       end
     end
@@ -1313,7 +1313,7 @@ module Diakonos
       else
         @current_buffer.read_only = ( not @current_buffer.read_only )
       end
-      updateStatusLine
+      update_status_line
     end
 
     def set_session_dir
@@ -1321,9 +1321,9 @@ module Diakonos
       if path
         @session[ 'dir' ] = File.expand_path( path )
         save_session
-        setILine "Session dir changed to: #{@session['dir']}"
+        set_iline "Session dir changed to: #{@session['dir']}"
       else
-        setILine "(Session dir is: #{@session['dir']})"
+        set_iline "(Session dir is: #{@session['dir']})"
       end
     end
 
@@ -1446,7 +1446,7 @@ module Diakonos
         Curses::init_screen
         refreshAll
 
-        setILine result
+        set_iline result
       end
     end
 
@@ -1488,9 +1488,9 @@ module Diakonos
 
       Thread.new do
         if system( command )
-          setILine "Return code #{$?} from '#{command}'"
+          set_iline "Return code #{$?} from '#{command}'"
         else
-          setILine "Error code #{$?} executing '#{command}'"
+          set_iline "Error code #{$?} executing '#{command}'"
         end
       end
     end
@@ -1554,7 +1554,7 @@ module Diakonos
 
     def toggleSelection
       @current_buffer.toggle_selection
-      updateStatusLine
+      update_status_line
     end
 
     def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
@@ -1570,7 +1570,7 @@ module Diakonos
       if value != nil   # explicitly true or false
         @session[ 'settings' ][ key ] = value
         redraw  if do_redraw
-        setILine "#{key} = #{value}"
+        set_iline "#{key} = #{value}"
       end
     end
 

@@ -10,7 +10,7 @@ module Diakonos
       end
 
       if @read_only and FileTest.exists?( @name ) and FileTest.exists?( name ) and ( File.stat( @name ).ino == File.stat( name ).ino )
-        @diakonos.setILine "#{name} cannot be saved since it is read-only."
+        @diakonos.set_iline "#{name} cannot be saved since it is read-only."
       else
         @read_only = false
         if name.nil?
@@ -45,13 +45,13 @@ module Diakonos
 
             if @name =~ /#{@diakonos.diakonos_home}\/.*\.conf/
               @diakonos.load_configuration
-              @diakonos.initializeDisplay
+              @diakonos.initialize_display
             end
 
             @modified = false
 
             display
-            @diakonos.updateStatusLine
+            @diakonos.update_status_line
           end
         end
       end
@@ -128,7 +128,7 @@ module Diakonos
 
     def set_modified( do_display = DO_DISPLAY )
       if @read_only
-        @diakonos.setILine "Warning: Modifying a read-only file."
+        @diakonos.set_iline "Warning: Modifying a read-only file."
       end
 
       fmod = false
@@ -145,7 +145,7 @@ module Diakonos
       if not reverted
         clear_matches
         if do_display
-          @diakonos.updateStatusLine
+          @diakonos.update_status_line
           display
         end
       end

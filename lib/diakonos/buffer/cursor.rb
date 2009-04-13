@@ -67,8 +67,8 @@ module Diakonos
             @win_main.setpos( @last_screen_y, @last_screen_x )
           end
         end
-        @diakonos.updateStatusLine
-        @diakonos.updateContextLine
+        @diakonos.update_status_line
+        @diakonos.update_context_line
 
         @diakonos.remember_buffer self
       end
@@ -101,7 +101,7 @@ module Diakonos
         if cursor_state
           pitch_view( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
           cursor_to( cursor_state[ :row ], cursor_state[ :col ] )
-          @diakonos.updateStatusLine
+          @diakonos.update_status_line
         end
       end
 
