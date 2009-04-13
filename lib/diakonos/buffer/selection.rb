@@ -185,7 +185,7 @@ module Diakonos
     def delete_selection( do_display = DO_DISPLAY )
       return  if @text_marks[ SELECTION ].nil?
 
-      takeSnapshot
+      take_snapshot
 
       selection  = @text_marks[ SELECTION ]
       start_row  = selection.start_row
@@ -227,7 +227,7 @@ module Diakonos
         end
       end
 
-      takeSnapshot
+      take_snapshot
 
       delete_selection( DONT_DISPLAY )
 

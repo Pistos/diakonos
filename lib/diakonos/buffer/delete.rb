@@ -18,7 +18,7 @@ module Diakonos
               cursor_to( @last_row, @last_col )
             end
           else
-            takeSnapshot( TYPING )
+            take_snapshot( TYPING )
             @lines[ row ] = line[ 0...col ] + line[ (col + 1)..-1 ]
             set_modified
           end
@@ -30,7 +30,7 @@ module Diakonos
       remove_selection( DONT_DISPLAY )  if selection_mark
 
       row = @last_row
-      takeSnapshot
+      take_snapshot
       retval = nil
       if @lines.length == 1
         retval = @lines[ 0 ]
@@ -51,7 +51,7 @@ module Diakonos
       row = @last_row
       col = @last_col
 
-      takeSnapshot
+      take_snapshot
       if @settings[ 'delete_newline_on_delete_to_eol' ] and col == @lines[ row ].size
         next_line = @lines.delete_at( row + 1 )
         @lines[ row ] << next_line
@@ -66,7 +66,7 @@ module Diakonos
     end
 
     def delete_from_to( row_from, col_from, row_to, col_to )
-      takeSnapshot
+      take_snapshot
       if row_to == row_from
         retval = [ @lines[ row_to ].slice!( col_from, col_to - col_from ) ]
       else

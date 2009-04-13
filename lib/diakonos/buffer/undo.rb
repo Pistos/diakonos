@@ -2,21 +2,21 @@ module Diakonos
 
   class Buffer
 
-    def takeSnapshot( typing = false )
-      take_snapshot = false
+    def take_snapshot( typing = false )
+      do_it = false
       if @typing != typing
         @typing = typing
         # If we just started typing, take a snapshot, but don't continue
         # taking snapshots for every keystroke
         if typing
-          take_snapshot = true
+          do_it = true
         end
       end
       if not @typing
-        take_snapshot = true
+        do_it = true
       end
 
-      if take_snapshot
+      if do_it
         undo_size = 0
         @buffer_states[ 1..-1 ].each do |state|
           undo_size += state.length

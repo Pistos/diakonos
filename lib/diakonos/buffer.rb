@@ -169,7 +169,7 @@ module Diakonos
     def replace_char( c )
       row = @last_row
       col = @last_col
-      takeSnapshot( TYPING )
+      take_snapshot TYPING
       @lines[ row ][ col ] = c
       set_modified
     end
@@ -177,7 +177,7 @@ module Diakonos
     def insert_char( c )
       row = @last_row
       col = @last_col
-      takeSnapshot( TYPING )
+      take_snapshot( TYPING )
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
       set_modified
@@ -186,14 +186,14 @@ module Diakonos
     def insert_string( str )
       row = @last_row
       col = @last_col
-      takeSnapshot( TYPING )
+      take_snapshot( TYPING )
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
       set_modified
     end
 
     def join_lines( row = @last_row, strip = DONT_STRIP_LINE )
-      takeSnapshot( TYPING )
+      take_snapshot( TYPING )
       next_line = @lines.delete_at( row + 1 )
       if strip
         next_line = ' ' + next_line.strip
@@ -230,7 +230,7 @@ module Diakonos
       new_head = head.sub( /\s+$/, '' )
       new_line = new_head + tail.sub( /^\s+/, ' ' )
       if new_line != line
-        takeSnapshot( TYPING )
+        take_snapshot( TYPING )
         @lines[ @last_row ] = new_line
         cursor_to( @last_row, @last_col - ( head.length - new_head.length ) )
         set_modified
@@ -238,7 +238,7 @@ module Diakonos
     end
 
     def columnize( delimiter = /=>?|:|,/, num_spaces_padding = 1 )
-      takeSnapshot
+      take_snapshot
 
       lines = selected_lines
       column_width = 0
@@ -277,7 +277,7 @@ module Diakonos
     end
 
     def comment_out
-      takeSnapshot
+      take_snapshot
       one_modified = false
       selected_lines.each do |line|
         old_line = line.dup
@@ -291,7 +291,7 @@ module Diakonos
     end
 
     def uncomment
-      takeSnapshot
+      take_snapshot
       comment_string = Regexp.escape( @settings[ "lang.#{@language}.comment_string" ].to_s )
       comment_close_string = Regexp.escape( @settings[ "lang.#{@language}.comment_close_string" ].to_s )
       one_modified = false
@@ -307,7 +307,7 @@ module Diakonos
     end
 
     def carriage_return
-      takeSnapshot
+      take_snapshot
       row = @last_row
       col = @last_col
       @lines = @lines[ 0...row ] +

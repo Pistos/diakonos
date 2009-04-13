@@ -34,7 +34,7 @@ module Diakonos
         indentation -= num_tabs * ( @tab_size - 1 )
       end
 
-      takeSnapshot( TYPING ) if do_display
+      take_snapshot( TYPING ) if do_display
       @lines[ row ] = indent_text + rest
       cursor_to( row, indentation ) if do_display
       set_modified
