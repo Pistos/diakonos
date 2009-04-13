@@ -429,17 +429,6 @@ module Diakonos
       exit 0
     end
 
-    def showClips
-      clip_filename = @diakonos_home + "/clips.txt"
-      File.open( clip_filename, "w" ) do |f|
-        @clipboard.each do |clip|
-          f.puts clip
-          f.puts "---------------------------"
-        end
-      end
-      openFile clip_filename
-    end
-
     def get_language_from_name( name )
       retval = nil
       @filemasks.each do |language,filemask|

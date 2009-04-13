@@ -1327,6 +1327,17 @@ module Diakonos
       end
     end
 
+    def showClips
+      clip_filename = @diakonos_home + "/clips.txt"
+      File.open( clip_filename, "w" ) do |f|
+        @clipboard.each do |clip|
+          f.puts clip
+          f.puts "---------------------------"
+        end
+      end
+      openFile clip_filename
+    end
+
     def subShellVariables( string )
       return  if string.nil?
 
