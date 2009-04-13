@@ -286,7 +286,7 @@ module Diakonos
           rescue Exception => e
             debug_log e.message
             debug_log e.backtrace.join( "\n\t" )
-            showException e
+            show_exception e
           end
         else
           partial_keychain = @keychains.get_node( keychain_pressed )

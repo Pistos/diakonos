@@ -105,8 +105,8 @@ module Diakonos
 
     def configure(
       language = (
-        @diakonos.getLanguageFromShaBang( @lines[ 0 ] ) or
-        @diakonos.getLanguageFromName( @name ) or
+        @diakonos.get_language_from_shabang( @lines[ 0 ] ) or
+        @diakonos.get_language_from_name( @name ) or
         LANG_TEXT
       )
     )

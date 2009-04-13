@@ -110,7 +110,7 @@ module Diakonos
       @files = Array.new
       @read_only_files = Array.new
       @config_filename = nil
-      parseOptions argv
+      parse_options argv
 
       init_help
 
@@ -179,7 +179,7 @@ module Diakonos
       end
     end
 
-    def parseOptions( argv )
+    def parse_options( argv )
       @post_load_script = ""
       while argv.length > 0
         arg = argv.shift
@@ -187,19 +187,19 @@ module Diakonos
         when '-c', '--config'
           @config_filename = argv.shift
           if @config_filename.nil?
-            printUsage
+            print_usage
             exit 1
           end
         when '-e', '--execute'
           post_load_script = argv.shift
           if post_load_script.nil?
-            printUsage
+            print_usage
             exit 1
           else
             @post_load_script << "\n#{post_load_script}"
           end
         when '-h', '--help'
-          printUsage
+          print_usage
           exit 1
         when '-m', '--open-matching'
           regexp = argv.shift
@@ -212,7 +212,7 @@ module Diakonos
         when '-ro'
           filename = argv.shift
           if filename.nil?
-            printUsage
+            print_usage
             exit 1
           else
             @read_only_files.push filename
@@ -234,9 +234,9 @@ module Diakonos
         end
       end
     end
-    protected :parseOptions
+    protected :parse_options
 
-    def printUsage
+    def print_usage
       puts "Usage: #{$0} [options] [file] [file...]"
       puts "\t--help\tDisplay usage"
       puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
@@ -246,9 +246,9 @@ module Diakonos
       puts "\t-s, --load-session <session identifier>\tLoad a session"
       puts "\t--uninstall[-without-confirmation]\tUninstall Diakonos"
     end
-    protected :printUsage
+    protected :print_usage
 
-    def clearNonMovementFlag
+    def clear_non_movement_flag
       @there_was_non_movement = false
     end
 
@@ -326,7 +326,7 @@ module Diakonos
         begin
           require script
         rescue Exception => e
-          showException(
+          show_exception(
             e,
             [
               "There is a syntax error in the script.",
@@ -440,7 +440,7 @@ module Diakonos
       openFile clip_filename
     end
 
-    def getLanguageFromName( name )
+    def get_language_from_name( name )
       retval = nil
       @filemasks.each do |language,filemask|
         if name =~ filemask
@@ -451,7 +451,7 @@ module Diakonos
       retval
     end
 
-    def getLanguageFromShaBang( first_line )
+    def get_language_from_shabang( first_line )
       retval = nil
       @bangmasks.each do |language,bangmask|
         if first_line =~ bangmask
@@ -462,7 +462,7 @@ module Diakonos
       retval
     end
 
-    def showException( e, probable_causes = [ "Unknown" ] )
+    def show_exception( e, probable_causes = [ "Unknown" ] )
       begin
         File.open( @error_filename, "w" ) do |f|
           f.puts "Diakonos Error:"
@@ -506,7 +506,7 @@ module Diakonos
     end
     protected :stopRecordingMacro
 
-    def loadTags
+    def load_tags
       @tags = Hash.new
       if @current_buffer and @current_buffer.name
         path = File.expand_path( File.dirname( @current_buffer.name ) )

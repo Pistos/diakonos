@@ -310,7 +310,7 @@ module Diakonos
         if clear_stack_pointer
           @cursor_stack_pointer = nil
         end
-        @diakonos.clearNonMovementFlag
+        @diakonos.clear_non_movement_flag
       end
     end
 

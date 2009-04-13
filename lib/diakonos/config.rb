@@ -232,7 +232,7 @@ module Diakonos
             begin
               eval( "Proc.new " + arg )
             rescue Exception => e
-              showException(
+              show_exception(
                 e,
                 [ "Failed to process Proc for #{command}.", ]
               )

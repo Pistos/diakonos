@@ -346,7 +346,7 @@ module Diakonos
             @diakonos.log( "Display Exception:" )
             @diakonos.log( e.message )
             @diakonos.log( e.backtrace.join( "\n" ) )
-            showException e
+            show_exception e
           end
 
           @diakonos.display_mutex.unlock

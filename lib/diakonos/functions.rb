@@ -379,7 +379,7 @@ module Diakonos
         begin
           eval code
         rescue Exception => e
-          showException(
+          show_exception(
             e,
             [
               "The code given to evaluate has a syntax error.",
@@ -572,7 +572,7 @@ module Diakonos
     end
 
     def goToTag( tag_ = nil )
-      loadTags
+      load_tags
 
       # If necessary, prompt for tag name.
 
@@ -816,7 +816,7 @@ module Diakonos
           begin
             load( f )
           rescue Exception => e
-            showException(
+            show_exception(
               e,
               [
                 "The filename given does not exist.",
@@ -1467,7 +1467,7 @@ module Diakonos
         rescue Exception => e
           debug_log e.message
           debug_log e.backtrace.join( "\n\t" )
-          showException e
+          show_exception e
         end
 
         Curses::init_screen
