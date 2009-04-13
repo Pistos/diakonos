@@ -57,7 +57,7 @@ module Diakonos
             list.puts grep_results.join( join_str )
           end
           list_buffer = open_list_buffer
-          list_buffer.highlightMatches regexp
+          list_buffer.highlight_matches regexp
           list_buffer.display
         rescue RegexpError
           # Do nothing

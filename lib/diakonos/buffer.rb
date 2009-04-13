@@ -422,7 +422,7 @@ module Diakonos
           remove_selection( DONT_DISPLAY )
         end
 
-        highlightMatches
+        highlight_matches
         if @diakonos.there_was_non_movement
           push_cursor_state( old_top_line, old_row, old_col )
         end

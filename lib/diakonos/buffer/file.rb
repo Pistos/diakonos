@@ -143,7 +143,7 @@ module Diakonos
       end
 
       if not reverted
-        clearMatches
+        clear_matches
         if do_display
           @diakonos.updateStatusLine
           display

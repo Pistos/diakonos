@@ -61,7 +61,7 @@ module Diakonos
     # Removes the highlighting from any text that matches the most recent
     # search.
     def clearMatches
-      @current_buffer.clearMatches Buffer::DO_DISPLAY
+      @current_buffer.clear_matches Buffer::DO_DISPLAY
     end
 
     def close_code
@@ -457,7 +457,7 @@ module Diakonos
             find_ direction, case_sensitive, input, nil, starting_row, starting_col, QUIET
           else
             @current_buffer.remove_selection Buffer::DONT_DISPLAY
-            @current_buffer.clearMatches Buffer::DO_DISPLAY
+            @current_buffer.clear_matches Buffer::DO_DISPLAY
           end
         }
       else
@@ -467,7 +467,7 @@ module Diakonos
       if regexp_source
         find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
       elsif starting_row and starting_col
-        @current_buffer.clearMatches
+        @current_buffer.clear_matches
         if @settings[ 'find.return_on_abort' ]
           @current_buffer.cursor_to starting_row, starting_col, Buffer::DO_DISPLAY
         end
@@ -477,9 +477,9 @@ module Diakonos
     def findAgain( dir_str = nil )
       if dir_str
         direction = direction_of( dir_str )
-        @current_buffer.findAgain( @last_search_regexps, direction )
+        @current_buffer.find_again( @last_search_regexps, direction )
       else
-        @current_buffer.findAgain( @last_search_regexps )
+        @current_buffer.find_again( @last_search_regexps )
       end
     end
 
@@ -669,7 +669,7 @@ module Diakonos
         list_buffer = open_list_buffer
         regexp = nil
         begin
-          list_buffer.highlightMatches Regexp.new( input )
+          list_buffer.highlight_matches Regexp.new( input )
         rescue RegexpError => e
           # ignore
         end

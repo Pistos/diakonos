@@ -187,9 +187,9 @@ module Diakonos
 
         if regexps.length == 1
           @highlight_regexp = regexp
-          highlightMatches
+          highlight_matches
         else
-          clearMatches
+          clear_matches
         end
         display
 
@@ -215,7 +215,7 @@ module Diakonos
             paste [ actual_replacement ]
             find( regexps, :direction => direction, :replacement => replacement )
           when CHOICE_ALL
-            replaceAll( regexp, replacement )
+            replace_all( regexp, replacement )
           when CHOICE_NO
             find( regexps, :direction => direction, :replacement => replacement )
           when CHOICE_CANCEL
@@ -227,25 +227,25 @@ module Diakonos
         end
       else
         remove_selection DONT_DISPLAY
-        clearMatches DO_DISPLAY
+        clear_matches DO_DISPLAY
         if not options[ :quiet ]
           @diakonos.setILine "/#{regexp.source}/ not found."
         end
       end
     end
 
-    def replaceAll( regexp, replacement )
+    def replace_all( regexp, replacement )
       return  if( regexp.nil? or replacement.nil? )
 
       @lines = @lines.collect { |line|
         line.gsub( regexp, replacement )
       }
       set_modified
-      clearMatches
+      clear_matches
       display
     end
 
-    def highlightMatches( regexp = @highlight_regexp )
+    def highlight_matches( regexp = @highlight_regexp )
       @highlight_regexp = regexp
       return  if @highlight_regexp.nil?
       found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
@@ -254,7 +254,7 @@ module Diakonos
       @text_marks = [ @text_marks[ 0 ] ] + found_marks
     end
 
-    def clearMatches( do_display = DONT_DISPLAY )
+    def clear_matches( do_display = DONT_DISPLAY )
       selection = @text_marks[ SELECTION ]
       @text_marks = Array.new
       @text_marks[ SELECTION ] = selection
@@ -262,7 +262,7 @@ module Diakonos
       display  if do_display
     end
 
-    def findAgain( last_search_regexps, direction = @last_search_direction )
+    def find_again( last_search_regexps, direction = @last_search_direction )
       if @last_search_regexps.nil?
         @last_search_regexps = last_search_regexps
       end
