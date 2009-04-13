@@ -1516,9 +1516,9 @@ module Diakonos
 
     def toggleMacroRecording( name = nil )
       if @macro_history
-        stopRecordingMacro
+        stop_recording_macro
       else
-        startRecordingMacro( name )
+        start_recording_macro name
       end
     end
 

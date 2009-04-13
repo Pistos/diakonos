@@ -477,23 +477,23 @@ module Diakonos
       end
     end
 
-    def startRecordingMacro( name = nil )
+    def start_recording_macro( name = nil )
       return if @macro_history
       @macro_name = name
       @macro_history = Array.new
       @macro_input_history = Array.new
       set_iline "Started macro recording."
     end
-    protected :startRecordingMacro
+    protected :start_recording_macro
 
-    def stopRecordingMacro
-      @macro_history.pop  # Remove the stopRecordingMacro command itself
+    def stop_recording_macro
+      @macro_history.pop  # Remove the stop_recording_macro command itself
       @macros[ @macro_name ] = [ @macro_history, @macro_input_history ]
       @macro_history = nil
       @macro_input_history = nil
       set_iline "Stopped macro recording."
     end
-    protected :stopRecordingMacro
+    protected :stop_recording_macro
 
     def load_tags
       @tags = Hash.new
