@@ -51,7 +51,7 @@ module Diakonos
     end
 
     def interaction_blink( message = nil )
-      terminateMessage
+      terminate_message
       set_iline @settings[ 'interaction.blink_string' ]
       sleep @settings[ 'interaction.blink_duration' ]
       set_iline message if message
@@ -80,7 +80,7 @@ module Diakonos
       msg << choice_strings.join( ", " )
 
       if default.nil?
-        showMessage msg
+        show_message msg
       else
         set_iline msg
       end
@@ -97,7 +97,7 @@ module Diakonos
         else
           if @message_expiry and Time.now < @message_expiry
             interaction_blink
-            showMessage msg
+            show_message msg
           else
             case c
             when ENTER
@@ -124,7 +124,7 @@ module Diakonos
         end
       end
 
-      terminateMessage
+      terminate_message
       set_iline
 
       if @choice_iterations > 0

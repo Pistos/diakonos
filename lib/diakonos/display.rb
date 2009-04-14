@@ -290,8 +290,8 @@ module Diakonos
       end
     end
 
-    def showMessage( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
-      terminateMessage
+    def show_message( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
+      terminate_message
 
       @message_expiry = Time.now + non_interaction_duration
       @message_thread = Thread.new do
@@ -307,14 +307,14 @@ module Diakonos
       end
     end
 
-    def terminateMessage
+    def terminate_message
       if @message_thread and @message_thread.alive?
         @message_thread.terminate
         @message_thread = nil
       end
     end
 
-    def refreshAll
+    def refresh_all
       @win_main.refresh
       if @win_context
         @win_context.refresh

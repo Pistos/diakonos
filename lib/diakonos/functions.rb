@@ -1429,7 +1429,7 @@ module Diakonos
           t2.join
 
           Curses::init_screen
-          refreshAll
+          refresh_all
         end
         openFile result_file
       end
@@ -1455,7 +1455,7 @@ module Diakonos
         end
 
         Curses::init_screen
-        refreshAll
+        refresh_all
 
         set_iline result
       end
@@ -1482,7 +1482,7 @@ module Diakonos
         end
 
         Curses::init_screen
-        refreshAll
+        refresh_all
       end
     end
 
@@ -1511,7 +1511,7 @@ module Diakonos
       Curses::close_screen
       Process.kill( "SIGSTOP", $PID )
       Curses::init_screen
-      refreshAll
+      refresh_all
     end
 
     def toggleMacroRecording( name = nil )
