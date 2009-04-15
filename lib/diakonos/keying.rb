@@ -241,7 +241,9 @@ module Diakonos
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def process_keystroke( context = [] )
-      c = @win_main.getch.ord
+      ch = @win_main.getch
+      return  if ch.nil?
+      c = ch.ord
 
       if @capturing_keychain
         capture_keychain c, context
