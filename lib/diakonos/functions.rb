@@ -1,6 +1,6 @@
 module Diakonos
   module Functions
-    def addNamedBookmark( name_ = nil )
+    def add_named_bookmark( name_ = nil )
       if name_.nil?
         name = get_user_input "Bookmark name: "
       else
@@ -14,7 +14,7 @@ module Diakonos
     end
 
     # Begins selecting text by anchoring (marking) the start of a selection.
-    def anchorSelection
+    def anchor_selection
       @current_buffer.anchor_selection
       update_status_line
     end
@@ -23,17 +23,17 @@ module Diakonos
     #
     # @see Diakonos::Buffer#delete
     def backspace
-      delete  if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
+      delete  if( @current_buffer.changing_selection or cursor_left( Buffer::STILL_TYPING ) )
     end
 
     # Insert a carriage return (newline) at the current cursor location.
     # Deletes any currently selected text.
-    def carriageReturn
+    def carriage_return
       @current_buffer.carriage_return
       @current_buffer.delete_selection
     end
 
-    def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
+    def change_session_setting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
       if key_.nil?
         key = get_user_input( "Setting: " )
       else
@@ -60,7 +60,7 @@ module Diakonos
 
     # Removes the highlighting from any text that matches the most recent
     # search.
-    def clearMatches
+    def clear_matches
       @current_buffer.clear_matches Buffer::DO_DISPLAY
     end
 
@@ -77,7 +77,7 @@ module Diakonos
     # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
     # @see Diakonos::CHOICE_YES
     # @see Diakonos::CHOICE_NO
-    def closeFile( buffer = @current_buffer, to_all = nil )
+    def close_file( buffer = @current_buffer, to_all = nil )
       return nil if buffer.nil?
 
       choice = nil
@@ -151,7 +151,7 @@ module Diakonos
             switch_to( previous_buffer )
           else
             # No buffers left.  Open a new blank one.
-            openFile
+            open_file
           end
 
           @buffers.delete del_buffer_key
@@ -167,7 +167,7 @@ module Diakonos
       choice
     end
 
-    def collapseWhitespace
+    def collapse_whitespace
       @current_buffer.collapse_whitespace
     end
 
@@ -188,7 +188,7 @@ module Diakonos
       @current_buffer.comment_out
     end
 
-    def copySelection
+    def copy_selection
       @clipboard.add_clip @current_buffer.copy_selection
       removeSelection
     end
@@ -200,7 +200,7 @@ module Diakonos
     end
 
     # Returns true iff the cursor changed positions
-    def cursorDown
+    def cursor_down
       @current_buffer.cursor_to(
         @current_buffer.last_row + 1,
         @current_buffer.last_col,
@@ -211,7 +211,7 @@ module Diakonos
     end
 
     # Returns true iff the cursor changed positions
-    def cursorLeft( stopped_typing = Buffer::STOPPED_TYPING )
+    def cursor_left( stopped_typing = Buffer::STOPPED_TYPING )
       @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col - 1,
@@ -220,7 +220,7 @@ module Diakonos
       )
     end
 
-    def cursorRight( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
+    def cursor_right( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
       @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col + amount,
@@ -230,7 +230,7 @@ module Diakonos
     end
 
     # Returns true iff the cursor changed positions
-    def cursorUp
+    def cursor_up
       @current_buffer.cursor_to(
         @current_buffer.last_row - 1,
         @current_buffer.last_col,
@@ -240,38 +240,38 @@ module Diakonos
       )
     end
 
-    def cursorBOF
+    def cursor_bof
       @current_buffer.cursor_to( 0, 0, Buffer::DO_DISPLAY )
     end
 
-    def cursorBOL
+    def cursor_bol
       @current_buffer.cursor_to_bol
     end
 
-    def cursorEOL
+    def cursor_eol
       @current_buffer.cursor_to_eol
     end
 
-    def cursorEOF
+    def cursor_eof
       @current_buffer.cursor_to_eof
     end
 
     # Top of view
-    def cursorTOV
+    def cursor_tov
       @current_buffer.cursor_to_tov
     end
 
     # Bottom of view
-    def cursorBOV
+    def cursor_bov
       @current_buffer.cursor_to_bov
     end
 
-    def cursorReturn( dir_str = "backward" )
+    def cursor_return( dir_str = "backward" )
       stack_pointer, stack_size = @current_buffer.cursor_return( direction_of( dir_str, :backward ) )
       set_iline( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
-    def cutSelection
+    def cut_selection
       delete  if @clipboard.add_clip( @current_buffer.copy_selection )
     end
 
@@ -297,11 +297,11 @@ module Diakonos
       end
     end
 
-    def deleteAndStoreLine
+    def delete_and_store_line
       removed_text = @current_buffer.delete_line
       if removed_text
         clip = [ removed_text, "" ]
-        if @last_commands[ -1 ] =~ /^deleteAndStoreLine/
+        if @last_commands[ -1 ] =~ /^delete_and_store_line/
           @clipboard.append_to_clip clip
         else
           @clipboard.add_clip clip
@@ -316,7 +316,7 @@ module Diakonos
       end
     end
 
-    def deleteLine
+    def delete_line
       removed_text = @current_buffer.delete_line
       @clipboard.add_clip( [ removed_text, "" ] ) if removed_text
     end
@@ -360,7 +360,7 @@ module Diakonos
       end
     end
 
-    def deleteToEOL
+    def delete_to_eol
       removed_text = @current_buffer.delete_to_eol
       @clipboard.add_clip( removed_text ) if removed_text
     end
@@ -474,7 +474,7 @@ module Diakonos
       end
     end
 
-    def findAgain( dir_str = nil )
+    def find_again( dir_str = nil )
       if dir_str
         direction = direction_of( dir_str )
         @current_buffer.find_again( @last_search_regexps, direction )
@@ -483,11 +483,7 @@ module Diakonos
       end
     end
 
-    def findAndReplace
-      searchAndReplace
-    end
-
-    def findExact( dir_str = "down", search_term_ = nil )
+    def find_exact( dir_str = "down", search_term_ = nil )
       if search_term_.nil?
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copy_selection[ 0 ]
@@ -517,7 +513,7 @@ module Diakonos
       @current_buffer.go_block_previous
     end
 
-    def goToLineAsk
+    def go_to_line_ask
       input = get_user_input( "Go to [line number|+lines][,column number]: " )
       if input
         row = nil
@@ -545,7 +541,7 @@ module Diakonos
       end
     end
 
-    def goToNamedBookmark( name_ = nil )
+    def go_to_named_bookmark( name_ = nil )
       if name_.nil?
         name = get_user_input "Bookmark name: "
       else
@@ -563,15 +559,15 @@ module Diakonos
       end
     end
 
-    def goToNextBookmark
+    def go_to_next_bookmark
       @current_buffer.go_to_next_bookmark
     end
 
-    def goToPreviousBookmark
+    def go_to_previous_bookmark
       @current_buffer.go_to_previous_bookmark
     end
 
-    def goToTag( tag_ = nil )
+    def go_to_tag( tag_ = nil )
       load_tags
 
       # If necessary, prompt for tag name.
@@ -597,7 +593,7 @@ module Diakonos
         if switch_to( @buffers[ tag.file ] )
           #@current_buffer.go_to_line( 0 )
         else
-          openFile( tag.file )
+          open_file tag.file
         end
         line_number = tag.command.to_i
         if line_number > 0
@@ -610,8 +606,8 @@ module Diakonos
       end
     end
 
-    def goToTagUnderCursor
-      goToTag @current_buffer.word_under_cursor
+    def go_to_tag_under_cursor
+      go_to_tag @current_buffer.word_under_cursor
     end
 
     def grep( regexp_source = nil )
@@ -679,7 +675,7 @@ module Diakonos
       if selected
         spl = selected.split( "| " )
         if spl.size > 1
-          openFile spl[ -1 ]
+          open_file spl[ -1 ]
         end
       else
         original_buffer.cursor_to starting_row, starting_col
@@ -732,7 +728,7 @@ module Diakonos
             f.puts "There were no help documents matching your search."
             f.puts "(#{selected.strip})"
           end
-          error_file = openFile @error_filename
+          error_file = open_file( @error_filename )
 
           choice = get_choice(
             "Send your search terms to purepistos.net to help improve Diakonos?",
@@ -750,7 +746,7 @@ module Diakonos
             # TODO: let them choose "never" and "always"
           end
 
-          closeFile error_file
+          close_file error_file
         else
           help selected
         end
@@ -776,19 +772,19 @@ module Diakonos
       end
     end
 
-    def insertSpaces( num_spaces )
+    def insert_spaces( num_spaces )
       if num_spaces > 0
         @current_buffer.delete_selection
         @current_buffer.insert_string( " " * num_spaces )
-        cursorRight( Buffer::STILL_TYPING, num_spaces )
+        cursor_right( Buffer::STILL_TYPING, num_spaces )
       end
     end
 
-    def insertTab
+    def insert_tab
       type_character TAB
     end
 
-    def joinLines
+    def join_lines
       @current_buffer.join_lines( @current_buffer.current_row, Buffer::STRIP_LINE )
     end
 
@@ -804,7 +800,7 @@ module Diakonos
       end
     end
 
-    def loadScript( name_ = nil )
+    def load_script( name_ = nil )
       if name_.nil?
         name = get_user_input( "File to load as script: ", @rlh_files )
       else
@@ -821,7 +817,7 @@ module Diakonos
               [
                 "The filename given does not exist.",
                 "The filename given is not accessible or readable.",
-                "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursorBOL instead of $diakonos.cursorBOL",
+                "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursor_bol instead of $diakonos.cursor_bol",
                 "The loaded script has syntax errors.",
                 "The loaded script references objects or object members which do not exist."
               ]
@@ -856,11 +852,11 @@ module Diakonos
         end
         @session = nil
         @buffers.each_value do |buffer|
-          closeFile buffer
+          close_file buffer
         end
         new_session( path )
         @session[ 'files' ].each do |file|
-          openFile file
+          open_file file
         end
       end
     end
@@ -873,12 +869,8 @@ module Diakonos
       end
     end
 
-    def newFile
-      openFile
-    end
-
     # Returns the buffer of the opened file, or nil.
-    def openFile( filename = nil, read_only = false, force_revert = ASK_REVERT, last_row = nil, last_col = nil )
+    def open_file( filename = nil, read_only = false, force_revert = ASK_REVERT, last_row = nil, last_col = nil )
       do_open = true
       buffer = nil
       if filename.nil?
@@ -956,8 +948,9 @@ module Diakonos
 
       buffer
     end
+    alias_method :new_file, :open_file
 
-    def openFileAsk
+    def open_file_ask
       prefill = ''
 
       if @current_buffer
@@ -982,7 +975,7 @@ module Diakonos
       file = get_user_input( "Filename: ", @rlh_files, prefill, &finder_block )
 
       if file
-        openFile file
+        open_file file
         update_status_line
         update_context_line
       end
@@ -1007,13 +1000,13 @@ module Diakonos
             return if choice == CHOICE_NO
         end
         files.each do |f|
-          openFile f
+          open_file f
         end
         find 'down', CASE_SENSITIVE, regexp
       end
     end
 
-    def operateOnString(
+    def operate_on_string(
         ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'str.' )
     )
       if ruby_code
@@ -1024,7 +1017,7 @@ module Diakonos
       end
     end
 
-    def operateOnLines(
+    def operate_on_lines(
         ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'lines.collect { |l| l }' )
     )
       if ruby_code
@@ -1043,7 +1036,7 @@ module Diakonos
       end
     end
 
-    def operateOnEachLine(
+    def operate_on_each_line(
         ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'line.' )
     )
       if ruby_code
@@ -1062,15 +1055,15 @@ module Diakonos
       end
     end
 
-    def pageUp
+    def page_up
       if @current_buffer.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
-        cursorBOF
+        cursor_bof
       end
       update_status_line
       update_context_line
     end
 
-    def pageDown
+    def page_down
       if @current_buffer.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
         @current_buffer.cursor_to_eof
       end
@@ -1123,7 +1116,7 @@ module Diakonos
       tag = @tag_stack.pop
       if tag
         if not switch_to( @buffers[ tag[ 0 ] ] )
-          openFile( tag[ 0 ] )
+          open_file tag[ 0 ]
         end
         @current_buffer.cursor_to( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
       else
@@ -1147,7 +1140,7 @@ module Diakonos
       @buffers.each_value do |buffer|
         if buffer.modified?
           switch_to buffer
-          closure_choice = closeFile( buffer, to_all )
+          closure_choice = close_file( buffer, to_all )
           case closure_choice
           when CHOICE_CANCEL
             @quitting = false
@@ -1199,7 +1192,7 @@ module Diakonos
       end
 
       if do_revert
-        openFile(
+        open_file(
           @current_buffer.name,
           Buffer::READ_WRITE,
           FORCE_REVERT,
@@ -1278,9 +1271,10 @@ module Diakonos
       update_context_line
     end
 
-    def searchAndReplace( case_sensitive = CASE_INSENSITIVE )
+    def search_and_replace( case_sensitive = CASE_INSENSITIVE )
       find( "down", case_sensitive, nil, ASK_REPLACEMENT )
     end
+    alias_method :find_and_replace, :search_and_replace
 
     def seek( regexp_source, dir_str = "down" )
       if regexp_source
@@ -1335,7 +1329,7 @@ module Diakonos
           f.puts "---------------------------"
         end
       end
-      openFile clip_filename
+      open_file clip_filename
     end
 
     def subShellVariables( string )
@@ -1431,7 +1425,7 @@ module Diakonos
           Curses::init_screen
           refresh_all
         end
-        openFile result_file
+        open_file result_file
       end
     end
 

@@ -3,11 +3,11 @@ module Diakonos
   class Diakonos
 
     def open_list_buffer
-      @list_buffer = openFile( @list_filename )
+      @list_buffer = open_file( @list_filename )
     end
 
     def close_list_buffer
-      closeFile( @list_buffer )
+      close_file( @list_buffer )
       @list_buffer = nil
     end
 
@@ -35,14 +35,14 @@ module Diakonos
 
     def previous_list_item
       if @list_buffer
-        cursorUp
+        cursor_up
         @list_buffer[ @list_buffer.current_row ]
       end
     end
 
     def next_list_item
       if @list_buffer
-        cursorDown
+        cursor_down
         @list_buffer[ @list_buffer.current_row ]
       end
     end

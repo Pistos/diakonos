@@ -193,7 +193,7 @@ module Diakonos
         @current_buffer.delete_selection
         str = keychain_str_for( context )
         @current_buffer.insert_string str
-        cursorRight( Buffer::STILL_TYPING, str.length )
+        cursor_right( Buffer::STILL_TYPING, str.length )
       else
         keychain_pressed = context.concat [ c ]
 
@@ -241,7 +241,9 @@ module Diakonos
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def process_keystroke( context = [] )
-      c = @win_main.getch.ord
+      ch = @win_main.getch
+      return  if ch.nil?
+      c = ch.ord
 
       if @capturing_keychain
         capture_keychain c, context
@@ -304,7 +306,7 @@ module Diakonos
     def type_character( c )
       @current_buffer.delete_selection( Buffer::DONT_DISPLAY )
       @current_buffer.insert_char c
-      cursorRight( Buffer::STILL_TYPING )
+      cursor_right( Buffer::STILL_TYPING )
     end
 
   end

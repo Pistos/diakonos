@@ -64,9 +64,9 @@ module Diakonos
       current_text_file = @diakonos_home + '/current-buffer'
       buffer.save_copy( current_text_file )
       `#{@settings[ 'diff_command' ]} #{current_text_file} #{buffer.name} > #{@diff_filename}`
-      diff_buffer = openFile( @diff_filename )
+      diff_buffer = open_file( @diff_filename )
       yield diff_buffer
-      closeFile diff_buffer
+      close_file diff_buffer
     end
 
   end
