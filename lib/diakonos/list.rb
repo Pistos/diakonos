@@ -7,7 +7,7 @@ module Diakonos
     end
 
     def close_list_buffer
-      closeFile( @list_buffer )
+      close_file( @list_buffer )
       @list_buffer = nil
     end
 

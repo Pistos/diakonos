@@ -14,7 +14,7 @@ module Diakonos
     end
 
     # Begins selecting text by anchoring (marking) the start of a selection.
-    def anchorSelection
+    def anchor_selection
       @current_buffer.anchor_selection
       update_status_line
     end
@@ -28,12 +28,12 @@ module Diakonos
 
     # Insert a carriage return (newline) at the current cursor location.
     # Deletes any currently selected text.
-    def carriageReturn
+    def carriage_return
       @current_buffer.carriage_return
       @current_buffer.delete_selection
     end
 
-    def changeSessionSetting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
+    def change_session_setting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
       if key_.nil?
         key = get_user_input( "Setting: " )
       else
@@ -60,7 +60,7 @@ module Diakonos
 
     # Removes the highlighting from any text that matches the most recent
     # search.
-    def clearMatches
+    def clear_matches
       @current_buffer.clear_matches Buffer::DO_DISPLAY
     end
 
@@ -77,7 +77,7 @@ module Diakonos
     # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
     # @see Diakonos::CHOICE_YES
     # @see Diakonos::CHOICE_NO
-    def closeFile( buffer = @current_buffer, to_all = nil )
+    def close_file( buffer = @current_buffer, to_all = nil )
       return nil if buffer.nil?
 
       choice = nil
@@ -750,7 +750,7 @@ module Diakonos
             # TODO: let them choose "never" and "always"
           end
 
-          closeFile error_file
+          close_file error_file
         else
           help selected
         end
@@ -856,7 +856,7 @@ module Diakonos
         end
         @session = nil
         @buffers.each_value do |buffer|
-          closeFile buffer
+          close_file buffer
         end
         new_session( path )
         @session[ 'files' ].each do |file|
@@ -1147,7 +1147,7 @@ module Diakonos
       @buffers.each_value do |buffer|
         if buffer.modified?
           switch_to buffer
-          closure_choice = closeFile( buffer, to_all )
+          closure_choice = close_file( buffer, to_all )
           case closure_choice
           when CHOICE_CANCEL
             @quitting = false
