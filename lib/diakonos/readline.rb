@@ -104,14 +104,14 @@ module Diakonos
         when TAB
           complete_input
         when Curses::KEY_NPAGE
-          @diakonos.pageDown
+          @diakonos.page_down
           line = @diakonos.select_list_item
           if line
             @input = line
             cursor_write_input
           end
         when Curses::KEY_PPAGE
-          @diakonos.pageUp
+          @diakonos.page_up
           line = @diakonos.select_list_item
           if line
             @input = line

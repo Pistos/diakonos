@@ -292,7 +292,7 @@ module Diakonos
         end
 
         session_files.each_with_index do |session_file,index|
-          session_buffers << openFile( session_file )
+          session_buffers << open_file( session_file )
 
           choice = get_choice(
             "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
@@ -342,13 +342,13 @@ module Diakonos
 
       num_opened = 0
       if @files.length == 0 and @read_only_files.length == 0
-        num_opened += 1 if openFile
+        num_opened += 1  if open_file
       else
         @files.each do |file|
-          num_opened += 1 if openFile file
+          num_opened += 1  if open_file file
         end
         @read_only_files.each do |file|
-          num_opened += 1 if openFile( file, Buffer::READ_ONLY )
+          num_opened += 1  if open_file( file, Buffer::READ_ONLY )
         end
       end
 
@@ -371,7 +371,7 @@ module Diakonos
         run_hook_procs :after_startup
 
         if not @settings[ 'suppress_welcome' ]
-          openFile "#{@help_dir}/welcome.dhf"
+          open_file "#{@help_dir}/welcome.dhf"
         end
 
         begin
@@ -471,7 +471,7 @@ module Diakonos
           f.puts "----------------------------------------------------"
           f.puts e.backtrace
         end
-        openFile( @error_filename )
+        open_file @error_filename
       rescue Exception => e2
         debug_log "EXCEPTION: #{e.message}"
         debug_log "\t#{e.backtrace}"

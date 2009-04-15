@@ -3,7 +3,7 @@ module Diakonos
   class Diakonos
 
     def open_list_buffer
-      @list_buffer = openFile( @list_filename )
+      @list_buffer = open_file( @list_filename )
     end
 
     def close_list_buffer

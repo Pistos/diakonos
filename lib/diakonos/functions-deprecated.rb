@@ -21,6 +21,29 @@ module Diakonos
     alias_method :cursorReturn, :cursor_return
     alias_method :cutSelection, :cut_selection
     alias_method :deleteAndStoreLine, :delete_and_store_line
+    alias_method :deleteLine, :delete_line
+    alias_method :deleteToEOL, :delete_to_eol
+    alias_method :findAgain, :find_again
+    alias_method :findAndReplace, :search_and_replace
+    alias_method :findExact, :find_exact
+    alias_method :goToLineAsk, :go_to_line_ask
+    alias_method :goToNamedBookmark, :go_to_named_bookmark
+    alias_method :goToNextBookmark, :go_to_next_bookmark
+    alias_method :goToPreviousBookmark, :go_to_previous_bookmark
+    alias_method :goToTag, :go_to_tag
+    alias_method :goToTagUnderCursor, :go_to_tag_under_cursor
+    alias_method :insertSpaces, :insert_spaces
+    alias_method :insertTab, :insert_tab
+    alias_method :joinLines, :join_lines
+    alias_method :loadScript, :load_script
+    alias_method :newFile, :open_file
+    alias_method :openFile, :open_file
+    alias_method :openFileAsk, :open_file_ask
+    alias_method :operateOnString, :operate_on_string
+    alias_method :operateOnLines, :operate_on_lines
+    alias_method :operateOnEachLine, :operate_on_each_line
+    alias_method :pageUp, :page_up
+    alias_method :pageDown, :page_down
     # alias_method :
     # alias_method :
     # alias_method :
@@ -42,5 +65,11 @@ module Diakonos
     # alias_method :
     # alias_method :
     # alias_method :
+    # alias_method :
+    # alias_method :
+    # alias_method :
+    # alias_method :
+    # alias_method :
+    alias_method :searchAndReplace, :search_and_replace
   end
 end

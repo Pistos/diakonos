@@ -6,7 +6,7 @@ module Diakonos
     end
 
     def open_help_buffer
-      @help_buffer = openFile( @help_filename )
+      @help_buffer = open_file( @help_filename )
     end
     def close_help_buffer
       close_file @help_buffer
@@ -39,7 +39,7 @@ module Diakonos
     def open_help_document( selected_string )
       help_file = selected_string.split( "| " )[ -1 ]
       if File.exist? help_file
-        openFile help_file
+        open_file help_file
       end
     end
 

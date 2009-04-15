@@ -67,7 +67,7 @@ module Diakonos
       if selected
         spl = selected.split( "| " )
         if spl.size > 1
-          openFile spl[ -1 ]
+          open_file spl[ -1 ]
         end
       else
         original_buffer.cursor_to starting_row, starting_col

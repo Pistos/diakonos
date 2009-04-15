@@ -91,9 +91,9 @@ module Diakonos
 
         case c
         when Curses::KEY_NPAGE
-          pageDown
+          page_down
         when Curses::KEY_PPAGE
-          pageUp
+          page_up
         else
           if @message_expiry and Time.now < @message_expiry
             interaction_blink
