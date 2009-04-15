@@ -35,14 +35,14 @@ module Diakonos
 
     def previous_list_item
       if @list_buffer
-        cursorUp
+        cursor_up
         @list_buffer[ @list_buffer.current_row ]
       end
     end
 
     def next_list_item
       if @list_buffer
-        cursorDown
+        cursor_down
         @list_buffer[ @list_buffer.current_row ]
       end
     end

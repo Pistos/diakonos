@@ -23,7 +23,7 @@ module Diakonos
     #
     # @see Diakonos::Buffer#delete
     def backspace
-      delete  if( @current_buffer.changing_selection or cursorLeft( Buffer::STILL_TYPING ) )
+      delete  if( @current_buffer.changing_selection or cursor_left( Buffer::STILL_TYPING ) )
     end
 
     # Insert a carriage return (newline) at the current cursor location.
@@ -167,7 +167,7 @@ module Diakonos
       choice
     end
 
-    def collapseWhitespace
+    def collapse_whitespace
       @current_buffer.collapse_whitespace
     end
 
@@ -188,7 +188,7 @@ module Diakonos
       @current_buffer.comment_out
     end
 
-    def copySelection
+    def copy_selection
       @clipboard.add_clip @current_buffer.copy_selection
       removeSelection
     end
@@ -200,7 +200,7 @@ module Diakonos
     end
 
     # Returns true iff the cursor changed positions
-    def cursorDown
+    def cursor_down
       @current_buffer.cursor_to(
         @current_buffer.last_row + 1,
         @current_buffer.last_col,
@@ -211,7 +211,7 @@ module Diakonos
     end
 
     # Returns true iff the cursor changed positions
-    def cursorLeft( stopped_typing = Buffer::STOPPED_TYPING )
+    def cursor_left( stopped_typing = Buffer::STOPPED_TYPING )
       @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col - 1,
@@ -220,7 +220,7 @@ module Diakonos
       )
     end
 
-    def cursorRight( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
+    def cursor_right( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
       @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col + amount,
@@ -230,7 +230,7 @@ module Diakonos
     end
 
     # Returns true iff the cursor changed positions
-    def cursorUp
+    def cursor_up
       @current_buffer.cursor_to(
         @current_buffer.last_row - 1,
         @current_buffer.last_col,
@@ -240,38 +240,38 @@ module Diakonos
       )
     end
 
-    def cursorBOF
+    def cursor_bof
       @current_buffer.cursor_to( 0, 0, Buffer::DO_DISPLAY )
     end
 
-    def cursorBOL
+    def cursor_bol
       @current_buffer.cursor_to_bol
     end
 
-    def cursorEOL
+    def cursor_eol
       @current_buffer.cursor_to_eol
     end
 
-    def cursorEOF
+    def cursor_eof
       @current_buffer.cursor_to_eof
     end
 
     # Top of view
-    def cursorTOV
+    def cursor_tov
       @current_buffer.cursor_to_tov
     end
 
     # Bottom of view
-    def cursorBOV
+    def cursor_bov
       @current_buffer.cursor_to_bov
     end
 
-    def cursorReturn( dir_str = "backward" )
+    def cursor_return( dir_str = "backward" )
       stack_pointer, stack_size = @current_buffer.cursor_return( direction_of( dir_str, :backward ) )
       set_iline( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
-    def cutSelection
+    def cut_selection
       delete  if @clipboard.add_clip( @current_buffer.copy_selection )
     end
 
@@ -297,11 +297,11 @@ module Diakonos
       end
     end
 
-    def deleteAndStoreLine
+    def delete_and_store_line
       removed_text = @current_buffer.delete_line
       if removed_text
         clip = [ removed_text, "" ]
-        if @last_commands[ -1 ] =~ /^deleteAndStoreLine/
+        if @last_commands[ -1 ] =~ /^delete_and_store_line/
           @clipboard.append_to_clip clip
         else
           @clipboard.add_clip clip
@@ -780,7 +780,7 @@ module Diakonos
       if num_spaces > 0
         @current_buffer.delete_selection
         @current_buffer.insert_string( " " * num_spaces )
-        cursorRight( Buffer::STILL_TYPING, num_spaces )
+        cursor_right( Buffer::STILL_TYPING, num_spaces )
       end
     end
 
@@ -821,7 +821,7 @@ module Diakonos
               [
                 "The filename given does not exist.",
                 "The filename given is not accessible or readable.",
-                "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursorBOL instead of $diakonos.cursorBOL",
+                "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursor_bol instead of $diakonos.cursor_bol",
                 "The loaded script has syntax errors.",
                 "The loaded script references objects or object members which do not exist."
               ]
@@ -1064,7 +1064,7 @@ module Diakonos
 
     def pageUp
       if @current_buffer.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
-        cursorBOF
+        cursor_bof
       end
       update_status_line
       update_context_line
