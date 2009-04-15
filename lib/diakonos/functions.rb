@@ -1,6 +1,6 @@
 module Diakonos
   module Functions
-    def addNamedBookmark( name_ = nil )
+    def add_named_bookmark( name_ = nil )
       if name_.nil?
         name = get_user_input "Bookmark name: "
       else

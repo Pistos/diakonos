@@ -3,6 +3,7 @@ Diakonos Changelog
 
 0.8.9
 
+- Changed all function names from camelCase to snake_case.
 - Numerous internal refactorings and reorganizations.
 - Accepted patches from Decklin Foster.
 
