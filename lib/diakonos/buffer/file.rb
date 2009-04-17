@@ -14,7 +14,7 @@ module Diakonos
       else
         @read_only = false
         if name.nil?
-          @diakonos.saveFileAs
+          @diakonos.save_file_as
         else
           proceed = true
 
