@@ -353,7 +353,7 @@ module Diakonos
       end
     end
 
-    def delete_to_EOL_to_klipper
+    def delete_to_eol_to_klipper
       removed_text = @current_buffer.delete_to_eol
       if removed_text
         send_to_klipper removed_text
