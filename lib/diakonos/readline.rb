@@ -37,7 +37,7 @@ module Diakonos
 
     # Returns nil on cancel.
     def readline
-      @input = @initial_text
+      @input = @initial_text.dup
       if ! @input.empty?
         call_block
       end
