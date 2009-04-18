@@ -2,6 +2,8 @@ module Diakonos
 
   class Buffer
 
+    attr_reader :last_col, :last_row, :last_screen_x, :last_screen_y, :last_screen_col
+
     # Returns true iff the cursor changed positions in the buffer.
     def cursor_to( row, col, do_display = DONT_DISPLAY, stopped_typing = STOPPED_TYPING, adjust_row = ADJUST_ROW )
       old_last_row = @last_row

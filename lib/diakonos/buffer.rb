@@ -2,8 +2,7 @@ module Diakonos
 
   class Buffer
     attr_reader :name, :key, :original_language, :changing_selection, :read_only,
-      :last_col, :last_row, :tab_size, :last_screen_x, :last_screen_y, :last_screen_col,
-      :selection_mode
+      :tab_size, :selection_mode
     attr_writer :desired_column, :read_only
 
     SELECTION = 0  # Selection mark is the first element of the @text_marks array
