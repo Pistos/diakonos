@@ -6,7 +6,7 @@ task :spec => [ :test ]
 
 desc "Run Diakonos tests"
 task :test do
-  system 'bacon -Ilib spec/*.rb'
+  system 'bacon -Ilib spec/*.rb spec/*/*.rb'
 end
 
 begin
