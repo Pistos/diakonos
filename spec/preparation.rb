@@ -17,6 +17,11 @@ if ! Object.const_defined? 'TEMP_FILE'
   TEMP_FILE = File.join( TEST_DIR, '/temp-file.rb' )
 end
 
+def cursor_should_be_at( row, col )
+  @b.current_row.should.equal row
+  @b.current_column.should.equal col
+end
+
 $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
 $diakonos.start
 $diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )

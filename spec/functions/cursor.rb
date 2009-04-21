@@ -1,10 +1,5 @@
 require 'spec/preparation'
 
-def cursor_should_be_at( row, col )
-  @b.current_row.should.equal row
-  @b.current_column.should.equal col
-end
-
 describe 'Diakonos' do
 
   before do
