@@ -69,7 +69,7 @@ describe 'A Diakonos user can' do
     ]
   end
 
-  it 'cut consecutive lines into an internal clipboard' do
+  it 'cut consecutive lines' do
     original_lines = @b.to_a
 
     @d.cursor_bof
