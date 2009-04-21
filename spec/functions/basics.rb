@@ -26,4 +26,17 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 0,2
   end
 
+  it 'insert a newline character' do
+    5.times{ @d.cursor_right }
+    @d.carriage_return
+    cursor_should_be_at 1,0
+    lines = @b.to_a
+    lines[ 0..3 ].should.equal [
+      '#!/us',
+      'r/bin/env ruby',
+      '',
+      '# This is only a sample file used in the tests.',
+    ]
+  end
+
 end
