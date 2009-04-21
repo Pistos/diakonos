@@ -1,13 +1,13 @@
 require 'spec/preparation'
 
-describe 'Diakonos' do
+describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
     @b = @d.openFile( SAMPLE_FILE )
   end
 
-  it 'allows basic cursor movements' do
+  it 'move the cursor in the four basic directions' do
     cursor_should_be_at 0,0
 
     @d.cursor_down
@@ -18,14 +18,26 @@ describe 'Diakonos' do
     cursor_should_be_at 0,1
     @d.cursor_left
     cursor_should_be_at 0,0
+  end
 
+  it 'move the cursor to the end of a line' do
     @d.cursor_eol
     cursor_should_be_at 0,19
-    @d.cursor_bol
-    cursor_should_be_at 0,0
+  end
 
+  it 'move the cursor to the beginning of a line' do
+    @b.cursor_to 2,2
+    @d.cursor_bol
+    cursor_should_be_at 2,0
+  end
+
+  it 'move the cursor to the end of a file' do
     @d.cursor_eof
     cursor_should_be_at 20,0
+  end
+
+  it 'move the cursor to the beginning of a file' do
+    @b.cursor_to 2,2
     @d.cursor_bof
     cursor_should_be_at 0,0
   end
