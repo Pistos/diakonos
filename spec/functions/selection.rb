@@ -42,4 +42,18 @@ describe 'A Diakonos user can' do
     s.end_col.should.equal 0
   end
 
+  it 'copy selected text' do
+    @d.anchor_selection
+    @d.cursor_down
+    @d.cursor_down
+    @d.cursor_down
+    @d.copy_selection
+    @d.clipboard.clip.should.equal [
+      '#!/usr/bin/env ruby',
+      '',
+      '# This is only a sample file used in the tests.',
+      '',
+    ]
+  end
+
 end
