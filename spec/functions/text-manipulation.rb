@@ -43,4 +43,18 @@ describe 'Diakonos' do
     cursor_should_be_at 10,0
   end
 
+  it 'can comment out lines' do
+    @b.cursor_to 7,0
+    @d.anchor_selection
+    4.times { @d.cursor_down }
+    @d.comment_out
+    @b.to_a[ 7..11 ].should.equal [
+      '  # def initialize',
+      '    # @x = 1',
+      '    # @y = 2',
+      '  # end',
+      '',
+    ]
+  end
+
 end
