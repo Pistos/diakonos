@@ -43,7 +43,23 @@ describe 'Diakonos' do
     cursor_should_be_at 10,0
   end
 
-  it 'can comment out and uncomment lines' do
+  it 'can comment out and uncomment a single line' do
+    @b.cursor_to 4,0
+    @b.selection_mark.should.be.nil
+    @b.to_a[ 4 ].should.equal 'class Sample'
+    @d.comment_out
+    @b.to_a[ 4 ].should.equal '# class Sample'
+    @d.comment_out
+    @b.to_a[ 4 ].should.equal '# # class Sample'
+    @d.uncomment
+    @b.to_a[ 4 ].should.equal '# class Sample'
+    @d.uncomment
+    @b.to_a[ 4 ].should.equal 'class Sample'
+    @d.uncomment
+    @b.to_a[ 4 ].should.equal 'class Sample'
+  end
+
+  it 'can comment out and uncomment selected lines' do
     @b.cursor_to 7,0
     @d.anchor_selection
     4.times { @d.cursor_down }
