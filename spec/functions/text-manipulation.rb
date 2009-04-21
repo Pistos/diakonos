@@ -1,6 +1,6 @@
 require 'spec/preparation'
 
-describe 'Diakonos' do
+describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
@@ -12,7 +12,7 @@ describe 'Diakonos' do
     @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
   end
 
-  it 'collapses whitespace' do
+  it 'collapse whitespace' do
     @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
     @b.cursor_to 2,9
     5.times { @d.type_character ' ' }
@@ -23,7 +23,7 @@ describe 'Diakonos' do
     @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
   end
 
-  it 'columnizes source code' do
+  it 'columnize source code' do
     @b.cursor_to 8,7
     3.times { @d.type_character ' ' }
     @b.to_a[ 8..10 ].should.equal [
@@ -43,7 +43,7 @@ describe 'Diakonos' do
     cursor_should_be_at 10,0
   end
 
-  it 'can comment out and uncomment a single line' do
+  it 'comment out and uncomment a single line' do
     @b.cursor_to 4,0
     @b.selection_mark.should.be.nil
     @b.to_a[ 4 ].should.equal 'class Sample'
@@ -59,7 +59,7 @@ describe 'Diakonos' do
     @b.to_a[ 4 ].should.equal 'class Sample'
   end
 
-  it 'can comment out and uncomment selected lines' do
+  it 'comment out and uncomment selected lines' do
     @b.cursor_to 7,0
     @d.anchor_selection
     4.times { @d.cursor_down }
