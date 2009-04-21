@@ -23,4 +23,24 @@ describe 'Diakonos' do
     @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
   end
 
+  it 'columnizes source code' do
+    @b.cursor_to 8,7
+    3.times { @d.type_character ' ' }
+    @b.to_a[ 8..10 ].should.equal [
+      '    @x    = 1',
+      '    @y = 2',
+      '  end',
+    ]
+    @b.cursor_to 8,0
+    @d.anchor_selection
+    2.times { @d.cursor_down }
+    @d.columnize '='
+    @b.to_a[ 8..10 ].should.equal [
+      '    @x    = 1',
+      '    @y    = 2',
+      '  end',
+    ]
+    cursor_should_be_at 10,0
+  end
+
 end

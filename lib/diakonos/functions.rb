@@ -179,7 +179,7 @@ module Diakonos
           @settings[ "lang.#{@current_buffer.original_language}.column_delimiters" ] || ''
         )
       end
-      if delimiter and num_spaces_padding
+      if delimiter && num_spaces_padding
         @current_buffer.columnize Regexp.new( delimiter ), num_spaces_padding
       end
     end
