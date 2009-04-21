@@ -4,7 +4,11 @@ describe 'Diakonos' do
 
   before do
     @d = $diakonos
-    @b = @d.openFile( SAMPLE_FILE )
+    @b = @d.open_file( SAMPLE_FILE )
+  end
+
+  after do
+    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'can cut consecutive lines into an internal clipboard' do
