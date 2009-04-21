@@ -43,7 +43,7 @@ describe 'Diakonos' do
     cursor_should_be_at 10,0
   end
 
-  it 'can comment out lines' do
+  it 'can comment out and uncomment lines' do
     @b.cursor_to 7,0
     @d.anchor_selection
     4.times { @d.cursor_down }
@@ -55,6 +55,31 @@ describe 'Diakonos' do
       '  # end',
       '',
     ]
+    @b.selection_mark.should.not.be.nil
+    cursor_should_be_at 11,0
+
+    @d.uncomment
+    @b.to_a[ 7..11 ].should.equal [
+      '  def initialize',
+      '    @x = 1',
+      '    @y = 2',
+      '  end',
+      '',
+    ]
+    @b.selection_mark.should.not.be.nil
+    cursor_should_be_at 11,0
+
+    # Uncommenting lines that are not commented should do nothing
+    @d.uncomment
+    @b.to_a[ 7..11 ].should.equal [
+      '  def initialize',
+      '    @x = 1',
+      '    @y = 2',
+      '  end',
+      '',
+    ]
+    @b.selection_mark.should.not.be.nil
+    cursor_should_be_at 11,0
   end
 
 end
