@@ -7,9 +7,6 @@ describe 'A Diakonos::Buffer' do
     @b.cursor_to( 0, 0 )
   end
 
-  after do
-  end
-
   it 'can provide selected text' do
     @b.anchor_selection( 0, 0 )
     @b.cursor_to( 3, 0 )

@@ -359,7 +359,7 @@ module Diakonos
       end
 
       if num_opened > 0
-        switchToBufferNumber 1
+        switch_to_buffer_number 1
 
         update_status_line
         update_context_line

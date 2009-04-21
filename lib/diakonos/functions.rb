@@ -103,7 +103,7 @@ module Diakonos
             case choice
             when CHOICE_YES, CHOICE_YES_TO_ALL
               do_closure = true
-              saveFile( buffer )
+              save_file buffer
             when CHOICE_NO, CHOICE_NO_TO_ALL
               do_closure = true
             when CHOICE_CANCEL
@@ -190,12 +190,12 @@ module Diakonos
 
     def copy_selection
       @clipboard.add_clip @current_buffer.copy_selection
-      removeSelection
+      remove_selection
     end
 
     def copy_selection_to_klipper
       if send_to_klipper( @current_buffer.selected_text )
-        removeSelection
+        remove_selection
       end
     end
 
@@ -353,7 +353,7 @@ module Diakonos
       end
     end
 
-    def delete_to_EOL_to_klipper
+    def delete_to_eol_to_klipper
       removed_text = @current_buffer.delete_to_eol
       if removed_text
         send_to_klipper removed_text
@@ -1071,7 +1071,7 @@ module Diakonos
       update_context_line
     end
 
-    def parsedIndent
+    def parsed_indent
       if( @current_buffer.changing_selection )
         @do_display = false
         mark = @current_buffer.selection_mark
@@ -1097,7 +1097,7 @@ module Diakonos
       @current_buffer.paste text
     end
 
-    def playMacro( name = nil )
+    def play_macro( name = nil )
       macro, input_history = @macros[ name ]
       if input_history
         @macro_input_history = input_history.deep_clone
@@ -1112,7 +1112,7 @@ module Diakonos
       end
     end
 
-    def popTag
+    def pop_tag
       tag = @tag_stack.pop
       if tag
         if not switch_to( @buffers[ tag[ 0 ] ] )
@@ -1129,7 +1129,7 @@ module Diakonos
       set_iline "Type any chain of keystrokes or key chords, or press Enter to stop."
     end
 
-    def printKeychain
+    def print_keychain
       @capturing_keychain = true
       set_iline "Type any chain of keystrokes or key chords, then press Enter..."
     end
@@ -1152,7 +1152,7 @@ module Diakonos
       end
     end
 
-    def removeNamedBookmark( name_ = nil )
+    def remove_named_bookmark( name_ = nil )
       if name_.nil?
         name = get_user_input "Bookmark name: "
       else
@@ -1165,12 +1165,12 @@ module Diakonos
       end
     end
 
-    def removeSelection
+    def remove_selection
       @current_buffer.remove_selection
       update_status_line
     end
 
-    def repeatLast
+    def repeat_last
       eval @last_commands[ -1 ] if not @last_commands.empty?
     end
 
@@ -1202,12 +1202,12 @@ module Diakonos
       end
     end
 
-    def saveFile( buffer = @current_buffer )
+    def save_file( buffer = @current_buffer )
       buffer.save
       run_hook_procs( :after_save, buffer )
     end
 
-    def saveFileAs
+    def save_file_as
       if @current_buffer and @current_buffer.name
         path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
         file = get_user_input( "Filename: ", @rlh_files, path )
@@ -1255,13 +1255,13 @@ module Diakonos
       update_status_line
     end
 
-    def scrollDown
+    def scroll_down
       @current_buffer.pitch_view( @settings[ "view.scroll_amount" ] || 1 )
       update_status_line
       update_context_line
     end
 
-    def scrollUp
+    def scroll_up
       if @settings[ "view.scroll_amount" ]
         @current_buffer.pitch_view( -@settings[ "view.scroll_amount" ] )
       else
@@ -1284,7 +1284,7 @@ module Diakonos
       end
     end
 
-    def setBufferType( type_ = nil )
+    def set_buffer_type( type_ = nil )
       if type_.nil?
         type = get_user_input "Content type: "
       else
@@ -1301,7 +1301,7 @@ module Diakonos
 
     # If read_only is nil, the read_only state of the current buffer is toggled.
     # Otherwise, the read_only state of the current buffer is set to read_only.
-    def setReadOnly( read_only = nil )
+    def set_read_only( read_only = nil )
       if read_only
         @current_buffer.read_only = read_only
       else
@@ -1321,7 +1321,7 @@ module Diakonos
       end
     end
 
-    def showClips
+    def show_clips
       clip_filename = @diakonos_home + "/clips.txt"
       File.open( clip_filename, "w" ) do |f|
         @clipboard.each do |clip|
@@ -1332,7 +1332,7 @@ module Diakonos
       open_file clip_filename
     end
 
-    def subShellVariables( string )
+    def sub_shell_variables( string )
       return  if string.nil?
 
       retval = string.dup
@@ -1399,7 +1399,7 @@ module Diakonos
       end
 
       if command
-        command = subShellVariables( command )
+        command = sub_shell_variables( command )
 
         result_file = "#{@diakonos_home}/#{result_filename}"
         File.open( result_file , "w" ) do |f|
@@ -1437,7 +1437,7 @@ module Diakonos
       end
 
       if command
-        command = subShellVariables( command )
+        command = sub_shell_variables( command )
 
         Curses::close_screen
 
@@ -1455,7 +1455,7 @@ module Diakonos
       end
     end
 
-    def pasteShellResult( command_ = nil )
+    def paste_shell_result( command_ = nil )
       if command_.nil?
         command = get_user_input( "Command: ", @rlh_shell )
       else
@@ -1463,7 +1463,7 @@ module Diakonos
       end
 
       if command
-        command = subShellVariables( command )
+        command = sub_shell_variables( command )
 
         Curses::close_screen
 
@@ -1489,7 +1489,7 @@ module Diakonos
 
       return  if command.nil?
 
-      command = subShellVariables( command )
+      command = sub_shell_variables( command )
 
       Thread.new do
         if system( command )
@@ -1508,7 +1508,7 @@ module Diakonos
       refresh_all
     end
 
-    def toggleMacroRecording( name = nil )
+    def toggle_macro_recording( name = nil )
       if @macro_history
         stop_recording_macro
       else
@@ -1516,7 +1516,7 @@ module Diakonos
       end
     end
 
-    def switchToBufferNumber( buffer_number_ )
+    def switch_to_buffer_number( buffer_number_ )
       buffer_number = buffer_number_.to_i
       return  if buffer_number < 1
       buffer_name = buffer_number_to_name( buffer_number )
@@ -1525,44 +1525,44 @@ module Diakonos
       end
     end
 
-    def switchToNextBuffer
+    def switch_to_next_buffer
       if @buffer_history.any?
         @buffer_history_pointer += 1
         if @buffer_history_pointer >= @buffer_history_pointer.size
           @buffer_history_pointer = @buffer_history_pointer.size - 1
-          switchToBufferNumber( buffer_to_number( @current_buffer ) + 1 )
+          switch_to_buffer_number( buffer_to_number( @current_buffer ) + 1 )
         else
           switch_to @buffer_history[ @buffer_history_pointer ]
         end
       else
-        switchToBufferNumber( buffer_to_number( @current_buffer ) + 1 )
+        switch_to_buffer_number( buffer_to_number( @current_buffer ) + 1 )
       end
     end
 
-    def switchToPreviousBuffer
+    def switch_to_previous_buffer
       if @buffer_history.any?
         @buffer_history_pointer -= 1
         if @buffer_history_pointer < 0
           @buffer_history_pointer = 0
-          switchToBufferNumber( buffer_to_number( @current_buffer ) - 1 )
+          switch_to_buffer_number( buffer_to_number( @current_buffer ) - 1 )
         else
           switch_to @buffer_history[ @buffer_history_pointer ]
         end
       else
-        switchToBufferNumber( buffer_to_number( @current_buffer ) - 1 )
+        switch_to_buffer_number( buffer_to_number( @current_buffer ) - 1 )
       end
     end
 
-    def toggleBookmark
+    def toggle_bookmark
       @current_buffer.toggle_bookmark
     end
 
-    def toggleSelection
+    def toggle_selection
       @current_buffer.toggle_selection
       update_status_line
     end
 
-    def toggleSessionSetting( key_ = nil, do_redraw = DONT_REDRAW )
+    def toggle_session_setting( key_ = nil, do_redraw = DONT_REDRAW )
       key = key_ || get_user_input( "Setting: " )
       return  if key.nil?
 

@@ -281,7 +281,7 @@ module Diakonos
 
           begin
             eval to_eval, nil, "eval"
-            @last_commands << to_eval unless to_eval == "repeatLast"
+            @last_commands << to_eval unless to_eval == "repeat_last"
             if ! @there_was_non_movement
               @there_was_non_movement = !( /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ === to_eval )
             end
