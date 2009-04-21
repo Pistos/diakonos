@@ -8,7 +8,6 @@ describe 'Diakonos' do
   end
 
   it 'allows basic cursor movements' do
-    original_lines = @b.to_a
     cursor_should_be_at 0,0
 
     @d.cursor_down
