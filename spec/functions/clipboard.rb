@@ -48,6 +48,27 @@ describe 'A Diakonos user can' do
     ]
   end
 
+  it 'paste from the clipboard' do
+    @d.anchor_selection
+    3.times { @d.cursor_down }
+    @d.copy_selection
+    @d.paste
+
+    lines = @b.to_a
+    lines.size.should.equal 24
+    lines[ 0..8 ].should.equal [
+      '#!/usr/bin/env ruby',
+      '',
+      '# This is only a sample file used in the tests.',
+      '#!/usr/bin/env ruby',
+      '',
+      '# This is only a sample file used in the tests.',
+      '',
+      'class Sample',
+      '  attr_reader :x, :y',
+    ]
+  end
+
   it 'cut consecutive lines into an internal clipboard' do
     original_lines = @b.to_a
 
