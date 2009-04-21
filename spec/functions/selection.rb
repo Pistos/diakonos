@@ -42,4 +42,16 @@ describe 'A Diakonos user can' do
     s.end_col.should.equal 0
   end
 
+  it 'delete the selection' do
+    @d.anchor_selection
+    3.times { @d.cursor_down }
+    @d.delete
+    @b.to_a[ 0..2 ].should.equal [
+      '',
+      'class Sample',
+      '  attr_reader :x, :y',
+    ]
+    cursor_should_be_at 0,0
+  end
+
 end
