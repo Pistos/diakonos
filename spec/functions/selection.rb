@@ -1,6 +1,6 @@
 require 'spec/preparation'
 
-describe 'Diakonos' do
+describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
@@ -8,7 +8,7 @@ describe 'Diakonos' do
     cursor_should_be_at 0,0
   end
 
-  it 'lets you select text' do
+  it 'select text' do
     @d.anchor_selection
     @d.cursor_down
     @d.cursor_down
@@ -22,7 +22,7 @@ describe 'Diakonos' do
     selection.end_col.should.equal 0
   end
 
-  it 'lets you stop selecting text' do
+  it 'stop selecting text' do
     @b.selection_mark.should.be.nil
     @d.anchor_selection
     @d.cursor_down
@@ -32,7 +32,7 @@ describe 'Diakonos' do
     @b.selection_mark.should.be.nil
   end
 
-  it 'lets you select the whole file at once' do
+  it 'select the whole file at once' do
     @b.selection_mark.should.be.nil
     @d.select_all
     s = @b.selection_mark
