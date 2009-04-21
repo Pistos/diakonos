@@ -32,4 +32,14 @@ describe 'Diakonos' do
     @b.selection_mark.should.be.nil
   end
 
+  it 'lets you select the whole file at once' do
+    @b.selection_mark.should.be.nil
+    @d.select_all
+    s = @b.selection_mark
+    s.start_row.should.equal 0
+    s.start_col.should.equal 0
+    s.end_row.should.equal 20
+    s.end_col.should.equal 0
+  end
+
 end
