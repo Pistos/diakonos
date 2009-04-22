@@ -1285,11 +1285,7 @@ module Diakonos
     end
 
     def set_buffer_type( type_ = nil )
-      if type_.nil?
-        type = get_user_input "Content type: "
-      else
-        type = type_
-      end
+      type = type_ || get_user_input( "Content type: " )
 
       if type
         if @current_buffer.set_type( type )
