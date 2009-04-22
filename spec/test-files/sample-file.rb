@@ -19,7 +19,7 @@ end
 s = Sample.new
 s.inspection
 
-[
+{
   :just => :a,
   :test => :array,
-]
+}
