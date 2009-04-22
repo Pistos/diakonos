@@ -123,4 +123,70 @@ describe 'A Diakonos user can' do
     ]
   end
 
+  it 'automatically indent selected code' do
+    @d.anchor_selection
+    @d.cursor_eof
+    @d.set_buffer_type 'text'
+    @d.indent
+    @b.to_a.should.equal [
+      '#!/usr/bin/env ruby',
+      '',
+      '# This is only a sample file used in the tests.',
+      '',
+      'class Sample',
+      'attr_reader :x, :y',
+      '',
+      'def initialize',
+      '@x = 1',
+      '@y = 2',
+      'end',
+      '',
+      'def inspection',
+      'x.inspect',
+      'y.inspect',
+      'end',
+      'end',
+      '',
+      's = Sample.new',
+      's.inspection',
+      '',
+      '{',
+      ':just => :a,',
+      ':test => :hash,',
+      '}',
+      '',
+    ]
+
+    @d.set_buffer_type 'ruby'
+    @d.indent
+    @b.to_a.should.equal [
+      '#!/usr/bin/env ruby',
+      '',
+      '# This is only a sample file used in the tests.',
+      '',
+      'class Sample',
+      '  attr_reader :x, :y',
+      '',
+      '  def initialize',
+      '    @x = 1',
+      '    @y = 2',
+      '  end',
+      '',
+      '  def inspection',
+      '    x.inspect',
+      '    y.inspect',
+      '  end',
+      'end',
+      '',
+      's = Sample.new',
+      's.inspection',
+      '',
+      '{',
+      '  :just => :a,',
+      '  :test => :hash,',
+      '}',
+      '',
+    ]
+  end
+
 end
