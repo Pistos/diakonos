@@ -98,4 +98,12 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 11,0
   end
 
+  it 'delete until a character' do
+    @b.cursor_to 5,2
+    @b.to_a[ 5 ].should.equal '  attr_reader :x, :y'
+    @d.delete_to ':'
+    cursor_should_be_at 5,2
+    @b.to_a[ 5 ].should.equal '  :x, :y'
+  end
+
 end
