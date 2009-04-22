@@ -21,5 +21,5 @@ s.inspection
 
 {
   :just => :a,
-  :test => :array,
+  :test => :hash,
 }
