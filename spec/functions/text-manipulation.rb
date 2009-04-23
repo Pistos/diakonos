@@ -124,10 +124,11 @@ describe 'A Diakonos user can' do
   end
 
   it 'automatically indent selected code' do
+    @d.set_buffer_type 'text'
     @d.anchor_selection
     @d.cursor_eof
-    @d.set_buffer_type 'text'
-    @d.indent
+    @b.selection_mark.should.not.be.nil
+    @d.parsed_indent
     @b.to_a.should.equal [
       '#!/usr/bin/env ruby',
       '',
@@ -158,7 +159,8 @@ describe 'A Diakonos user can' do
     ]
 
     @d.set_buffer_type 'ruby'
-    @d.indent
+    @b.selection_mark.should.not.be.nil
+    @d.parsed_indent
     @b.to_a.should.equal [
       '#!/usr/bin/env ruby',
       '',
@@ -166,12 +168,12 @@ describe 'A Diakonos user can' do
       '',
       'class Sample',
       '  attr_reader :x, :y',
-      '',
+      '  ',
       '  def initialize',
       '    @x = 1',
       '    @y = 2',
       '  end',
-      '',
+      '  ',
       '  def inspection',
       '    x.inspect',
       '    y.inspect',
