@@ -37,7 +37,7 @@ describe 'A Diakonos user can' do
 
   it 'move the cursor to the end of a file' do
     @d.cursor_eof
-    cursor_should_be_at 20,0
+    cursor_should_be_at 25,0
   end
 
   it 'move the cursor to the beginning of a file' do

@@ -58,6 +58,11 @@ describe 'A Diakonos::Buffer' do
     @b.indentation_level( 18 ).should.equal 0
     @b.indentation_level( 19 ).should.equal 0
     @b.indentation_level( 20 ).should.equal 0
+    @b.indentation_level( 21 ).should.equal 0
+    @b.indentation_level( 22 ).should.equal 1
+    @b.indentation_level( 23 ).should.equal 1
+    @b.indentation_level( 24 ).should.equal 0
+    @b.indentation_level( 25 ).should.equal 0
 
     indentation_file = File.join( TEST_DIR, 'indentation.test1' )
     b2 = Diakonos::Buffer.new( $diakonos, indentation_file, indentation_file )

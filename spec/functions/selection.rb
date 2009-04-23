@@ -4,8 +4,12 @@ describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
-    @b = @d.openFile( SAMPLE_FILE )
+    @b = @d.open_file( SAMPLE_FILE )
     cursor_should_be_at 0,0
+  end
+
+  after do
+    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'select text' do
@@ -38,7 +42,7 @@ describe 'A Diakonos user can' do
     s = @b.selection_mark
     s.start_row.should.equal 0
     s.start_col.should.equal 0
-    s.end_row.should.equal 20
+    s.end_row.should.equal 25
     s.end_col.should.equal 0
   end
 
