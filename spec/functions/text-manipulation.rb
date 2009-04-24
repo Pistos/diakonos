@@ -191,4 +191,19 @@ describe 'A Diakonos user can' do
     ]
   end
 
+  it 'join lines' do
+    @d.join_lines
+    @b.to_a[ 0..2 ].should.equal [
+      '#!/usr/bin/env ruby ',
+      '# This is only a sample file used in the tests.',
+      '',
+    ]
+    @d.join_lines
+    @b.to_a[ 0..2 ].should.equal [
+      '#!/usr/bin/env ruby  # This is only a sample file used in the tests.',
+      '',
+      'class Sample',
+    ]
+  end
+
 end
