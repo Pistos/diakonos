@@ -2,7 +2,7 @@
 
 # == Diakonos
 #
-# A usable console text editor.
+# A Linux console text editor for the masses.
 # :title: Diakonos
 #
 # Author:: Pistos (irc.freenode.net)
