@@ -56,6 +56,66 @@ module Diakonos
       %r{/\d+$} === path
     end
 
+    def session_startup
+      if @session_to_load
+        pid_session = @session
+        @session = nil
+        session_path = session_filepath_for( @session_to_load )
+        load_session_data session_path
+        if @session
+          @files.concat @session[ 'files' ]
+        else
+          new_session session_path
+        end
+      else
+        session_buffers = []
+
+        session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
+        pids = session_files.map { |sf| sf[ %r{/(\d+)$}, 1 ].to_i }
+        pids.each do |pid|
+          begin
+            Process.kill 0, pid
+            session_files.reject! { |sf| pid_session? sf }
+          rescue Errno::ESRCH, Errno::EPERM
+            # Process is no longer alive, so we consider the session stale
+          end
+        end
+
+        session_files.each_with_index do |session_file,index|
+          session_buffers << open_file( session_file )
+
+          choice = get_choice(
+            "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
+            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ]
+          )
+
+          case choice
+          when CHOICE_YES
+            load_session_data session_file
+            if @session
+              @files.concat @session[ 'files' ]
+              File.delete session_file
+              break
+            end
+          when CHOICE_DELETE
+            File.delete session_file
+          end
+        end
+
+        if session_buffers.empty? and @files.empty? and @settings[ 'session.default_session' ]
+          session_file = session_filepath_for( @settings[ 'session.default_session' ] )
+          if File.exist? session_file
+            load_session_data session_file
+            if @session
+              @files.concat @session[ 'files' ]
+            end
+          end
+        end
+      end
+
+      session_buffers
+    end
+
     def increase_grep_context
       current = settings[ 'grep.context' ]
       @session[ 'settings' ][ 'grep.context' ] = current + 1
