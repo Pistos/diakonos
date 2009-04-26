@@ -79,10 +79,10 @@ module Diakonos
       end
       msg << choice_strings.join( ", " )
 
-      if default.nil?
-        show_message msg
-      else
+      if default
         set_iline msg
+      else
+        show_message msg
       end
 
       c = nil

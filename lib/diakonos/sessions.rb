@@ -86,7 +86,8 @@ module Diakonos
 
           choice = get_choice(
             "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
-            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ]
+            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ],
+            index > 0 ? CHOICE_NO : nil
           )
 
           case choice
