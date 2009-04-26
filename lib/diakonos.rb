@@ -175,7 +175,7 @@ module Diakonos
     end
 
     def mkdir( dir )
-      if not FileTest.exists? dir
+      if ! FileTest.exists?( dir )
         Dir.mkdir dir
       end
     end
@@ -287,7 +287,7 @@ module Diakonos
       end
 
       num_opened = 0
-      if @files.length == 0 and @read_only_files.length == 0
+      if @files.length == 0 && @read_only_files.length == 0
         num_opened += 1  if open_file
       else
         @files.each do |file|
@@ -316,13 +316,13 @@ module Diakonos
 
         run_hook_procs :after_startup
 
-        if not @settings[ 'suppress_welcome' ]
+        if ! @settings[ 'suppress_welcome' ]
           open_file "#{@help_dir}/welcome.dhf"
         end
 
         begin
           # Main keyboard loop.
-          while not @quitting
+          while ! @quitting
             process_keystroke
             @win_main.refresh
           end
@@ -444,7 +444,7 @@ module Diakonos
 
     def load_tags
       @tags = Hash.new
-      if @current_buffer and @current_buffer.name
+      if @current_buffer && @current_buffer.name
         path = File.expand_path( File.dirname( @current_buffer.name ) )
         tagfile = path + "/tags"
       else
