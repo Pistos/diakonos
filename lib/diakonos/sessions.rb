@@ -125,7 +125,7 @@ module Diakonos
     end
 
     def cleanup_session
-      if pid_session?
+      if pid_session? && File.exists?( @session[ 'filename' ] )
         File.delete @session[ 'filename' ]
       end
     end
