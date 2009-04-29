@@ -42,6 +42,7 @@ module Diakonos
 
     def save_session( session_file = @session[ 'filename' ] )
       return if session_file.nil?
+      return if @testing && pid_session?( session_file )
       @session[ 'files' ] = @buffers.collect { |filepath,buffer|
         buffer.name ? filepath : nil
       }.compact

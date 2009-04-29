@@ -329,8 +329,6 @@ module Diakonos
         end
 
         cleanup_display
-
-        cleanup_display
         cleanup_session
 
         @debug.close
