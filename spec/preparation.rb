@@ -22,6 +22,8 @@ def cursor_should_be_at( row, col )
   @b.current_column.should.equal col
 end
 
-$diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
-$diakonos.start
-$diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )
+if $diakonos.nil?
+  $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
+  $diakonos.start
+  $diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )
+end
