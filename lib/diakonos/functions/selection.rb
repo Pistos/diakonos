@@ -44,8 +44,14 @@ module Diakonos
       @current_buffer.selection_mode_block
       update_status_line
     end
+
     def selection_mode_normal
       @current_buffer.selection_mode_normal
+      update_status_line
+    end
+
+    def toggle_selection
+      @current_buffer.toggle_selection
       update_status_line
     end
 

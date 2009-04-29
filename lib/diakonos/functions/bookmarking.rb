@@ -53,5 +53,9 @@ module Diakonos
       end
     end
 
+    def toggle_bookmark
+      @current_buffer.toggle_bookmark
+    end
+
   end
 end

@@ -48,5 +48,24 @@ module Diakonos
       update_context_line
     end
 
+    def unindent
+      if( @current_buffer.changing_selection )
+        @do_display = false
+        mark = @current_buffer.selection_mark
+        if mark.end_col > 0
+          end_row = mark.end_row
+        else
+          end_row = mark.end_row - 1
+        end
+        (mark.start_row..end_row).each do |row|
+          @current_buffer.unindent row, Buffer::DONT_DISPLAY
+        end
+        @do_display = true
+        @current_buffer.display
+      else
+        @current_buffer.unindent
+      end
+    end
+
   end
 end

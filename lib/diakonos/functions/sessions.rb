@@ -69,5 +69,22 @@ module Diakonos
       end
     end
 
+    def toggle_session_setting( key_ = nil, do_redraw = DONT_REDRAW )
+      key = key_ || get_user_input( "Setting: " )
+      return  if key.nil?
+
+      value = nil
+      if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
+        value = ! @session[ 'settings' ][ key ]
+      elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
+        value = ! @settings[ key ]
+      end
+      if value != nil   # explicitly true or false
+        @session[ 'settings' ][ key ] = value
+        redraw  if do_redraw
+        set_iline "#{key} = #{value}"
+      end
+    end
+
   end
 end

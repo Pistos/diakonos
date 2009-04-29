@@ -321,5 +321,42 @@ module Diakonos
       update_status_line
     end
 
+    def switch_to_buffer_number( buffer_number_ )
+      buffer_number = buffer_number_.to_i
+      return  if buffer_number < 1
+      buffer_name = buffer_number_to_name( buffer_number )
+      if buffer_name
+        switch_to( @buffers[ buffer_name ] )
+      end
+    end
+
+    def switch_to_next_buffer
+      if @buffer_history.any?
+        @buffer_history_pointer += 1
+        if @buffer_history_pointer >= @buffer_history_pointer.size
+          @buffer_history_pointer = @buffer_history_pointer.size - 1
+          switch_to_buffer_number( buffer_to_number( @current_buffer ) + 1 )
+        else
+          switch_to @buffer_history[ @buffer_history_pointer ]
+        end
+      else
+        switch_to_buffer_number( buffer_to_number( @current_buffer ) + 1 )
+      end
+    end
+
+    def switch_to_previous_buffer
+      if @buffer_history.any?
+        @buffer_history_pointer -= 1
+        if @buffer_history_pointer < 0
+          @buffer_history_pointer = 0
+          switch_to_buffer_number( buffer_to_number( @current_buffer ) - 1 )
+        else
+          switch_to @buffer_history[ @buffer_history_pointer ]
+        end
+      else
+        switch_to_buffer_number( buffer_to_number( @current_buffer ) - 1 )
+      end
+    end
+
   end
 end

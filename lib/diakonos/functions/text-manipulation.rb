@@ -79,5 +79,13 @@ module Diakonos
       end
     end
 
+    def uncomment
+      @current_buffer.uncomment
+    end
+
+    def wrap_paragraph
+      @current_buffer.wrap_paragraph
+    end
+
   end
 end
