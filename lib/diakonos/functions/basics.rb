@@ -15,5 +15,14 @@ module Diakonos
       @current_buffer.delete_selection
     end
 
+    def delete
+      @current_buffer.delete
+    end
+
+    def delete_line
+      removed_text = @current_buffer.delete_line
+      @clipboard.add_clip( [ removed_text, "" ] ) if removed_text
+    end
+
   end
 end
