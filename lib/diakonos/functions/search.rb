@@ -109,5 +109,18 @@ module Diakonos
       end
     end
 
+    def search_and_replace( case_sensitive = CASE_INSENSITIVE )
+      find( "down", case_sensitive, nil, ASK_REPLACEMENT )
+    end
+    alias_method :find_and_replace, :search_and_replace
+
+    def seek( regexp_source, dir_str = "down" )
+      if regexp_source
+        direction = direction_of( dir_str )
+        regexp = Regexp.new( regexp_source )
+        @current_buffer.seek( regexp, direction )
+      end
+    end
+
   end
 end

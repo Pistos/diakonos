@@ -75,5 +75,16 @@ module Diakonos
       @current_buffer.paste text
     end
 
+    def show_clips
+      clip_filename = @diakonos_home + "/clips.txt"
+      File.open( clip_filename, "w" ) do |f|
+        @clipboard.each do |clip|
+          f.puts clip
+          f.puts "---------------------------"
+        end
+      end
+      open_file clip_filename
+    end
+
   end
 end

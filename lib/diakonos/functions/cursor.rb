@@ -130,5 +130,21 @@ module Diakonos
       update_context_line
     end
 
+    def scroll_down
+      @current_buffer.pitch_view( @settings[ "view.scroll_amount" ] || 1 )
+      update_status_line
+      update_context_line
+    end
+
+    def scroll_up
+      if @settings[ "view.scroll_amount" ]
+        @current_buffer.pitch_view( -@settings[ "view.scroll_amount" ] )
+      else
+        @current_buffer.pitch_view( -1 )
+      end
+      update_status_line
+      update_context_line
+    end
+
   end
 end

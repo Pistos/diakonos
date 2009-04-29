@@ -249,5 +249,77 @@ module Diakonos
       end
     end
 
+    # If the prompt is non-nil, ask the user yes or no question first.
+    def revert( prompt = nil )
+      do_revert = true
+
+      if prompt
+        show_buffer_file_diff do
+          choice = get_choice(
+            prompt,
+            [ CHOICE_YES, CHOICE_NO ]
+          )
+          case choice
+          when CHOICE_NO
+            do_revert = false
+          end
+        end
+      end
+
+      if do_revert
+        open_file(
+          @current_buffer.name,
+          Buffer::READ_WRITE,
+          FORCE_REVERT,
+          @current_buffer.last_row,
+          @current_buffer.last_col
+        )
+      end
+    end
+
+    def save_file( buffer = @current_buffer )
+      buffer.save
+      run_hook_procs( :after_save, buffer )
+    end
+
+    def save_file_as
+      if @current_buffer and @current_buffer.name
+        path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+        file = get_user_input( "Filename: ", @rlh_files, path )
+      else
+        file = get_user_input( "Filename: ", @rlh_files )
+      end
+      if file
+        old_name = @current_buffer.name
+        if @current_buffer.save( file, PROMPT_OVERWRITE )
+          @buffers.delete old_name
+          @buffers[ @current_buffer.name ] = @current_buffer
+          save_session
+        end
+      end
+    end
+
+    def set_buffer_type( type_ = nil )
+      type = type_ || get_user_input( "Content type: " )
+
+      if type
+        if @current_buffer.set_type( type )
+          update_status_line
+          update_context_line
+        end
+      end
+    end
+
+    # If read_only is nil, the read_only state of the current buffer is toggled.
+    # Otherwise, the read_only state of the current buffer is set to read_only.
+    def set_read_only( read_only = nil )
+      if read_only
+        @current_buffer.read_only = read_only
+      else
+        @current_buffer.read_only = ( not @current_buffer.read_only )
+      end
+      update_status_line
+    end
+
   end
 end
