@@ -111,13 +111,13 @@ module Diakonos
         when '<'
           end_char = '>'
         when ')'
-          start_char = '('
+          end_char = '('
         when '}'
-          start_char = '{'
+          end_char = '{'
         when ']'
-          start_char = '['
+          end_char = '['
         when '>'
-          start_char = '<'
+          end_char = '<'
       end
 
       row = @last_row
