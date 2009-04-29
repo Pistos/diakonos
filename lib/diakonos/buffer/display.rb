@@ -150,10 +150,11 @@ module Diakonos
         next  if column.nil?
         next  if column > Curses::cols - @left_column || column - @left_column < 0
 
-        ( 0...@diakonos.main_window_height ).each do |row|
+        num_lines_to_paint = [ @diakonos.main_window_height, @lines.size - @top_line ].min
+        ( 0...num_lines_to_paint ).each do |row|
           @win_main.setpos( row, column - @left_column )
           @win_main.attrset data[ :format ]
-          @win_main.addstr @lines[ @top_line + row ][ column + @left_column ] || ' '
+          @win_main.addstr( @lines[ @top_line + row ][ column + @left_column ] || ' ' )
         end
       end
     end

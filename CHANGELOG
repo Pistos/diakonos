@@ -3,9 +3,12 @@ Diakonos Changelog
 
 0.8.9
 
+- Put interaction timer only on first stale session prompt, not any after that.
 - Changed all function names from camelCase to snake_case.
+- Added --help-dir switch to installer.
 - Numerous internal refactorings and reorganizations.
 - Accepted patches from Decklin Foster.
+
 
 0.8.8
 
