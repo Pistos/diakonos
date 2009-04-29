@@ -114,5 +114,21 @@ module Diakonos
       end
     end
 
+    def page_up
+      if @current_buffer.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+        cursor_bof
+      end
+      update_status_line
+      update_context_line
+    end
+
+    def page_down
+      if @current_buffer.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+        @current_buffer.cursor_to_eof
+      end
+      update_status_line
+      update_context_line
+    end
+
   end
 end

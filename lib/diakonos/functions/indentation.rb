@@ -32,5 +32,21 @@ module Diakonos
       type_character TAB
     end
 
+    def parsed_indent
+      if( @current_buffer.changing_selection )
+        @do_display = false
+        mark = @current_buffer.selection_mark
+        (mark.start_row..mark.end_row).each do |row|
+          @current_buffer.parsed_indent row, Buffer::DONT_DISPLAY
+        end
+        @do_display = true
+        @current_buffer.display
+      else
+        @current_buffer.parsed_indent
+      end
+      update_status_line
+      update_context_line
+    end
+
   end
 end

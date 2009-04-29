@@ -30,5 +30,54 @@ module Diakonos
       @current_buffer.join_lines( @current_buffer.current_row, Buffer::STRIP_LINE )
     end
 
+    def operate_on_string(
+        ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'str.' )
+    )
+      if ruby_code
+        str = @current_buffer.selected_string
+        if str and not str.empty?
+          @current_buffer.paste eval( ruby_code )
+        end
+      end
+    end
+
+    def operate_on_lines(
+        ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'lines.collect { |l| l }' )
+    )
+      if ruby_code
+        lines = @current_buffer.selected_text
+        if lines and not lines.empty?
+          if lines[ -1 ].empty?
+            lines.pop
+            popped = true
+          end
+          new_lines = eval( ruby_code )
+          if popped
+            new_lines << ''
+          end
+          @current_buffer.paste new_lines
+        end
+      end
+    end
+
+    def operate_on_each_line(
+        ruby_code = get_user_input( 'Ruby code: ', @rlh_general, 'line.' )
+    )
+      if ruby_code
+        lines = @current_buffer.selected_text
+        if lines and not lines.empty?
+          if lines[ -1 ].empty?
+            lines.pop
+            popped = true
+          end
+          new_lines = eval( "lines.collect { |line| #{ruby_code} }" )
+          if popped
+            new_lines << ''
+          end
+          @current_buffer.paste new_lines
+        end
+      end
+    end
+
   end
 end

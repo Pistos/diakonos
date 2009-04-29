@@ -112,5 +112,142 @@ module Diakonos
       end
     end
 
+    # Returns the buffer of the opened file, or nil.
+    def open_file( filename = nil, read_only = false, force_revert = ASK_REVERT, last_row = nil, last_col = nil )
+      do_open = true
+      buffer = nil
+      if filename.nil?
+        buffer_key = @untitled_id
+        @untitled_id += 1
+      else
+        if filename =~ /^(.+):(\d+)$/
+          filename, line_number = $1, ( $2.to_i - 1 )
+        end
+        buffer_key = filename
+        if(
+          ( not force_revert ) and
+          ( (existing_buffer = @buffers[ filename ]) != nil ) and
+          ( filename !~ /\.diakonos/ ) and
+          existing_buffer.file_different?
+        )
+          show_buffer_file_diff( existing_buffer ) do
+            choice = get_choice(
+              "Load on-disk version of #{existing_buffer.nice_name}?",
+              [ CHOICE_YES, CHOICE_NO ]
+            )
+            case choice
+            when CHOICE_NO
+              do_open = false
+            end
+          end
+        end
+
+        if FileTest.exist?( filename )
+          # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
+          do_open &&= FileTest.file?( filename )
+        end
+      end
+
+      if do_open
+        # Is file readable?
+
+        # Does the "file" utility exist?
+        if(
+          filename and
+          @settings[ 'use_magic_file' ] and
+          FileTest.exist?( "/usr/bin/file" ) and
+          FileTest.exist?( filename ) and
+          /\blisting\.txt\b/ !~ filename
+        )
+          file_type = `/usr/bin/file -L #{filename}`
+          if file_type !~ /text/ and file_type !~ /empty$/
+            choice = get_choice(
+              "#{filename} does not appear to be readable.  Try to open it anyway?",
+              [ CHOICE_YES, CHOICE_NO ],
+              CHOICE_NO
+            )
+            case choice
+            when CHOICE_NO
+              do_open = false
+            end
+
+          end
+        end
+
+        if do_open
+          buffer = Buffer.new( self, filename, buffer_key, read_only )
+          run_hook_procs( :after_open, buffer )
+          @buffers[ buffer_key ] = buffer
+          save_session
+          if switch_to( buffer )
+            if line_number
+              @current_buffer.go_to_line( line_number, 0 )
+            elsif last_row && last_col
+              @current_buffer.cursor_to( last_row, last_col, Buffer::DO_DISPLAY )
+            end
+          end
+        end
+      end
+
+      buffer
+    end
+    alias_method :new_file, :open_file
+
+    def open_file_ask
+      prefill = ''
+
+      if @current_buffer
+        if @current_buffer.current_line =~ %r#(/\w+)+/\w+\.\w+#
+          prefill = $&
+        elsif @current_buffer.name
+          prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+        end
+      end
+
+      if @settings[ 'fuzzy_file_find' ]
+        prefill = ''
+        finder_block = lambda { |input|
+          finder = FuzzyFileFinder.new( @session[ 'dir' ] )
+          matches = finder.find( input ).sort_by { |m| [ -m[:score], m[:path] ] }
+          with_list_file do |list|
+            list.puts matches.map { |m| m[ :path ] }
+          end
+          open_list_buffer
+        }
+      end
+      file = get_user_input( "Filename: ", @rlh_files, prefill, &finder_block )
+
+      if file
+        open_file file
+        update_status_line
+        update_context_line
+      end
+    end
+
+    def open_matching_files( regexp = nil, search_root = nil )
+      regexp ||= get_user_input( "Regexp: ", @rlh_search )
+      return if regexp.nil?
+
+      if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
+        prefill = $&
+      else
+        prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+      end
+      search_root ||= get_user_input( "Search within: ", @rlh_files, prefill )
+      return if search_root.nil?
+
+      files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
+      if files.any?
+        if files.size > 5
+            choice = get_choice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
+            return if choice == CHOICE_NO
+        end
+        files.each do |f|
+          open_file f
+        end
+        find 'down', CASE_SENSITIVE, regexp
+      end
+    end
+
   end
 end

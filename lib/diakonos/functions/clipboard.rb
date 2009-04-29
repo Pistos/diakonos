@@ -65,5 +65,15 @@ module Diakonos
       @clipboard.add_clip( removed_text ) if removed_text
     end
 
+    def paste
+      @current_buffer.paste @clipboard.clip
+    end
+
+    def paste_from_klipper
+      text = `dcop klipper klipper getClipboardContents`.split( "\n", -1 )
+      text.pop  # getClipboardContents puts an extra newline on end
+      @current_buffer.paste text
+    end
+
   end
 end

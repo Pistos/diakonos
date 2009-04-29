@@ -40,5 +40,18 @@ module Diakonos
       @current_buffer.go_to_previous_bookmark
     end
 
+    def remove_named_bookmark( name_ = nil )
+      if name_.nil?
+        name = get_user_input "Bookmark name: "
+      else
+        name = name_
+      end
+
+      if name
+        bookmark = @bookmarks.delete name
+        set_iline "Removed bookmark #{bookmark.to_s}."
+      end
+    end
+
   end
 end
