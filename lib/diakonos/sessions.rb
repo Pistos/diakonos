@@ -15,6 +15,12 @@ module Diakonos
       }
     end
 
+    def initialize_sessions
+      @session_dir = "#{@diakonos_home}/sessions"
+      mkdir @session_dir
+      new_session "#{@session_dir}/#{Process.pid}"
+    end
+
     def load_session_data( filename )
       return if not File.exist? filename
       File.open( filename ) do |f|
@@ -125,6 +131,12 @@ module Diakonos
       current = settings[ 'grep.context' ]
       if current > 0
         @session[ 'settings' ][ 'grep.context' ] = current - 1
+      end
+    end
+
+    def cleanup_session
+      if pid_session?
+        File.delete @session[ 'filename' ]
       end
     end
   end

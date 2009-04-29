@@ -104,9 +104,7 @@ module Diakonos
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
-      @session_dir = "#{@diakonos_home}/sessions"
-      mkdir @session_dir
-      new_session "#{@session_dir}/#{Process.pid}"
+      initialize_sessions
 
       @files = Array.new
       @read_only_files = Array.new
@@ -332,9 +330,8 @@ module Diakonos
 
         cleanup_display
 
-        if pid_session?
-          File.delete @session[ 'filename' ]
-        end
+        cleanup_display
+        cleanup_session
 
         @debug.close
       end
