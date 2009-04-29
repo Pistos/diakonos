@@ -15,7 +15,7 @@ module Diakonos
       }
     end
 
-    def initialize_sessions
+    def initialize_session
       @session_dir = "#{@diakonos_home}/sessions"
       mkdir @session_dir
       new_session "#{@session_dir}/#{Process.pid}"

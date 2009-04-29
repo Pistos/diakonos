@@ -104,7 +104,7 @@ module Diakonos
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
-      initialize_sessions
+      initialize_session
 
       @files = Array.new
       @read_only_files = Array.new
