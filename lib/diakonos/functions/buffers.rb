@@ -100,5 +100,17 @@ module Diakonos
       choice
     end
 
+    def list_buffers
+      with_list_file do |f|
+        f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
+      end
+      open_list_buffer
+      filename = get_user_input( "Switch to buffer: " )
+      buffer = @buffers[ filename ]
+      if buffer
+        switch_to buffer
+      end
+    end
+
   end
 end

@@ -26,5 +26,9 @@ module Diakonos
       @current_buffer.comment_out
     end
 
+    def join_lines
+      @current_buffer.join_lines( @current_buffer.current_row, Buffer::STRIP_LINE )
+    end
+
   end
 end

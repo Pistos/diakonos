@@ -73,5 +73,46 @@ module Diakonos
       set_iline( "Location: #{stack_pointer+1}/#{stack_size}" )
     end
 
+    def go_block_outer
+      @current_buffer.go_block_outer
+    end
+    def go_block_inner
+      @current_buffer.go_block_inner
+    end
+    def go_block_next
+      @current_buffer.go_block_next
+    end
+    def go_block_previous
+      @current_buffer.go_block_previous
+    end
+
+    def go_to_line_ask
+      input = get_user_input( "Go to [line number|+lines][,column number]: " )
+      if input
+        row = nil
+
+        if input =~ /([+-]\d+)/
+          row = @current_buffer.last_row + $1.to_i
+          col = @current_buffer.last_col
+        else
+          input = input.split( /\D+/ ).collect { |n| n.to_i }
+          if input.size > 0
+            if input[ 0 ] == 0
+              row = nil
+            else
+              row = input[ 0 ] - 1
+            end
+            if input[ 1 ]
+              col = input[ 1 ] - 1
+            end
+          end
+        end
+
+        if row
+          @current_buffer.go_to_line( row, col )
+        end
+      end
+    end
+
   end
 end
