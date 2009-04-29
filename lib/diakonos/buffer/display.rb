@@ -153,7 +153,7 @@ module Diakonos
         ( 0...@diakonos.main_window_height ).each do |row|
           @win_main.setpos( row, column - @left_column )
           @win_main.attrset data[ :format ]
-          @win_main.addstr @lines[ @top_line + row ][ column + @left_column ] || ' '
+          @win_main.addstr( @lines[ @top_line + row ][ column + @left_column ] || ' ' )
         end
       end
     end
