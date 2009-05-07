@@ -141,8 +141,10 @@ end
           mkdir_ dir
           cp_ Dir[ "#{item}/*" ], dir
         else
-          cp item, File.join( @dest_dir, dest ), :preserve => true
-          @installed_files << File.expand_path( File.join( dest, File.basename( item ) ) )
+          cp item, File.join( @dest_dir, dest )
+          installed_file = File.expand_path( File.join( dest, File.basename( item ) ) )
+          chmod File.stat( item ).mode, installed_file
+          @installed_files << installed_file
         end
       end
     end
