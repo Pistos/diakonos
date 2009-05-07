@@ -141,7 +141,7 @@ end
           mkdir_ dir
           cp_ Dir[ "#{item}/*" ], dir
         else
-          cp item, File.join( @dest_dir, dest )
+          cp item, File.join( @dest_dir, dest ), :preserve => true
           @installed_files << File.expand_path( File.join( dest, File.basename( item ) ) )
         end
       end
