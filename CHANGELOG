@@ -6,6 +6,7 @@ Diakonos Changelog
 - Put interaction timer only on first stale session prompt, not any after that.
 - Changed all function names from camelCase to snake_case.
 - Added --help-dir switch to installer.
+- Fixed some minor issues with installer re: file permissions.
 - Changed delete_to_and_from to always assume given character is the left side character when matching pairs.
 - Numerous internal refactorings and reorganizations.
 - Accepted patches from Decklin Foster.
