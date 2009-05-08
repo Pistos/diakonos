@@ -361,7 +361,7 @@ module Diakonos
         case answer
         when /^y/i
           puts "Deleting..."
-        when /^n/i
+        else
           puts "Uninstallation aborted."
           exit 1
         end
