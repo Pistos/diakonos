@@ -320,6 +320,12 @@ module Diakonos
 
             # Paint the empty space below the file if the file is too short to fit in one screen.
             ( y...@diakonos.main_window_height ).each do |y|
+              if @win_line_numbers
+                @win_line_numbers.setpos( y, 0 )
+                @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
+                @win_line_numbers.addstr( ' ' * @settings[ 'view.line_numbers.width' ] )
+              end
+
               @win_main.setpos( y, 0 )
               @win_main.attrset @default_formatting
               linestr = " " * Curses::cols
