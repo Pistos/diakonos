@@ -160,7 +160,7 @@ module Diakonos
     end
 
     def print_string( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
-      return  if not @pen_down
+      return  if ! @pen_down
       return  if string.nil?
 
       @win_main.attrset formatting
@@ -245,7 +245,7 @@ module Diakonos
     end
 
     def print_padding_from( col )
-      return  if not @pen_down
+      return  if ! @pen_down
 
       if col < @left_column
         remainder = Curses::cols
