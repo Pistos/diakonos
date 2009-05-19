@@ -270,8 +270,6 @@ module Diakonos
 
             @continued_format_class = nil
 
-            @pen_down = true
-
             # First, we have to "draw" off-screen, in order to check for opening of
             # multi-line highlights.
 
