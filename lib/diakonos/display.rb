@@ -210,6 +210,7 @@ module Diakonos
 
     def update_status_line
       return  if @testing
+      return  if ! @do_display
 
       str = build_status_line
       if str.length > Curses::cols
