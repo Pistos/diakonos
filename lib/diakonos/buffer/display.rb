@@ -284,11 +284,12 @@ module Diakonos
               open_index, open_token_class, open_match_text = find_opening_match( line )
 
               if open_token_class
+                original_pen_state = @pen_down
                 @pen_down = false
                 @lines[ index...@top_line ].each do |line|
                   print_line line
                 end
-                @pen_down = true
+                @pen_down = original_pen_state
 
                 break
               end
