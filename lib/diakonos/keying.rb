@@ -241,10 +241,7 @@ module Diakonos
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def process_keystroke( context = [] )
-      t0 = Time.now
       ch = @win_main.getch
-      time_taken_to_type = Time.now - t0
-
       return  if ch.nil?
       c = ch.ord
 
@@ -256,20 +253,6 @@ module Diakonos
 
         if context.empty?
           if c > 31 and c < 255 and c != BACKSPACE
-            if time_taken_to_type < 0.001
-              if @pen_thread
-                @pen_thread.terminate
-              end
-              @pen_thread = Thread.new do
-                set_iline '(processing external paste)'
-                @do_display = false
-                sleep 0.1
-                @do_display = true
-                set_iline
-                @current_buffer.display
-              end
-            end
-
             if @macro_history
               @macro_history.push "type_character #{c}"
             end

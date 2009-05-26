@@ -160,7 +160,7 @@ module Diakonos
     end
 
     def print_string( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
-      return  if ! @pen_down
+      return  if not @pen_down
       return  if string.nil?
 
       @win_main.attrset formatting
@@ -245,7 +245,7 @@ module Diakonos
     end
 
     def print_padding_from( col )
-      return  if ! @pen_down
+      return  if not @pen_down
 
       if col < @left_column
         remainder = Curses::cols
@@ -270,6 +270,8 @@ module Diakonos
 
             @continued_format_class = nil
 
+            @pen_down = true
+
             # First, we have to "draw" off-screen, in order to check for opening of
             # multi-line highlights.
 
@@ -284,12 +286,11 @@ module Diakonos
               open_index, open_token_class, open_match_text = find_opening_match( line )
 
               if open_token_class
-                original_pen_state = @pen_down
                 @pen_down = false
                 @lines[ index...@top_line ].each do |line|
                   print_line line
                 end
-                @pen_down = original_pen_state
+                @pen_down = true
 
                 break
               end

@@ -9,7 +9,6 @@ Diakonos Changelog
 - Fixed some issues with installer.
 - Changed delete_to_and_from to always assume given character is the left side character when matching pairs.
 - Fixed a line number display bug.
-- Improved handling of external (X windows) pastes.
 - Numerous internal refactorings and reorganizations.
 - Accepted patches from Decklin Foster.
 

@@ -62,17 +62,15 @@ module Diakonos
           remove_selection( DONT_DISPLAY )
           removed = true
         end
-        if do_display
-          if removed || selecting? || view_changed
-            display
-          else
-            @diakonos.display_mutex.synchronize do
-              @win_main.setpos( @last_screen_y, @last_screen_x )
-            end
+        if removed or ( do_display and ( selecting? or view_changed ) )
+          display
+        else
+          @diakonos.display_mutex.synchronize do
+            @win_main.setpos( @last_screen_y, @last_screen_x )
           end
-          @diakonos.update_status_line
-          @diakonos.update_context_line
         end
+        @diakonos.update_status_line
+        @diakonos.update_context_line
 
         @diakonos.remember_buffer self
       end

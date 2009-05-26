@@ -6,7 +6,7 @@ module Diakonos
       @current_buffer.cursor_to(
         @current_buffer.last_row + 1,
         @current_buffer.last_col,
-        @do_display,
+        Buffer::DO_DISPLAY,
         Buffer::STOPPED_TYPING,
         DONT_ADJUST_ROW
       )
@@ -17,7 +17,7 @@ module Diakonos
       @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col - 1,
-        @do_display,
+        Buffer::DO_DISPLAY,
         stopped_typing
       )
     end
@@ -26,7 +26,7 @@ module Diakonos
       @current_buffer.cursor_to(
         @current_buffer.last_row,
         @current_buffer.last_col + amount,
-        @do_display,
+        Buffer::DO_DISPLAY,
         stopped_typing
       )
     end
@@ -36,14 +36,14 @@ module Diakonos
       @current_buffer.cursor_to(
         @current_buffer.last_row - 1,
         @current_buffer.last_col,
-        @do_display,
+        Buffer::DO_DISPLAY,
         Buffer::STOPPED_TYPING,
         DONT_ADJUST_ROW
       )
     end
 
     def cursor_bof
-      @current_buffer.cursor_to( 0, 0, @do_display )
+      @current_buffer.cursor_to( 0, 0, Buffer::DO_DISPLAY )
     end
 
     def cursor_bol

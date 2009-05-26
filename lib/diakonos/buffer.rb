@@ -60,7 +60,6 @@ module Diakonos
       end
       @current_buffer_state = 0
 
-      @pen_down = true
       @top_line = 0
       @left_column = 0
       @desired_column = 0
