@@ -238,10 +238,14 @@ module Diakonos
       end
     end
 
+    def typeable?( char )
+      char > 31 && char < 255 && char != BACKSPACE
+    end
+
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
-    def process_keystroke( context = [] )
-      ch = @win_main.getch
+    def process_keystroke( context = [], ch = nil )
+      ch ||= @win_main.getch
       return  if ch.nil?
       c = ch.ord
 
@@ -252,12 +256,41 @@ module Diakonos
       else
 
         if context.empty?
-          if c > 31 and c < 255 and c != BACKSPACE
+          if typeable?( c )
             if @macro_history
               @macro_history.push "type_character #{c}"
             end
             @there_was_non_movement = true
             type_character c
+
+            # Handle X windows paste
+            s = ""
+            loop do
+              ch = nil
+              begin
+                Timeout::timeout( 0.02 ) do
+                  ch = @win_main.getch
+                end
+              rescue Timeout::Error => e
+                break
+              end
+              break  if ch.nil?
+
+              c = ch.ord
+              if typeable?( c )
+                s << c
+              elsif c == ENTER
+                s << "\n"
+              else
+                break
+              end
+            end
+
+            @current_buffer.paste s
+            if ch
+              process_keystroke( [], ch )
+            end
+
             return
           end
         end

@@ -20,6 +20,7 @@ require 'English'
 require 'set'
 require 'yaml'
 require 'digest/md5'
+require 'timeout'
 
 require 'diakonos/core-ext/object'
 require 'diakonos/core-ext/enumerable'
