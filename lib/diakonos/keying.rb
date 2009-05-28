@@ -286,7 +286,9 @@ module Diakonos
               end
             end
 
-            @current_buffer.paste s
+            if ! s.empty?
+              @current_buffer.paste s
+            end
             if ch
               process_keystroke( [], ch )
             end
