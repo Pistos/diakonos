@@ -87,11 +87,7 @@ module Diakonos
     end
 
     def go_to_char( char = nil )
-      if char.nil?
-        set_iline "Type character to go to..."
-        char = @win_main.getch
-        set_iline
-      end
+      char ||= get_char( "Type character to go to..." )
 
       if char
         moved = @current_buffer.go_to_char( char )

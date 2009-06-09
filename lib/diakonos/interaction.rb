@@ -136,5 +136,12 @@ module Diakonos
       retval
     end
 
+    def get_char( prompt )
+      set_iline prompt
+      char = @win_main.getch
+      set_iline
+      char
+    end
+
   end
 end
