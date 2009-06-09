@@ -1,6 +1,11 @@
 Diakonos Changelog
 ------------------
 
+0.8.10
+
+- Added go_to_char (Alt-N).
+- Added go_to_char_previous (Alt-P).
+
 0.8.9
 
 - Put interaction timer only on first stale session prompt, not any after that.

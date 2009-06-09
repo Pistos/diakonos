@@ -46,4 +46,37 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 0,0
   end
 
+  it 'move the cursor to the next occurrence of a character' do
+    cursor_should_be_at 0,0
+    @d.go_to_char 'c'
+    cursor_should_be_at 4,0
+    @d.go_to_char 'a'
+    cursor_should_be_at 4,2
+    @d.go_to_char 'a'
+    cursor_should_be_at 4,7
+    @d.go_to_char ':'
+    cursor_should_be_at 5,14
+    @d.go_to_char '='
+    cursor_should_be_at 8,7
+    @d.go_to_char '`'
+    cursor_should_be_at 8,7
+  end
+
+  it 'move the cursor to the closest previous occurrence of a character' do
+    @d.cursor_eof
+    cursor_should_be_at 25,0
+    @d.go_to_char_previous '.'
+    cursor_should_be_at 19,1
+    @d.go_to_char_previous 'e'
+    cursor_should_be_at 18,12
+    @d.go_to_char_previous 's'
+    cursor_should_be_at 18,0
+    @d.go_to_char_previous 't'
+    cursor_should_be_at 14,12
+    @d.go_to_char_previous 't'
+    cursor_should_be_at 13,12
+    @d.go_to_char_previous '%'
+    cursor_should_be_at 13,12
+  end
+
 end
