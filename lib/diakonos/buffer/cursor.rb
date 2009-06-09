@@ -318,12 +318,15 @@ module Diakonos
 
     def go_to_char( char )
       r = @last_row
-      i = @lines[ r ].index( char, @last_col )
+      i = @lines[ r ].index( char, @last_col + 1 )
       if i
         return cursor_to r, i
       end
 
       loop do
+        r += 1
+        break  if r >= @lines.size
+
         i = @lines[ r ].index( char )
         if i
           return cursor_to r, i

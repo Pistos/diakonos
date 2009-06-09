@@ -52,6 +52,8 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 4,0
     @d.go_to_char 'a'
     cursor_should_be_at 4,2
+    @d.go_to_char 'a'
+    cursor_should_be_at 4,7
     @d.go_to_char ':'
     cursor_should_be_at 5,14
     @d.go_to_char '='
