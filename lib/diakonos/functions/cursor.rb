@@ -97,6 +97,17 @@ module Diakonos
       end
     end
 
+    def go_to_char_previous( char = nil )
+      char ||= get_char( "Type character to go to..." )
+
+      if char
+        moved = @current_buffer.go_to_char_previous( char )
+        if ! moved
+          set_iline "'#{char}' not found."
+        end
+      end
+    end
+
     def go_to_line_ask
       input = get_user_input( "Go to [line number|+lines][,column number]: " )
       if input
