@@ -69,7 +69,6 @@ module Diakonos
 
       result_file = "#{@diakonos_home}/#{result_filename}"
       File.open( result_file , "w" ) do |f|
-        set_iline "Results for: #{command}"
         Curses::close_screen
 
         stdin, stdout, stderr = Open3.popen3( command )
@@ -91,6 +90,7 @@ module Diakonos
         refresh_all
       end
       open_file result_file
+      set_iline "Results for: #{command}"
     end
 
     def execute( command_ = nil )
