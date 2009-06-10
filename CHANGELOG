@@ -8,6 +8,7 @@ Diakonos Changelog
 - shell command now shows executed command on interaction line.
 - shell command is now interruptable.
 - Klipper synchronization now a single setting (clipboard.external klipper).
+- Added xclip support.
 
 0.8.9
 

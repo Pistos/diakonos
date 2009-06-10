@@ -39,6 +39,8 @@ module Diakonos
         case @settings[ 'clipboard.external' ]
         when 'klipper'
           f.puts 'Access Klipper directly (tray icon) to get at all clips.'
+        when 'xclip'
+          f.puts 'xclip does not keep a history of clips.'
         else
           @clipboard.each do |clip|
             f.puts clip
