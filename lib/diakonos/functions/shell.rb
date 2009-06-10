@@ -67,11 +67,13 @@ module Diakonos
 
       command = sub_shell_variables( command )
 
+      completed = false
       result_file = "#{@diakonos_home}/#{result_filename}"
       File.open( result_file , "w" ) do |f|
         Curses::close_screen
 
         stdin, stdout, stderr = Open3.popen3( command )
+
         t1 = Thread.new do
           stdout.each_line do |line|
             f.puts line
@@ -83,14 +85,35 @@ module Diakonos
           end
         end
 
-        t1.join
-        t2.join
+        catch :stop do
+          loop do
+            begin
+              Timeout::timeout( 5 ) do
+                t1.join
+                t2.join
+                Curses::init_screen
+                refresh_all
+                completed = true
+                throw :stop
+              end
+            rescue Timeout::Error => e
+              choice = get_choice(
+                "Keep waiting for shell results?",
+                [ CHOICE_YES, CHOICE_NO ],
+                CHOICE_YES
+              )
+              if choice != CHOICE_YES
+                t1.terminate
+                t2.terminate
+                throw :stop
+              end
+            end
+          end
+        end
 
-        Curses::init_screen
-        refresh_all
       end
       open_file result_file
-      set_iline "Results for: #{command}"
+      set_iline "#{completed ? '' : '(interrupted)'} Results for: #{command}"
     end
 
     def execute( command_ = nil )

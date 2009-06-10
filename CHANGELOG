@@ -5,6 +5,8 @@ Diakonos Changelog
 
 - Added go_to_char (Alt-N).
 - Added go_to_char_previous (Alt-P).
+- shell command now shows executed command on interaction line.
+- shell command is now interruptable.
 
 0.8.9
 
