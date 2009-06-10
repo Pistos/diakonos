@@ -100,22 +100,4 @@ describe 'A Diakonos user can' do
     @b.to_a.should.equal original_lines
   end
 
-  it 'cut consecutive lines to Klipper' do
-    original_lines = @b.to_a
-
-    @d.cursor_bof
-    @d.delete_and_store_line_to_klipper
-    @d.last_commands << 'delete_and_store_line_to_klipper'
-    @b.to_a.should.equal original_lines[ 1..-1 ]
-    @d.delete_and_store_line_to_klipper
-    @d.last_commands << 'delete_and_store_line_to_klipper'
-    @b.to_a.should.equal original_lines[ 2..-1 ]
-    @d.delete_and_store_line_to_klipper
-    @d.last_commands << 'delete_and_store_line_to_klipper'
-    @b.to_a.should.equal original_lines[ 3..-1 ]
-
-    @d.paste
-    @b.to_a.should.equal original_lines
-  end
-
 end
