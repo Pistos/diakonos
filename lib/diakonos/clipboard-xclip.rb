@@ -1,20 +1,20 @@
 module Diakonos
 
-  # Same interface as Diakonos::Clipboard, except interacts with KDE's Klipper
-  class ClipboardKlipper
+  # Same interface as Diakonos::Clipboard, except interacts with xclip
+  class ClipboardXClip
 
     def initialize
     end
 
-    # Returns true iff some text was copied to klipper.
-    def send_to_klipper( text )
+    # Returns true iff some text was copied to xclip.
+    def send_to_xclip( text )
       return false  if text.nil?
-
       clip_filename = write_to_clip_file( text.join( "\n" ) )
-
-      # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
-      # Thank you to pgas from irc.freenode.net#bash for help with this.
-      `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
+      t = Thread.new do
+        `xclip -i #{clip_filename}`
+      end
+      `xclip -o`  # Unfreeze xclip
+      t.terminate
       true
     end
 
@@ -29,10 +29,7 @@ module Diakonos
     # ------------------------------
 
     def clip
-      text = `dcop klipper klipper getClipboardContents`.split( "\n", -1 )
-      # getClipboardContents puts an extra newline on end; pop it off.
-      text.pop
-      text
+      `xclip -o`.split( "\n", -1 )
     end
 
     # text is an array of Strings
@@ -40,7 +37,7 @@ module Diakonos
     # and only non-nil text can be added.
     def add_clip( text )
       return false  if text.nil?
-      send_to_klipper text
+      send_to_xclip text
     end
 
     # no-op.
@@ -56,7 +53,7 @@ module Diakonos
 
       last_clip = clip
       last_clip.pop  if last_clip[ -1 ] == ""
-      send_to_klipper last_clip + text
+      send_to_xclip last_clip + text
     end
   end
 

@@ -115,6 +115,8 @@ module Diakonos
         case @settings[ 'clipboard.external' ]
         when 'klipper'
           @clipboard = ClipboardKlipper.new
+        when 'xclip'
+          @clipboard = ClipboardXClip.new
         else
           @clipboard = Clipboard.new( @settings[ "max_clips" ] )
         end
