@@ -6,20 +6,8 @@ module Diakonos
       remove_selection
     end
 
-    def copy_selection_to_klipper
-      if send_to_klipper( @current_buffer.selected_text )
-        remove_selection
-      end
-    end
-
     def cut_selection
       delete  if @clipboard.add_clip( @current_buffer.copy_selection )
-    end
-
-    def cut_selection_to_klipper
-      if send_to_klipper( @current_buffer.selected_text )
-        delete
-      end
     end
 
     def delete_and_store_line_to_klipper
@@ -67,12 +55,6 @@ module Diakonos
 
     def paste
       @current_buffer.paste @clipboard.clip
-    end
-
-    def paste_from_klipper
-      text = `dcop klipper klipper getClipboardContents`.split( "\n", -1 )
-      text.pop  # getClipboardContents puts an extra newline on end
-      @current_buffer.paste text
     end
 
     def show_clips
