@@ -25,23 +25,14 @@ module Diakonos
       end
 
       # Current clipboard text
-      if retval =~ /\$c/
+      if retval =~ /\$[ck]/
         clip_filename = @diakonos_home + "/clip.txt"
         File.open( clip_filename, "w" ) do |clipfile|
           if @clipboard.clip
             clipfile.puts( @clipboard.clip.join( "\n" ) )
           end
         end
-        retval.gsub!( /\$c/, clip_filename )
-      end
-
-      # Current klipper (KDE clipboard) text
-      if retval =~ /\$k/
-        clip_filename = @diakonos_home + "/clip.txt"
-        File.open( clip_filename, "w" ) do |clipfile|
-          clipfile.puts( `dcop klipper klipper getClipboardContents` )
-        end
-        retval.gsub!( /\$k/, clip_filename )
+        retval.gsub!( /\$[ck]/, clip_filename )
       end
 
       # Currently selected text
