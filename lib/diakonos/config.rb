@@ -112,7 +112,12 @@ module Diakonos
           @settings[ key ] = value
         end
 
-        @clipboard = Clipboard.new @settings[ "max_clips" ]
+        case @settings[ 'clipboard.external' ]
+        when 'klipper'
+          @clipboard = ClipboardKlipper.new
+        else
+          @clipboard = Clipboard.new( @settings[ "max_clips" ] )
+        end
         @log = File.open( @logfilename, "a" )
 
         if @buffers
@@ -257,7 +262,8 @@ module Diakonos
             /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
             /^lang\.(.+?)\.column_delimiters$/,
             "view.nonfilelines.character",
-            'interaction.blink_string', 'diff_command', 'session.default_session'
+            'interaction.blink_string', 'diff_command', 'session.default_session',
+            'clipboard.external'
           @settings[ command ] = arg
         when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format'
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )

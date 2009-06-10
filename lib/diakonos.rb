@@ -77,6 +77,7 @@ require 'diakonos/buffer/searching'
 require 'diakonos/buffer/selection'
 require 'diakonos/buffer/undo'
 require 'diakonos/clipboard'
+require 'diakonos/clipboard-klipper'
 require 'diakonos/readline'
 
 require 'diakonos/vendor/fuzzy_file_finder'
@@ -474,25 +475,6 @@ module Diakonos
       else
         set_iline "(tags file not found)"
       end
-    end
-
-    def write_to_clip_file( text )
-      clip_filename = @diakonos_home + "/clip.txt"
-      File.open( clip_filename, "w" ) do |f|
-        f.print text
-      end
-      clip_filename
-    end
-
-    # Returns true iff some text was copied to klipper.
-    def send_to_klipper( text )
-      return false if text.nil?
-
-      clip_filename = write_to_clip_file( text.join( "\n" ) )
-      # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
-      # Thank you to pgas from irc.freenode.net#bash for help with this.
-      `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
-      true
     end
 
     def settings

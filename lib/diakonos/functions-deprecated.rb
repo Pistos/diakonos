@@ -23,7 +23,6 @@ module Diakonos
     alias_method :deleteAndStoreLine,     :delete_and_store_line
     alias_method :deleteLine,             :delete_line
     alias_method :deleteToEOL,            :delete_to_eol
-    alias_method :delete_to_EOL_to_klipper, :delete_to_eol_to_klipper
     alias_method :findAgain,              :find_again
     alias_method :findAndReplace,         :search_and_replace
     alias_method :findExact,              :find_exact
