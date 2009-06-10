@@ -19,8 +19,10 @@ more lines.
 <Ctrl-Alt-K> will cut from the cursor to the end of the current line.
 
 Diakonos also supports synchronization with Klipper, the KDE clipboard
-manager.  This requires DCOP to be installed.  Uncomment the indicated lines
-in the configuration file.
+manager.  This requires DCOP to be installed.  Uncomment the indicated line
+in the configuration file.  Alternatively, synchronization with the X
+clipboard can be accomplished with xclip (third-party software).  Uncomment
+the xclip line for xclip usage.
 
 ## Block Selection
 
