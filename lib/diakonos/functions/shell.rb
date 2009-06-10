@@ -61,100 +61,84 @@ module Diakonos
     end
 
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
-      if command_.nil?
-        command = get_user_input( "Command: ", @rlh_shell )
-      else
-        command = command_
-      end
+      command = command_ || get_user_input( "Command: ", @rlh_shell )
 
-      if command
-        command = sub_shell_variables( command )
+      return  if command.nil?
 
-        result_file = "#{@diakonos_home}/#{result_filename}"
-        File.open( result_file , "w" ) do |f|
-          f.puts command
-          f.puts
-          Curses::close_screen
+      command = sub_shell_variables( command )
 
-          stdin, stdout, stderr = Open3.popen3( command )
-          t1 = Thread.new do
-            stdout.each_line do |line|
-              f.puts line
-            end
+      result_file = "#{@diakonos_home}/#{result_filename}"
+      File.open( result_file , "w" ) do |f|
+        f.puts command
+        f.puts
+        Curses::close_screen
+
+        stdin, stdout, stderr = Open3.popen3( command )
+        t1 = Thread.new do
+          stdout.each_line do |line|
+            f.puts line
           end
-          t2 = Thread.new do
-            stderr.each_line do |line|
-              f.puts line
-            end
-          end
-
-          t1.join
-          t2.join
-
-          Curses::init_screen
-          refresh_all
         end
-        open_file result_file
+        t2 = Thread.new do
+          stderr.each_line do |line|
+            f.puts line
+          end
+        end
+
+        t1.join
+        t2.join
+
+        Curses::init_screen
+        refresh_all
       end
+      open_file result_file
     end
 
     def execute( command_ = nil )
-      if command_.nil?
-        command = get_user_input( "Command: ", @rlh_shell )
+      command = command_ || get_user_input( "Command: ", @rlh_shell )
+
+      return  if command.nil?
+
+      command = sub_shell_variables( command )
+
+      Curses::close_screen
+
+      success = system( command )
+      if not success
+        result = "Could not execute: #{command}"
       else
-        command = command_
+        result = "Return code: #{$?}"
       end
 
-      if command
-        command = sub_shell_variables( command )
+      Curses::init_screen
+      refresh_all
 
-        Curses::close_screen
-
-        success = system( command )
-        if not success
-          result = "Could not execute: #{command}"
-        else
-          result = "Return code: #{$?}"
-        end
-
-        Curses::init_screen
-        refresh_all
-
-        set_iline result
-      end
+      set_iline result
     end
 
     def paste_shell_result( command_ = nil )
-      if command_.nil?
-        command = get_user_input( "Command: ", @rlh_shell )
-      else
-        command = command_
+      command = command_ || get_user_input( "Command: ", @rlh_shell )
+
+      return  if command.nil?
+
+      command = sub_shell_variables( command )
+
+      Curses::close_screen
+
+      begin
+        @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
+      rescue Exception => e
+        debug_log e.message
+        debug_log e.backtrace.join( "\n\t" )
+        show_exception e
       end
 
-      if command
-        command = sub_shell_variables( command )
-
-        Curses::close_screen
-
-        begin
-          @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
-        rescue Exception => e
-          debug_log e.message
-          debug_log e.backtrace.join( "\n\t" )
-          show_exception e
-        end
-
-        Curses::init_screen
-        refresh_all
-      end
+      Curses::init_screen
+      refresh_all
     end
 
     def spawn( command_ = nil )
-      if command_.nil?
-        command = get_user_input( "Command: ", @rlh_shell )
-      else
-        command = command_
-      end
+      command = command_ || get_user_input( "Command: ", @rlh_shell )
 
       return  if command.nil?
 
