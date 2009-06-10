@@ -22,16 +22,16 @@ module Diakonos
     end
 
     def load_session_data( filename )
-      return if not File.exist? filename
+      return  if not File.exist? filename
       File.open( filename ) do |f|
         loaded = YAML::load( f )
         if loaded
           if(
-            loaded[ 'filename' ] and
-            loaded[ 'settings' ] and
-            loaded[ 'settings' ].respond_to?( :values ) and
-            loaded[ 'name' ] and
-            loaded[ 'files' ] and
+            loaded[ 'filename' ] &&
+            loaded[ 'settings' ] &&
+            loaded[ 'settings' ].respond_to?( :values ) &&
+            loaded[ 'name' ] &&
+            loaded[ 'files' ] &&
             loaded[ 'files' ].respond_to?( :each )
           )
             @session = loaded
@@ -41,8 +41,8 @@ module Diakonos
     end
 
     def save_session( session_file = @session[ 'filename' ] )
-      return if session_file.nil?
-      return if @testing && pid_session?( session_file )
+      return  if session_file.nil?
+      return  if @testing && pid_session?( session_file )
       @session[ 'files' ] = @buffers.collect { |filepath,buffer|
         buffer.name ? filepath : nil
       }.compact
@@ -52,7 +52,7 @@ module Diakonos
     end
 
     def session_filepath_for( session_id )
-      if session_id and session_id !~ %r{/}
+      if session_id && session_id !~ %r{/}
         "#{@session_dir}/#{session_id}"
       else
         session_id
@@ -110,7 +110,7 @@ module Diakonos
           end
         end
 
-        if session_buffers.empty? and @files.empty? and @settings[ 'session.default_session' ]
+        if session_buffers.empty? && @files.empty? && @settings[ 'session.default_session' ]
           session_file = session_filepath_for( @settings[ 'session.default_session' ] )
           if File.exist? session_file
             load_session_data session_file
