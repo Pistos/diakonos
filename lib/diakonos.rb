@@ -282,6 +282,7 @@ module Diakonos
       set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
       session_buffers = session_startup
+      session_buffer_number = @session[ 'current_buffer' ] || 1
 
       Dir[ "#{@script_dir}/*" ].each do |script|
         begin
@@ -335,6 +336,7 @@ module Diakonos
         end
 
         run_hook_procs :after_startup
+        switch_to_buffer_number session_buffer_number
 
         if ! @settings[ 'suppress_welcome' ]
           open_file "#{@help_dir}/welcome.dhf"

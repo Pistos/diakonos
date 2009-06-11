@@ -11,6 +11,7 @@ module Diakonos
         'settings' => Hash.new,
         'name' => name,
         'buffers' => [],
+        'current_buffer' => 1,
         'dir' => Dir.getwd,
       }
     end
@@ -69,6 +70,7 @@ module Diakonos
     def save_session( session_file = @session[ 'filename' ] )
       return  if session_file.nil?
       return  if @testing && pid_session?( session_file )
+
       @session[ 'buffers' ] = @buffers.collect { |filepath,buffer|
         {
           'filepath' => buffer.name ? filepath : nil,
