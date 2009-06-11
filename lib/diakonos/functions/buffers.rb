@@ -194,18 +194,18 @@ module Diakonos
           save_session
           if switch_to( buffer )
             if line_number
-              @current_buffer.go_to_line( line_number, 0 )
+              buffer.go_to_line( line_number, 0 )
             else
               if last_row && last_col
-                @current_buffer.cursor_to( last_row, last_col, Buffer::DONT_DISPLAY )
+                buffer.cursor_to( last_row, last_col, Buffer::DONT_DISPLAY )
               end
               if top_line
-                @current_buffer.pitch_view_to( top_line, Buffer::DO_PITCH_CURSOR, Buffer::DONT_DISPLAY )
+                buffer.pitch_view_to( top_line, Buffer::DONT_PITCH_CURSOR, Buffer::DONT_DISPLAY )
               end
               if left_column
-                @current_buffer.pan_view_to( left_column, Buffer::DONT_DISPLAY )
+                buffer.pan_view_to( left_column, Buffer::DONT_DISPLAY )
               end
-              @current_buffer.display
+              buffer.display
             end
           end
         end
