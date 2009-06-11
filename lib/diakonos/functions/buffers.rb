@@ -196,14 +196,14 @@ module Diakonos
             if line_number
               buffer.go_to_line( line_number, 0 )
             else
-              if last_row && last_col
-                buffer.cursor_to( last_row, last_col, Buffer::DONT_DISPLAY )
-              end
               if top_line
                 buffer.pitch_view_to( top_line, Buffer::DONT_PITCH_CURSOR, Buffer::DONT_DISPLAY )
               end
               if left_column
                 buffer.pan_view_to( left_column, Buffer::DONT_DISPLAY )
+              end
+              if last_row && last_col
+                buffer.cursor_to( last_row, last_col, Buffer::DONT_DISPLAY )
               end
               buffer.display
             end
