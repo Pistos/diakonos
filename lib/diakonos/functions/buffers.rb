@@ -113,7 +113,20 @@ module Diakonos
     end
 
     # Returns the buffer of the opened file, or nil.
-    def open_file( filename = nil, read_only = false, force_revert = ASK_REVERT, last_row = nil, last_col = nil )
+    # @param meta is metadata containing additional information on how to open
+    # the file
+    def open_file( filename = nil, meta = {} )
+      read_only    = !!meta[ 'read_only' ]
+      force_revert = meta[ 'revert' ] || ASK_REVERT
+      if meta[ 'cursor' ]
+        last_row = meta[ 'cursor' ][ 'row' ]
+        last_col = meta[ 'cursor' ][ 'col' ]
+      end
+      if meta[ 'display' ]
+        top_line    = meta[ 'display' ][ 'top_line' ]
+        left_column = meta[ 'display' ][ 'left_column' ]
+      end
+
       do_open = true
       buffer = nil
       if filename.nil?
@@ -125,9 +138,9 @@ module Diakonos
         end
         buffer_key = filename
         if(
-          ( not force_revert ) and
-          ( (existing_buffer = @buffers[ filename ]) != nil ) and
-          ( filename !~ /\.diakonos/ ) and
+          ( not force_revert ) &&
+          ( (existing_buffer = @buffers[ filename ]) != nil ) &&
+          ( filename !~ /\.diakonos/ ) &&
           existing_buffer.file_different?
         )
           show_buffer_file_diff( existing_buffer ) do
@@ -153,14 +166,14 @@ module Diakonos
 
         # Does the "file" utility exist?
         if(
-          filename and
-          @settings[ 'use_magic_file' ] and
-          FileTest.exist?( "/usr/bin/file" ) and
-          FileTest.exist?( filename ) and
+          filename &&
+          @settings[ 'use_magic_file' ] &&
+          FileTest.exist?( "/usr/bin/file" ) &&
+          FileTest.exist?( filename ) &&
           /\blisting\.txt\b/ !~ filename
         )
           file_type = `/usr/bin/file -L #{filename}`
-          if file_type !~ /text/ and file_type !~ /empty$/
+          if file_type !~ /text/ && file_type !~ /empty$/
             choice = get_choice(
               "#{filename} does not appear to be readable.  Try to open it anyway?",
               [ CHOICE_YES, CHOICE_NO ],
@@ -181,9 +194,18 @@ module Diakonos
           save_session
           if switch_to( buffer )
             if line_number
-              @current_buffer.go_to_line( line_number, 0 )
-            elsif last_row && last_col
-              @current_buffer.cursor_to( last_row, last_col, Buffer::DO_DISPLAY )
+              buffer.go_to_line( line_number, 0 )
+            else
+              if top_line
+                buffer.pitch_view_to( top_line, Buffer::DONT_PITCH_CURSOR, Buffer::DONT_DISPLAY )
+              end
+              if left_column
+                buffer.pan_view_to( left_column, Buffer::DONT_DISPLAY )
+              end
+              if last_row && last_col
+                buffer.cursor_to( last_row, last_col, Buffer::DONT_DISPLAY )
+              end
+              buffer.display
             end
           end
         end
@@ -269,10 +291,12 @@ module Diakonos
       if do_revert
         open_file(
           @current_buffer.name,
-          Buffer::READ_WRITE,
-          FORCE_REVERT,
-          @current_buffer.last_row,
-          @current_buffer.last_col
+          'read_only' => false,
+          'revert' => FORCE_REVERT,
+          'cursor' => {
+            'row' => @current_buffer.last_row,
+            'col' => @current_buffer.last_col
+          }
         )
       end
     end
@@ -283,7 +307,7 @@ module Diakonos
     end
 
     def save_file_as
-      if @current_buffer and @current_buffer.name
+      if @current_buffer && @current_buffer.name
         path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
         file = get_user_input( "Filename: ", @rlh_files, path )
       else

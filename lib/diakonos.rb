@@ -220,7 +220,7 @@ module Diakonos
           regexp = argv.shift
           files = `egrep -rl '#{regexp}' *`.split( /\n/ )
           if files.any?
-            @files.concat files
+            @files.concat( files.map { |f| session_file_hash_for f } )
             script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
             @post_load_script << script
           end
@@ -230,7 +230,7 @@ module Diakonos
             print_usage
             exit 1
           else
-            @read_only_files.push filename
+            @read_only_files.push session_file_hash_for( filename )
           end
         when '-s', '--load-session'
           @session_to_load = session_filepath_for( argv.shift )
@@ -245,7 +245,7 @@ module Diakonos
           exit 0
         else
           # a name of a file to open
-          @files.push arg
+          @files.push session_file_hash_for( arg )
         end
       end
     end
@@ -282,6 +282,7 @@ module Diakonos
       set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
       session_buffers = session_startup
+      session_buffer_number = @session[ 'current_buffer' ] || 1
 
       Dir[ "#{@script_dir}/*" ].each do |script|
         begin
@@ -302,13 +303,19 @@ module Diakonos
 
       num_opened = 0
       if @files.length == 0 && @read_only_files.length == 0
-        num_opened += 1  if open_file
+        if open_file
+          num_opened += 1
+        end
       else
         @files.each do |file|
-          num_opened += 1  if open_file file
+          if open_file( file[ 'filepath' ], file )
+            num_opened += 1
+          end
         end
         @read_only_files.each do |file|
-          num_opened += 1  if open_file( file, Buffer::READ_ONLY )
+          if open_file( file[ 'filepath' ], 'read_only' => true )
+            num_opened += 1
+          end
         end
       end
 
@@ -329,6 +336,7 @@ module Diakonos
         end
 
         run_hook_procs :after_startup
+        switch_to_buffer_number session_buffer_number
 
         if ! @settings[ 'suppress_welcome' ]
           open_file "#{@help_dir}/welcome.dhf"

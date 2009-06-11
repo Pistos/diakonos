@@ -196,6 +196,7 @@ module Diakonos
     def quit
       @quitting = true
       to_all = nil
+      save_session
       @buffers.each_value do |buffer|
         if buffer.modified?
           switch_to buffer

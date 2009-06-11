@@ -10,6 +10,7 @@ module Diakonos
           @buffer_stack.push @current_buffer
         end
         @current_buffer = buffer
+        @session[ 'current_buffer' ] = buffer_to_number( buffer )
         run_hook_procs( :after_buffer_switch, buffer )
         update_status_line
         update_context_line
