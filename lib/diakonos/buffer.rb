@@ -370,19 +370,21 @@ module Diakonos
       @last_col
     end
 
+    def pan_view_to( left_column, do_display = DO_DISPLAY )
+      @left_column = [ left_column, 0 ].max
+      record_mark_start_and_end
+      display  if do_display
+    end
+
     # Returns the amount the view was actually panned.
     def pan_view( x = 1, do_display = DO_DISPLAY )
       old_left_column = @left_column
-      @left_column = [ @left_column + x, 0 ].max
-      record_mark_start_and_end
-      display if do_display
+      pan_view_to( @left_column + x, do_display )
       @left_column - old_left_column
     end
 
-    # Returns the amount the view was actually pitched.
-    def pitch_view( y = 1, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )
+    def pitch_view_to( new_top_line, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )
       old_top_line = @top_line
-      new_top_line = @top_line + y
 
       if new_top_line < 0
         @top_line = 0
@@ -396,7 +398,7 @@ module Diakonos
       old_col = @last_col
 
       changed = ( @top_line - old_top_line )
-      if changed != 0 and do_pitch_cursor
+      if changed != 0 && do_pitch_cursor
         @last_row += changed
       end
 
@@ -417,8 +419,8 @@ module Diakonos
       record_mark_start_and_end
 
       if changed != 0
-        if not @changing_selection and selecting?
-          remove_selection( DONT_DISPLAY )
+        if ! @changing_selection && selecting?
+          remove_selection DONT_DISPLAY
         end
 
         highlight_matches
@@ -427,9 +429,14 @@ module Diakonos
         end
       end
 
-      display if do_display
+      display  if do_display
 
       changed
+    end
+
+    # Returns the amount the view was actually pitched.
+    def pitch_view( y = 1, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )
+      pitch_view_to( @top_line + y, do_pitch_cursor, do_display )
     end
 
     def wrap_paragraph
