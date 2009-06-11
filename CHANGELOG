@@ -9,6 +9,8 @@ Diakonos Changelog
 - shell command is now interruptable.
 - Klipper synchronization now a single setting (clipboard.external klipper).
 - Added xclip support.
+- Cursor and viewport positions now saved in and restored from sessions.
+- Current buffer number now saved in sessions.
 
 0.8.9
 
