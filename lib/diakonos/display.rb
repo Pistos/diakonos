@@ -226,8 +226,8 @@ module Diakonos
       return  if @testing
       return  if @win_context.nil?
 
-      @context_thread.exit if @context_thread
-      @context_thread = Thread.new do ||
+      @context_thread.exit  if @context_thread
+      @context_thread = Thread.new do
 
         context = @current_buffer.context
 

@@ -11,6 +11,7 @@ Diakonos Changelog
 - Added xclip support.
 - Cursor and viewport positions now saved in and restored from sessions.
 - Current buffer number now saved in sessions.
+- Fixed context line.
 
 0.8.9
 

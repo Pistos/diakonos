@@ -475,20 +475,20 @@ module Diakonos
       retval = Array.new
       row = @last_row
       clevel = indentation_level( row )
-      while row > 0 and clevel < 0
+      while row > 0 && clevel < 0
         row = row - 1
         clevel = indentation_level( row )
       end
-      clevel = 0 if clevel < 0
+      clevel = 0  if clevel < 0
       while row > 0
         row = row - 1
         line = @lines[ row ]
-        if line !~ @settings[ "lang.#{@language}.context.ignore" ]
+        if ! line.strip.empty? && ( line !~ @settings[ "lang.#{@language}.context.ignore" ] )
           level = indentation_level( row )
           if level < clevel and level > -1
             retval.unshift line
             clevel = level
-            break if clevel == 0
+            break  if clevel == 0
           end
         end
       end
