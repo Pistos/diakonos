@@ -103,8 +103,12 @@ module Diakonos
         end
 
       end
-      open_file result_file
-      set_iline "#{completed ? '' : '(interrupted)'} Results for: #{command}"
+      if File.size?( result_file )
+        open_file result_file
+        set_iline "#{completed ? '' : '(interrupted) '}Results for: #{command}"
+      else
+        set_iline "Empty result for: #{command}"
+      end
     end
 
     def execute( command_ = nil )

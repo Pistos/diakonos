@@ -12,6 +12,7 @@ Diakonos Changelog
 - Cursor and viewport positions now saved in and restored from sessions.
 - Current buffer number now saved in sessions.
 - Fixed context line.
+- Textual indication of no shell results now given.
 
 0.8.9
 
