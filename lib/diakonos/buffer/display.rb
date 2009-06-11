@@ -2,6 +2,8 @@ module Diakonos
 
   class Buffer
 
+    attr_reader :top_line, :left_column
+
     def find_opening_match( line, match_close = true, bos_allowed = true )
       open_index = line.length
       open_token_class = nil

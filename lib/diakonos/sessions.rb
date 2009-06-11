@@ -10,7 +10,7 @@ module Diakonos
         'filename' => File.expand_path( filepath ),
         'settings' => Hash.new,
         'name' => name,
-        'files' => [],
+        'buffers' => [],
         'dir' => Dir.getwd,
       }
     end
@@ -19,6 +19,20 @@ module Diakonos
       @session_dir = "#{@diakonos_home}/sessions"
       mkdir @session_dir
       new_session "#{@session_dir}/#{Process.pid}"
+    end
+
+    def session_file_hash_for( filepath )
+      {
+        'filepath' => filepath,
+        'cursor'   => {
+          'row' => 0,
+          'col' => 0,
+        },
+        'display'  => {
+          'top_line'    => 0,
+          'left_column' => 0
+        },
+      }
     end
 
     def load_session_data( filename )
@@ -31,9 +45,20 @@ module Diakonos
             loaded[ 'settings' ] &&
             loaded[ 'settings' ].respond_to?( :values ) &&
             loaded[ 'name' ] &&
-            loaded[ 'files' ] &&
-            loaded[ 'files' ].respond_to?( :each )
+            (
+              loaded[ 'files' ] &&
+              loaded[ 'files' ].respond_to?( :each ) ||
+              loaded[ 'buffers' ] &&
+              loaded[ 'buffers' ].respond_to?( :each )
+            )
           )
+            # Convert old sessions
+            if loaded[ 'files' ]
+              loaded[ 'buffers' ] = loaded[ 'files' ].map { |f|
+                session_file_hash_for f
+              }
+              loaded.delete 'files'
+            end
             @session = loaded
           end
         end
@@ -43,8 +68,18 @@ module Diakonos
     def save_session( session_file = @session[ 'filename' ] )
       return  if session_file.nil?
       return  if @testing && pid_session?( session_file )
-      @session[ 'files' ] = @buffers.collect { |filepath,buffer|
-        buffer.name ? filepath : nil
+      @session[ 'buffers' ] = @buffers.collect { |filepath,buffer|
+        {
+          'filepath' => buffer.name ? filepath : nil,
+          'cursor'   => {
+            'row' => buffer.last_row,
+            'col' => buffer.last_col,
+          },
+          'display'  => {
+            'top_line'    => buffer.top_line,
+            'left_column' => buffer.left_column
+          },
+        }
       }.compact
       File.open( session_file, 'w' ) do |f|
         f.puts @session.to_yaml
@@ -63,6 +98,10 @@ module Diakonos
       %r{/\d+$} === path
     end
 
+    def session_filepaths
+      @session[ 'buffers' ].map { |b| b[ 'filepath' ] }
+    end
+
     def session_startup
       if @session_to_load
         pid_session = @session
@@ -70,7 +109,7 @@ module Diakonos
         session_path = session_filepath_for( @session_to_load )
         load_session_data session_path
         if @session
-          @files.concat @session[ 'files' ]
+          @files.concat @session[ 'buffers' ]
         else
           new_session session_path
         end
@@ -101,7 +140,7 @@ module Diakonos
           when CHOICE_YES
             load_session_data session_file
             if @session
-              @files.concat @session[ 'files' ]
+              @files.concat @session[ 'buffers' ]
               File.delete session_file
               break
             end
@@ -115,7 +154,7 @@ module Diakonos
           if File.exist? session_file
             load_session_data session_file
             if @session
-              @files.concat @session[ 'files' ]
+              @files.concat @session[ 'buffers' ]
             end
           end
         end

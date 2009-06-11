@@ -220,7 +220,7 @@ module Diakonos
           regexp = argv.shift
           files = `egrep -rl '#{regexp}' *`.split( /\n/ )
           if files.any?
-            @files.concat files
+            @files.concat( files.map { |f| session_file_hash_for f } )
             script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
             @post_load_script << script
           end
@@ -230,7 +230,7 @@ module Diakonos
             print_usage
             exit 1
           else
-            @read_only_files.push filename
+            @read_only_files.push session_file_hash_for( filename )
           end
         when '-s', '--load-session'
           @session_to_load = session_filepath_for( argv.shift )
@@ -245,7 +245,7 @@ module Diakonos
           exit 0
         else
           # a name of a file to open
-          @files.push arg
+          @files.push session_file_hash_for( arg )
         end
       end
     end
@@ -302,13 +302,19 @@ module Diakonos
 
       num_opened = 0
       if @files.length == 0 && @read_only_files.length == 0
-        num_opened += 1  if open_file
+        if open_file
+          num_opened += 1
+        end
       else
         @files.each do |file|
-          num_opened += 1  if open_file file
+          if open_file( file[ 'filepath' ] )
+            num_opened += 1
+          end
         end
         @read_only_files.each do |file|
-          num_opened += 1  if open_file( file, Buffer::READ_ONLY )
+          if open_file( file[ 'filepath' ], Buffer::READ_ONLY )
+            num_opened += 1
+          end
         end
       end
 
