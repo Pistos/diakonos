@@ -118,7 +118,10 @@ module Diakonos
     def open_file( filename = nil, meta = {} )
       read_only = !!meta[ 'read_only' ]
       force_revert = meta[ 'revert' ] || ASK_REVERT
-      last_row, last_col = meta[ 'row' ], meta[ 'col' ]
+      if meta[ 'cursor' ]
+        last_row = meta[ 'cursor' ][ 'row' ]
+        last_col = meta[ 'cursor' ][ 'col' ]
+      end
 
       do_open = true
       buffer = nil
@@ -277,8 +280,10 @@ module Diakonos
           @current_buffer.name,
           'read_only' => false,
           'revert' => FORCE_REVERT,
-          'row' => @current_buffer.last_row,
-          'col' => @current_buffer.last_col
+          'cursor' => {
+            'row' => @current_buffer.last_row,
+            'col' => @current_buffer.last_col
+          }
         )
       end
     end

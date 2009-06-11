@@ -307,7 +307,7 @@ module Diakonos
         end
       else
         @files.each do |file|
-          if open_file( file[ 'filepath' ] )
+          if open_file( file[ 'filepath' ], file )
             num_opened += 1
           end
         end
