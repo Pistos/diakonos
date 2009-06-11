@@ -113,7 +113,13 @@ module Diakonos
     end
 
     # Returns the buffer of the opened file, or nil.
-    def open_file( filename = nil, read_only = false, force_revert = ASK_REVERT, last_row = nil, last_col = nil )
+    # @param meta is metadata containing additional information on how to open
+    # the file
+    def open_file( filename = nil, meta = {} )
+      read_only = !!meta[ 'read_only' ]
+      force_revert = meta[ 'revert' ] || ASK_REVERT
+      last_row, last_col = meta[ 'row' ], meta[ 'col' ]
+
       do_open = true
       buffer = nil
       if filename.nil?
@@ -269,10 +275,10 @@ module Diakonos
       if do_revert
         open_file(
           @current_buffer.name,
-          Buffer::READ_WRITE,
-          FORCE_REVERT,
-          @current_buffer.last_row,
-          @current_buffer.last_col
+          'read_only' => false,
+          'revert' => FORCE_REVERT,
+          'row' => @current_buffer.last_row,
+          'col' => @current_buffer.last_col
         )
       end
     end

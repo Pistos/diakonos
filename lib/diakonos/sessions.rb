@@ -23,12 +23,13 @@ module Diakonos
 
     def session_file_hash_for( filepath )
       {
-        'filepath' => filepath,
-        'cursor'   => {
+        'filepath'  => filepath,
+        'read_only' => false,
+        'cursor'    => {
           'row' => 0,
           'col' => 0,
         },
-        'display'  => {
+        'display'   => {
           'top_line'    => 0,
           'left_column' => 0
         },
@@ -71,6 +72,7 @@ module Diakonos
       @session[ 'buffers' ] = @buffers.collect { |filepath,buffer|
         {
           'filepath' => buffer.name ? filepath : nil,
+          'read_only' => buffer.read_only,
           'cursor'   => {
             'row' => buffer.last_row,
             'col' => buffer.last_col,

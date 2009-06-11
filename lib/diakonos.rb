@@ -312,7 +312,7 @@ module Diakonos
           end
         end
         @read_only_files.each do |file|
-          if open_file( file[ 'filepath' ], Buffer::READ_ONLY )
+          if open_file( file[ 'filepath' ], 'read_only' => true )
             num_opened += 1
           end
         end
