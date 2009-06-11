@@ -6,7 +6,7 @@ Diakonos Changelog
 - Added go_to_char (Alt-N).
 - Added go_to_char_previous (Alt-P).
 - shell command now shows executed command on interaction line.
-- shell command is now interruptable.
+- shell command is now interruptible.
 - Klipper synchronization now a single setting (clipboard.external klipper).
 - Added xclip support.
 - Cursor and viewport positions now saved in and restored from sessions.
@@ -23,7 +23,6 @@ Diakonos Changelog
 - X windows pasting handled much better now.
 - Numerous internal refactorings and reorganizations.
 - Accepted patches from Decklin Foster.
-
 
 0.8.8
 
