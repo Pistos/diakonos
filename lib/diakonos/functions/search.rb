@@ -109,6 +109,10 @@ module Diakonos
       end
     end
 
+    def go_to_pair_match
+      @current_buffer.go_to_pair_match
+    end
+
     def search_and_replace( case_sensitive = CASE_INSENSITIVE )
       find( "down", case_sensitive, nil, ASK_REPLACEMENT )
     end

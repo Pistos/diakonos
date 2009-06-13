@@ -2,6 +2,17 @@ module Diakonos
 
   class Buffer
 
+    CHARACTER_PAIRS = {
+      '(' => { partner: ')', direction: :forward },
+      '<' => { partner: '>', direction: :forward },
+      '{' => { partner: '}', direction: :forward },
+      '[' => { partner: ']', direction: :forward },
+      ')' => { partner: '(', direction: :backward },
+      '>' => { partner: '<', direction: :backward },
+      '}' => { partner: '{', direction: :backward },
+      ']' => { partner: '[', direction: :backward },
+    }
+
     # Takes an array of Regexps, which represents a user-provided regexp,
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
@@ -260,6 +271,37 @@ module Diakonos
       @text_marks[ SELECTION ] = selection
       @highlight_regexp = nil
       display  if do_display
+    end
+
+    def pos_of_closest( c )
+      row = @last_row
+      i = @lines[ row ].index( c, @last_col )
+      while i.nil?
+        row += 1
+        break  if row >= @lines.length
+        i = @lines[ row ].index( c )
+      end
+      if i
+        [ row, i ]
+      end
+    end
+
+    def pos_of_pair_match( c = @lines[ @last_row ][ @last_col ] )
+      data = CHARACTER_PAIRS[ c ]
+      return  if data.nil?
+
+      case data[ :direction ]
+      when :forward
+        pos_of_closest data[ :partner ]
+      when :backward
+      end
+    end
+
+    def go_to_pair_match
+      row, col = pos_of_pair_match
+      if row && col
+        cursor_to row, col
+      end
     end
 
     def find_again( last_search_regexps, direction = @last_search_direction )
