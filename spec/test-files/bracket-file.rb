@@ -10,3 +10,12 @@
     },
   }
 }
+
+# Test mismatched pairs
+
+}
+]
+)
+{
+  {
+}
