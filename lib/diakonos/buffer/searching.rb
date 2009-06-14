@@ -262,13 +262,11 @@ module Diakonos
       found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
         TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
       end
-      @text_marks = [ @text_marks[ 0 ] ] + found_marks
+      @text_marks[ :found ] = found_marks
     end
 
     def clear_matches( do_display = DONT_DISPLAY )
-      selection = @text_marks[ SELECTION ]
-      @text_marks = Array.new
-      @text_marks[ SELECTION ] = selection
+      @text_marks[ :found ] = []
       @highlight_regexp = nil
       display  if do_display
     end

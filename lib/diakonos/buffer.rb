@@ -5,7 +5,6 @@ module Diakonos
       :tab_size, :selection_mode
     attr_writer :desired_column, :read_only
 
-    SELECTION = 0  # Selection mark is the first element of the @text_marks array
     TYPING = true
     STOPPED_TYPING = true
     STILL_TYPING = false
@@ -64,7 +63,7 @@ module Diakonos
       @left_column = 0
       @desired_column = 0
       @mark_anchor = nil
-      @text_marks = Array.new
+      @text_marks = Hash.new
       @selection_mode = :normal
       @last_search_regexps = nil
       @highlight_regexp = nil
