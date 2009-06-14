@@ -13,6 +13,8 @@ Diakonos Changelog
 - Current buffer number now saved in sessions.
 - Fixed context line.
 - Textual indication of no shell results now given.
+- Added basic pair (bracket) highlighting.
+- Added go_to_pair_match (Alt-Shift-[).
 
 0.8.9
 
