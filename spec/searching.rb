@@ -79,13 +79,13 @@ describe 'A Diakonos Buffer' do
   end
 
   it 'can handle mismatched pairs' do
-    @b.pos_of_pair_match( 15, 0 ).should.equal [ nil, nil ]
-    @b.pos_of_pair_match( 16, 0 ).should.equal [ nil, nil ]
     @b.pos_of_pair_match( 17, 0 ).should.equal [ nil, nil ]
-    @b.pos_of_pair_match( 19, 2 ).should.equal [ 20, 0 ]
-    @b.pos_of_pair_match( 20, 0 ).should.equal [ 19, 2 ]
+    @b.pos_of_pair_match( 18, 0 ).should.equal [ nil, nil ]
+    @b.pos_of_pair_match( 19, 0 ).should.equal [ nil, nil ]
+    @b.pos_of_pair_match( 21, 2 ).should.equal [ 22, 0 ]
+    @b.pos_of_pair_match( 22, 0 ).should.equal [ 21, 2 ]
     @b.pos_of_pair_match( 5, 20 ).should.equal [ nil, nil ]
     @b.pos_of_pair_match( 5, 13 ).should.equal [ nil, nil ]
-    @b.pos_of_pair_match( 21, 0 ).should.equal [ nil, nil ]
+    @b.pos_of_pair_match( 23, 0 ).should.equal [ nil, nil ]
   end
 end

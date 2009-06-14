@@ -13,6 +13,8 @@
 
 # Test mismatched pairs
 
+__END__
+
 }
 ]
 )
