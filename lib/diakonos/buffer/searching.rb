@@ -313,12 +313,14 @@ module Diakonos
         row, col, char = pos_of_next( target, row, col + 1 )
         while char == c  # Take care of nested pairs
           row, col = pos_of_pair_match( row, col )
+          break  if col.nil?
           row, col, char = pos_of_next( target, row, col + 1 )
         end
       when :backward
         row, col, char = pos_of_prev( target, row, col - 1 )
         while char == c  # Take care of nested pairs
           row, col = pos_of_pair_match( row, col )
+          break  if col.nil?
           row, col, char = pos_of_prev( target, row, col - 1 )
         end
       end
