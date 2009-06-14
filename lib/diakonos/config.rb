@@ -250,7 +250,7 @@ module Diakonos
             "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
             'suppress_welcome', 'strip_trailing_whitespace_on_save',
             'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
-            'find.show_context_after'
+            'find.show_context_after', 'view.pairs.highlight'
           @settings[ command ] = arg.to_b
         when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
           @settings[ command ] = Display.to_formatting( arg )

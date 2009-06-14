@@ -351,6 +351,10 @@ module Diakonos
       !! @text_marks[ :pair ]
     end
 
+    def clear_pair_highlight
+      @text_marks[ :pair ] = nil
+    end
+
     def find_again( last_search_regexps, direction = @last_search_direction )
       if @last_search_regexps.nil?
         @last_search_regexps = last_search_regexps

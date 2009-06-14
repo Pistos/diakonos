@@ -64,7 +64,11 @@ module Diakonos
         end
 
         pair_was_highlighted = pair_highlighted?
-        highlight_pair
+        if @settings[ 'view.pairs.highlight' ]
+          highlight_pair
+        elsif pair_was_highlighted
+          clear_pair_highlight
+        end
         highlight_changed = pair_was_highlighted ^ pair_highlighted?
 
         if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
