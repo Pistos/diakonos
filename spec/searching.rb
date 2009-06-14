@@ -61,4 +61,18 @@ describe 'A Diakonos Buffer' do
     @b.pos_of_prev( /q/, 4, 9 ).should.be.nil
   end
 
+  it 'knows the positions of matching pairs' do
+    @b.pos_of_pair_match( 0, 0 ).should.equal [ 11, 0 ]
+    @b.pos_of_pair_match( 1, 5 ).should.equal [ 10, 2 ]
+    @b.pos_of_pair_match( 3, 7 ).should.equal [ 6, 4 ]
+    @b.pos_of_pair_match( 5, 9 ).should.equal [ 5, 23 ]
+    @b.pos_of_pair_match( 5, 10 ).should.equal [ 5, 15 ]
+
+    @b.pos_of_pair_match( 11, 0 ).should.equal [ 0, 0 ]
+    @b.pos_of_pair_match( 10, 2 ).should.equal [ 1, 5 ]
+    @b.pos_of_pair_match( 6, 4 ).should.equal [ 3, 7 ]
+    @b.pos_of_pair_match( 5, 23 ).should.equal [ 5, 9 ]
+    @b.pos_of_pair_match( 5, 15 ).should.equal [ 5, 10 ]
+  end
+
 end
