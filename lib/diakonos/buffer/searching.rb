@@ -273,26 +273,34 @@ module Diakonos
       display  if do_display
     end
 
-    def pos_of_closest( c )
-      row = @last_row
-      i = @lines[ row ].index( c, @last_col )
-      while i.nil?
+    def pos_of_next( regexp, start_row, start_col )
+      row, col = start_row, start_col
+      col = @lines[ row ].index( regexp, start_col )
+      while col.nil? && row < @lines.length - 1
         row += 1
-        break  if row >= @lines.length
-        i = @lines[ row ].index( c )
+        col = @lines[ row ].index( regexp )
       end
-      if i
-        [ row, i ]
+      if col
+        [ row, col, Regexp.last_match( 0 ) ]
       end
     end
 
-    def pos_of_pair_match( c = @lines[ @last_row ][ @last_col ] )
+    def pos_of_pair_match( row = @last_row, col = @last_col )
+      c = @lines[ row ][ col ]
       data = CHARACTER_PAIRS[ c ]
       return  if data.nil?
 
       case data[ :direction ]
       when :forward
-        pos_of_closest data[ :partner ]
+        d = data[ :partner ]
+        row, col, char = pos_of_next( /(?:#{c}|#{d})/, row, col + 1 )
+        while char == c
+          # Take care of nested pair first
+          row, col = pos_of_pair_match( row, col )
+          # Now keep looking for d (the closing partner)
+          row, col, char = pos_of_next( /(?:#{c}|#{d})/, row, col + 1 )
+        end
+        [ row, col ]
       when :backward
       end
     end
