@@ -109,7 +109,7 @@ module Diakonos
       cury = @win_main.cury
       curx = @win_main.curx
 
-      @text_marks.reverse_each do |text_mark|
+      @text_marks.values.flatten.reverse_each do |text_mark|
         next  if text_mark.nil?
 
         @win_main.attrset text_mark.formatting

@@ -62,7 +62,16 @@ module Diakonos
           remove_selection( DONT_DISPLAY )
           removed = true
         end
-        if removed or ( do_display and ( selecting? or view_changed ) )
+
+        pair_was_highlighted = pair_highlighted?
+        if @settings[ 'view.pairs.highlight' ]
+          highlight_pair
+        elsif pair_was_highlighted
+          clear_pair_highlight
+        end
+        highlight_changed = pair_was_highlighted ^ pair_highlighted?
+
+        if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
           display
         else
           @diakonos.display_mutex.synchronize do

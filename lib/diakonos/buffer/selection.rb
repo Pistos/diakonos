@@ -6,7 +6,7 @@ module Diakonos
     # @mark_end[ "col" ] is exclusive.
     def record_mark_start_and_end
       if @mark_anchor.nil?
-        @text_marks[ SELECTION ] = nil
+        @text_marks[ :selection ] = nil
         return
       end
 
@@ -30,36 +30,36 @@ module Diakonos
         end
 
         if anchor_first
-          @text_marks[ SELECTION ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
+          @text_marks[ :selection ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
         else
-          @text_marks[ SELECTION ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
+          @text_marks[ :selection ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
         end
       when :block
         if crow < arow
           if ccol < acol # Northwest
-            @text_marks[ SELECTION ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
+            @text_marks[ :selection ] = TextMark.new( crow, ccol, arow, acol, @selection_formatting )
           else           # Northeast
-            @text_marks[ SELECTION ] = TextMark.new( crow, acol, arow, ccol, @selection_formatting )
+            @text_marks[ :selection ] = TextMark.new( crow, acol, arow, ccol, @selection_formatting )
           end
         else
           if ccol < acol  # Southwest
-            @text_marks[ SELECTION ] = TextMark.new( arow, ccol, crow, acol, @selection_formatting )
+            @text_marks[ :selection ] = TextMark.new( arow, ccol, crow, acol, @selection_formatting )
           else            # Southeast
-            @text_marks[ SELECTION ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
+            @text_marks[ :selection ] = TextMark.new( arow, acol, crow, ccol, @selection_formatting )
           end
         end
       end
     end
 
     def selection_mark
-      @text_marks[ SELECTION ]
+      @text_marks[ :selection ]
     end
     def selecting?
       !!selection_mark
     end
 
     def select_current_line
-      @text_marks[ SELECTION ] = TextMark.new(
+      @text_marks[ :selection ] = TextMark.new(
         @last_row,
         0,
         @last_row,
@@ -183,11 +183,11 @@ module Diakonos
     end
 
     def delete_selection( do_display = DO_DISPLAY )
-      return  if @text_marks[ SELECTION ].nil?
+      return  if @text_marks[ :selection ].nil?
 
       take_snapshot
 
-      selection  = @text_marks[ SELECTION ]
+      selection  = @text_marks[ :selection ]
       start_row  = selection.start_row
       start_col  = selection.start_col
       end_row    = selection.end_row

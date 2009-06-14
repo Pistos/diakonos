@@ -2,6 +2,17 @@ module Diakonos
 
   class Buffer
 
+    CHARACTER_PAIRS = {
+      '(' => { partner: ')', direction: :forward },
+      '<' => { partner: '>', direction: :forward },
+      '{' => { partner: '}', direction: :forward },
+      '[' => { partner: ']', direction: :forward },
+      ')' => { partner: '(', direction: :backward },
+      '>' => { partner: '<', direction: :backward },
+      '}' => { partner: '{', direction: :backward },
+      ']' => { partner: '[', direction: :backward },
+    }
+
     # Takes an array of Regexps, which represents a user-provided regexp,
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
@@ -251,15 +262,99 @@ module Diakonos
       found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
         TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
       end
-      @text_marks = [ @text_marks[ 0 ] ] + found_marks
+      @text_marks[ :found ] = found_marks
     end
 
     def clear_matches( do_display = DONT_DISPLAY )
-      selection = @text_marks[ SELECTION ]
-      @text_marks = Array.new
-      @text_marks[ SELECTION ] = selection
+      @text_marks[ :found ] = []
       @highlight_regexp = nil
       display  if do_display
+    end
+
+    def pos_of_next( regexp, start_row, start_col )
+      row, col = start_row, start_col
+      col = @lines[ row ].index( regexp, col )
+      while col.nil? && row < @lines.length - 1
+        row += 1
+        col = @lines[ row ].index( regexp )
+      end
+      if col
+        [ row, col, Regexp.last_match( 0 ) ]
+      end
+    end
+
+    def pos_of_prev( regexp, start_row, start_col )
+      row, col = start_row, start_col
+      if col < 0
+        row -= 1
+        col = -1
+      end
+      col = @lines[ row ].rindex( regexp, col )
+      while col.nil? && row > 0
+        row -= 1
+        col = @lines[ row ].rindex( regexp )
+      end
+      if col
+        [ row, col, Regexp.last_match( 0 ) ]
+      end
+    end
+
+    def pos_of_pair_match( row = @last_row, col = @last_col )
+      c = @lines[ row ][ col ]
+      data = CHARACTER_PAIRS[ c ]
+      return  if data.nil?
+      d = data[ :partner ]
+      c_ = Regexp.escape c
+      d_ = Regexp.escape d
+      target = /(?:#{c_}|#{d_})/
+
+      case data[ :direction ]
+      when :forward
+        row, col, char = pos_of_next( target, row, col + 1 )
+        while char == c  # Take care of nested pairs
+          row, col = pos_of_pair_match( row, col )
+          break  if col.nil?
+          row, col, char = pos_of_next( target, row, col + 1 )
+        end
+      when :backward
+        row, col, char = pos_of_prev( target, row, col - 1 )
+        while char == c  # Take care of nested pairs
+          row, col = pos_of_pair_match( row, col )
+          break  if col.nil?
+          row, col, char = pos_of_prev( target, row, col - 1 )
+        end
+      end
+      [ row, col ]
+    end
+
+    def go_to_pair_match
+      row, col = pos_of_pair_match
+      if row && col
+        cursor_to row, col
+      end
+    end
+
+    def highlight_pair
+      match_row, match_col = pos_of_pair_match( @last_row, @last_col )
+      if match_col.nil?
+        @text_marks[ :pair ] = nil
+      else
+        @text_marks[ :pair ] = TextMark.new(
+          match_row,
+          match_col,
+          match_row,
+          match_col + 1,
+          @settings[ "lang.#{@language}.format.pair" ] || @settings[ "lang.shared.format.pair" ]
+        )
+      end
+    end
+
+    def pair_highlighted?
+      !! @text_marks[ :pair ]
+    end
+
+    def clear_pair_highlight
+      @text_marks[ :pair ] = nil
     end
 
     def find_again( last_search_regexps, direction = @last_search_direction )
