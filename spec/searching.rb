@@ -47,6 +47,7 @@ describe 'A Diakonos Buffer' do
 
     @b.pos_of_next( /:/, 1, 2 ).should.equal [ 1, 3, ':' ]
     @b.pos_of_next( /a/, 2, 4 ).should.equal [ 2, 4, 'a' ]
+    @b.pos_of_next( /\]/, 5, 9 ).should.equal [ 5, 23, ']' ]
 
     @b.pos_of_next( /q/, 0, 0 ).should.be.nil
   end
@@ -58,6 +59,7 @@ describe 'A Diakonos Buffer' do
 
     @b.pos_of_prev( /c/, 4, 7 ).should.equal [ 4, 6, 'c' ]
     @b.pos_of_prev( /\{/, 1, 4 ).should.be.equal [ 0, 0, '{' ]
+    @b.pos_of_prev( /\[/, 5, 23 ).should.equal [ 5, 9, '[' ]
 
     @b.pos_of_prev( /q/, 4, 9 ).should.be.nil
   end
