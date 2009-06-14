@@ -47,6 +47,18 @@ describe 'A Diakonos Buffer' do
 
     @b.pos_of_next( /:/, 1, 2 ).should.equal [ 1, 3, ':' ]
     @b.pos_of_next( /a/, 2, 4 ).should.equal [ 2, 4, 'a' ]
+
+    @b.pos_of_prev( /q/, 0, 0 ).should.be.nil
+  end
+
+  it 'can find previous closest characters' do
+    @b.pos_of_prev( /x/, 4, 9 ).should.equal [ 1, 2, 'x' ]
+    @b.pos_of_prev( /a/, 4, 9 ).should.equal [ 2, 4, 'a' ]
+    @b.pos_of_prev( /:/, 4, 7 ).should.equal [ 4, 7, ':' ]
+
+    @b.pos_of_prev( /c/, 4, 7 ).should.equal [ 4, 6, 'c' ]
+
+    @b.pos_of_prev( /q/, 4, 9 ).should.be.nil
   end
 
 end
