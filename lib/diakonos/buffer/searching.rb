@@ -306,19 +306,22 @@ module Diakonos
       data = CHARACTER_PAIRS[ c ]
       return  if data.nil?
       d = data[ :partner ]
+      c_ = Regexp.escape c
+      d_ = Regexp.escape d
+      target = /(?:#{c_}|#{d_})/
 
       case data[ :direction ]
       when :forward
-        row, col, char = pos_of_next( /(?:#{c}|#{d})/, row, col + 1 )
+        row, col, char = pos_of_next( target, row, col + 1 )
         while char == c  # Take care of nested pairs
           row, col = pos_of_pair_match( row, col )
-          row, col, char = pos_of_next( /(?:#{c}|#{d})/, row, col + 1 )
+          row, col, char = pos_of_next( target, row, col + 1 )
         end
       when :backward
-        row, col, char = pos_of_prev( /(?:#{c}|#{d})/, row, col - 1 )
+        row, col, char = pos_of_prev( target, row, col - 1 )
         while char == c  # Take care of nested pairs
           row, col = pos_of_pair_match( row, col )
-          row, col, char = pos_of_prev( /(?:#{c}|#{d})/, row, col - 1 )
+          row, col, char = pos_of_prev( target, row, col - 1 )
         end
       end
       [ row, col ]
