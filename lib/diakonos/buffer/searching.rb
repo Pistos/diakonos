@@ -332,6 +332,25 @@ module Diakonos
       end
     end
 
+    def highlight_pair
+      match_row, match_col = pos_of_pair_match( @last_row, @last_col )
+      if match_col.nil?
+        @text_marks[ :pair ] = nil
+      else
+        @text_marks[ :pair ] = TextMark.new(
+          match_row,
+          match_col,
+          match_row,
+          match_col + 1,
+          @settings[ "lang.#{@language}.format.pair" ] || @settings[ "lang.shared.format.pair" ]
+        )
+      end
+    end
+
+    def pair_highlighted?
+      !! @text_marks[ :pair ]
+    end
+
     def find_again( last_search_regexps, direction = @last_search_direction )
       if @last_search_regexps.nil?
         @last_search_regexps = last_search_regexps
