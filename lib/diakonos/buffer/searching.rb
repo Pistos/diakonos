@@ -275,10 +275,26 @@ module Diakonos
 
     def pos_of_next( regexp, start_row, start_col )
       row, col = start_row, start_col
-      col = @lines[ row ].index( regexp, start_col )
+      col = @lines[ row ].index( regexp, col )
       while col.nil? && row < @lines.length - 1
         row += 1
         col = @lines[ row ].index( regexp )
+      end
+      if col
+        [ row, col, Regexp.last_match( 0 ) ]
+      end
+    end
+
+    def pos_of_prev( regexp, start_row, start_col )
+      row, col = start_row, start_col
+      if col < 0
+        row -= 1
+        col = -1
+      end
+      col = @lines[ row ].rindex( regexp, col )
+      while col.nil? && row > 0
+        row -= 1
+        col = @lines[ row ].rindex( regexp )
       end
       if col
         [ row, col, Regexp.last_match( 0 ) ]
@@ -289,20 +305,23 @@ module Diakonos
       c = @lines[ row ][ col ]
       data = CHARACTER_PAIRS[ c ]
       return  if data.nil?
+      d = data[ :partner ]
 
       case data[ :direction ]
       when :forward
-        d = data[ :partner ]
         row, col, char = pos_of_next( /(?:#{c}|#{d})/, row, col + 1 )
-        while char == c
-          # Take care of nested pair first
+        while char == c  # Take care of nested pairs
           row, col = pos_of_pair_match( row, col )
-          # Now keep looking for d (the closing partner)
           row, col, char = pos_of_next( /(?:#{c}|#{d})/, row, col + 1 )
         end
-        [ row, col ]
       when :backward
+        row, col, char = pos_of_prev( /(?:#{c}|#{d})/, row, col - 1 )
+        while char == c  # Take care of nested pairs
+          row, col = pos_of_pair_match( row, col )
+          row, col, char = pos_of_prev( /(?:#{c}|#{d})/, row, col - 1 )
+        end
       end
+      [ row, col ]
     end
 
     def go_to_pair_match
