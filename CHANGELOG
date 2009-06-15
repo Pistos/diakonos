@@ -15,6 +15,7 @@ Diakonos Changelog
 - Textual indication of no shell results now given.
 - Added basic pair (bracket) highlighting.
 - Added go_to_pair_match (Alt-Shift-[).
+- Fixed chmodding in installer.
 
 0.8.9
 

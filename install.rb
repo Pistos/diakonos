@@ -142,8 +142,9 @@ end
           cp_ Dir[ "#{item}/*" ], dir
         else
           cp item, File.join( @dest_dir, dest )
+          dest_dir_installed_file = File.expand_path( File.join( @dest_dir, dest, File.basename( item ) ) )
+          chmod File.stat( item ).mode, dest_dir_installed_file
           installed_file = File.expand_path( File.join( dest, File.basename( item ) ) )
-          chmod File.stat( item ).mode, installed_file
           @installed_files << installed_file
         end
       end
