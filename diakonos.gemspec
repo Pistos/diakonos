@@ -4,7 +4,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
     s.name = 'diakonos'
-    s.version = '0.8.8'
+    s.version = '0.8.10'
     s.summary = 'A usable console-based text editor.'
     s.description = 'Diakonos is a customizable, usable console-based text editor.'
     s.homepage = 'http://purepistos.net/diakonos'
