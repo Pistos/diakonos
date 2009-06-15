@@ -349,10 +349,6 @@ module Diakonos
       end
     end
 
-    def pair_highlighted?
-      !! @text_marks[ :pair ]
-    end
-
     def clear_pair_highlight
       @text_marks[ :pair ] = nil
     end

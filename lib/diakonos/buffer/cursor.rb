@@ -49,11 +49,11 @@ module Diakonos
       @last_screen_y = row - @top_line
       @last_screen_x = new_col - @left_column
 
-      @typing = false if stopped_typing
+      @typing = false  if stopped_typing
       @last_row = row
       @last_col = col
       @last_screen_col = new_col
-      changed = ( @last_row != old_last_row or @last_col != old_last_col )
+      changed = ( @last_row != old_last_row || @last_col != old_last_col )
       if changed
         record_mark_start_and_end
 
@@ -63,13 +63,13 @@ module Diakonos
           removed = true
         end
 
-        pair_was_highlighted = pair_highlighted?
+        old_pair = @text_marks[ :pair ]
         if @settings[ 'view.pairs.highlight' ]
           highlight_pair
-        elsif pair_was_highlighted
+        elsif old_pair
           clear_pair_highlight
         end
-        highlight_changed = pair_was_highlighted ^ pair_highlighted?
+        highlight_changed = old_pair != @text_marks[ :pair ]
 
         if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
           display
