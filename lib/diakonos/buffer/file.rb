@@ -132,7 +132,6 @@ module Diakonos
       end
 
       if ! @modified
-        @modified = true
         fmod = file_modified?
       end
 
@@ -140,6 +139,7 @@ module Diakonos
         reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
       end
 
+      @modified = file_different?
       if ! reverted
         clear_matches
         if do_display
