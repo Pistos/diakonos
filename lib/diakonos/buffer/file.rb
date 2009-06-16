@@ -126,7 +126,7 @@ module Diakonos
       end
     end
 
-    def set_modified( do_display = DO_DISPLAY )
+    def set_modified( do_display = DO_DISPLAY, use_md5 = DONT_USE_MD5 )
       if @read_only
         @diakonos.set_iline "Warning: Modifying a read-only file."
       end
@@ -139,7 +139,7 @@ module Diakonos
         reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
       end
 
-      @modified = file_different?
+      @modified = use_md5 ? file_different? : true
       if ! reverted
         clear_matches
         if do_display
