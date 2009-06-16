@@ -3,6 +3,7 @@ Diakonos Changelog
 
 0.8.10
 
+- Ruby version 1.9+ now required.  (Ruby 1.8 support dropped)
 - Added go_to_char (Alt-N).
 - Added go_to_char_previous (Alt-P).
 - shell command now shows executed command on interaction line.
