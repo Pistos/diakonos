@@ -2,6 +2,9 @@ module Diakonos
 
   class Buffer
 
+    DO_USE_MD5 = true
+    DONT_USE_MD5 = false
+
     def take_snapshot( typing = false )
       do_it = false
       if @typing != typing
@@ -43,7 +46,7 @@ module Diakonos
         @lines = @buffer_states[ @current_buffer_state ]
         cursor_to( @cursor_states[ @current_buffer_state - 1 ][ 0 ], @cursor_states[ @current_buffer_state - 1 ][ 1 ] )
         @diakonos.set_iline "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-        set_modified
+        set_modified DO_DISPLAY, DO_USE_MD5
       end
     end
 
@@ -54,7 +57,7 @@ module Diakonos
         @lines = @buffer_states[ @current_buffer_state ]
         cursor_to( @cursor_states[ @current_buffer_state ][ 0 ], @cursor_states[ @current_buffer_state ][ 1 ] )
         @diakonos.set_iline "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-        set_modified
+        set_modified DO_DISPLAY, DO_USE_MD5
       end
     end
 
