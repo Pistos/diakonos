@@ -16,6 +16,7 @@ Diakonos Changelog
 - Added basic pair (bracket) highlighting.
 - Added go_to_pair_match (Alt-Shift-[).
 - Fixed chmodding in installer.
+- Undo and redo now actually compare file contents to set "modified" flag.
 
 0.8.9
 

@@ -330,7 +330,10 @@ module Diakonos
     def go_to_pair_match
       row, col = pos_of_pair_match
       if row && col
-        cursor_to row, col
+        if cursor_to( row, col )
+          highlight_pair
+          display
+        end
       end
     end
 
@@ -347,10 +350,6 @@ module Diakonos
           @settings[ "lang.#{@language}.format.pair" ] || @settings[ "lang.shared.format.pair" ]
         )
       end
-    end
-
-    def pair_highlighted?
-      !! @text_marks[ :pair ]
     end
 
     def clear_pair_highlight

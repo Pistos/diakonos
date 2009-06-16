@@ -1,4 +1,9 @@
 module Diakonos
+
+  class Diakonos
+    alias_method :loadConfiguration,      :load_configuration
+  end
+
   module Functions
     alias_method :addNamedBookmark,       :add_named_bookmark
     alias_method :anchorSelection,        :anchor_selection
