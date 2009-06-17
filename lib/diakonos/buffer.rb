@@ -496,11 +496,10 @@ module Diakonos
     end
 
     def set_type( type )
-      if type
-        configure( type )
-        display
-        true
-      end
+      return false  if type.nil?
+      configure( type )
+      display
+      true
     end
 
     def word_under_cursor
