@@ -19,6 +19,7 @@ Diakonos Changelog
 - Fixed chmodding in installer.
 - Undo and redo now actually compare file contents to set "modified" flag.
 - Added support for a special 'all' language, whose formats apply no matter the current language.
+- Added dynamic prefix expansion (Alt-E).
 
 0.8.9
 

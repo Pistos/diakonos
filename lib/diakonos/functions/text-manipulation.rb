@@ -49,7 +49,16 @@ module Diakonos
         word = words[ i ]
         b.insert_string word[ partial.length..-1 ]
         b.set_selection( b.last_row, b.last_col, b.last_row, b.last_col + word.length - partial.length )
-        set_iline word.center( Curses::cols )
+        ww = words + words + words
+        n = words.size
+        shown_words = [
+          ww[ n+i-2 ],
+          ww[ n+i-1 ],
+          "   #{ww[ n+i ]}   ",
+          ww[ n+i+1 ],
+          ww[ n+i+2 ],
+        ].compact.uniq
+        set_iline shown_words.join( ' ' ).center( Curses::cols )
       end
     end
 
