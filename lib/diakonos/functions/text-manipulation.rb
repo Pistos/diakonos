@@ -48,7 +48,9 @@ module Diakonos
         end
         word = words[ i ]
         b.insert_string word[ partial.length..-1 ]
-        b.set_selection( b.last_row, b.last_col, b.last_row, b.last_col + word.length - partial.length )
+        r, c = b.last_row, b.last_col
+        b.cursor_to( b.last_row, b.last_col + word.length - partial.length )
+        b.set_selection( r, c, r, c + word.length - partial.length )
         ww = words + words + words
         n = words.size
         middle_word = "   #{ww[ n+i ]}   "
