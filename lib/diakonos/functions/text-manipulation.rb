@@ -68,7 +68,7 @@ module Diakonos
           middle_word,
           ww[ n+i+1 ],
           ww[ n+i+2 ],
-        ].compact.uniq.join( ' ' )
+        ].compact.uniq.reject { |w| w == middle_word.strip }.join( ' ' )
         mi = shown_words.index( middle_word )
         padding = " " * ( Curses::cols / 2 - mi - ( middle_word.length / 2 ) )
         set_iline padding + shown_words
