@@ -61,7 +61,7 @@ module Diakonos
         b.set_selection( r, c, r, c + word.length - partial.length )
         ww = words + words + words
         n = words.size
-        middle_word = "   #{ww[ n+i ]}   "
+        middle_word = ww[ n+i ].center( Curses::cols / 4, ' ' )
         shown_words = [
           ww[ n+i-2 ],
           ww[ n+i-1 ],
