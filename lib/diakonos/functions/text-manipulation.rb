@@ -51,14 +51,17 @@ module Diakonos
         b.set_selection( b.last_row, b.last_col, b.last_row, b.last_col + word.length - partial.length )
         ww = words + words + words
         n = words.size
+        middle_word = "   #{ww[ n+i ]}   "
         shown_words = [
           ww[ n+i-2 ],
           ww[ n+i-1 ],
-          "   #{ww[ n+i ]}   ",
+          middle_word,
           ww[ n+i+1 ],
           ww[ n+i+2 ],
-        ].compact.uniq
-        set_iline shown_words.join( ' ' ).center( Curses::cols )
+        ].compact.uniq.join( ' ' )
+        mi = shown_words.index( middle_word )
+        padding = " " * ( Curses::cols / 2 - mi - ( middle_word.length / 2 ) )
+        set_iline padding + shown_words
       end
     end
 
