@@ -103,6 +103,11 @@ module Diakonos
       end
     end
 
+    def set_selection( start_row, start_col, end_row, end_col )
+      @text_marks[ :selection ] = TextMark.new( start_row, start_col, end_row, end_col, @selection_formatting )
+      @changing_selection = false
+    end
+
     def anchor_selection( row = @last_row, col = @last_col, do_display = DO_DISPLAY )
       @mark_anchor = ( @mark_anchor or Hash.new )
       @mark_anchor[ "row" ] = row

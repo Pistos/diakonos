@@ -27,14 +27,29 @@ module Diakonos
     end
 
     def complete_word
+      b = @current_buffer
+      if b.selecting?
+        old_word = @current_buffer.word_before_cursor
+        b.delete_selection
+      end
       partial = @current_buffer.word_before_cursor
-      return if partial.nil?
+      return  if partial.nil?
 
       words = @buffers.values.collect { |b| b.words }.flatten
       words = words.grep( /^#{Regexp.escape(partial)}./ ).sort
       if words.any?
-        @current_buffer.insert_and_select words[ 0 ][ partial.length..-1 ]
-        set_iline words[ 0 ].center( Curses::cols )
+        if old_word
+          i = words.find_index { |w| w == old_word } + 1
+          if i == words.size
+            i = 0
+          end
+        else
+          i = 0
+        end
+        word = words[ i ]
+        b.insert_string word[ partial.length..-1 ]
+        b.set_selection( b.last_row, b.last_col, b.last_row, b.last_col + word.length - partial.length )
+        set_iline word.center( Curses::cols )
       end
     end
 

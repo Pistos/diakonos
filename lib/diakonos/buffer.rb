@@ -191,13 +191,6 @@ module Diakonos
       set_modified
     end
 
-    def insert_and_select( text )
-      delete_selection
-      anchor_selection
-      insert_string text
-      cursor_to( @last_row, @last_col + text.length, DO_DISPLAY )
-    end
-
     def join_lines( row = @last_row, strip = DONT_STRIP_LINE )
       take_snapshot( TYPING )
       next_line = @lines.delete_at( row + 1 )
@@ -525,17 +518,17 @@ module Diakonos
     end
 
     def word_before_cursor
-        word = nil
+      word = nil
 
-        @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
-            last_match = Regexp.last_match
-            if last_match.begin( 0 ) <= @last_col and @last_col <= last_match.end( 0 )
-                word = match_text
-                break
-            end
+      @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
+        last_match = Regexp.last_match
+        if last_match.begin( 0 ) <= @last_col && @last_col <= last_match.end( 0 )
+          word = match_text
+          break
         end
+      end
 
-        word
+      word
     end
 
     def words
