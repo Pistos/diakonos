@@ -121,21 +121,21 @@ module Diakonos
     def set_language( language )
       @settings = @diakonos.settings
       @language = language
-      @token_regexps = ( @diakonos.token_regexps[ @language ] or Hash.new )
-      @close_token_regexps = ( @diakonos.close_token_regexps[ @language ] or Hash.new )
-      @token_formats = ( @diakonos.token_formats[ @language ] or Hash.new )
+      @token_regexps = ( @diakonos.token_regexps[ @language ] || Hash.new )
+      @close_token_regexps = ( @diakonos.close_token_regexps[ @language ] || Hash.new )
+      @token_formats = ( @diakonos.token_formats[ @language ] || Hash.new )
       @indenters = @diakonos.indenters[ @language ]
       @unindenters = @diakonos.unindenters[ @language ]
       @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
       @closers = @diakonos.closers[ @language ] || Hash.new
       @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
-      @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] or 4 )
+      @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] || 4 )
       @indent_roundup = @settings[ "lang.#{@language}.indent.roundup" ].nil? ? true : @settings[ "lang.#{@language}.indent.roundup" ]
       @indent_closers = @settings[ "lang.#{@language}.indent.closers" ].nil? ? false : @settings[ "lang.#{@language}.indent.closers" ]
-      @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] or Curses::A_NORMAL )
-      @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] or Curses::A_REVERSE )
-      @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] or "" )
-      @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] or DEFAULT_TAB_SIZE )
+      @default_formatting = ( @settings[ "lang.#{@language}.format.default" ] || Curses::A_NORMAL )
+      @selection_formatting = ( @settings[ "lang.#{@language}.format.selection" ] || Curses::A_REVERSE )
+      @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] || "" )
+      @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] || DEFAULT_TAB_SIZE )
     end
     protected :set_language
 
