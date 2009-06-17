@@ -35,16 +35,19 @@ module Diakonos
       partial = @current_buffer.word_before_cursor
       return  if partial.nil?
 
-      words = @buffers.values.collect { |b| b.words }.flatten
-      words = words.grep( /^#{Regexp.escape(partial)}./ ).sort
-      if words.any?
+      all_words = @buffers.values.collect { |b| b.words( /^#{Regexp.escape(partial)}./ ) }.flatten
+      if all_words.any?
+        words = all_words.uniq.sort
         if old_word
           i = words.find_index { |w| w == old_word } + 1
           if i == words.size
             i = 0
           end
         else
-          i = 0
+          freq_word = words.sort_by { |word|
+            all_words.find_all { |w| w == word }.size
+          }[ -1 ]
+          i = words.find_index { |w| w == freq_word }
         end
         word = words[ i ]
         b.insert_string word[ partial.length..-1 ]

@@ -531,8 +531,9 @@ module Diakonos
       word
     end
 
-    def words
-      @lines.join( ' ' ).scan( WORD_REGEXP ).uniq
+    def words( filter_regexp = nil )
+      w = @lines.join( ' ' ).scan( WORD_REGEXP )
+      filter_regexp ? w.grep( filter_regexp ) : w
     end
 
   end
