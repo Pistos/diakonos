@@ -26,7 +26,7 @@ module Diakonos
       @current_buffer.comment_out
     end
 
-    def complete_word
+    def complete_word( direction = :down )
       b = @current_buffer
       if b.selecting?
         old_word = b.word_before_cursor
@@ -44,7 +44,8 @@ module Diakonos
         words = all_words.uniq.sort
         if old_word
           i = (
-            1 + words.find_index { |w|
+            ( direction == :up ? words.size - 1 : 1 ) +
+            words.find_index { |w|
               w == old_word
             }
           ) % words.size
