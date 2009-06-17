@@ -29,13 +29,17 @@ module Diakonos
     def complete_word
       b = @current_buffer
       if b.selecting?
-        old_word = @current_buffer.word_before_cursor
+        old_word = b.word_before_cursor
         b.delete_selection
       end
-      partial = @current_buffer.word_before_cursor
+      partial = b.word_before_cursor
       return  if partial.nil?
 
-      all_words = @buffers.values.collect { |b| b.words( /^#{Regexp.escape(partial)}./ ) }.flatten
+      all_words = @buffers.values.find_all { |b_|
+        b_.original_language == b.original_language
+      }.collect { |b_|
+        b_.words( /^#{Regexp.escape(partial)}./ )
+      }.flatten
       if all_words.any?
         words = all_words.uniq.sort
         if old_word
