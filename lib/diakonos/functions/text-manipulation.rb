@@ -39,10 +39,11 @@ module Diakonos
       if all_words.any?
         words = all_words.uniq.sort
         if old_word
-          i = words.find_index { |w| w == old_word } + 1
-          if i == words.size
-            i = 0
-          end
+          i = (
+            1 + words.find_index { |w|
+              w == old_word
+            }
+          ) % words.size
         else
           freq_word = words.sort_by { |word|
             all_words.find_all { |w| w == word }.size
