@@ -2,7 +2,7 @@
 
 # == Diakonos
 #
-# A usable console text editor.
+# A Linux console text editor for the masses.
 # :title: Diakonos
 #
 # Author:: Pistos (irc.freenode.net)
@@ -20,22 +20,39 @@ require 'English'
 require 'set'
 require 'yaml'
 require 'digest/md5'
+require 'timeout'
 
-require 'diakonos/object'
-require 'diakonos/enumerable'
-require 'diakonos/regexp'
-require 'diakonos/sized-array'
-require 'diakonos/hash'
+require 'diakonos/core-ext/object'
+require 'diakonos/core-ext/enumerable'
+require 'diakonos/core-ext/regexp'
+require 'diakonos/core-ext/hash'
+require 'diakonos/core-ext/string'
+require 'diakonos/core-ext/fixnum'
+require 'diakonos/core-ext/bignum'
 require 'diakonos/buffer-hash'
-require 'diakonos/array'
-require 'diakonos/string'
-require 'diakonos/fixnum'
-require 'diakonos/bignum'
+require 'diakonos/sized-array'
 
+require 'diakonos/version'
+require 'diakonos/installation'
 require 'diakonos/config'
 require 'diakonos/functions'
+require 'diakonos/functions/basics'
+require 'diakonos/functions/bookmarking'
+require 'diakonos/functions/buffers'
+require 'diakonos/functions/clipboard'
+require 'diakonos/functions/cursor'
+require 'diakonos/functions/grepping'
+require 'diakonos/functions/indentation'
+require 'diakonos/functions/search'
+require 'diakonos/functions/selection'
+require 'diakonos/functions/sessions'
+require 'diakonos/functions/shell'
+require 'diakonos/functions/tags'
+require 'diakonos/functions/text-manipulation'
+require 'diakonos/functions-deprecated'
 require 'diakonos/help'
 require 'diakonos/display'
+require 'diakonos/display/format'
 require 'diakonos/interaction'
 require 'diakonos/hooks'
 require 'diakonos/keying'
@@ -45,28 +62,29 @@ require 'diakonos/buffer-management'
 require 'diakonos/sessions'
 require 'diakonos/grep'
 
-require 'diakonos/keycode'
 require 'diakonos/text-mark'
 require 'diakonos/bookmark'
 require 'diakonos/ctag'
 require 'diakonos/finding'
 require 'diakonos/buffer'
-require 'diakonos/window'
+require 'diakonos/buffer/bookmarking'
+require 'diakonos/buffer/cursor'
+require 'diakonos/buffer/delete'
+require 'diakonos/buffer/display'
+require 'diakonos/buffer/indentation'
+require 'diakonos/buffer/file'
+require 'diakonos/buffer/searching'
+require 'diakonos/buffer/selection'
+require 'diakonos/buffer/undo'
 require 'diakonos/clipboard'
+require 'diakonos/clipboard-klipper'
+require 'diakonos/clipboard-xclip'
 require 'diakonos/readline'
 
 require 'diakonos/vendor/fuzzy_file_finder'
 
-#$profiling = true
-
-#if $profiling
-  #require 'ruby-prof'
-#end
 
 module Diakonos
-
-  VERSION       = '0.8.7'
-  LAST_MODIFIED = 'December 11, 2008'
 
   DONT_ADJUST_ROW       = false
   ADJUST_ROW            = true
@@ -93,18 +111,21 @@ module Diakonos
 
     attr_reader :diakonos_home, :script_dir, :clipboard,
       :list_filename, :hooks, :indenters, :unindenters, :closers,
-      :last_commands, :there_was_non_movement, :do_display
+      :last_commands, :there_was_non_movement, :do_display, :testing
 
     include ::Diakonos::Functions
 
     def initialize( argv = [] )
-      @diakonos_home = ( ( ENV[ 'HOME' ] or '' ) + '/.diakonos' ).subHome
+      @diakonos_home = File.expand_path( ( ENV[ 'HOME' ] || '' ) + '/.diakonos' )
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
-      @session_dir = "#{@diakonos_home}/sessions"
-      mkdir @session_dir
-      new_session "#{@session_dir}/#{Process.pid}"
+      initialize_session
+
+      @files = Array.new
+      @read_only_files = Array.new
+      @config_filename = nil
+      parse_options argv
 
       init_help
 
@@ -114,19 +135,14 @@ module Diakonos
       @help_filename  = "#{@help_dir}/about-help.dhf"
       @error_filename = "#{@diakonos_home}/diakonos.err"
 
-      @files = Array.new
-      @read_only_files = Array.new
-      @config_filename = nil
-
-      parseOptions argv
-
-      @win_main        = nil
-      @win_context     = nil
-      @win_status      = nil
-      @win_interaction = nil
+      @win_main         = nil
+      @win_context      = nil
+      @win_status       = nil
+      @win_interaction  = nil
+      @win_line_numbers = nil
       @buffers = BufferHash.new
 
-      loadConfiguration
+      load_configuration
 
       @quitting    = false
       @untitled_id = 0
@@ -173,60 +189,69 @@ module Diakonos
     end
 
     def mkdir( dir )
-      if not FileTest.exists? dir
+      if ! FileTest.exists?( dir )
         Dir.mkdir dir
       end
     end
 
-    def parseOptions( argv )
+    def parse_options( argv )
       @post_load_script = ""
       while argv.length > 0
         arg = argv.shift
         case arg
-        when '-h', '--help'
-          printUsage
-          exit 1
-        when '-ro'
-          filename = argv.shift
-          if filename.nil?
-            printUsage
-            exit 1
-          else
-            @read_only_files.push filename
-          end
         when '-c', '--config'
           @config_filename = argv.shift
           if @config_filename.nil?
-            printUsage
+            print_usage
             exit 1
           end
         when '-e', '--execute'
           post_load_script = argv.shift
           if post_load_script.nil?
-            printUsage
+            print_usage
             exit 1
           else
             @post_load_script << "\n#{post_load_script}"
           end
+        when '-h', '--help'
+          print_usage
+          exit 1
         when '-m', '--open-matching'
           regexp = argv.shift
           files = `egrep -rl '#{regexp}' *`.split( /\n/ )
           if files.any?
-            @files.concat files
+            @files.concat( files.map { |f| session_file_hash_for f } )
             script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
             @post_load_script << script
           end
+        when '-ro'
+          filename = argv.shift
+          if filename.nil?
+            print_usage
+            exit 1
+          else
+            @read_only_files.push session_file_hash_for( filename )
+          end
         when '-s', '--load-session'
           @session_to_load = session_filepath_for( argv.shift )
+        when '--test', '--testing'
+          @testing = true
+        when '--uninstall'
+          uninstall
+        when '--uninstall-without-confirmation'
+          uninstall false
+        when '--version'
+          puts "Diakonos #{::Diakonos::VERSION} (#{::Diakonos::LAST_MODIFIED})"
+          exit 0
         else
           # a name of a file to open
-          @files.push arg
+          @files.push session_file_hash_for( arg )
         end
       end
     end
-    protected :parseOptions
+    protected :parse_options
 
-    def printUsage
+    def print_usage
       puts "Usage: #{$0} [options] [file] [file...]"
       puts "\t--help\tDisplay usage"
       puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
@@ -234,86 +259,36 @@ module Diakonos
       puts "\t-m, --open-matching <regular expression>\tOpen all matching files under current directory"
       puts "\t-ro <file>\tLoad file as read-only"
       puts "\t-s, --load-session <session identifier>\tLoad a session"
+      puts "\t--uninstall[-without-confirmation]\tUninstall Diakonos"
     end
-    protected :printUsage
+    protected :print_usage
 
-    def clearNonMovementFlag
+    def clear_non_movement_flag
       @there_was_non_movement = false
     end
 
     # -----------------------------------------------------------------------
 
     def start
-      initializeDisplay
+      require 'diakonos/window'
+
+      initialize_display
 
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
         help_key = 'Shift-F1'
       else
         help_key = 'F1'
       end
-      setILine "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
+      set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
-      if @session_to_load
-        pid_session = @session
-        @session = nil
-        session_path = session_filepath_for( @session_to_load )
-        load_session_data session_path
-        if @session
-          @files.concat @session[ 'files' ]
-        else
-          new_session session_path
-        end
-      else
-        session_buffers = []
-
-        session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
-        pids = session_files.map { |sf| sf[ %r{/(\d+)$}, 1 ].to_i }
-        pids.each do |pid|
-          begin
-            Process.kill 0, pid
-            session_files.reject! { |sf| pid_session? sf }
-          rescue Errno::ESRCH
-            # Process is no longer alive, so we consider the session stale
-          end
-        end
-
-        session_files.each_with_index do |session_file,index|
-          session_buffers << openFile( session_file )
-
-          choice = getChoice(
-            "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
-            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ]
-          )
-
-          case choice
-          when CHOICE_YES
-            load_session_data session_file
-            if @session
-              @files.concat @session[ 'files' ]
-              File.delete session_file
-              break
-            end
-          when CHOICE_DELETE
-            File.delete session_file
-          end
-        end
-
-        if session_buffers.empty? and @files.empty? and @settings[ 'session.default_session' ]
-          session_file = session_filepath_for( @settings[ 'session.default_session' ] )
-          if File.exist? session_file
-            load_session_data session_file
-            if @session
-              @files.concat @session[ 'files' ]
-            end
-          end
-        end
-      end
+      session_buffers = session_startup
+      session_buffer_number = @session[ 'current_buffer' ] || 1
 
       Dir[ "#{@script_dir}/*" ].each do |script|
         begin
           require script
         rescue Exception => e
-          showException(
+          show_exception(
             e,
             [
               "There is a syntax error in the script.",
@@ -327,69 +302,100 @@ module Diakonos
       end
 
       num_opened = 0
-      if @files.length == 0 and @read_only_files.length == 0
-        num_opened += 1 if openFile
+      if @files.length == 0 && @read_only_files.length == 0
+        if open_file
+          num_opened += 1
+        end
       else
         @files.each do |file|
-          num_opened += 1 if openFile file
+          if open_file( file[ 'filepath' ], file )
+            num_opened += 1
+          end
         end
         @read_only_files.each do |file|
-          num_opened += 1 if openFile( file, Buffer::READ_ONLY )
+          if open_file( file[ 'filepath' ], 'read_only' => true )
+            num_opened += 1
+          end
         end
       end
 
       if session_buffers
         session_buffers.each do |buffer|
-          closeFile buffer
+          close_file buffer
         end
       end
 
       if num_opened > 0
-        switchToBufferNumber 1
+        switch_to_buffer_number 1
 
-        updateStatusLine
-        updateContextLine
+        update_status_line
+        update_context_line
 
         if @post_load_script
           eval @post_load_script
         end
 
-        runHookProcs :after_startup
+        run_hook_procs :after_startup
+        switch_to_buffer_number session_buffer_number
 
-        if not @settings[ 'suppress_welcome' ]
-          openFile "#{@help_dir}/welcome.dhf"
+        if ! @settings[ 'suppress_welcome' ]
+          open_file "#{@help_dir}/welcome.dhf"
         end
 
         begin
           # Main keyboard loop.
-          while not @quitting
-            processKeystroke
+          while ! @quitting
+            process_keystroke
             @win_main.refresh
           end
         rescue SignalException => e
-          debugLog "Terminated by signal (#{e.message})"
+          debug_log "Terminated by signal (#{e.message})"
         end
 
-        if pid_session?
-          File.delete @session[ 'filename' ]
-        end
+        cleanup_display
+        cleanup_session
 
         @debug.close
       end
     end
 
-    def showClips
-      clip_filename = @diakonos_home + "/clips.txt"
-      File.open( clip_filename, "w" ) do |f|
-        @clipboard.each do |clip|
-          f.puts clip
-          f.puts "---------------------------"
+    def uninstall( confirm = true )
+      inst = ::Diakonos::INSTALL_SETTINGS[ :installed ]
+
+      if confirm
+        puts inst[ :files ].sort.join( "\n" )
+        puts
+        puts inst[ :dirs ].sort.map { |d| "#{d}/" }.join( "\n" )
+        puts
+        puts "The above files will be removed.  The above directories will be removed if they are empty.  Proceed?  (y/n)"
+        answer = $stdin.gets
+        case answer
+        when /^y/i
+          puts "Deleting..."
+        else
+          puts "Uninstallation aborted."
+          exit 1
         end
       end
-      openFile clip_filename
+
+      require 'fileutils'
+      inst[ :files ].each do |f|
+        FileUtils.rm f
+      end
+      inst[ :dirs ].sort { |d1,d2| d2.length <=> d1.length }.each do |d|
+        begin
+          FileUtils.rmdir d
+        rescue Errno::ENOTEMPTY
+        end
+        if File.exists? d
+          $stderr.puts "(#{d} not removed)"
+        end
+      end
+
+      exit 0
     end
 
-    def getLanguageFromName( name )
+    def get_language_from_name( name )
       retval = nil
       @filemasks.each do |language,filemask|
         if name =~ filemask
@@ -400,7 +406,7 @@ module Diakonos
       retval
     end
 
-    def getLanguageFromShaBang( first_line )
+    def get_language_from_shabang( first_line )
       retval = nil
       @bangmasks.each do |language,bangmask|
         if first_line =~ bangmask
@@ -411,7 +417,7 @@ module Diakonos
       retval
     end
 
-    def showException( e, probable_causes = [ "Unknown" ] )
+    def show_exception( e, probable_causes = [ "Unknown" ] )
       begin
         File.open( @error_filename, "w" ) do |f|
           f.puts "Diakonos Error:"
@@ -430,92 +436,34 @@ module Diakonos
           f.puts "----------------------------------------------------"
           f.puts e.backtrace
         end
-        openFile( @error_filename )
+        open_file @error_filename
       rescue Exception => e2
-        debugLog "EXCEPTION: #{e.message}"
-        debugLog "\t#{e.backtrace}"
+        debug_log "EXCEPTION: #{e.message}"
+        debug_log "\t#{e.backtrace}"
       end
     end
 
-    def subShellVariables( string )
-      return nil if string.nil?
-
-      retval = string
-      retval = retval.subHome
-
-      # Current buffer filename
-      retval.gsub!( /\$f/, ( $1 or "" ) + ( @current_buffer.name or "" ) )
-
-      # space-separated list of all buffer filenames
-      name_array = Array.new
-      @buffers.each_value do |b|
-        name_array.push b.name
-      end
-      retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )
-
-      # Get user input, sub it in
-      if retval =~ /\$i/
-        user_input = getUserInput( "Argument: ", @rlh_shell )
-        retval.gsub!( /\$i/, user_input )
-      end
-
-      # Current clipboard text
-      if retval =~ /\$c/
-        clip_filename = @diakonos_home + "/clip.txt"
-        File.open( clip_filename, "w" ) do |clipfile|
-          if @clipboard.clip
-            clipfile.puts( @clipboard.clip.join( "\n" ) )
-          end
-        end
-        retval.gsub!( /\$c/, clip_filename )
-      end
-
-      # Current klipper (KDE clipboard) text
-      if retval =~ /\$k/
-        clip_filename = @diakonos_home + "/clip.txt"
-        File.open( clip_filename, "w" ) do |clipfile|
-          clipfile.puts( `dcop klipper klipper getClipboardContents` )
-        end
-        retval.gsub!( /\$k/, clip_filename )
-      end
-
-      # Currently selected text
-      if retval =~ /\$s/
-        text_filename = @diakonos_home + "/selected.txt"
-
-        File.open( text_filename, "w" ) do |textfile|
-          selected_text = @current_buffer.selected_text
-          if selected_text
-            textfile.puts( selected_text.join( "\n" ) )
-          end
-        end
-        retval.gsub!( /\$s/, text_filename )
-      end
-
-      retval
-    end
-
-    def startRecordingMacro( name = nil )
+    def start_recording_macro( name = nil )
       return if @macro_history
       @macro_name = name
       @macro_history = Array.new
       @macro_input_history = Array.new
-      setILine "Started macro recording."
+      set_iline "Started macro recording."
     end
-    protected :startRecordingMacro
+    protected :start_recording_macro
 
-    def stopRecordingMacro
-      @macro_history.pop  # Remove the stopRecordingMacro command itself
+    def stop_recording_macro
+      @macro_history.pop  # Remove the stop_recording_macro command itself
       @macros[ @macro_name ] = [ @macro_history, @macro_input_history ]
       @macro_history = nil
       @macro_input_history = nil
-      setILine "Stopped macro recording."
+      set_iline "Stopped macro recording."
     end
-    protected :stopRecordingMacro
+    protected :stop_recording_macro
 
-    def loadTags
+    def load_tags
       @tags = Hash.new
-      if @current_buffer and @current_buffer.name
+      if @current_buffer && @current_buffer.name
         path = File.expand_path( File.dirname( @current_buffer.name ) )
         tagfile = path + "/tags"
       else
@@ -534,79 +482,44 @@ module Diakonos
           @tags[ tag ].push CTag.new( file, command, kind, rest )
         end
       else
-        setILine "(tags file not found)"
+        set_iline "(tags file not found)"
       end
-    end
-
-    def write_to_clip_file( text )
-      clip_filename = @diakonos_home + "/clip.txt"
-      File.open( clip_filename, "w" ) do |f|
-        f.print text
-      end
-      clip_filename
-    end
-
-    # Returns true iff some text was copied to klipper.
-    def send_to_klipper( text )
-      return false if text.nil?
-
-      clip_filename = write_to_clip_file( text.join( "\n" ) )
-      # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
-      # Thank you to pgas from irc.freenode.net#bash for help with this.
-      `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
-      true
-    end
-
-    # Worker method for find function.
-    def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
-      return if( regexp_source.nil? or regexp_source.empty? )
-
-      rs_array = regexp_source.newlineSplit
-      regexps = Array.new
-      exception_thrown = nil
-
-      rs_array.each do |source|
-        begin
-          warning_verbosity = $VERBOSE
-          $VERBOSE = nil
-          regexps << Regexp.new(
-            source,
-            case_sensitive ? nil : Regexp::IGNORECASE
-          )
-          $VERBOSE = warning_verbosity
-        rescue RegexpError => e
-          if not exception_thrown
-            exception_thrown = e
-            source = Regexp.escape( source )
-            retry
-          else
-            raise e
-          end
-        end
-      end
-
-      if replacement == ASK_REPLACEMENT
-        replacement = getUserInput( "Replace with: ", @rlh_search )
-      end
-
-      if exception_thrown and not quiet
-        setILine( "Searching literally; #{exception_thrown.message}" )
-      end
-
-      @current_buffer.find(
-        regexps,
-        :direction    => direction,
-        :replacement  => replacement,
-        :starting_row => starting_row,
-        :starting_col => starting_col,
-        :quiet        => quiet
-      )
-      @last_search_regexps = regexps
     end
 
     def settings
       @settings.merge @session[ 'settings' ]
     end
+
+    def escape_quotes( str )
+      temp = ''
+      str.each_byte do |b|
+        if b == 39
+          temp << 39
+          temp << 92
+          temp << 39
+        end
+        temp << b
+      end
+      temp
+    end
+
+    def direction_of( str, default = :down )
+      case str
+      when "up"
+        :up
+      when /other/
+        :opposite
+      when "down"
+        :down
+      when "forward"
+        :forward
+      when "backward"
+        :backward
+      else
+        default
+      end
+    end
+
   end
 
 end

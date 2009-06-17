@@ -1,9 +1,23 @@
 # Configuring Diakonos
 
-Press <F12> to open the Diakonos configuration file.  Read the comments in the
-file for information on the individual settings.  Edit the file as you like.
-When you save the file, your changes take effect immediately in your current
-session.
+## Personal configuration
+
+Press <F12> to open your personal Diakonos configuration file, which is
+~/.diakonos/diakonos.conf .  Read the comments in the file for information on
+the individual settings.  Edit the file as you like.  When you save the file,
+your changes take effect immediately in your current session.
+
+Your personal configuration remains separate from the system-wide
+configuration, located elsewhere.  Your personal settings take precedence over
+system configuration where there is any difference or discrepancy.
+
+## Saving configuration changes
+
+Since configuring Diakonos is nothing but editing and saving the configuration
+file, to stop configuring, simply switch buffers or close the configuration
+file (with <Ctrl-W>).
+
+## Configuration file format
 
 Each line in the configuration file has a setting identifier and the value of
 the setting, for example:
@@ -17,12 +31,14 @@ permitted, but may not be in future versions.
 Comments can be placed in the file by starting a line with an octothorpe
 character (#).
 
+## Including other configuration files
+
 You can create and include custom configuration files which remain distinct
-from the standard default configuration file.  You can place these files
+from your standard default configuration file.  You can place these files
 wherever you like, but it is recommended to put them in ~/.diakonos.  Then,
 place a line like this at the bottom of the default configuration file:
 
-include ~/.diakonos/pistos.conf
+include ~/.diakonos/extra.conf
 
 If a setting is specified again (whether in the same file, or an included
 file), it overrides the previous setting given higher up in the configuration
@@ -30,8 +46,22 @@ file(s).  Note that editing and saving custom configuration files will not
 cause the changes to be automatically loaded like they are with the default
 configuration file.  To reload all configuration files, press <F11>.
 
-Since configuring Diakonos is nothing but editing and saving the configuration
-file, to stop configuring, simply switch buffers or close the configuration
-file (with <Ctrl-W>).
+## Configuration inheritance
+
+Configuration settings can be inherited (cascaded).  Simply use an equals sign
+(=) to set one setting to the value of another.
+
+one.setting = another.setting
+
+For an example, have a look at the Ruby language definition in the default
+configuration file.  See how the shared settings are defined earlier in the
+file, then used later on in the Ruby language configuration.
+
+Inheritance will work for any setting, not just formatting.  The important
+thing to remember is that Diakonos will parse configuration files top to
+bottom, and visit each included file in the order the include directives are
+encountered, with a depth-first strategy.  So you should define ancestor
+settings before descendant settings.
+
 
 Tags: diakonos config configure configuration configuring setup setting settings options option preferences

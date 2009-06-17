@@ -1,8 +1,8 @@
 module Diakonos
   class Diakonos
     attr_reader :current_buffer
-    
-    def switchTo( buffer )
+
+    def switch_to( buffer )
       switched = false
       if buffer
         @buffer_stack -= [ @current_buffer ]
@@ -10,29 +10,30 @@ module Diakonos
           @buffer_stack.push @current_buffer
         end
         @current_buffer = buffer
-        runHookProcs( :after_buffer_switch, buffer )
-        updateStatusLine
-        updateContextLine
+        @session[ 'current_buffer' ] = buffer_to_number( buffer )
+        run_hook_procs( :after_buffer_switch, buffer )
+        update_status_line
+        update_context_line
         buffer.display
         switched = true
       end
-      
+
       switched
     end
-    protected :switchTo
-    
+    protected :switch_to
+
     def remember_buffer( buffer )
       if @buffer_history.last != buffer
         @buffer_history << buffer
         @buffer_history_pointer = @buffer_history.size - 1
       end
     end
-    
+
     # The given buffer_number should be 1-based, not zero-based.
     # Returns nil if no such buffer exists.
-    def bufferNumberToName( buffer_number )
+    def buffer_number_to_name( buffer_number )
       return nil if buffer_number < 1
-      
+
       number = 1
       buffer_name = nil
       @buffers.each_key do |name|
@@ -47,7 +48,7 @@ module Diakonos
 
     # The returned value is 1-based, not zero-based.
     # Returns nil if no such buffer exists.
-    def bufferToNumber( buffer )
+    def buffer_to_number( buffer )
       number = 1
       buffer_number = nil
       @buffers.each_value do |b|
@@ -62,12 +63,12 @@ module Diakonos
 
     def show_buffer_file_diff( buffer = @current_buffer )
       current_text_file = @diakonos_home + '/current-buffer'
-      buffer.saveCopy( current_text_file )
+      buffer.save_copy( current_text_file )
       `#{@settings[ 'diff_command' ]} #{current_text_file} #{buffer.name} > #{@diff_filename}`
-      diff_buffer = openFile( @diff_filename )
+      diff_buffer = open_file( @diff_filename )
       yield diff_buffer
-      closeFile diff_buffer
+      close_file diff_buffer
     end
-    
+
   end
 end

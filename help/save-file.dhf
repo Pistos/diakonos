@@ -1,6 +1,10 @@
 # Saving a File
 
-Press <Ctrl-S> to save the current file.  Press <Alt-S> to save the current
+Press <Ctrl-S> to save the current file.  Press <Alt-Shift-S> to save the current
 file under a different filename or path.
 
-Tags: save saving file filename as save-as
+The strip_trailing_whitespace_on_save setting controls whether trailing
+whitespace is removed from the lines of a file when a buffer is saved.  The
+default configuration has this setting turned on.
+
+Tags: save saving file filename as save-as trailing white space whitespace

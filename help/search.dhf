@@ -39,7 +39,9 @@ Press <Ctrl-F> to perform a case-insensitive search for text.  You will be
 prompted for what to search for.  As you type your search expression,
 matching text will be highlighted.  You can try it right now as you read this
 document!  Press <Ctrl-F> and then type the word "text".  Press <Esc> to abort
-the search and return the cursor to where it was when the search began.
+the search.  If the find.return_on_abort setting is set to true, then the
+cursor will return to where it was when the search began.  Otherwise, it will
+remain where the last search brought it.
 
 What you type will be interpreted as a regular expression.  (If you don't know
 what a regular expression is, search the Internet, or read the Wikipedia

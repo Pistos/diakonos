@@ -1,0 +1,16 @@
+# Code Block Navigation
+
+Using <Ctrl-PageDown>, you can jump to the next code block of the same
+indentation level as the current line.  <Ctrl-PageUp> goes back in the opposite
+direction (up or previous block).  You might use this to easily browse: the
+methods of a class; or the different 'when' clauses of a Ruby case expression; or
+the components of an if-elsif-else tree; or the rules of a CSS stylesheet; and
+so on.  Diakonos will automatically limit the extent of the navigation, so if
+you start your browsing within an if-elsif tree, your cursor won't jump outside
+that tree if you press <Ctrl-PageDown> too many times.
+
+<Alt-PageDown> brings the cursor one block level deeper; <Alt-PageUp> brings
+you out one level.
+
+
+Tags: code block navigation navigate move moving movement jump jumping cursor

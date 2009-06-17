@@ -3,41 +3,55 @@ module Diakonos
   DONT_REDRAW           = false
 
   class Diakonos
-    attr_reader :win_main, :display_mutex
+    attr_reader :win_main, :display_mutex, :win_line_numbers
 
-    def initializeDisplay
-      @win_main.close if @win_main
-      @win_status.close if @win_status
-      @win_interaction.close if @win_interaction
-      @win_context.close if @win_context
+    def cleanup_display
+      return  if @testing
 
-      Curses::init_screen
-      Curses::nonl
-      Curses::raw
-      Curses::noecho
+      @win_main.close          if @win_main
+      @win_status.close        if @win_status
+      @win_interaction.close   if @win_interaction
+      @win_context.close       if @win_context
+      @win_line_numbers.close  if @win_line_numbers
 
-      if Curses::has_colors?
-        Curses::start_color
-        Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
-        Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
-        @colour_pairs.each do |cp|
-          Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
+      Curses::close_screen
+    end
+
+    def initialize_display
+      if ! @testing
+        cleanup_display
+
+        Curses::init_screen
+        Curses::nonl
+        Curses::raw
+        Curses::noecho
+
+        if Curses::has_colors?
+          Curses::start_color
+          Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
+          Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
+          @colour_pairs.each do |cp|
+            Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
+          end
         end
       end
 
-      @win_main = Curses::Window.new( main_window_height, Curses::cols, 0, 0 )
-      @win_main.keypad( true )
-      @win_status = Curses::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
-      @win_status.keypad( true )
+      if settings[ 'view.line_numbers' ]
+        @win_line_numbers = ::Diakonos::Window.new( main_window_height, settings[ 'view.line_numbers.width' ], 0, 0 )
+        @win_main = ::Diakonos::Window.new( main_window_height, Curses::cols - settings[ 'view.line_numbers.width' ], 0, settings[ 'view.line_numbers.width' ] )
+      else
+        @win_main = ::Diakonos::Window.new( main_window_height, Curses::cols, 0, 0 )
+        @win_line_numbers = nil
+      end
+      @win_status = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
       @win_status.attrset @settings[ 'status.format' ]
-      @win_interaction = Curses::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
-      @win_interaction.keypad( true )
+      @win_interaction = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
 
       if @settings[ 'context.visible' ]
         if @settings[ 'context.combined' ]
@@ -45,37 +59,39 @@ module Diakonos
         else
           pos = 3
         end
-        @win_context = Curses::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
-        @win_context.keypad( true )
+        @win_context = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
       else
         @win_context = nil
       end
 
+      if ! @testing
+        @win_main.keypad( true )
+        @win_status.keypad( true )
+        @win_interaction.keypad( true )
+        if @win_line_numbers
+          @win_line_numbers.keypad( true )
+        end
+        if @win_context
+          @win_context.keypad( true )
+        end
+      end
+
       @win_interaction.refresh
       @win_main.refresh
+      if @win_line_numbers
+        @win_line_numbers.refresh
+      end
 
       @buffers.each_value do |buffer|
-        buffer.reset_win_main
-      end
-    end
-
-    def getTokenRegexp( hash, arg, match )
-      language = match[ 1 ]
-      token_class = match[ 2 ]
-      case_insensitive = ( match[ 3 ] != nil )
-      hash[ language ] = ( hash[ language ] or Hash.new )
-      if case_insensitive
-        hash[ language ][ token_class ] = Regexp.new( arg, Regexp::IGNORECASE )
-      else
-        hash[ language ][ token_class ] = Regexp.new arg
+        buffer.reset_display
       end
     end
 
     def redraw
-      loadConfiguration
-      initializeDisplay
-      updateStatusLine
-      updateContextLine
+      load_configuration
+      initialize_display
+      update_status_line
+      update_context_line
       @current_buffer.display
     end
 
@@ -95,7 +111,8 @@ module Diakonos
     end
 
     # Display text on the interaction line.
-    def setILine( string = "" )
+    def set_iline( string = "" )
+      return  if @testing
       Curses::curs_set 0
       @win_interaction.setpos( 0, 0 )
       @win_interaction.addstr( "%-#{Curses::cols}s" % string )
@@ -108,12 +125,12 @@ module Diakonos
       @status_vars[ identifier ] = value
     end
 
-    def buildStatusLine( truncation = 0 )
+    def build_status_line( truncation = 0 )
       var_array = Array.new
       @settings[ "status.vars" ].each do |var|
         case var
         when "buffer_number"
-          var_array.push bufferToNumber( @current_buffer )
+          var_array.push buffer_to_number( @current_buffer )
         when "col"
           var_array.push( @current_buffer.last_screen_col + 1 )
         when "filename"
@@ -143,6 +160,13 @@ module Diakonos
           else
             var_array.push ""
           end
+        when 'selection_mode'
+          case @current_buffer.selection_mode
+          when :block
+            var_array.push 'block'
+          else
+            var_array.push ''
+          end
         when 'session_name'
           var_array.push @session[ 'name' ]
         when "type"
@@ -170,12 +194,14 @@ module Diakonos
       end
       str
     end
-    protected :buildStatusLine
+    protected :build_status_line
 
-    def updateStatusLine
-      str = buildStatusLine
+    def update_status_line
+      return  if @testing
+
+      str = build_status_line
       if str.length > Curses::cols
-        str = buildStatusLine( str.length - Curses::cols )
+        str = build_status_line( str.length - Curses::cols )
       end
       Curses::curs_set 0
       @win_status.setpos( 0, 0 )
@@ -184,61 +210,62 @@ module Diakonos
       Curses::curs_set 1
     end
 
-    def updateContextLine
-      if @win_context
-        @context_thread.exit if @context_thread
-        @context_thread = Thread.new do ||
+    def update_context_line
+      return  if @testing
+      return  if @win_context.nil?
 
-          context = @current_buffer.context
+      @context_thread.exit  if @context_thread
+      @context_thread = Thread.new do
 
-          Curses::curs_set 0
-          @win_context.setpos( 0, 0 )
-          chars_printed = 0
-          if context.length > 0
-            truncation = [ @settings[ "context.max_levels" ], context.length ].min
-            max_length = [
-              ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
-              ( @settings[ "context.max_segment_width" ] or Curses::cols )
-            ].min
-            line = nil
-            context_subset = context[ 0...truncation ]
-            context_subset = context_subset.collect do |line|
-              line.strip[ 0...max_length ]
-            end
+        context = @current_buffer.context
 
-            context_subset.each do |line|
-              @win_context.attrset @settings[ "context.format" ]
-              @win_context.addstr line
-              chars_printed += line.length
-              @win_context.attrset @settings[ "context.separator.format" ]
-              @win_context.addstr @settings[ "context.separator" ]
-              chars_printed += @settings[ "context.separator" ].length
-            end
+        Curses::curs_set 0
+        @win_context.setpos( 0, 0 )
+        chars_printed = 0
+        if context.length > 0
+          truncation = [ @settings[ "context.max_levels" ], context.length ].min
+          max_length = [
+            ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
+            ( @settings[ "context.max_segment_width" ] or Curses::cols )
+          ].min
+          line = nil
+          context_subset = context[ 0...truncation ]
+          context_subset = context_subset.collect do |line|
+            line.strip[ 0...max_length ]
           end
 
-          @iline_mutex.synchronize do
+          context_subset.each do |line|
             @win_context.attrset @settings[ "context.format" ]
-            @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
-            @win_context.refresh
+            @win_context.addstr line
+            chars_printed += line.length
+            @win_context.attrset @settings[ "context.separator.format" ]
+            @win_context.addstr @settings[ "context.separator" ]
+            chars_printed += @settings[ "context.separator" ].length
           end
-          @display_mutex.synchronize do
-            @win_main.setpos( @current_buffer.last_screen_y, @current_buffer.last_screen_x )
-            @win_main.refresh
-          end
-          Curses::curs_set 1
         end
 
-        @context_thread.priority = -2
+        @iline_mutex.synchronize do
+          @win_context.attrset @settings[ "context.format" ]
+          @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
+          @win_context.refresh
+        end
+        @display_mutex.synchronize do
+          @win_main.setpos( @current_buffer.last_screen_y, @current_buffer.last_screen_x )
+          @win_main.refresh
+        end
+        Curses::curs_set 1
       end
+
+      @context_thread.priority = -2
     end
 
-    def displayEnqueue( buffer )
+    def display_enqueue( buffer )
       @display_queue_mutex.synchronize do
         @display_queue = buffer
       end
     end
 
-    def displayDequeue
+    def display_dequeue
       @display_queue_mutex.synchronize do
         if @display_queue
           Thread.new( @display_queue ) do |b|
@@ -251,38 +278,42 @@ module Diakonos
       end
     end
 
-    def showMessage( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
-      terminateMessage
+    def show_message( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
+      terminate_message
 
       @message_expiry = Time.now + non_interaction_duration
       @message_thread = Thread.new do
         time_left = @message_expiry - Time.now
         while time_left > 0
-          setILine "(#{time_left.round}) #{message}"
+          set_iline "(#{time_left.round}) #{message}"
           @win_main.setpos( @saved_main_y, @saved_main_x )
           sleep 1
           time_left = @message_expiry - Time.now
         end
-        setILine message
+        set_iline message
         @win_main.setpos( @saved_main_y, @saved_main_x )
       end
     end
 
-    def terminateMessage
+    def terminate_message
       if @message_thread and @message_thread.alive?
         @message_thread.terminate
         @message_thread = nil
       end
     end
 
-    def refreshAll
+    def refresh_all
       @win_main.refresh
       if @win_context
         @win_context.refresh
       end
       @win_status.refresh
       @win_interaction.refresh
+      if @win_line_numbers
+        @win_line_numbers.refresh
+      end
     end
 
   end
+
 end

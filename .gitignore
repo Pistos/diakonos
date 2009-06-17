@@ -1,1 +1,6 @@
 *.gem
+*.tar.bz2
+*.tar.gz
+spec/test-files/temp-file.rb
+.yardoc
+doc

@@ -11,8 +11,7 @@ module Diakonos
   EOL_ALT_LAST_CHAR = 3
 
   class Diakonos
-    attr_reader :settings, :token_regexps, :close_token_regexps, :token_formats,
-      :diakonos_conf
+    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers
 
     def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
@@ -29,63 +28,64 @@ module Diakonos
             end
           end
         end
-      rescue OpenURI::HTTPError => e
+      rescue SocketError, OpenURI::HTTPError => e
         $stderr.puts "Failed to fetch from #{location}."
       end
 
       found
     end
 
-    def loadConfiguration
+    def load_configuration
       # Set defaults first
 
-      existent = 0
-      conf_dirs = [
-        '/usr/local/etc/diakonos.conf',
-        '/usr/etc/diakonos.conf',
-        '/etc/diakonos.conf',
-        '/usr/local/share/diakonos/diakonos.conf',
-        '/usr/share/diakonos/diakonos.conf'
-      ]
+      conf_dir = INSTALL_SETTINGS[ :conf_dir ]
+      @global_diakonos_conf = "#{conf_dir}/diakonos.conf"
+      @diakonos_conf = @config_filename || "#{@diakonos_home}/diakonos.conf"
 
-      conf_dirs.each do |conf_dir|
-        @global_diakonos_conf = conf_dir
-        if FileTest.exists? @global_diakonos_conf
-          existent += 1
-          break
-        end
-      end
+      if ! FileTest.exists?( @diakonos_conf )
+        if FileTest.exists?( @global_diakonos_conf )
+          puts "No personal configuration file found."
+          puts "Would you like to copy the system-wide configuration file (#{@global_diakonos_conf}) to use"
+          $stdout.print "as a basis for your personal configuration (recommended)? (y/n)"; $stdout.flush
+          answer = $stdin.gets
+          if answer =~ /^y/i
+            require 'fileutils'
+            FileUtils.cp @global_diakonos_conf, @diakonos_conf
+          end
+        else
+          if @testing
+            File.open( @diakonos_conf, 'w' ) do |f|
+              f.puts File.read( './diakonos.conf' )
+            end
+          else
+            puts "diakonos.conf not found in any of:"
+            puts "  #{conf_dir}"
+            puts "  #{@diakonos_home}"
+            puts "At least one configuration file must exist."
+            $stdout.print "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
+            answer = $stdin.gets
 
-      @diakonos_conf = ( @config_filename or ( @diakonos_home + '/diakonos.conf' ) )
-      existent += 1 if FileTest.exists? @diakonos_conf
+            case answer
+            when /^y/i
+              if not fetch_conf
+                fetch_conf 'master'
+              end
+            end
+          end
 
-      if existent < 1
-        puts "diakonos.conf not found in any of:"
-        conf_dirs.each do |conf_dir|
-          puts "   #{conf_dir}"
-        end
-        puts "   ~/.diakonos/"
-        puts "At least one configuration file must exist."
-        $stdout.puts "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
-        answer = $stdin.gets
-        case answer
-        when /^y/i
-          if not fetch_conf
-            fetch_conf 'master'
+          if not FileTest.exists?( @diakonos_conf )
+            puts "Terminating due to lack of configuration file."
+            exit 1
           end
         end
-
-        if not FileTest.exists?( @diakonos_conf )
-          puts "Terminating..."
-          exit 1
-        end
       end
 
-      @logfilename = @diakonos_home + "/diakonos.log"
+      @logfilename         = @diakonos_home + "/diakonos.log"
       @keychains           = Hash.new
-      @token_regexps       = Hash.new
-      @close_token_regexps = Hash.new
-      @token_formats       = Hash.new
+      @token_regexps       = Hash.new { |h,k| h[ k ] = Hash.new }
+      @close_token_regexps = Hash.new { |h,k| h[ k ] = Hash.new }
+      @token_formats       = Hash.new { |h,k| h[ k ] = Hash.new }
+      @column_markers      = Hash.new { |h,k| h[ k ] = Hash.new }
       @indenters           = Hash.new
       @unindenters         = Hash.new
       @filemasks           = Hash.new
@@ -93,6 +93,7 @@ module Diakonos
       @closers             = Hash.new
 
       @settings = Hash.new
+      @setting_strings = Hash.new
       # Setup some defaults
       @settings[ "context.format" ] = Curses::A_REVERSE
 
@@ -102,8 +103,8 @@ module Diakonos
       @colour_pairs = Array.new
 
       begin
-        parseConfigurationFile( @global_diakonos_conf )
-        parseConfigurationFile( @diakonos_conf )
+        parse_configuration_file @global_diakonos_conf
+        parse_configuration_file @diakonos_conf
 
         # Session settings override config file settings.
 
@@ -111,7 +112,14 @@ module Diakonos
           @settings[ key ] = value
         end
 
-        @clipboard = Clipboard.new @settings[ "max_clips" ]
+        case @settings[ 'clipboard.external' ]
+        when 'klipper'
+          @clipboard = ClipboardKlipper.new
+        when 'xclip'
+          @clipboard = ClipboardXClip.new
+        else
+          @clipboard = Clipboard.new( @settings[ "max_clips" ] )
+        end
         @log = File.open( @logfilename, "a" )
 
         if @buffers
@@ -124,20 +132,42 @@ module Diakonos
       end
     end
 
-    def parseConfigurationFile( filename )
-      return if not FileTest.exists? filename
+    def get_token_regexp( hash, arg, match )
+      language = match[ 1 ]
+      token_class = match[ 2 ]
+      case_insensitive = ( match[ 3 ] != nil )
+      hash[ language ] = ( hash[ language ] or Hash.new )
+      if case_insensitive
+        hash[ language ][ token_class ] = Regexp.new( arg, Regexp::IGNORECASE )
+      else
+        hash[ language ][ token_class ] = Regexp.new arg
+      end
+    end
 
-      lines = IO.readlines( filename ).collect { |l| l.chomp }
-      lines.each do |line|
+    def parse_configuration_file( filename )
+      return  if ! FileTest.exists? filename
+
+      IO.foreach( filename ) do |line|
+        line.chomp!
         # Skip comments
-        next if line[ 0 ] == ?#
+        next  if line[ 0 ] == ?#
 
-        command, arg = line.split( /\s+/, 2 )
-        next if command.nil?
+        if line =~ /^\s*(\S+)\s*=\s*(\S+)\s*$/
+          # Inheritance
+          command, arg = $1, @setting_strings[ $2 ]
+        end
+
+        if arg.nil?
+          command, arg = line.split( /\s+/, 2 )
+          next  if command.nil?
+        end
         command = command.downcase
+
+        @setting_strings[ command ] = arg
+
         case command
         when "include"
-          parseConfigurationFile arg.subHome
+          parse_configuration_file File.expand_path( arg )
         when "key"
           if arg
             if /  / === arg
@@ -147,41 +177,38 @@ module Diakonos
             end
             keystrokes = Array.new
             keystrings.split( /\s+/ ).each do |ks_str|
-              code = ks_str.keyCode
-              if code
-                keystrokes.concat code
+              codes = Keying.keycodes_for( ks_str )
+              if codes.empty?
+                puts "Unknown keystring: #{ks_str}"
               else
-                puts "unknown keystring: #{ks_str}"
+                keystrokes.concat codes
               end
             end
             if function_and_args.nil?
-              @keychains.deleteKeyPath( keystrokes )
+              @keychains.delete_key_path( keystrokes )
             else
               function, function_args = function_and_args.split( /\s+/, 2 )
-              @keychains.setKeyPath(
+              @keychains.set_key_path(
                 keystrokes,
                 [ function, function_args ]
               )
             end
           end
-        when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/
-          getTokenRegexp( @token_regexps, arg, Regexp.last_match )
-        when /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
-          getTokenRegexp( @token_regexps, arg, Regexp.last_match )
+        when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/, /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
+          get_token_regexp( @token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/
-          getTokenRegexp( @close_token_regexps, arg, Regexp.last_match )
+          get_token_regexp( @close_token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.(.+?)\.format$/
           language = $1
           token_class = $2
-          @token_formats[ language ] = ( @token_formats[ language ] or Hash.new )
-          @token_formats[ language ][ token_class ] = arg.toFormatting
+          @token_formats[ language ][ token_class ] = Display.to_formatting( arg )
         when /^lang\.(.+?)\.format\..+$/
-          @settings[ command ] = arg.toFormatting
+          @settings[ command ] = Display.to_formatting( arg )
         when /^colou?r$/
           number, fg, bg = arg.split( /\s+/ )
           number = number.to_i
-          fg = fg.toColourConstant
-          bg = bg.toColourConstant
+          fg = Display.to_colour_constant( fg )
+          bg = Display.to_colour_constant( bg )
           @colour_pairs << {
             :number => number,
             :fg => fg,
@@ -201,9 +228,8 @@ module Diakonos
           else
             @unindenters[ $1 ] = Regexp.new arg
           end
-        when /^lang\.(.+?)\.indent\.preventers(\.case_insensitive)?$/,
-          /^lang\.(.+?)\.indent\.ignore(\.case_insensitive)?$/,
-          /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
+        when /^lang\.(.+?)\.indent\.(?:preventers|ignore|not_indented)(\.case_insensitive)?$/,
+            /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
           case_insensitive = ( $2 != nil )
           if case_insensitive
             @settings[ command ] = Regexp.new( arg, Regexp::IGNORECASE )
@@ -218,53 +244,53 @@ module Diakonos
           @closers[ $1 ] ||= Hash.new
           @closers[ $1 ][ $2 ] ||= Hash.new
           @closers[ $1 ][ $2 ][ $3.to_sym ] = case $3
-        when 'regexp'
-          Regexp.new arg
-        when 'closer'
-          begin
-            eval( "Proc.new " + arg )
-          rescue Exception => e
-            showException(
-              e,
-              [
-                "Failed to process Proc for #{command}.",
-              ]
-            )
+          when 'regexp'
+            Regexp.new arg
+          when 'closer'
+            begin
+              eval( "Proc.new " + arg )
+            rescue Exception => e
+              show_exception(
+                e,
+                [ "Failed to process Proc for #{command}.", ]
+              )
+            end
           end
-        end
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
-          /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
-          "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
-          'suppress_welcome', 'strip_trailing_whitespace_on_save',
-          'find.return_on_abort', 'fuzzy_file_find'
+            /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
+            "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
+            'suppress_welcome', 'strip_trailing_whitespace_on_save',
+            'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
+            'find.show_context_after', 'view.pairs.highlight'
           @settings[ command ] = arg.to_b
-        when "context.format", "context.separator.format", "status.format"
-          @settings[ command ] = arg.toFormatting
+        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
+          @settings[ command ] = Display.to_formatting( arg )
+        when /view\.column_markers\.(.+?)\.format/
+          @column_markers[ $1 ][ :format ] = Display.to_formatting( arg )
         when "logfile"
-          @logfilename = arg.subHome
+          @logfilename = File.expand_path( arg )
         when "context.separator", "status.left", "status.right", "status.filler",
-          "status.modified_str", "status.unnamed_str", "status.selecting_str",
-          "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
-          /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
-          /^lang\.(.+?)\.column_delimiters$/,
-          "view.nonfilelines.character",
-          'interaction.blink_string', 'diff_command', 'session.default_session'
+            "status.modified_str", "status.unnamed_str", "status.selecting_str",
+            "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
+            /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
+            /^lang\.(.+?)\.column_delimiters$/,
+            "view.nonfilelines.character",
+            'interaction.blink_string', 'diff_command', 'session.default_session',
+            'clipboard.external'
           @settings[ command ] = arg
-        when /^lang\..+?\.comment_(?:close_)?string$/
+        when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format'
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
         when "status.vars"
           @settings[ command ] = arg.split( /\s+/ )
-        when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/
-          @settings[ command ] = arg.to_i
-        when "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
-          "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context'
+        when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/,
+            "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
+            "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
+            'view.line_numbers.width'
           @settings[ command ] = arg.to_i
         when "view.jump.x", "view.jump.y"
-          value = arg.to_i
-          if value < 1
-            value = 1
-          end
-          @settings[ command ] = value
+          @settings[ command ] = [ arg.to_i, 1 ].max
+        when /view\.column_markers\.(.+?)\.column/
+          @column_markers[ $1 ][ :column ] = [ arg.to_i, 1 ].max
         when "bol_behaviour", "bol_behavior"
           case arg.downcase
           when "zero"
@@ -292,7 +318,6 @@ module Diakonos
         end
       end
     end
-    protected :parseConfigurationFile
 
   end
 end

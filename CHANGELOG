@@ -1,17 +1,75 @@
 Diakonos Changelog
 ------------------
 
+0.8.10
+
+- Ruby version 1.9+ now required.  (Ruby 1.8 support dropped)
+- Added go_to_char (Alt-N).
+- Added go_to_char_previous (Alt-P).
+- shell command now shows executed command on interaction line.
+- shell command is now interruptible.
+- Klipper synchronization now a single setting (clipboard.external klipper).
+- Added xclip support.
+- Cursor and viewport positions now saved in and restored from sessions.
+- Current buffer number now saved in sessions.
+- Fixed context line.
+- Textual indication of no shell results now given.
+- Added basic pair (bracket) highlighting.
+- Added go_to_pair_match (Alt-Shift-[).
+- Fixed chmodding in installer.
+- Undo and redo now actually compare file contents to set "modified" flag.
+- Added support for a special 'all' language, whose formats apply no matter the current language.
+
+0.8.9
+
+- Put interaction timer only on first stale session prompt, not any after that.
+- Changed all function names from camelCase to snake_case.
+- Added --help-dir switch to installer.
+- Fixed some issues with installer.
+- Changed delete_to_and_from to always assume given character is the left side character when matching pairs.
+- Fixed a line number display bug.
+- X windows pasting handled much better now.
+- Numerous internal refactorings and reorganizations.
+- Accepted patches from Decklin Foster.
+
+0.8.8
+
+- New installation and uninstallation method: tarball + install.rb.
+- Added configuration setting inheritance.
+- Added block selection mode (Alt-Shift-M B; Alt-Shift-M N).
+- Added line numbering settings.
+- Added spawn function.
+- Added go_block_previous, go_block_next (Ctrl-PageUp, Ctrl-PageDown).
+- Added go_block_outer, go_block_inner (Alt-PageUp, Alt-PageDown).
+- "Remove word" functionality (Ctrl-W) added to readline.
+- Added find.show_context_after setting.
+- Added view.column_markers.
+- Added lang.____.indent.not_indented setting.
+- Introduced $d shell variable: current buffer's directory.
+- $f and $d now expand to absolute paths.
+- delete_to and delete_to_and_from can now operate over multiple lines.
+- delete_to_and_from can now delete between matching brackets.
+- Added git diff (F9).
+- Ruby 1.9 support smoothed out.  Ruby 1.8 support being deprecated.
+- Support for non-ASCII encodings tentatively confirmed.
+- Several bugs fixed.
+- Help files updated.
+
 0.8.7
 
 - MRU buffer history added.
 - strip_trailing_whitespace_on_save setting added.
 - Sessions (named and unnamed) added.
 - grep as you type added.
+- delete_to added.
+- delete_to_and_from added.
+- find.return_on_abort setting added.
 - Makefile config added.
 - Markdown config added.
-- find.return_on_abort setting added.
+- Sass config added.
 - Now including custom.conf from default diakonos.conf.
 - Help files updated.
+- Some Ruby 1.9 compatibility introduced.
 - Lots of code refactoring done.
 - Numerous little adjustments and fixes made.
 

@@ -1,0 +1,22 @@
+# Line Numbers
+
+Diakonos indicates on the status line (at the bottom right of the screen) the
+current line and column that the cursor is over.  For example:
+
+  L  6/  8 C13
+
+means that the cursor is on the 13th column of the 6th line of a file which is
+8 lines long.
+
+## Showing line numbers
+
+Default keychord <Alt-Shift-L> can be used to toggle line numbering on and
+off.  Line numbers appear in a left-side margin.  Enable line numbering
+permanently by setting view.line_numbers to true in your config.  Set
+view.line_numbers.width to the number of columns to use for the line numbering
+margin.  view.line_numbers.number_format is the setting to use to define a
+sprintf format for the line numbers.  Set the colour and brightness with
+view.line_numbers.format.
+
+
+Tags: line number numbers numbering sprintf format colour color config configuration set setting settings toggle show margin

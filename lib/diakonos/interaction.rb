@@ -9,6 +9,7 @@ module Diakonos
   CTRL_K    = 11
   CTRL_Q    = 17
   CTRL_H    = 263
+  CTRL_W    = 23
   RESIZE2   = 4294967295
 
   DO_COMPLETE   = true
@@ -23,20 +24,20 @@ module Diakonos
   CHOICE_YES_AND_STOP = 6
   CHOICE_DELETE       = 7
   CHOICE_KEYS = [
-    [ ?n, ?N ],
-    [ ?y, ?Y ],
-    [ ?a, ?A ],
-    [ ?c, ?C, ESCAPE, CTRL_C, CTRL_D, CTRL_Q ],
-    [ ?e ],
-    [ ?o ],
-    [ ?s ],
-    [ ?d ],
+    [ "n".ord, "N".ord ],
+    [ "y".ord, "Y".ord ],
+    [ "a".ord, "A".ord ],
+    [ "c".ord, "C".ord, ESCAPE, CTRL_C, CTRL_D, CTRL_Q ],
+    [ "e".ord ],
+    [ "o".ord ],
+    [ "s".ord ],
+    [ "d".ord ],
   ]
   CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top', '(d)elete' ]
 
   class Diakonos
     # completion_array is the array of strings that tab completion can use
-    def getUserInput( prompt, history = @rlh_general, initial_text = "", completion_array = nil, do_complete = DONT_COMPLETE, on_dirs = :go_into_dirs, &block )
+    def get_user_input( prompt, history = @rlh_general, initial_text = "", completion_array = nil, do_complete = DONT_COMPLETE, on_dirs = :go_into_dirs, &block )
       if @playing_macro
         retval = @macro_input_history.shift
       else
@@ -44,21 +45,21 @@ module Diakonos
         if @macro_history
           @macro_input_history.push retval
         end
-        setILine
+        set_iline
       end
       retval
     end
 
-    def interactionBlink( message = nil )
-      terminateMessage
-      setILine @settings[ 'interaction.blink_string' ]
+    def interaction_blink( message = nil )
+      terminate_message
+      set_iline @settings[ 'interaction.blink_string' ]
       sleep @settings[ 'interaction.blink_duration' ]
-      setILine message if message
+      set_iline message if message
     end
 
     # choices should be an array of CHOICE_* constants.
     # default is what is returned when Enter is pressed.
-    def getChoice( prompt, choices, default = nil )
+    def get_choice( prompt, choices, default = nil )
       retval = @iterated_choice
       if retval
         @choice_iterations -= 1
@@ -78,34 +79,34 @@ module Diakonos
       end
       msg << choice_strings.join( ", " )
 
-      if default.nil?
-        showMessage msg
+      if default
+        set_iline msg
       else
-        setILine msg
+        show_message msg
       end
 
       c = nil
       while retval.nil?
-        c = @win_interaction.getch
+        c = @win_interaction.getch.ord
 
         case c
         when Curses::KEY_NPAGE
-          pageDown
+          page_down
         when Curses::KEY_PPAGE
-          pageUp
+          page_up
         else
           if @message_expiry and Time.now < @message_expiry
-            interactionBlink
-            showMessage msg
+            interaction_blink
+            show_message msg
           else
             case c
             when ENTER
               retval = default
-            when ?0..?9
+            when '0'.ord..'9'.ord
               if @choice_iterations < 1
-                @choice_iterations = ( c - ?0 )
+                @choice_iterations = ( c - '0'.ord )
               else
-                @choice_iterations = @choice_iterations * 10 + ( c - ?0 )
+                @choice_iterations = @choice_iterations * 10 + ( c - '0'.ord )
               end
             else
               choices.each do |choice|
@@ -117,14 +118,14 @@ module Diakonos
             end
 
             if retval.nil?
-              interactionBlink( msg )
+              interaction_blink( msg )
             end
           end
         end
       end
 
-      terminateMessage
-      setILine
+      terminate_message
+      set_iline
 
       if @choice_iterations > 0
         @choice_iterations -= 1
@@ -133,6 +134,13 @@ module Diakonos
       end
 
       retval
+    end
+
+    def get_char( prompt )
+      set_iline prompt
+      char = @win_main.getch
+      set_iline
+      char
     end
 
   end

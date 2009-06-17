@@ -1,0 +1,60 @@
+# External Programs
+
+Diakonos has several functions available that you can map to keys in order to
+execute external programs, scripts and applications: shell, execute and
+pasteShellResult. Each one takes an optional string argument, which is the
+shell command to execute.  If no argument is given, the user is prompted for
+the command to execute.
+
+shell will run the command and show the results in a new buffer.  execute will
+run the command, and allow you to interact with it, but discard the results.
+pasteShellResult will paste the command's results at the current cursor
+location.
+
+The shell command also takes an optional second parameter which lets you
+specify the file to which the shell results are to be written.
+
+Press <F2> to specify an arbitrary command to run with 'shell'.
+Press <F8> to specify an arbitrary command to run with 'execute'.
+
+## Shell Variables
+
+The command strings to these commands given can contain any of the following
+variables:
+
+$f  the current buffer's filepath
+$d  the current buffer's directory
+$F  all current buffer filepaths, space-separated
+$i  a string obtained from user input
+$c  temp file containing current clipboard text
+$k  temp file containing current klipper (KDE clipboard) text
+$s  temp file containing currently selected text
+
+## Examples
+
+The following examples are found in the default configuration file.
+
+
+key ctrl+alt+c    shell "ruby -c $f"
+
+Press <Ctrl-Alt-C> to check the Ruby syntax of the current buffer.
+
+
+key esc d         shell "diff -U 5 -w -b $c $s", "clipboard.diff"
+
+Press <Alt-D> to diff the current clipboard text against the currently selected
+text, and write the result to a file named clipboard.diff.
+
+
+key esc l         execute "aspell check $f"
+
+Press <Alt-L> to interactively spell check the current file with the aspell
+program.  (This keychord is not active in the default configuration.)
+
+
+key f9            shell "cd $d; git diff --ignore-space-change -- $f", 'git.diff'
+
+Press <F9> to see all changes made to the current buffer that have not been
+committed to the git repository yet.
+
+Tags: shell system exec execute spawn spawning executing shelling out external program programs application app apps applications variable variables substitute substitution spell spelling check git diff difference

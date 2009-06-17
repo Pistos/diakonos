@@ -10,7 +10,7 @@ module Diakonos
       @prompt = prompt
       pos = redraw_prompt
       @window.setpos( 0, pos )
-      @initial_text = initial_text
+      @initial_text = initial_text || ''
       @completion_array = completion_array
       @list_filename = @diakonos.list_filename
 
@@ -25,7 +25,7 @@ module Diakonos
     end
 
     def redraw_prompt
-      @diakonos.setILine @prompt
+      @diakonos.set_iline @prompt
     end
 
     def call_block
@@ -37,8 +37,8 @@ module Diakonos
 
     # Returns nil on cancel.
     def readline
-      @input = @initial_text
-      if not @input.empty?
+      @input = @initial_text.dup
+      if ! @input.empty?
         call_block
       end
 
@@ -49,11 +49,11 @@ module Diakonos
       @opened_list_file = false
 
       if @do_complete
-        completeInput
+        complete_input
       end
 
       loop do
-        c = @window.getch
+        c = @window.getch.ord
 
         case c
         when Curses::KEY_DC
@@ -78,7 +78,7 @@ module Diakonos
         when ENTER, Curses::KEY_F3
           item = @diakonos.current_list_item
           if @on_dirs == :go_into_dirs and item and File.directory? item
-            completeInput
+            complete_input
           else
             break
           end
@@ -102,20 +102,20 @@ module Diakonos
           @input_cursor = @input.length
           @window.setpos( @window.cury, @icurx + @input.length )
         when TAB
-          completeInput
+          complete_input
         when Curses::KEY_NPAGE
-          @diakonos.pageDown
+          @diakonos.page_down
           line = @diakonos.select_list_item
           if line
             @input = line
-            cursorWriteInput
+            cursor_write_input
           end
         when Curses::KEY_PPAGE
-          @diakonos.pageUp
+          @diakonos.page_up
           line = @diakonos.select_list_item
           if line
             @input = line
-            cursorWriteInput
+            cursor_write_input
           end
         when Curses::KEY_UP
           if @diakonos.showing_list?
@@ -128,7 +128,7 @@ module Diakonos
             @history_index -= 1
             @input = @history[ @history_index ]
           end
-          cursorWriteInput
+          cursor_write_input
         when Curses::KEY_DOWN
           if @diakonos.showing_list?
             if @diakonos.list_item_selected?
@@ -140,19 +140,25 @@ module Diakonos
             @history_index += 1
             @input = @history[ @history_index ]
           end
-          cursorWriteInput
+          cursor_write_input
         when CTRL_K
           @input = ""
           if @block
             @block.call @input
           end
-          cursorWriteInput
+          cursor_write_input
         when Curses::KEY_F5
           @diakonos.decrease_grep_context
           call_block
         when Curses::KEY_F6
           @diakonos.increase_grep_context
           call_block
+        when CTRL_W
+          @input = @input.gsub( /\W+$/, '' ).gsub( /\w+$/, '' )
+          if @block
+            @block.call @input
+          end
+          cursor_write_input
         else
           if c > 31 and c < 255 and c != BACKSPACE
             if @input_cursor == @input.length
@@ -161,7 +167,7 @@ module Diakonos
             else
               @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
               @window.setpos( @window.cury, @window.curx + 1 )
-              redrawInput
+              redraw_input
             end
             @input_cursor += 1
             call_block
@@ -171,12 +177,12 @@ module Diakonos
         end
       end
 
-      @diakonos.closeListBuffer
+      @diakonos.close_list_buffer
 
       @history[ -1 ] = @input
     end
 
-    def redrawInput
+    def redraw_input
       input = @input[ 0...Curses::cols ]
 
       curx = @window.curx
@@ -189,20 +195,24 @@ module Diakonos
 
     # Redisplays the input text starting at the start of the user input area,
     # positioning the cursor at the end of the text.
-    def cursorWriteInput
+    def cursor_write_input
       if @input
         @input_cursor = @input.length
         @window.setpos( @window.cury, @icurx + @input.length )
-        redrawInput
+        redraw_input
       end
     end
 
-    def completeInput
+    def complete_input
       if @completion_array and @input.length > 0
         len = @input.length
         matches = @completion_array.find_all { |el| el[ 0...len ] == @input and len <= el.length }
       else
-        matches = Dir.glob( ( @input.subHome() + "*" ).gsub( /\*\*/, "*" ) )
+        path = File.expand_path( @input )
+        if FileTest.directory? path
+          path << '/'
+        end
+        matches = Dir.glob( ( path + "*" ).gsub( /\*\*/, "*" ) )
         if @on_dirs == :accept_dirs
           matches = matches.select { |m| File.directory? m }
         end
@@ -211,7 +221,7 @@ module Diakonos
 
       if matches.length == 1
         @input = matches[ 0 ]
-        cursorWriteInput
+        cursor_write_input
         File.open( @list_filename, "w" ) do |f|
           if @completion_array.nil?
             f.puts "(unique)"
@@ -221,9 +231,9 @@ module Diakonos
         end
         if @completion_array.nil? and FileTest.directory?( @input )
           @input << "/"
-          cursorWriteInput
+          cursor_write_input
           if @on_dirs != :accept_dirs
-            completeInput
+            complete_input
           end
         end
       elsif matches.length > 1
@@ -258,14 +268,14 @@ module Diakonos
           end
         else
           @input = common
-          cursorWriteInput
+          cursor_write_input
         end
       else
         File.open( @list_filename, "w" ) do |f|
           f.puts "(no matches)"
         end
       end
-      @diakonos.openListBuffer
+      @diakonos.open_list_buffer
       @window.setpos( @window.cury, @window.curx )
     end
 

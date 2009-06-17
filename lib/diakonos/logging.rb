@@ -1,24 +1,27 @@
 module Diakonos
+
   class Diakonos
+
     def log( string )
       @log.puts string
       @log.flush
     end
-    
-    def debugLog( string )
+
+    def debug_log( string )
       @debug.puts( Time.now.strftime( "[%a %H:%M:%S] #{string}" ) )
       @debug.flush
     end
-    
-    def logBacktrace
+
+    def log_backtrace
       begin
         raise Exception
       rescue Exception => e
         e.backtrace[ 1..-1 ].each do |x|
-          debugLog x
+          debug_log x
         end
       end
     end
 
   end
+
 end

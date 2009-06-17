@@ -19,7 +19,20 @@ more lines.
 <Ctrl-Alt-K> will cut from the cursor to the end of the current line.
 
 Diakonos also supports synchronization with Klipper, the KDE clipboard
-manager.  This requires DCOP to be installed.  Uncomment the indicated lines
-in the configuration file.
+manager.  This requires DCOP to be installed.  Uncomment the indicated line
+in the configuration file.  Alternatively, synchronization with the X
+clipboard can be accomplished with xclip (third-party software).  Uncomment
+the xclip line for xclip usage.
 
-Tags: clipboard copy cut paste kde klipper dcop select selecting selected unselect unselecting mark marking highlight eol line
+## Block Selection
+
+Diakonos supports block selection.  This allows you to select and work with
+rectangular highlighted areas instead of selecting text the usual way (as a
+left-to-right flow of characters).
+
+To change to block selection mode, press <Alt-Shift-M,B>.  The status line will
+indicate "block" mode.  To change to normal selection mode, press
+<Alt-Shift-M,N>.  Mnemonic: M for Mark, B for Block, N for Normal.
+
+
+Tags: clipboard copy cut paste kde klipper dcop select selecting selected unselect unselecting mark marking highlight eol line block column

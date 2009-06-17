@@ -67,39 +67,27 @@ while args.length > 0
     end
 end
 
-tarball_files = [
-    'lib',
-    'bin',
-    'test',
-    'README',
-    'LICENCE',
-    'CHANGELOG',
-    'setup.rb',
-    'diakonos.conf',
-    'Rakefile',
-    'home-on-save.rb',
-]
-
 puts "git tag and export..."
 doCommand "git tag -a v#{version} -m 'Tagged Diakonos version #{version}.'"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | bzip2 > diakonos-#{version}.tar.bz2"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | gzip > diakonos-#{version}.tar.gz"
 
 puts "Building gem..."
-doCommand( "gem build gemspecs/diakonos-#{version}.gemspec -v" )
+doCommand( "gem build diakonos.gemspec -v" )
 
 puts "MD5 sums:"
 doCommand( "md5sum diakonos-#{version}.gem" )
 doCommand( "md5sum diakonos-#{version}.tar.gz" )
 doCommand( "md5sum diakonos-#{version}.tar.bz2" )
 
-puts "GPG signing:"
-doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.gem"
-doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.tar.gz"
-doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.tar.bz2"
+#puts "GPG signing:"
+#doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.gem"
+#doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.tar.gz"
+#doCommand "gpg --detach-sign --default-key 'Pistos <jesusdoesntlikespammers.6.pistos@geoshell.com>' diakonos-#{version}.tar.bz2"
 
 puts "Copying files to website..."
-doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}.gem diakonos-#{version}.tar.bz2.sig diakonos-#{version}.tar.gz.sig diakonos-#{version}.gem.sig CHANGELOG README ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/sites/purepistos.net/diakonos/" )
+#doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}.gem diakonos-#{version}.tar.bz2.sig diakonos-#{version}.tar.gz.sig diakonos-#{version}.gem.sig CHANGELOG README ebuild/diakonos-#{version}.ebuild pistos@purepistos.net:/home/pistos/sites/purepistos.net/diakonos/" )
+doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz diakonos-#{version}.gem CHANGELOG README pistos@purepistos.net:/home/pistos/sites/purepistos.net/diakonos/" )
 doCommand( "scp diakonos-#{version}.gem pistos@purepistos.net:/home/pistos/svn/purepistos.net/public/gems/" )
 
 puts "Release complete."
