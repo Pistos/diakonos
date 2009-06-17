@@ -18,6 +18,7 @@ Diakonos Changelog
 - Added go_to_pair_match (Alt-Shift-[).
 - Fixed chmodding in installer.
 - Undo and redo now actually compare file contents to set "modified" flag.
+- Added support for a special 'all' language, whose formats apply no matter the current language.
 
 0.8.9
 

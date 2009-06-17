@@ -82,9 +82,9 @@ module Diakonos
 
       @logfilename         = @diakonos_home + "/diakonos.log"
       @keychains           = Hash.new
-      @token_regexps       = Hash.new
-      @close_token_regexps = Hash.new
-      @token_formats       = Hash.new
+      @token_regexps       = Hash.new { |h,k| h[ k ] = Hash.new }
+      @close_token_regexps = Hash.new { |h,k| h[ k ] = Hash.new }
+      @token_formats       = Hash.new { |h,k| h[ k ] = Hash.new }
       @column_markers      = Hash.new { |h,k| h[ k ] = Hash.new }
       @indenters           = Hash.new
       @unindenters         = Hash.new
@@ -189,7 +189,6 @@ module Diakonos
         when /^lang\.(.+?)\.tokens\.(.+?)\.format$/
           language = $1
           token_class = $2
-          @token_formats[ language ] = ( @token_formats[ language ] or Hash.new )
           @token_formats[ language ][ token_class ] = Display.to_formatting( arg )
         when /^lang\.(.+?)\.format\..+$/
           @settings[ command ] = Display.to_formatting( arg )

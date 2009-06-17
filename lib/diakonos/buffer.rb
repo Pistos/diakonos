@@ -121,9 +121,9 @@ module Diakonos
     def set_language( language )
       @settings = @diakonos.settings
       @language = language
-      @token_regexps = ( @diakonos.token_regexps[ @language ] || Hash.new )
-      @close_token_regexps = ( @diakonos.close_token_regexps[ @language ] || Hash.new )
-      @token_formats = ( @diakonos.token_formats[ @language ] || Hash.new )
+      @token_regexps = @diakonos.token_regexps[ 'all' ].merge( @diakonos.token_regexps[ @language ] || Hash.new )
+      @close_token_regexps = @diakonos.close_token_regexps[ 'all' ].merge( @diakonos.close_token_regexps[ @language ] || Hash.new )
+      @token_formats = @diakonos.token_formats[ 'all' ].merge( @diakonos.token_formats[ @language ] || Hash.new )
       @indenters = @diakonos.indenters[ @language ]
       @unindenters = @diakonos.unindenters[ @language ]
       @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
