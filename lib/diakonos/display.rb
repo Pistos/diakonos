@@ -87,18 +87,6 @@ module Diakonos
       end
     end
 
-    def get_token_regexp( hash, arg, match )
-      language = match[ 1 ]
-      token_class = match[ 2 ]
-      case_insensitive = ( match[ 3 ] != nil )
-      hash[ language ] = ( hash[ language ] or Hash.new )
-      if case_insensitive
-        hash[ language ][ token_class ] = Regexp.new( arg, Regexp::IGNORECASE )
-      else
-        hash[ language ][ token_class ] = Regexp.new arg
-      end
-    end
-
     def redraw
       load_configuration
       initialize_display
