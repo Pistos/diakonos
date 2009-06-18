@@ -74,6 +74,11 @@ Diakonos will then highlight each individual match and ask whether or not you
 wish to replace the selected text.  You can also choose to replace all matches
 throughout the file at once.
 
+The search expression you provide is considered a regular expression.  You can
+also use parentheses to capture groups, and refer to those groups on your
+replacement string with \1, \2, etc., which correspond to the first group, the
+second group, etc.
+
 ## Grepping
 
 Press <Ctrl-Alt-G> to begin grepping files under a directory (recursively).
