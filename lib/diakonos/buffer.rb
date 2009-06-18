@@ -98,8 +98,8 @@ module Diakonos
         end
       end
 
-      if @settings[ "auto_read_only" ] and @name
-        if not File.writable?(@name) and File.exist?(@name)
+      if @settings[ "auto_read_only" ] && @name
+        if ! File.writable?( @name ) && File.exist?( @name )
           @read_only = true
         end
       end
