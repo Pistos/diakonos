@@ -60,15 +60,14 @@ module Diakonos
         r, c = b.last_row, b.last_col
         b.cursor_to( b.last_row, b.last_col + word.length - partial.length )
         b.set_selection( r, c, r, c + word.length - partial.length )
-        ww = words + words + words
         n = words.size
-        middle_word = ww[ n+i ].center( Curses::cols / 4, ' ' )
+        middle_word = words[ i ].center( Curses::cols / 4, ' ' )
         shown_words = [
-          ww[ n+i-2 ],
-          ww[ n+i-1 ],
+          words[ ( n+i-2 ) % n ],
+          words[ ( n+i-1 ) % n ],
           middle_word,
-          ww[ n+i+1 ],
-          ww[ n+i+2 ],
+          words[ ( n+i+1 ) % n ],
+          words[ ( n+i+2 ) % n ],
         ].compact.uniq.reject { |w| w == middle_word.strip }.join( ' ' )
         mi = shown_words.index( middle_word )
         padding = " " * ( Curses::cols / 2 - mi - ( middle_word.length / 2 ) )
