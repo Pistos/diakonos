@@ -98,6 +98,12 @@ module Diakonos
         end
       end
 
+      if @settings[ "auto_read_only" ] and @name
+        if not File.writable?(@name)
+          @read_only = true
+        end
+      end
+
       @buffer_states[ @current_buffer_state ] = @lines
       @cursor_states[ @current_buffer_state ] = [ @last_row, @last_col ]
     end
