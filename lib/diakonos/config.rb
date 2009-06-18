@@ -263,6 +263,8 @@ module Diakonos
             'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
             'find.show_context_after', 'view.pairs.highlight'
           @settings[ command ] = arg.to_b
+        when "auto_read_only"
+          @settings [ command ] = arg.to_b
         when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
           @settings[ command ] = Display.to_formatting( arg )
         when /view\.column_markers\.(.+?)\.format/
