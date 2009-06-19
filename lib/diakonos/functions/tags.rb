@@ -10,7 +10,12 @@ module Diakonos
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copy_selection[ 0 ]
         end
-        tag_name = get_user_input( "Tag name: ", @rlh_general, ( selected_text or "" ), @tags.keys )
+        tag_name = get_user_input(
+          "Tag name: ",
+          history: @rlh_general,
+          initial_text: selected_text || "",
+          completion_array: @tags.keys
+        )
       else
         tag_name = tag_
       end

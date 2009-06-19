@@ -40,9 +40,9 @@ module Diakonos
         end
         code = get_user_input(
           "Ruby code: ",
-          @rlh_general,
-          selected_text || "",
-          ::Diakonos::Functions.public_instance_methods.map { |m| m.to_s }
+          history: @rlh_general,
+          initial_text: selected_text || "",
+          completion_array: ::Diakonos::Functions.public_instance_methods.map { |m| m.to_s }
         )
       else
         code = code_
@@ -76,9 +76,9 @@ module Diakonos
 
       selected = get_user_input(
         "Search terms: ",
-        @rlh_help,
-        prefill,
-        @help_tags
+        history: @rlh_help,
+        initial_text: prefill,
+        completion_array: @help_tags
       ) { |input|
         next if input.length < 3 and input[ 0..0 ] != '/'
 
@@ -138,7 +138,7 @@ module Diakonos
 
     def load_script( name_ = nil )
       if name_.nil?
-        name = get_user_input( "File to load as script: ", @rlh_files )
+        name = get_user_input( "File to load as script: ", history: @rlh_files )
       else
         name = name_
       end

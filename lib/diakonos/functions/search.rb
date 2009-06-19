@@ -30,7 +30,7 @@ module Diakonos
       end
 
       if replacement == ASK_REPLACEMENT
-        replacement = get_user_input( "Replace with: ", @rlh_search )
+        replacement = get_user_input( "Replace with: ", history: @rlh_search )
       end
 
       if exception_thrown and not quiet
@@ -59,8 +59,8 @@ module Diakonos
 
         regexp_source = get_user_input(
           "Search regexp: ",
-          @rlh_search,
-          ( selected_text or "" )
+          history: @rlh_search,
+          initial_text: selected_text || ""
         ) { |input|
           if input.length > 1
             find_ direction, case_sensitive, input, nil, starting_row, starting_col, QUIET
@@ -97,7 +97,11 @@ module Diakonos
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copy_selection[ 0 ]
         end
-        search_term = get_user_input( "Search for: ", @rlh_search, ( selected_text or "" ) )
+        search_term = get_user_input(
+          "Search for: ",
+          history: @rlh_search,
+          initial_text: selected_text || ""
+        )
       else
         search_term = search_term_
       end

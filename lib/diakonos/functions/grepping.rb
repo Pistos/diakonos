@@ -15,7 +15,13 @@ module Diakonos
 
     def grep_dir( regexp_source = nil, dir = nil )
       if dir.nil?
-        dir = get_user_input( "Grep directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
+        dir = get_user_input(
+          "Grep directory: ",
+          history: @rlh_files,
+          initial_text: @session[ 'dir' ],
+          do_complete: DONT_COMPLETE,
+          on_dirs: :accept_dirs
+        )
         return if dir.nil?
       end
       dir = File.expand_path( dir )
@@ -28,8 +34,8 @@ module Diakonos
 
       selected = get_user_input(
         "Grep regexp: ",
-        @rlh_search,
-        regexp_source || selected_text || ""
+        history: @rlh_search,
+        initial_text: regexp_source || selected_text || ""
       ) { |input|
         next if input.length < 2
         escaped_input = input.gsub( /'/ ) { "\\047" }

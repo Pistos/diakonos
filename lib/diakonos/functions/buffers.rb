@@ -237,7 +237,12 @@ module Diakonos
           open_list_buffer
         }
       end
-      file = get_user_input( "Filename: ", @rlh_files, prefill, &finder_block )
+      file = get_user_input(
+        "Filename: ",
+        history: @rlh_files,
+        initial_text: prefill,
+        &finder_block
+      )
 
       if file
         open_file file
@@ -247,7 +252,7 @@ module Diakonos
     end
 
     def open_matching_files( regexp = nil, search_root = nil )
-      regexp ||= get_user_input( "Regexp: ", @rlh_search )
+      regexp ||= get_user_input( "Regexp: ", history: @rlh_search )
       return if regexp.nil?
 
       if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
@@ -255,7 +260,7 @@ module Diakonos
       else
         prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
       end
-      search_root ||= get_user_input( "Search within: ", @rlh_files, prefill )
+      search_root ||= get_user_input( "Search within: ", history: @rlh_files, initial_text: prefill )
       return if search_root.nil?
 
       files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
@@ -309,9 +314,9 @@ module Diakonos
     def save_file_as
       if @current_buffer && @current_buffer.name
         path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
-        file = get_user_input( "Filename: ", @rlh_files, path )
+        file = get_user_input( "Filename: ", history: @rlh_files, initial_text: path )
       else
-        file = get_user_input( "Filename: ", @rlh_files )
+        file = get_user_input( "Filename: ", history: @rlh_files )
       end
       if file
         old_name = @current_buffer.name

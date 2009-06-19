@@ -28,7 +28,12 @@ module Diakonos
 
     def load_session( session_id = nil )
       if session_id.nil?
-        session_id = get_user_input( "Session: ", @rlh_sessions, @session_dir, nil, DO_COMPLETE )
+        session_id = get_user_input(
+          "Session: ",
+          history: @rlh_sessions,
+          initial_text: @session_dir,
+          do_complete: DO_COMPLETE
+        )
       end
       return if session_id.nil? or session_id.empty?
 
@@ -59,7 +64,13 @@ module Diakonos
     end
 
     def set_session_dir
-      path = get_user_input( "Session directory: ", @rlh_files, @session[ 'dir' ], nil, DONT_COMPLETE, :accept_dirs )
+      path = get_user_input(
+        "Session directory: ",
+        history: @rlh_files,
+        initial_text: @session[ 'dir' ],
+        do_complete: DONT_COMPLETE,
+        on_dirs: :accept_dirs
+      )
       if path
         @session[ 'dir' ] = File.expand_path( path )
         save_session

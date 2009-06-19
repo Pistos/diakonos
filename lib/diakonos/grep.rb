@@ -61,8 +61,8 @@ module Diakonos
 
       selected = get_user_input(
         "Grep regexp: ",
-        @rlh_search,
-        regexp_source || selected_text || ""
+        history: @rlh_search,
+        initial_text: regexp_source || selected_text || ""
       ) { |input|
         next if input.length < 2
         actually_grep input, *buffers

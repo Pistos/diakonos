@@ -20,7 +20,11 @@ module Diakonos
 
       # Get user input, sub it in
       if retval =~ /\$i/
-        user_input = get_user_input( "Argument: ", @rlh_shell, @current_buffer.selected_string )
+        user_input = get_user_input(
+          "Argument: ",
+          history: @rlh_shell,
+          initial_text: @current_buffer.selected_string
+        )
         retval.gsub!( /\$i/, user_input )
       end
 
@@ -52,7 +56,7 @@ module Diakonos
     end
 
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
-      command = command_ || get_user_input( "Command: ", @rlh_shell )
+      command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
       return  if command.nil?
 
@@ -112,7 +116,7 @@ module Diakonos
     end
 
     def execute( command_ = nil )
-      command = command_ || get_user_input( "Command: ", @rlh_shell )
+      command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
       return  if command.nil?
 
@@ -134,7 +138,7 @@ module Diakonos
     end
 
     def paste_shell_result( command_ = nil )
-      command = command_ || get_user_input( "Command: ", @rlh_shell )
+      command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
       return  if command.nil?
 
@@ -155,7 +159,7 @@ module Diakonos
     end
 
     def spawn( command_ = nil )
-      command = command_ || get_user_input( "Command: ", @rlh_shell )
+      command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
       return  if command.nil?
 
