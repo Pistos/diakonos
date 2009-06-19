@@ -198,7 +198,7 @@ module Diakonos
     end
 
     def join_with_line_above( row = @last_row, strip = DONT_STRIP_LINE )
-      return false if row == 0
+      return false  if row == 0
 
       take_snapshot
 
@@ -210,8 +210,8 @@ module Diakonos
       if strip
         line.strip!
 
-        # only prepend a space if the line above isnt empty
-        unless old_line.strip.empty?
+        # Only prepend a space if the line above isn't empty.
+        if ! old_line.strip.empty?
           line = ' ' + line
           new_x_pos += 1
         end
