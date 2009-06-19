@@ -6,7 +6,7 @@ Diakonos Changelog
 Contributors: Pistos, dominikh
 
 - Added join_lines_upward (Alt-Shift-J).
-- Various little bug fixes.
+- Various bug fixes and refactorings.
 
 0.8.10
 

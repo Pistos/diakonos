@@ -4,22 +4,22 @@ module Diakonos
 
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
-    def initialize( diakonos, window, prompt, initial_text = "", completion_array = nil, history = [], do_complete = Diakonos::DONT_COMPLETE, on_dirs = :go_into_dirs, &block )
+    def initialize( diakonos, window, prompt, options = {}, &block )
       @diakonos = diakonos
       @window = window
       @prompt = prompt
       pos = redraw_prompt
       @window.setpos( 0, pos )
-      @initial_text = initial_text || ''
-      @completion_array = completion_array
+      @initial_text = options[ :initial_text ] || ''
+      @completion_array = options[ :completion_array ]
       @list_filename = @diakonos.list_filename
 
-      @history = history
-      @history << initial_text
+      @history = options[ :history ] || []
+      @history << @initial_text
       @history_index = @history.length - 1
 
-      @do_complete = do_complete
-      @on_dirs = on_dirs
+      @do_complete = options[ :do_complete ] || Diakonos::DONT_COMPLETE
+      @on_dirs = options[ :on_dirs ] || :go_into_dirs
 
       @block = block
     end
