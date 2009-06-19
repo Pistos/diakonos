@@ -197,6 +197,33 @@ module Diakonos
       set_modified
     end
 
+    def join_with_line_above( row = @last_row, strip = DONT_STRIP_LINE )
+      return false if row == 0
+
+      take_snapshot
+
+      line       = @lines.delete_at( row )
+      old_line   = @lines[ row-1 ]
+
+      new_x_pos  = old_line.length
+
+      if strip
+        line.strip!
+
+        # only prepend a space if the line above isnt empty
+        unless old_line.strip.empty?
+          line = ' ' + line
+          new_x_pos += 1
+        end
+      end
+
+      @lines[ row-1 ] << line
+
+      cursor_to( row-1, new_x_pos )
+
+      set_modified
+    end
+
     def join_lines( row = @last_row, strip = DONT_STRIP_LINE )
       take_snapshot( TYPING )
       next_line = @lines.delete_at( row + 1 )

@@ -75,6 +75,10 @@ module Diakonos
       end
     end
 
+    def join_with_line_above
+      @current_buffer.join_with_line_above( @current_buffer.current_row, Buffer::STRIP_LINE )
+    end
+
     def join_lines
       @current_buffer.join_lines( @current_buffer.current_row, Buffer::STRIP_LINE )
     end
