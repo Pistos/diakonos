@@ -106,7 +106,7 @@ module Diakonos
         @buffers.keys.sort.each_with_index do |name, index|
           bullet = bullets[ index ]
           if bullet
-            bullet << ') '
+            bullet << '  '
           end
           f.puts "#{bullet}#{name}"
         end

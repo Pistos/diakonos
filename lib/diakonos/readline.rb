@@ -40,7 +40,7 @@ module Diakonos
     end
 
     def set_input( input = '' )
-      if @numbered_completion && input =~ /^\w\) /
+      if @numbered_completion && input =~ /^\w  /
         input = input[ 3..-1 ]
       end
       @input = input
@@ -178,7 +178,7 @@ module Diakonos
                 ( (48..57).include?( c ) || (97..122).include?( c ) )
               )
                 line = @diakonos.list_buffer.to_a.select { |l|
-                  l =~ /^#{c.chr}\) /
+                  l =~ /^#{c.chr}  /
                 }[ 0 ]
 
                 if line
