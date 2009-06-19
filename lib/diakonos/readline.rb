@@ -77,7 +77,7 @@ module Diakonos
           end
         when ENTER, Curses::KEY_F3
           item = @diakonos.current_list_item
-          if @on_dirs == :go_into_dirs and item and File.directory? item
+          if @on_dirs == :go_into_dirs && item && File.directory?( item )
             complete_input
           else
             break
@@ -160,7 +160,7 @@ module Diakonos
           end
           cursor_write_input
         else
-          if c > 31 and c < 255 and c != BACKSPACE
+          if c > 31 && c < 255 && c != BACKSPACE
             if @input_cursor == @input.length
               @input << c
               @window.addch c
@@ -204,9 +204,9 @@ module Diakonos
     end
 
     def complete_input
-      if @completion_array and @input.length > 0
+      if @completion_array && @input.length > 0
         len = @input.length
-        matches = @completion_array.find_all { |el| el[ 0...len ] == @input and len <= el.length }
+        matches = @completion_array.find_all { |el| el[ 0...len ] == @input && len <= el.length }
       else
         path = File.expand_path( @input )
         if FileTest.directory? path
@@ -229,7 +229,7 @@ module Diakonos
             f.puts @input
           end
         end
-        if @completion_array.nil? and FileTest.directory?( @input )
+        if @completion_array.nil? && FileTest.directory?( @input )
           @input << "/"
           cursor_write_input
           if @on_dirs != :accept_dirs
@@ -256,7 +256,7 @@ module Diakonos
 
             up_to = [ common.length - 1, match.length - 1 ].min
             i = 1
-            while ( i <= up_to ) and ( match[ 0..i ] == common[ 0..i ] )
+            while ( i <= up_to ) && ( match[ 0..i ] == common[ 0..i ] )
               i += 1
             end
             common = common[ 0...i ]
