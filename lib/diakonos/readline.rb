@@ -39,8 +39,7 @@ module Diakonos
       end
     end
 
-    def set_input(input)
-      input ||= ''
+    def set_input( input = '' )
       if @numbered_completion && input =~ /^\w\) /
         input = input[ 3..-1 ]
       end
@@ -119,14 +118,14 @@ module Diakonos
           @diakonos.page_down
           line = @diakonos.select_list_item
           if line
-            set_input( line )
+            set_input line
             cursor_write_input
           end
         when Curses::KEY_PPAGE
           @diakonos.page_up
           line = @diakonos.select_list_item
           if line
-            set_input( line )
+            set_input line
             cursor_write_input
           end
         when Curses::KEY_UP
@@ -134,7 +133,7 @@ module Diakonos
             if @diakonos.list_item_selected?
               @diakonos.previous_list_item
             end
-            set_input( @diakonos.select_list_item )
+            set_input @diakonos.select_list_item
           elsif @history_index > 0
             @history[ @history_index ] = @input
             @history_index -= 1
@@ -146,7 +145,7 @@ module Diakonos
             if @diakonos.list_item_selected?
               @diakonos.next_list_item
             end
-            set_input( @diakonos.select_list_item )
+            set_input @diakonos.select_list_item
           elsif @history_index < @history.length - 1
             @history[ @history_index ] = @input
             @history_index += 1
@@ -174,17 +173,18 @@ module Diakonos
         else
           if c > 31 && c < 255 && c != BACKSPACE
             if @numbered_completion
-              if ((48..57).to_a + (97..122).to_a).include?(c)
-                if @diakonos.showing_list?
-                  line = @diakonos.list_buffer.to_a.select { |l|
-                    l =~ /^#{c.chr}\) /
-                  }[0]
+              if(
+                @diakonos.showing_list? &&
+                ( (48..57).include?( c ) || (97..122).include?( c ) )
+              )
+                line = @diakonos.list_buffer.to_a.select { |l|
+                  l =~ /^#{c.chr}\) /
+                }[ 0 ]
 
-                  if line
-                    set_input( line )
-                    cursor_write_input
-                    break
-                  end
+                if line
+                  set_input line
+                  cursor_write_input
+                  break
                 end
               end
             else

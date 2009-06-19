@@ -104,13 +104,15 @@ module Diakonos
       bullets = ('0'..'9').to_a + ('a'..'z').to_a
       with_list_file do |f|
         @buffers.keys.sort.each_with_index do |name, index|
-          bullet = bullets[index]
-          bullet << ') ' if bullet
+          bullet = bullets[ index ]
+          if bullet
+            bullet << ') '
+          end
           f.puts "#{bullet}#{name}"
         end
       end
       open_list_buffer
-      filename = get_user_input( "Switch to buffer: ", :numbered_completion => true )
+      filename = get_user_input( "Switch to buffer: ", numbered_completion: true )
       buffer = @buffers[ filename ]
       if buffer
         switch_to buffer
