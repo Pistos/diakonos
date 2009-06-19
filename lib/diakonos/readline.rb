@@ -41,7 +41,9 @@ module Diakonos
 
     def set_input(input)
       input ||= ''
-      input = input[ 3..-1 ]  if @numbered_completion
+      if @numbered_completion && input =~ /^\w\) /
+        input = input[ 3..-1 ]
+      end
       @input = input
     end
 
