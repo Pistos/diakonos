@@ -227,6 +227,8 @@ module Diakonos
     def join_lines( row = @last_row, strip = DONT_STRIP_LINE )
       take_snapshot( TYPING )
       next_line = @lines.delete_at( row + 1 )
+      return false  if next_line.nil?
+
       if strip
         next_line = ' ' + next_line.strip
       end
