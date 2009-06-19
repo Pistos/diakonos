@@ -98,11 +98,5 @@ class Hash
     end
   end
 
-  # Implement Ruby 1.9's Hash#key for Ruby 1.8
-  if ! method_defined?( :key )
-    def key( *args )
-      index( *args )
-    end
-  end
 end
 

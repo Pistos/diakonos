@@ -1,4 +1,5 @@
 class String
+
     def to_b
       case downcase
       when "true", "t", "1", "yes", "y", "on", "+"
@@ -117,11 +118,5 @@ class String
       [ i, match_text ]
     end
 
-    # Backport of Ruby 1.9's String#ord into Ruby 1.8
-    if ! method_defined?( :ord )
-      def ord
-        self[ 0 ]
-      end
-    end
 end
 
