@@ -103,7 +103,6 @@ module Diakonos
     def list_buffers
       bullets = ('0'..'9').to_a + ('a'..'z').to_a
       with_list_file do |f|
-        # f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
         @buffers.keys.sort.each_with_index do |name, index|
           bullet = bullets[index]
           bullet << ') ' if bullet
