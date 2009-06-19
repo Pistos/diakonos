@@ -197,7 +197,7 @@ module Diakonos
       set_modified
     end
 
-    def join_with_line_above( row = @last_row, strip = DONT_STRIP_LINE )
+    def join_lines_upward( row = @last_row, strip = DONT_STRIP_LINE )
       return false  if row == 0
 
       take_snapshot
