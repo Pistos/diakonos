@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.8.11
+
+- Added join_lines_upward (Alt-Shift-J).
+
 0.8.10
 
 - Ruby version 1.9+ now required.  (Ruby 1.8 support dropped)
