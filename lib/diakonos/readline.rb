@@ -22,6 +22,9 @@ module Diakonos
       @do_complete = options[ :do_complete ] || ::Diakonos::DONT_COMPLETE
       @on_dirs = options[ :on_dirs ] || :go_into_dirs
 
+      # TODO think of better name
+      @numbered_completion = options [ :numbered_completion ]
+
       @block = block
     end
 
@@ -34,6 +37,12 @@ module Diakonos
         @block.call( @input )
         @window.refresh
       end
+    end
+
+    def set_input(input)
+      input ||= ''
+      input = input[ 3..-1 ]  if @numbered_completion
+      @input = input
     end
 
     # Returns nil on cancel.
@@ -60,7 +69,7 @@ module Diakonos
         when Curses::KEY_DC
           if @input_cursor < @input.length
             @window.delch
-            @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+            set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
             call_block
           end
         when BACKSPACE, CTRL_H
@@ -72,7 +81,7 @@ module Diakonos
             # Curses::KEY_DC
             if @input_cursor < @input.length
               @window.delch
-              @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+              set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
               call_block
             end
           end
@@ -108,14 +117,14 @@ module Diakonos
           @diakonos.page_down
           line = @diakonos.select_list_item
           if line
-            @input = line
+            set_input( line )
             cursor_write_input
           end
         when Curses::KEY_PPAGE
           @diakonos.page_up
           line = @diakonos.select_list_item
           if line
-            @input = line
+            set_input( line )
             cursor_write_input
           end
         when Curses::KEY_UP
@@ -123,7 +132,7 @@ module Diakonos
             if @diakonos.list_item_selected?
               @diakonos.previous_list_item
             end
-            @input = @diakonos.select_list_item
+            set_input( @diakonos.select_list_item )
           elsif @history_index > 0
             @history[ @history_index ] = @input
             @history_index -= 1
@@ -135,7 +144,7 @@ module Diakonos
             if @diakonos.list_item_selected?
               @diakonos.next_list_item
             end
-            @input = @diakonos.select_list_item
+            set_input( @diakonos.select_list_item )
           elsif @history_index < @history.length - 1
             @history[ @history_index ] = @input
             @history_index += 1
@@ -162,16 +171,32 @@ module Diakonos
           cursor_write_input
         else
           if c > 31 && c < 255 && c != BACKSPACE
-            if @input_cursor == @input.length
-              @input << c
-              @window.addch c
+            if @numbered_completion
+              if ((48..57).to_a + (97..122).to_a).include?(c)
+                if @diakonos.showing_list?
+                  line = @diakonos.list_buffer.to_a.select { |l|
+                    l =~ /^#{c.chr}\) /
+                  }[0]
+
+                  if line
+                    set_input( line )
+                    cursor_write_input
+                    break
+                  end
+                end
+              end
             else
-              @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
-              @window.setpos( @window.cury, @window.curx + 1 )
-              redraw_input
+              if @input_cursor == @input.length
+                @input << c
+                @window.addch c
+              else
+                @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
+                @window.setpos( @window.cury, @window.curx + 1 )
+                redraw_input
+              end
+              @input_cursor += 1
+              call_block
             end
-            @input_cursor += 1
-            call_block
           else
             @diakonos.log "Other input: #{c}"
           end

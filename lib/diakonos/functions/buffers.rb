@@ -101,11 +101,17 @@ module Diakonos
     end
 
     def list_buffers
+      bullets = ('0'..'9').to_a + ('a'..'z').to_a
       with_list_file do |f|
-        f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
+        # f.puts @buffers.keys.map { |name| "#{name}\n" }.sort
+        @buffers.keys.sort.each_with_index do |name, index|
+          bullet = bullets[index]
+          bullet << ') ' if bullet
+          f.puts "#{bullet}#{name}"
+        end
       end
       open_list_buffer
-      filename = get_user_input( "Switch to buffer: " )
+      filename = get_user_input( "Switch to buffer: ", :numbered_completion => true )
       buffer = @buffers[ filename ]
       if buffer
         switch_to buffer

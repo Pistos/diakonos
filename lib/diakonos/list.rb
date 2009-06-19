@@ -1,6 +1,7 @@
 module Diakonos
 
   class Diakonos
+    attr_reader :list_buffer
 
     def open_list_buffer
       @list_buffer = open_file( @list_filename )
