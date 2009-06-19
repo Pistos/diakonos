@@ -37,6 +37,7 @@ module Diakonos
 
   class Diakonos
     # completion_array is the array of strings that tab completion can use
+    # @param options :initial_text, :completion_array, :history, :do_complete, :on_dirs
     def get_user_input( prompt, options = {}, &block )
       options[ :history ] ||= @rlh_general
       options[ :initial_text ] ||= ""

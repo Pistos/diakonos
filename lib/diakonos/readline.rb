@@ -4,6 +4,7 @@ module Diakonos
 
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
+    # @param options :initial_text, :completion_array, :history, :do_complete, :on_dirs
     def initialize( diakonos, window, prompt, options = {}, &block )
       @diakonos = diakonos
       @window = window
