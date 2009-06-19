@@ -157,7 +157,7 @@ module Diakonos
         when Curses::KEY_SUSPEND
           "suspend"
         when Curses::KEY_F0..(Curses::KEY_F0 + 24)
-          "f" + (self - Curses::KEY_F0).to_s
+          "f" + ( num - Curses::KEY_F0 ).to_s
         when CTRL_H
           "ctrl+h"
         when Curses::KEY_RESIZE
