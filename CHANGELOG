@@ -6,6 +6,7 @@ Diakonos Changelog
 Contributors: Pistos, dominikh
 
 - Added join_lines_upward (Alt-Shift-J).
+- Added one-key selection in buffer list.
 - Various bug fixes and refactorings.
 
 0.8.10
