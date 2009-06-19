@@ -3,10 +3,14 @@ Diakonos Changelog
 
 0.8.11
 
+Contributors: Pistos, dominikh
+
 - Added join_lines_upward (Alt-Shift-J).
 - Various little bug fixes.
 
 0.8.10
+
+Contributors: Pistos
 
 - Ruby version 1.9+ now required.  (Ruby 1.8 support dropped)
 - Added go_to_char (Alt-N).
@@ -28,6 +32,8 @@ Diakonos Changelog
 
 0.8.9
 
+Contributors: Pistos, Decklin Foster
+
 - Put interaction timer only on first stale session prompt, not any after that.
 - Changed all function names from camelCase to snake_case.
 - Added --help-dir switch to installer.
@@ -36,7 +42,6 @@ Diakonos Changelog
 - Fixed a line number display bug.
 - X windows pasting handled much better now.
 - Numerous internal refactorings and reorganizations.
-- Accepted patches from Decklin Foster.
 
 0.8.8
 
