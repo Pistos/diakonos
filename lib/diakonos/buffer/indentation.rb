@@ -109,6 +109,7 @@ module Diakonos
               level += -1
             end
           end
+
           if line =~ @unindenters || second_prev_line =~ @indenters_next_line
             level += -1
           end
