@@ -86,6 +86,10 @@ module Diakonos
           level = 0
         else
           prev_line = @lines[ row - i ]
+          second_prev_line = ''
+          if ! ( ( row - i - i ) < 0 )
+            second_prev_line = @lines[ row - i - 1 ]
+          end
           level = indentation_level( row - i )
 
           line = @lines[ row ]
@@ -95,14 +99,17 @@ module Diakonos
           end
 
           indenter_index = ( prev_line =~ @indenters )
-          if indenter_index
+
+          if prev_line =~ @indenters_next_line
+            level += 1
+          elsif indenter_index
             level += 1
             unindenter_index = (prev_line =~ @unindenters)
-            if unindenter_index and unindenter_index != indenter_index
+            if unindenter_index and unindenter_index != indenter_index)
               level += -1
             end
           end
-          if line =~ @unindenters
+          if line =~ @unindenters || second_prev_line =~ @indenters_next_line
             level += -1
           end
         end

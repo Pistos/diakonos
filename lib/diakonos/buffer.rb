@@ -132,6 +132,7 @@ module Diakonos
       @close_token_regexps = @diakonos.close_token_regexps[ 'all' ].merge( @diakonos.close_token_regexps[ @language ] || Hash.new )
       @token_formats = @diakonos.token_formats[ 'all' ].merge( @diakonos.token_formats[ @language ] || Hash.new )
       @indenters = @diakonos.indenters[ @language ]
+      @indenters_next_line = @diakonos.indenters_next_line[ @language ]
       @unindenters = @diakonos.unindenters[ @language ]
       @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
       @closers = @diakonos.closers[ @language ] || Hash.new
