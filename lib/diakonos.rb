@@ -122,6 +122,7 @@ module Diakonos
       mkdir @script_dir
       @extension_dir = File.join( @diakonos_home, 'extensions' )
       mkdir @extension_dir
+      @extension_scripts = Array.new
       initialize_session
 
       @files = Array.new
@@ -286,7 +287,8 @@ module Diakonos
       session_buffers = session_startup
       session_buffer_number = @session[ 'current_buffer' ] || 1
 
-      Dir[ "#{@script_dir}/*" ].each do |script|
+      scripts = @extension_scripts + Dir[ "#{@script_dir}/*" ]
+      scripts.each do |script|
         begin
           require script
         rescue Exception => e
