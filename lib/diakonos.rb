@@ -120,6 +120,8 @@ module Diakonos
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
+      @extension_dir = File.join( @diakonos_home, 'extensions' )
+      mkdir @extension_dir
       initialize_session
 
       @files = Array.new
@@ -297,6 +299,7 @@ module Diakonos
           )
         end
       end
+
       @hooks.each do |hook_name, hook|
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end

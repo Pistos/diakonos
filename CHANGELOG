@@ -8,6 +8,7 @@ Contributors: Pistos, dominikh
 - Added join_lines_upward (Alt-Shift-J).
 - Added one-key selection in buffer list.
 - Added support for single line indentation.
+- Added extension system.
 - Various bug fixes and refactorings.
 
 0.8.10

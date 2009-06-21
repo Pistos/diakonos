@@ -169,6 +169,24 @@ module Diakonos
         case command
         when "include"
           parse_configuration_file File.expand_path( arg )
+        when 'load_extension'
+          ext_dir = arg
+          Dir[ File.join( @extension_dir, ext_dir, "*.conf" ) ].each do |conf_file|
+            parse_configuration_file File.expand_path( conf_file )
+          end
+          Dir[ File.join( @extension_dir, ext_dir, "**/*.rb" ) ].each do |ext_file|
+            begin
+              require ext_file
+            rescue Exception => e
+              show_exception(
+                e,
+                [
+                  "There is a syntax error in the script.",
+                  "An invalid hook name was used."
+                ]
+              )
+            end
+          end
         when "key"
           if arg
             if /  / === arg
