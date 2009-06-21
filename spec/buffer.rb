@@ -4,7 +4,6 @@ describe 'A Diakonos::Buffer' do
 
   before do
     @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
-    @b.cursor_to( 0, 0 )
   end
 
   it 'can provide selected text' do
@@ -128,6 +127,28 @@ describe 'A Diakonos::Buffer' do
     indent_rows
     @b.save_copy TEMP_FILE
     File.read( TEMP_FILE ).should.equal File.read( SAMPLE_FILE )
+
+    # -------
+
+    @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE_C, SAMPLE_FILE_C )
+
+    indent_rows 0, 14
+    @b.save_copy TEMP_FILE_C
+    File.read( TEMP_FILE_C ).should.equal File.read( SAMPLE_FILE_C )
+
+    @b.cursor_to( 3, 0 )
+    @b.insert_string "    "
+    @b.cursor_to( 10, 0 )
+    @b.insert_string "    "
+    @b.cursor_to( 12, 0 )
+    @b.insert_string "    "
+
+    @b.save_copy TEMP_FILE_C
+    File.read( TEMP_FILE_C ).should.not.equal File.read( SAMPLE_FILE_C )
+
+    indent_rows 0, 14
+    @b.save_copy TEMP_FILE_C
+    File.read( TEMP_FILE_C ).should.equal File.read( SAMPLE_FILE_C )
   end
 
   it 'can paste an Array of Strings' do
