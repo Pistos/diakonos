@@ -105,7 +105,7 @@ module Diakonos
           elsif indenter_index
             level += 1
             unindenter_index = (prev_line =~ @unindenters)
-            if unindenter_index and unindenter_index != indenter_index)
+            if unindenter_index and unindenter_index != indenter_index
               level += -1
             end
           end
