@@ -13,11 +13,17 @@ end
 if ! Object.const_defined? 'SAMPLE_FILE'
   SAMPLE_FILE = File.join( TEST_DIR, '/sample-file.rb' )
 end
+if ! Object.const_defined? 'SAMPLE_FILE_C'
+  SAMPLE_FILE_C = File.join( TEST_DIR, '/sample-file.c' )
+end
 if ! Object.const_defined? 'BRACKET_FILE'
   BRACKET_FILE = File.join( TEST_DIR, '/bracket-file.rb' )
 end
 if ! Object.const_defined? 'TEMP_FILE'
   TEMP_FILE = File.join( TEST_DIR, '/temp-file.rb' )
+end
+if ! Object.const_defined? 'TEMP_FILE_C'
+  TEMP_FILE_C = File.join( TEST_DIR, '/temp-file.c' )
 end
 
 def cursor_should_be_at( row, col )

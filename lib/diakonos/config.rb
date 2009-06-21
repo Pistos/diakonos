@@ -87,6 +87,7 @@ module Diakonos
       @token_formats       = Hash.new { |h,k| h[ k ] = Hash.new }
       @column_markers      = Hash.new { |h,k| h[ k ] = Hash.new }
       @indenters           = Hash.new
+      @indenters_next_line  = Hash.new
       @unindenters         = Hash.new
       @filemasks           = Hash.new
       @bangmasks           = Hash.new
@@ -220,6 +221,13 @@ module Diakonos
             @indenters[ $1 ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
             @indenters[ $1 ] = Regexp.new arg
+          end
+        when /^lang\.(.+?)\.indent\.indenters_next_line(\.case_insensitive)?$/
+          case_insensitive = ( $2 != nil )
+          if case_insensitive
+            @indenters_next_line[ $1 ] = Regexp.new( arg, Regexp::IGNORECASE )
+          else
+            @indenters_next_line[ $1 ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.unindenters(\.case_insensitive)?$/
           case_insensitive = ( $2 != nil )

@@ -110,7 +110,7 @@ module Diakonos
   class Diakonos
 
     attr_reader :diakonos_home, :script_dir, :clipboard,
-      :list_filename, :hooks, :indenters, :unindenters, :closers,
+      :list_filename, :hooks, :indenters, :indenters_next_line, :unindenters, :closers,
       :last_commands, :there_was_non_movement, :do_display, :testing
 
     include ::Diakonos::Functions
