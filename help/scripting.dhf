@@ -28,7 +28,7 @@ Press <F7> to iterate over each line of selected text.  You will be prompted
 for Ruby code which will act as the body of a Ruby block which uses the
 variable "line" and evaluates to a String.  For example:
 
-  line.strip.squeeze( ' ' )  
+  line.strip.squeeze( ' ' )
 
 will strip off whitespace from the beginning and end of each line and then
 collapse all consecutive sequences of spaces into single spaces.
@@ -40,12 +40,12 @@ will be prompted for Ruby code which operates on the array variable "lines".
 For example:
 
   lines.find_all { |l| /foo/ === l }
-  
+
 will replace the selected lines with the lines that match the regular expression
 /foo/.
 
   lines.sort
-  
+
 will sort the selected lines.
 
 ## Startup Scripts
@@ -60,6 +60,8 @@ with the -e command line argument.  Here is an example of using the -e argument
 to initiate a search on startup:
 
   diakonos -e 'find "down", CASE_SENSITIVE, "search expression"' filename
+
+See also the documentation on extensions.
 
 ## Hooks
 

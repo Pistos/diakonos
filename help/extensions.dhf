@@ -1,0 +1,93 @@
+# Extending Diakonos
+
+Diakonos has a simple but powerful extension system.  Extensions are written in
+Ruby (http://www.ruby-lang.org).
+
+## Installing and Uninstalling Extensions
+
+### Unpack/Clone
+
+Extensions are installed in ~/.diakonos/extensions/.  Each extension should
+have its own subdirectory under there.  Extension tarballs or repository clones
+should be unpacked or cloned under there.
+
+### Load
+
+Once an extension is installed into ~/.diakonos/extensions/, you activate it
+by adding a command to your configuration:
+
+  load_extension name_of_the_extension
+
+Diakonos will load extensions at startup, and will reload extensions whenever
+the Diakonos configuration is updated.
+
+### Unload
+
+To deactivate an extension, simply remove (or comment out) all load_extension
+directives from your configuration which load the extension.
+
+### Uninstall
+
+Extensions can be removed cleanly by deleting the extension's subdirectory out
+of ~/.diakonos/extensions/.
+
+## Extension Format
+
+### Directory Structure
+
+A Diakonos extension consists of a directory (or directory tree) of files:
+
+  info.yaml
+  *.conf
+  *.rb
+
+The simplest extension will have nothing but an info.yaml file.  This "empty"
+extension will do nothing useful, though, of course.
+
+Diakonos will parse and load all configuration files (*.conf) in the root of
+the extension's directory.  All Ruby files (*.rb) found in the extension's
+directory, or any subdirectory underneath it, are loaded and executed at
+startup, and on configuration change.  Typically, an extension will only have
+one configuration file, but it may have any number of Ruby files.
+
+### Information File
+
+To be valid, an extension must have a properly-formatted info.yaml file.  As
+the filename suggests, info.yaml is a YAML file.  It consists of several keys,
+and a few arrays, described below.
+
+The diakonos key is required.  It is strongly recommended to have name, uris
+and version keys.  The other keys are optional.
+
+name: (recommended) The name of the extension.
+
+description: (optional) A brief, one-line description of the extension.
+
+author: (optional) Several subkeys provide information about the extension's author.
+    name: The author's name or nickname.
+    email: The author's email address.
+    uri: A URI associated with the author.  This might be a homepage, or a blog.
+
+version: (recommended) The version of the extension.
+
+uris: (recommended)
+    homepage: The website giving more information about the extension.
+    repository: The URI of the extension's source code repository.  This should
+      be a URI that can be used with version control software, and so might
+      begin with "svn://" or "git://".
+
+licence: (optional) The licence of the extension's source code.
+
+diakonos: (required) Several subkeys tell Diakonos about what versions of
+      Diakonos the extension works with.
+    minimum: The minimum version of Diakonos required for the extension to
+      function properly.
+    tested: A list of Diakonos versions which the extension is known to run
+      under.
+
+notes: (optional) Longer text describing the extension, its capabilities and
+  its usage.  For multiple paragraphs, use the YAML syntax "notes: >", and
+  indent the paragraphs to the same level.
+
+
+Tags: script scripts scripting program programming language ruby extend extension extensions plugin plug-in plugins plug-ins addon addons add-on add-ons package packages format layout structure load loading unload unloading activate deactivate activating deactivating install installing installation
