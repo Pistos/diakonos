@@ -1,0 +1,19 @@
+name: Hello World
+description: A example of a Diakonos extension
+author:
+    name: Pistos
+    email: somebody@example.com
+    uri: http://blog.purepistos.net
+version: 1.0.0
+uris:
+    homepage: http://github.com/Pistos/diakonos/tree/master/extensions/dk-hello-world
+    repository: git://github.com/Pistos/diakonos.git
+licence: MIT
+diakonos:
+    minimum: 0.8.11
+    tested:
+        - 0.8.11
+notes: >
+    This extension adds a hello_world function to Diakonos.
+
+    Pressing Shift-F12 will activate the function.
