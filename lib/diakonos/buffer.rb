@@ -194,32 +194,40 @@ module Diakonos
 
 
     def surround(text, args = { })
-      # TODO make this a class or instance variable, otherwise we are going to waste memory and processing time
       # TODO examine if we need an args hash
+
+      # TODO make this a class or instance variable, otherwise we are going to waste memory and processing time
+      # TODO make this configurable and language dependent
       parentheses = {
-        /^\($/ => ['( ', ' )'],
-        /^\)$/ => ['(', ')'],
+        "(" => ['( ', ' )'],
+        ")" => ['(', ')'],
 
-        /^\{$/ => ['{ ', ' }'],
-        /^\}$/ => ['{', '}'],
+        "{" => ['{ ', ' }'],
+        "}" => ['{', '}'],
 
-        /^\[$/ => ['[ ', ' ]'],
-        /^\]$/ => ['[', ']'],
+        "[" => ['[ ', ' ]'],
+        "]" => ['[', ']'],
 
-        /^<$/ => ['< ', ' >'],
-        /^>$/ => ['<', '>'],
+        "<" => ['< ', ' >'],
+        ">" => ['<', '>'],
 
-        /^'$/ => ['\'', '\''],
-        /^"$/ => ['"', '"'],
+        "'" => ['\'', '\''],
+        "\"" => ['"', '"'],
 
-        /^\/\*$/ => ['/*', '*/'],
-        /^<!--$/ => ['<!-- ', ' -->'],
+        "/*" => ['/*', '*/'],
+        "<!--" => ['<!-- ', ' -->'],
 
         /^<.+?>$/ => lambda { |tag| return [tag, tag[0] + '/' + tag[1..-1]] },
       }
+      r_parentheses = { }
+      parentheses.each do |key, value|
+        if key.is_a? String
+          key = Regexp.new("^#{Regexp.escape(key)}$")
+        end
+        r_parentheses[key] = value
+      end
 
-
-      pair = parentheses.select { |r, p| args[:parenthesis] =~ r }.values[0]
+      pair = r_parentheses.select { |r, p| args[:parenthesis] =~ r }.values[0]
       pair = pair.call(args[:parenthesis])  if pair.is_a? Proc
 
       pair[0] + text.join("\n") + pair[1]
