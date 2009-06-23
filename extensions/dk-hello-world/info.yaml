@@ -16,4 +16,4 @@ diakonos:
 notes: >
     This extension adds a hello_world function to Diakonos.
 
-    Pressing Shift-F12 will activate the function.
+    Pressing Shift-F11 will activate the function.
