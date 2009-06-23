@@ -32,9 +32,14 @@ module Diakonos
     end
 
     def surround_word
+      ( start_row, start_col ), ( end_row, end_col ) = @current_buffer.word_under_cursor_pos
+      @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
+      surround_selection
     end
 
     def surround_line
+      @current_buffer.select_current_line
+      surround_selection
     end
 
     def surround_paragraph
