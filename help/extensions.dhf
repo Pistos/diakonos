@@ -3,6 +3,7 @@
 Diakonos has a simple but powerful extension system.  Extensions are written in
 Ruby (http://www.ruby-lang.org).
 
+
 ## Installing and Uninstalling Extensions
 
 ### Unpack/Clone
@@ -30,6 +31,7 @@ directives from your configuration which load the extension.
 
 Extensions can be removed cleanly by deleting the extension's subdirectory out
 of ~/.diakonos/extensions/.
+
 
 ## Extension Format
 
@@ -88,6 +90,14 @@ diakonos: (required) Several subkeys tell Diakonos about what versions of
 notes: (optional) Longer text describing the extension, its capabilities and
   its usage.  For multiple paragraphs, use the YAML syntax "notes: >", and
   indent the paragraphs to the same level.
+
+
+## Extension Code
+
+Extension code is any valid Ruby code.  See http://purepistos.net/diakonos/rdoc/
+for source code documentation for Diakonos, and
+http://github.com/Pistos/diakonos/tree/master/extensions/dk-hello-world for an
+example of an extension.
 
 
 Tags: script scripts scripting program programming language ruby extend extension extensions plugin plug-in plugins plug-ins addon addons add-on add-ons package packages format layout structure load loading unload unloading activate deactivate activating deactivating install installing installation
