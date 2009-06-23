@@ -192,6 +192,33 @@ module Diakonos
       set_modified
     end
 
+
+    def surround(text, args = { })
+      # TODO make this a class or instance variable, otherwise we are going to waste memory and processing time
+      # TODO examine if we need an args hash
+      parentheses = {
+        /^\($/ => ['( ', ' )'],
+        /^\)$/ => ['(', ')'],
+
+        /^\{$/ => ['{ ', ' }'],
+        /^\}$/ => ['{', '}'],
+
+        /^\[$/ => ['[ ', ' ]'],
+        /^\]$/ => ['[', ']'],
+
+        /^<$/ => ['< ', ' >'],
+        /^>$/ => ['<', '>'],
+
+        /^<.+?>$/ => lambda { |tag| return [tag, tag[0] + '/' + tag[1..-1]] },
+      }
+
+
+      pair = parentheses.select { |r, p| args[:parenthesis] =~ r }.values[0]
+      pair = pair.call(args[:parenthesis])  if pair.is_a? Proc
+
+      pair[0] + text.join("\n") + pair[1]
+    end
+
     def join_lines_upward( row = @last_row, strip = DONT_STRIP_LINE )
       return false  if row == 0
 
