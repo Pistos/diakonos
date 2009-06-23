@@ -79,6 +79,8 @@ require 'diakonos/buffer/undo'
 require 'diakonos/clipboard'
 require 'diakonos/clipboard-klipper'
 require 'diakonos/clipboard-xclip'
+require 'diakonos/extension'
+require 'diakonos/extension-set'
 require 'diakonos/readline'
 
 require 'diakonos/vendor/fuzzy_file_finder'
@@ -120,9 +122,7 @@ module Diakonos
       mkdir @diakonos_home
       @script_dir = "#{@diakonos_home}/scripts"
       mkdir @script_dir
-      @extension_dir = File.join( @diakonos_home, 'extensions' )
-      mkdir @extension_dir
-      @extension_scripts = Array.new
+      @extensions = ExtensionSet.new( File.join( @diakonos_home, 'extensions' ) )
       initialize_session
 
       @files = Array.new
@@ -287,7 +287,8 @@ module Diakonos
       session_buffers = session_startup
       session_buffer_number = @session[ 'current_buffer' ] || 1
 
-      scripts = @extension_scripts + Dir[ "#{@script_dir}/*" ]
+      scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
+      debug_log "scripts: #{scripts.inspect}"
       scripts.each do |script|
         begin
           require script

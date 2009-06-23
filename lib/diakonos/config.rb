@@ -145,12 +145,6 @@ module Diakonos
       end
     end
 
-    def parse_version( s )
-      if s
-        s.split( '.' ).map { |part| part.to_i }.extend( Comparable )
-      end
-    end
-
     def parse_configuration_file( filename )
       return  if ! FileTest.exists? filename
 
@@ -176,20 +170,8 @@ module Diakonos
         when "include"
           parse_configuration_file File.expand_path( arg )
         when 'load_extension'
-          ext_dir = File.join( @extension_dir, arg )
-
-          info = YAML.load_file( File.join( ext_dir, 'info.yaml' ) )
-          if info[ 'diakonos' ]
-            this_version = parse_version( ::Diakonos::VERSION )
-            min_version = parse_version( info[ 'diakonos' ][ 'minimum' ] )
-            if min_version && this_version >= min_version
-              Dir[ File.join( ext_dir, "**/*.rb" ) ].each do |ext_file|
-                @extension_scripts << ext_file
-              end
-              Dir[ File.join( ext_dir, "*.conf" ) ].each do |conf_file|
-                parse_configuration_file File.expand_path( conf_file )
-              end
-            end
+          @extensions.load( arg ).each do |conf_file|
+            parse_configuration_file conf_file
           end
         when "key"
           if arg
