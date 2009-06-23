@@ -576,15 +576,25 @@ module Diakonos
     def word_under_cursor
       word = nil
 
+      if pos = word_under_cursor_pos
+        col1 = pos[0][1]
+        col2 = pos[1][1]
+        word = @lines[ @last_row ][col1..col2]
+      end
+
+      word
+    end
+
+    def word_under_cursor_pos
       @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
         last_match = Regexp.last_match
         if last_match.begin( 0 ) <= @last_col and @last_col < last_match.end( 0 )
-          word = match_text
+          return [ [ @last_row, last_match.begin(0) ], [ @last_row, last_match.end(0)-1 ] ]
           break
         end
       end
 
-      word
+      return nil
     end
 
     def word_before_cursor
