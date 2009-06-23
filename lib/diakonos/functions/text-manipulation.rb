@@ -26,6 +26,20 @@ module Diakonos
       @current_buffer.comment_out
     end
 
+    def surround_selection
+      parenthesis = get_user_input("Parenthesis: ")
+      @current_buffer.paste @current_buffer.surround(@current_buffer.selected_text, :parenthesis => parenthesis)
+    end
+
+    def surround_word
+    end
+
+    def surround_line
+    end
+
+    def surround_paragraph
+    end
+
     def complete_word( direction = :down )
       b = @current_buffer
       if b.selecting?
