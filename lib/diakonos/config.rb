@@ -201,6 +201,9 @@ module Diakonos
           parse_configuration_file File.expand_path( arg )
         when "key"
           map_key arg
+        when 'mkey'
+          mode, arg_ = arg.split( /\s+/, 2 )
+          map_key arg_, mode
         when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/, /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
           get_token_regexp( @token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/
