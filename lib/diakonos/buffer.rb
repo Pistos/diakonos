@@ -193,9 +193,7 @@ module Diakonos
     end
 
 
-    def surround(text, args = { })
-      # TODO examine if we need an args hash
-
+    def surround(text, parenthesis)
       # TODO make this a class or instance variable, otherwise we are going to waste memory and processing time
       # TODO make this configurable and language dependent
       parentheses = {
@@ -227,8 +225,8 @@ module Diakonos
         r_parentheses[key] = value
       end
 
-      pair = r_parentheses.select { |r, p| args[:parenthesis] =~ r }.values[0]
-      pair = pair.call(args[:parenthesis])  if pair.is_a? Proc
+      pair = r_parentheses.select { |r, p| parenthesis =~ r }.values[0]
+      pair = pair.call(parenthesis)  if pair.is_a? Proc
 
       if pair.nil?
         $diakonos.set_iline "No matching parentheses pair found."
