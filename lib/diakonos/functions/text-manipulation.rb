@@ -28,7 +28,8 @@ module Diakonos
 
     def surround_selection
       parenthesis = get_user_input("Parenthesis: ")
-      @current_buffer.paste @current_buffer.surround(@current_buffer.selected_text, :parenthesis => parenthesis)
+      text = @current_buffer.surround(@current_buffer.selected_text, :parenthesis => parenthesis)
+      @current_buffer.paste text  if text
     end
 
     def surround_word

@@ -230,7 +230,12 @@ module Diakonos
       pair = r_parentheses.select { |r, p| args[:parenthesis] =~ r }.values[0]
       pair = pair.call(args[:parenthesis])  if pair.is_a? Proc
 
-      pair[0] + text.join("\n") + pair[1]
+      if pair.nil?
+        $diakonos.set_iline "No matching parentheses pair found."
+        return nil
+      else
+        return pair[0] + text.join("\n") + pair[1]
+      end
     end
 
     def join_lines_upward( row = @last_row, strip = DONT_STRIP_LINE )
