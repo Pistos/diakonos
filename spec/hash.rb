@@ -163,23 +163,4 @@ describe 'A Hash' do
     h.get_leaf( [ 'a', 'b' ] ).should.equal( 'x' )
   end
 
-  it 'can list leaves' do
-    h = {}
-    h.leaves.should.equal( Set.new( [] ) )
-
-    h = { 'a' => 'x' }
-    h.leaves.should.equal( Set.new( [ 'x' ] ) )
-
-    h = { 'a' => 'x', 'b' => 'y' }
-    h.leaves.should.equal( Set.new( [ 'x', 'y' ] ) )
-
-    h = { 'a' => { 'b' => 'x' }, 'c' => 'y' }
-    h.leaves.should.equal( Set.new( [ 'x', 'y' ] ) )
-
-    h = { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } }
-    h.leaves.should.equal( Set.new( [ 'x', 'y' ] ) )
-
-    h = { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y', 'e' => 'z' }, 'f' => 'w' }
-    h.leaves.should.equal( Set.new( [ 'x', 'y', 'z', 'w' ] ) )
-  end
 end
