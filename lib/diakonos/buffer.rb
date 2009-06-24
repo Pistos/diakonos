@@ -215,7 +215,7 @@ module Diakonos
         "/*" => ['/*', '*/'],
         "<!--" => ['<!-- ', ' -->'],
 
-        /^<.+?>$/ => lambda { |tag| return [tag, tag[0] + '/' + tag[1..-1]] },
+        /^<(.+?)>$/ => ['<\1>', '</\1>'],
       }
       r_parentheses = { }
       parentheses.each do |key, value|
@@ -225,8 +225,10 @@ module Diakonos
         r_parentheses[key] = value
       end
 
-      pair = r_parentheses.select { |r, p| parenthesis =~ r }.values[0]
-      pair = pair.call(parenthesis)  if pair.is_a? Proc
+      pattern, pair = r_parentheses.select { |r, p| parenthesis =~ r }.to_a[0]
+      pair.map! do |paren|
+        parenthesis.gsub( pattern, paren )
+      end
 
       if pair.nil?
         $diakonos.set_iline "No matching parentheses pair found."
