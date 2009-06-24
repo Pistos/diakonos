@@ -44,6 +44,9 @@ module Diakonos
     end
 
     def surround_paragraph
+      (first, _), (last, length) = @current_buffer.paragraph_under_cursor_pos
+      @current_buffer.set_selection( first, 0, last, length+1 )
+      surround_selection
     end
 
     def complete_word( direction = :down )
