@@ -82,8 +82,8 @@ module Diakonos
 
       @logfilename         = @diakonos_home + "/diakonos.log"
       @modes = {
-        edit:  Mode.new,
-        input: Mode.new,
+        'edit'  => Mode.new,
+        'input' => Mode.new,
       }
       @token_regexps       = Hash.new { |h,k| h[ k ] = Hash.new }
       @close_token_regexps = Hash.new { |h,k| h[ k ] = Hash.new }
@@ -100,8 +100,8 @@ module Diakonos
       # Setup some defaults
       @settings[ "context.format" ] = Curses::A_REVERSE
 
-      @modes[ :edit ].keymap[ Curses::KEY_RESIZE ] = [ "redraw", nil ]
-      @modes[ :edit ].keymap[ RESIZE2 ] = [ "redraw", nil ]
+      @modes[ 'edit' ].keymap[ Curses::KEY_RESIZE ] = [ "redraw", nil ]
+      @modes[ 'edit' ].keymap[ RESIZE2 ] = [ "redraw", nil ]
 
       @colour_pairs = Array.new
 
@@ -147,6 +147,34 @@ module Diakonos
       end
     end
 
+    def map_key( arg, mode = 'edit' )
+      return  if arg.nil?
+
+      if /  / === arg
+        keystrings, function_and_args = arg.split( / {2,}/, 2 )
+      else
+        keystrings, function_and_args = arg.split( /;/, 2 )
+      end
+      keystrokes = Array.new
+      keystrings.split( /\s+/ ).each do |ks_str|
+        codes = Keying.keycodes_for( ks_str )
+        if codes.empty?
+          puts "Unknown keystring: #{ks_str}"
+        else
+          keystrokes.concat codes
+        end
+      end
+      if function_and_args.nil?
+        @modes[ mode ].keymap.delete_key_path( keystrokes )
+      else
+        function, function_args = function_and_args.split( /\s+/, 2 )
+        @modes[ mode ].keymap.set_key_path(
+          keystrokes,
+          [ function, function_args ]
+        )
+      end
+    end
+
     def parse_configuration_file( filename )
       return  if ! FileTest.exists? filename
 
@@ -172,31 +200,7 @@ module Diakonos
         when "include"
           parse_configuration_file File.expand_path( arg )
         when "key"
-          if arg
-            if /  / === arg
-              keystrings, function_and_args = arg.split( / {2,}/, 2 )
-            else
-              keystrings, function_and_args = arg.split( /;/, 2 )
-            end
-            keystrokes = Array.new
-            keystrings.split( /\s+/ ).each do |ks_str|
-              codes = Keying.keycodes_for( ks_str )
-              if codes.empty?
-                puts "Unknown keystring: #{ks_str}"
-              else
-                keystrokes.concat codes
-              end
-            end
-            if function_and_args.nil?
-              @modes[ :edit ].keymap.delete_key_path( keystrokes )
-            else
-              function, function_args = function_and_args.split( /\s+/, 2 )
-              @modes[ :edit ].keymap.set_key_path(
-                keystrokes,
-                [ function, function_args ]
-              )
-            end
-          end
+          map_key arg
         when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/, /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
           get_token_regexp( @token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/
