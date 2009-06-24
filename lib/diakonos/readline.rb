@@ -46,6 +46,148 @@ module Diakonos
       @input = input
     end
 
+    def process_keystroke( context = [], ch = nil )
+      ch ||= @window.getch
+      return  if ch.nil?
+      c = ch.ord
+
+      case c
+      when Curses::KEY_DC
+        if @input_cursor < @input.length
+          @window.delch
+          set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
+          call_block
+        end
+      when BACKSPACE, CTRL_H
+        # Curses::KEY_LEFT
+        if @input_cursor > 0
+          @input_cursor += -1
+          @window.setpos( @window.cury, @window.curx - 1 )
+
+          # Curses::KEY_DC
+          if @input_cursor < @input.length
+            @window.delch
+            set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
+            call_block
+          end
+        end
+      when ENTER, Curses::KEY_F3
+        item = @diakonos.current_list_item
+        if @on_dirs == :go_into_dirs && item && File.directory?( item )
+          complete_input
+        else
+          @done = true
+        end
+      when ESCAPE, CTRL_C, CTRL_D, CTRL_Q
+        @input = nil
+        @done = true
+      when Curses::KEY_LEFT
+        if @input_cursor > 0
+          @input_cursor += -1
+          @window.setpos( @window.cury, @window.curx - 1 )
+        end
+      when Curses::KEY_RIGHT
+        if @input_cursor < @input.length
+          @input_cursor += 1
+          @window.setpos( @window.cury, @window.curx + 1 )
+        end
+      when Curses::KEY_HOME
+        @input_cursor = 0
+        @window.setpos( @icury, @icurx )
+      when Curses::KEY_END
+        @input_cursor = @input.length
+        @window.setpos( @window.cury, @icurx + @input.length )
+      when TAB
+        complete_input
+      when Curses::KEY_NPAGE
+        @diakonos.page_down
+        line = @diakonos.select_list_item
+        if line
+          set_input line
+          cursor_write_input
+        end
+      when Curses::KEY_PPAGE
+        @diakonos.page_up
+        line = @diakonos.select_list_item
+        if line
+          set_input line
+          cursor_write_input
+        end
+      when Curses::KEY_UP
+        if @diakonos.showing_list?
+          if @diakonos.list_item_selected?
+            @diakonos.previous_list_item
+          end
+          set_input @diakonos.select_list_item
+        elsif @history_index > 0
+          @history[ @history_index ] = @input
+          @history_index -= 1
+          @input = @history[ @history_index ]
+        end
+        cursor_write_input
+      when Curses::KEY_DOWN
+        if @diakonos.showing_list?
+          if @diakonos.list_item_selected?
+            @diakonos.next_list_item
+          end
+          set_input @diakonos.select_list_item
+        elsif @history_index < @history.length - 1
+          @history[ @history_index ] = @input
+          @history_index += 1
+          @input = @history[ @history_index ]
+        end
+        cursor_write_input
+      when CTRL_K
+        @input = ""
+        if @block
+          @block.call @input
+        end
+        cursor_write_input
+      when Curses::KEY_F5
+        @diakonos.decrease_grep_context
+        call_block
+      when Curses::KEY_F6
+        @diakonos.increase_grep_context
+        call_block
+      when CTRL_W
+        @input = @input.gsub( /\W+$/, '' ).gsub( /\w+$/, '' )
+        if @block
+          @block.call @input
+        end
+        cursor_write_input
+      else
+        if c > 31 && c < 255 && c != BACKSPACE
+          if @numbered_completion
+            if(
+              @diakonos.showing_list? &&
+              ( (48..57).include?( c ) || (97..122).include?( c ) )
+            )
+              line = @diakonos.list_buffer.to_a.select { |l|
+                l =~ /^#{c.chr}  /
+              }[ 0 ]
+
+              if line
+                set_input line
+                cursor_write_input
+                @done = true
+              end
+            end
+          else
+            if @input_cursor == @input.length
+              @input << c
+              @window.addch c
+            else
+              @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
+              @window.setpos( @window.cury, @window.curx + 1 )
+              redraw_input
+            end
+            @input_cursor += 1
+            call_block
+          end
+        end
+      end
+    end
+
     # Returns nil on cancel.
     def readline
       @input = @initial_text.dup
@@ -63,146 +205,8 @@ module Diakonos
         complete_input
       end
 
-      loop do
-        c = @window.getch.ord
-
-        case c
-        when Curses::KEY_DC
-          if @input_cursor < @input.length
-            @window.delch
-            set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
-            call_block
-          end
-        when BACKSPACE, CTRL_H
-          # Curses::KEY_LEFT
-          if @input_cursor > 0
-            @input_cursor += -1
-            @window.setpos( @window.cury, @window.curx - 1 )
-
-            # Curses::KEY_DC
-            if @input_cursor < @input.length
-              @window.delch
-              set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
-              call_block
-            end
-          end
-        when ENTER, Curses::KEY_F3
-          item = @diakonos.current_list_item
-          if @on_dirs == :go_into_dirs && item && File.directory?( item )
-            complete_input
-          else
-            break
-          end
-        when ESCAPE, CTRL_C, CTRL_D, CTRL_Q
-          @input = nil
-          break
-        when Curses::KEY_LEFT
-          if @input_cursor > 0
-            @input_cursor += -1
-            @window.setpos( @window.cury, @window.curx - 1 )
-          end
-        when Curses::KEY_RIGHT
-          if @input_cursor < @input.length
-            @input_cursor += 1
-            @window.setpos( @window.cury, @window.curx + 1 )
-          end
-        when Curses::KEY_HOME
-          @input_cursor = 0
-          @window.setpos( @icury, @icurx )
-        when Curses::KEY_END
-          @input_cursor = @input.length
-          @window.setpos( @window.cury, @icurx + @input.length )
-        when TAB
-          complete_input
-        when Curses::KEY_NPAGE
-          @diakonos.page_down
-          line = @diakonos.select_list_item
-          if line
-            set_input line
-            cursor_write_input
-          end
-        when Curses::KEY_PPAGE
-          @diakonos.page_up
-          line = @diakonos.select_list_item
-          if line
-            set_input line
-            cursor_write_input
-          end
-        when Curses::KEY_UP
-          if @diakonos.showing_list?
-            if @diakonos.list_item_selected?
-              @diakonos.previous_list_item
-            end
-            set_input @diakonos.select_list_item
-          elsif @history_index > 0
-            @history[ @history_index ] = @input
-            @history_index -= 1
-            @input = @history[ @history_index ]
-          end
-          cursor_write_input
-        when Curses::KEY_DOWN
-          if @diakonos.showing_list?
-            if @diakonos.list_item_selected?
-              @diakonos.next_list_item
-            end
-            set_input @diakonos.select_list_item
-          elsif @history_index < @history.length - 1
-            @history[ @history_index ] = @input
-            @history_index += 1
-            @input = @history[ @history_index ]
-          end
-          cursor_write_input
-        when CTRL_K
-          @input = ""
-          if @block
-            @block.call @input
-          end
-          cursor_write_input
-        when Curses::KEY_F5
-          @diakonos.decrease_grep_context
-          call_block
-        when Curses::KEY_F6
-          @diakonos.increase_grep_context
-          call_block
-        when CTRL_W
-          @input = @input.gsub( /\W+$/, '' ).gsub( /\w+$/, '' )
-          if @block
-            @block.call @input
-          end
-          cursor_write_input
-        else
-          if c > 31 && c < 255 && c != BACKSPACE
-            if @numbered_completion
-              if(
-                @diakonos.showing_list? &&
-                ( (48..57).include?( c ) || (97..122).include?( c ) )
-              )
-                line = @diakonos.list_buffer.to_a.select { |l|
-                  l =~ /^#{c.chr}  /
-                }[ 0 ]
-
-                if line
-                  set_input line
-                  cursor_write_input
-                  break
-                end
-              end
-            else
-              if @input_cursor == @input.length
-                @input << c
-                @window.addch c
-              else
-                @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
-                @window.setpos( @window.cury, @window.curx + 1 )
-                redraw_input
-              end
-              @input_cursor += 1
-              call_block
-            end
-          else
-            @diakonos.log "Other input: #{c}"
-          end
-        end
+      while ! @done
+        process_keystroke
       end
 
       @diakonos.close_list_buffer
