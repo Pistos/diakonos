@@ -197,13 +197,13 @@ module Diakonos
       else
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.get_leaf( keychain_pressed )
+        function_and_args = @modes[ :edit ].keymap.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
         end
 
-        partial_keychain = @keychains.get_node( keychain_pressed )
+        partial_keychain = @modes[ :edit ].keymap.get_node( keychain_pressed )
         if partial_keychain
           set_iline( "Part of existing keychain: " + keychain_str_for( keychain_pressed ) + "..." )
         else
@@ -221,13 +221,13 @@ module Diakonos
       else
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.get_leaf( keychain_pressed )
+        function_and_args = @modes[ :edit ].keymap.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
           set_iline "#{keychain_str_for( keychain_pressed )}  ->  #{function}( #{args} )"
         else
-          partial_keychain = @keychains.get_node( keychain_pressed )
+          partial_keychain = @modes[ :edit ].keymap.get_node( keychain_pressed )
           if partial_keychain
             set_iline( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
             process_keystroke( keychain_pressed )
@@ -296,7 +296,7 @@ module Diakonos
         end
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.get_leaf( keychain_pressed )
+        function_and_args = @modes[ :edit ].keymap.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
@@ -324,7 +324,7 @@ module Diakonos
             show_exception e
           end
         else
-          partial_keychain = @keychains.get_node( keychain_pressed )
+          partial_keychain = @modes[ :edit ].keymap.get_node( keychain_pressed )
           if partial_keychain
             set_iline( keychain_str_for( keychain_pressed ) + "..." )
             process_keystroke( keychain_pressed )

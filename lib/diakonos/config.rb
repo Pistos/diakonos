@@ -81,7 +81,10 @@ module Diakonos
       end
 
       @logfilename         = @diakonos_home + "/diakonos.log"
-      @keychains           = Hash.new.extend( KeyMap )
+      @modes = {
+        edit:  Mode.new,
+        input: Mode.new,
+      }
       @token_regexps       = Hash.new { |h,k| h[ k ] = Hash.new }
       @close_token_regexps = Hash.new { |h,k| h[ k ] = Hash.new }
       @token_formats       = Hash.new { |h,k| h[ k ] = Hash.new }
@@ -97,8 +100,8 @@ module Diakonos
       # Setup some defaults
       @settings[ "context.format" ] = Curses::A_REVERSE
 
-      @keychains[ Curses::KEY_RESIZE ] = [ "redraw", nil ]
-      @keychains[ RESIZE2 ] = [ "redraw", nil ]
+      @modes[ :edit ].keymap[ Curses::KEY_RESIZE ] = [ "redraw", nil ]
+      @modes[ :edit ].keymap[ RESIZE2 ] = [ "redraw", nil ]
 
       @colour_pairs = Array.new
 
@@ -185,10 +188,10 @@ module Diakonos
               end
             end
             if function_and_args.nil?
-              @keychains.delete_key_path( keystrokes )
+              @modes[ :edit ].keymap.delete_key_path( keystrokes )
             else
               function, function_args = function_and_args.split( /\s+/, 2 )
-              @keychains.set_key_path(
+              @modes[ :edit ].keymap.set_key_path(
                 keystrokes,
                 [ function, function_args ]
               )

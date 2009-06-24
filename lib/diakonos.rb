@@ -80,6 +80,7 @@ require 'diakonos/clipboard'
 require 'diakonos/clipboard-klipper'
 require 'diakonos/clipboard-xclip'
 require 'diakonos/key-map'
+require 'diakonos/mode'
 require 'diakonos/readline'
 
 require 'diakonos/vendor/fuzzy_file_finder'
