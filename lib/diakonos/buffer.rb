@@ -615,6 +615,42 @@ module Diakonos
 
       word
     end
+    # TODO word_before_cursor_pos
+
+    # Returns an array of lines of the current paragraph.
+    def paragraph_under_cursor
+      (first, _), (last, _) = paragraph_under_cursor_pos
+      @lines [ first..last ]
+    end
+
+    # Returns the coordinates of the first and last line of the current
+    # paragraph.
+    def paragraph_under_cursor_pos
+      if @lines[ @last_row ] =~ /^\s*$/
+        return [ [ @last_row, 0], [ @last_row, @lines[ @last_row ].length - 1] ]
+      end
+      upper_boundary = 0
+      lower_boundary = @lines.size - 1
+
+      @last_row.downto(0) do |i|
+        line = @lines[ i ]
+        if line =~ /^\s*$/
+          upper_boundary = i + 1
+          break
+        end
+      end
+
+      @last_row.upto(@lines.size - 1) do |i|
+        line = @lines[ i ]
+        if line =~ /^\s*$/
+          lower_boundary = i - 1
+          break
+        end
+      end
+
+      [ [ upper_boundary, 0 ], [ lower_boundary, @lines[ lower_boundary ].length - 1 ] ]
+    end
+    # TODO paragraph_before_cursor(_pos)?
 
     def words( filter_regexp = nil )
       w = @lines.join( ' ' ).scan( WORD_REGEXP )
