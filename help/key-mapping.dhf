@@ -102,7 +102,7 @@ For example, suppose you wanted to make the keychord <Alt-L> drop to the shell
 and execute 'ls' and show the results.  You would set this up with a new line
 in the configuration file.  Type 'key' and space:
 
-key 
+key
 
 then press <Alt-K>, <Alt-L> and <Enter> to print out the string Diakonos
 expects for <Alt-L>. Your line will then be:
@@ -116,4 +116,12 @@ key esc l     shell "ls"
 Press <Ctrl-S> to save the configuration, and your new key mapping will be
 ready for use.  Try it!
 
-Tags: key keys keyboard map mapping layout change config configure set different alternate function feature command
+## Unsetting a key mapping
+
+If other configuration files (such as the system-wide one) are introducing a
+key mapping that you want to unmap, simply configure the key to have no
+function.  For example:
+
+key ctrl+g
+
+Tags: key keys keyboard map mapping layout change config configure set different alternate function feature command unset unmap override
