@@ -272,8 +272,6 @@ module Diakonos
             f.print match
             if FileTest.directory?( match )
               f.print '/'
-            else
-              @diakonos.log "'#{match}' is not a directory"
             end
             f.puts
 
