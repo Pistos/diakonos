@@ -79,6 +79,7 @@ require 'diakonos/buffer/undo'
 require 'diakonos/clipboard'
 require 'diakonos/clipboard-klipper'
 require 'diakonos/clipboard-xclip'
+require 'diakonos/key-map'
 require 'diakonos/readline'
 
 require 'diakonos/vendor/fuzzy_file_finder'

@@ -1,8 +1,8 @@
 require 'spec/preparation'
 
-describe 'A Hash' do
+describe 'A KeyMap' do
   it 'can delete a key path' do
-    g = {}
+    g = {}.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.delete_key_path( [] ).should.equal( {} )
     h = g.deep_clone
@@ -10,7 +10,7 @@ describe 'A Hash' do
     h = g.deep_clone
     h.delete_key_path( [ 'test', 'test2' ] ).should.equal( {} )
 
-    g = { 'a' => 'x' }
+    g = { 'a' => 'x' }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.delete_key_path( [] ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
@@ -26,7 +26,7 @@ describe 'A Hash' do
       'a' => {
         'b' => 'x'
       }
-    }
+    }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.delete_key_path( [] ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
@@ -45,7 +45,7 @@ describe 'A Hash' do
         'b' => 'x',
         'c' => 'y'
       }
-    }
+    }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.delete_key_path( [] ).should.equal( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
     h = g.deep_clone
@@ -68,7 +68,7 @@ describe 'A Hash' do
       'c' => {
         'd' => 'y'
       }
-    }
+    }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.delete_key_path( [] ).should.equal( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )
     h = g.deep_clone
@@ -88,7 +88,7 @@ describe 'A Hash' do
   end
 
   it 'can set a key path' do
-    g = {}
+    g = {}.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.set_key_path( [], 'x' ).should.equal( {} )
     h = g.deep_clone
@@ -96,7 +96,7 @@ describe 'A Hash' do
     h = g.deep_clone
     h.set_key_path( [ 'a', 'b' ], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
 
-    g = { 'a' => 'x' }
+    g = { 'a' => 'x' }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.set_key_path( [], 'x' ).should.equal( { 'a' => 'x' } )
     h = g.deep_clone
@@ -104,7 +104,7 @@ describe 'A Hash' do
     h = g.deep_clone
     h.set_key_path( [ 'a', 'b' ], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
 
-    g = { 'c' => 'y' }
+    g = { 'c' => 'y' }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.set_key_path( [], 'x' ).should.equal( { 'c' => 'y' } )
     h = g.deep_clone
@@ -112,7 +112,7 @@ describe 'A Hash' do
     h = g.deep_clone
     h.set_key_path( [ 'a', 'b' ], 'x' ).should.equal( { 'c' => 'y', 'a' => { 'b' => 'x' } } )
 
-    g = { 'a' => { 'b' => 'x' } }
+    g = { 'a' => { 'b' => 'x' } }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     h.set_key_path( [], 'x' ).should.equal( { 'a' => { 'b' => 'x' } } )
     h = g.deep_clone
@@ -124,17 +124,17 @@ describe 'A Hash' do
   end
 
   it 'can get a node' do
-    h = {}
+    h = {}.extend( Diakonos::KeyMap )
     h.get_node( [] ).should.be.nil
     h.get_node( [ 'a' ] ).should.be.nil
     h.get_node( [ 'a', 'b' ] ).should.be.nil
 
-    h = { 'a' => 'x' }
+    h = { 'a' => 'x' }.extend( Diakonos::KeyMap )
     h.get_node( [] ).should.be.nil
     h.get_node( [ 'b' ] ).should.be.nil
     h.get_node( [ 'a' ] ).should.equal( 'x' )
 
-    h = { 'a' => { 'b' => 'x' } }
+    h = { 'a' => { 'b' => 'x' } }.extend( Diakonos::KeyMap )
     h.get_node( [] ).should.be.nil
     h.get_node( [ 'b' ] ).should.be.nil
     h.get_node( [ 'a' ] ).should.equal( { 'b' => 'x' } )
@@ -144,17 +144,17 @@ describe 'A Hash' do
   end
 
   it 'can get a leaf' do
-    h = {}
+    h = {}.extend( Diakonos::KeyMap )
     h.get_leaf( [] ).should.be.nil
     h.get_leaf( [ 'a' ] ).should.be.nil
     h.get_leaf( [ 'a', 'b' ] ).should.be.nil
 
-    h = { 'a' => 'x' }
+    h = { 'a' => 'x' }.extend( Diakonos::KeyMap )
     h.get_leaf( [] ).should.be.nil
     h.get_leaf( [ 'b' ] ).should.be.nil
     h.get_leaf( [ 'a' ] ).should.equal( 'x' )
 
-    h = { 'a' => { 'b' => 'x' } }
+    h = { 'a' => { 'b' => 'x' } }.extend( Diakonos::KeyMap )
     h.get_leaf( [] ).should.be.nil
     h.get_leaf( [ 'b' ] ).should.be.nil
     h.get_leaf( [ 'a' ] ).should.be.nil

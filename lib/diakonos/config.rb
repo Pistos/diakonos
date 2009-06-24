@@ -81,7 +81,7 @@ module Diakonos
       end
 
       @logfilename         = @diakonos_home + "/diakonos.log"
-      @keychains           = Hash.new
+      @keychains           = Hash.new.extend( KeyMap )
       @token_regexps       = Hash.new { |h,k| h[ k ] = Hash.new }
       @close_token_regexps = Hash.new { |h,k| h[ k ] = Hash.new }
       @token_formats       = Hash.new { |h,k| h[ k ] = Hash.new }
