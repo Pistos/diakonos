@@ -177,21 +177,21 @@ module Diakonos
         when /^lang\.(.+?)\.surround\.pair$/
           language = $1
 
-          args = arg.split(/"\s+"/)
+          args = arg.split( /"\s+"/ )
           args.map! do |s|
-            s.gsub(/(?<!\\)"/, '').gsub(/\\"/, '"')
+            s.gsub( /(?<!\\)"/, '' ).gsub( /\\"/, '"' )
           end
 
           pair_key = args.shift
 
           if pair_key =~ /^\/.+\/$/
-            pair_key = Regexp.new(pair_key[1..-2])
+            pair_key = Regexp.new( pair_key[ 1..-2 ] )
           else
-            pair_key = Regexp.new("^#{Regexp.escape(pair_key)}$")
+            pair_key = Regexp.new( "^#{Regexp.escape(pair_key)}$" )
           end
 
           pair_parens = args
-          @surround_pairs[language][pair_key] = pair_parens
+          @surround_pairs[ language ][ pair_key ] = pair_parens
         when "key"
           if arg
             if /  / === arg

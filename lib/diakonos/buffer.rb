@@ -193,18 +193,17 @@ module Diakonos
       set_modified
     end
 
-    def surround(text, parenthesis)
+    def surround( text, parenthesis )
       pattern, pair = @surround_pairs.select { |r, p| parenthesis =~ r }.to_a[ 0 ]
 
       if pair.nil?
         $diakonos.set_iline "No matching parentheses pair found."
-        return nil
+        nil
       else
         pair.map! do |paren|
           parenthesis.gsub( pattern, paren )
         end
-
-        return pair[ 0 ] + text.join( "\n" ) + pair[ 1 ]
+        pair[ 0 ] + text.join( "\n" ) + pair[ 1 ]
       end
     end
 
@@ -549,27 +548,26 @@ module Diakonos
     end
 
     def word_under_cursor
-      word = nil
+      pos = word_under_cursor_pos
+      return  if pos.nil?
 
-      if pos = word_under_cursor_pos
-        col1 = pos[0][1]
-        col2 = pos[1][1]
-        word = @lines[ @last_row ][col1..col2]
-      end
-
-      word
+      col1 = pos[ 0 ][ 1 ]
+      col2 = pos[ 1 ][ 1 ]
+      @lines[ @last_row ][ col1..col2 ]
     end
 
     def word_under_cursor_pos
       @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
         last_match = Regexp.last_match
-        if last_match.begin( 0 ) <= @last_col and @last_col < last_match.end( 0 )
-          return [ [ @last_row, last_match.begin(0) ], [ @last_row, last_match.end(0)-1 ] ]
-          break
+        if last_match.begin( 0 ) <= @last_col && @last_col < last_match.end( 0 )
+          return [
+            [ @last_row, last_match.begin( 0 ) ],
+            [ @last_row, last_match.end( 0 ) - 1 ],
+          ]
         end
       end
 
-      return nil
+      nil
     end
 
     def word_before_cursor
@@ -590,15 +588,19 @@ module Diakonos
     # Returns an array of lines of the current paragraph.
     def paragraph_under_cursor
       ( first, _ ), ( last, _ ) = paragraph_under_cursor_pos
-      @lines [ first..last ]
+      @lines[ first..last ]
     end
 
     # Returns the coordinates of the first and last line of the current
     # paragraph.
     def paragraph_under_cursor_pos
       if @lines[ @last_row ] =~ /^\s*$/
-        return [ [ @last_row, 0 ], [ @last_row, @lines[ @last_row ].length - 1 ] ]
+        return [
+          [ @last_row, 0 ],
+          [ @last_row, @lines[ @last_row ].length - 1 ]
+        ]
       end
+
       upper_boundary = 0
       lower_boundary = @lines.size - 1
 
@@ -610,7 +612,7 @@ module Diakonos
         end
       end
 
-      @last_row.upto(@lines.size - 1) do |i|
+      @last_row.upto( @lines.size - 1 ) do |i|
         line = @lines[ i ]
         if line =~ /^\s*$/
           lower_boundary = i - 1
@@ -618,7 +620,10 @@ module Diakonos
         end
       end
 
-      [ [ upper_boundary, 0 ], [ lower_boundary, @lines[ lower_boundary ].length - 1 ] ]
+      [
+        [ upper_boundary, 0 ],
+        [ lower_boundary, @lines[ lower_boundary ].length - 1 ]
+      ]
     end
     # TODO paragraph_before_cursor(_pos)?
 
