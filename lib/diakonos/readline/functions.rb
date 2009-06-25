@@ -58,6 +58,28 @@ module Diakonos
       cursor_write_input
     end
 
+    def history_up
+      return  if @history_index < 1
+      @history[ @history_index ] = @input
+      @history_index -= 1
+      @input = @history[ @history_index ]
+    end
+
+    def history_down
+      return  if @history_index > @history.length - 2
+      @history[ @history_index ] = @input
+      @history_index += 1
+      @input = @history[ @history_index ]
+    end
+
+    def list_sync
+      line = @diakonos.select_list_item
+      if line
+        set_input line
+        cursor_write_input
+      end
+    end
+
   end
 
 end

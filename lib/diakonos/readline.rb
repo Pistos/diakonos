@@ -102,18 +102,10 @@ module Diakonos
         complete_input
       when Curses::KEY_NPAGE
         @diakonos.page_down
-        line = @diakonos.select_list_item
-        if line
-          set_input line
-          cursor_write_input
-        end
+        list_sync
       when Curses::KEY_PPAGE
         @diakonos.page_up
-        line = @diakonos.select_list_item
-        if line
-          set_input line
-          cursor_write_input
-        end
+        list_sync
       when Curses::KEY_UP
         if @diakonos.showing_list?
           if @diakonos.list_item_selected?
