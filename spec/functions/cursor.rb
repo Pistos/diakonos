@@ -37,7 +37,7 @@ describe 'A Diakonos user can' do
 
   it 'move the cursor to the end of a file' do
     @d.cursor_eof
-    cursor_should_be_at 25,0
+    cursor_should_be_at 26,40
   end
 
   it 'move the cursor to the beginning of a file' do
@@ -64,7 +64,7 @@ describe 'A Diakonos user can' do
 
   it 'move the cursor to the closest previous occurrence of a character' do
     @d.cursor_eof
-    cursor_should_be_at 25,0
+    cursor_should_be_at 26,40
     @d.go_to_char_previous '.'
     cursor_should_be_at 19,1
     @d.go_to_char_previous 'e'

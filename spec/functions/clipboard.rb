@@ -40,7 +40,7 @@ describe 'A Diakonos user can' do
     ]
 
     lines = @b.to_a
-    lines.size.should.equal 23
+    lines.size.should.equal 24
     lines[ 0..2 ].should.equal [
       '',
       'class Sample',
@@ -55,7 +55,7 @@ describe 'A Diakonos user can' do
     @d.paste
 
     lines = @b.to_a
-    lines.size.should.equal 29
+    lines.size.should.equal 30
     lines[ 0..8 ].should.equal [
       '#!/usr/bin/env ruby',
       '',

@@ -116,7 +116,7 @@ describe 'A Diakonos user can' do
     @b.cursor_to 22,2
     @d.delete_to_and_from '{'
     lines = @b.to_a
-    lines.size.should.equal 23
+    lines.size.should.equal 24
     lines[ 21..22 ].should.equal [
       '{}',
       '',
@@ -156,6 +156,7 @@ describe 'A Diakonos user can' do
       ':test => :hash,',
       '}',
       '',
+      '# Comment at end, with no newline at EOF',
     ]
 
     @d.set_buffer_type 'ruby'
@@ -188,6 +189,7 @@ describe 'A Diakonos user can' do
       '  :test => :hash,',
       '}',
       '',
+      '# Comment at end, with no newline at EOF',
     ]
   end
 
