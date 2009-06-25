@@ -6,7 +6,7 @@ module Diakonos
     end
 
     def readline_accept
-      @readline.accept
+      @readline.accept current_list_item
     end
 
     def readline_backspace
@@ -81,12 +81,12 @@ module Diakonos
 
     def readline_page_down
       page_down
-      @readline.list_sync
+      @readline.list_sync select_list_item
     end
 
     def readline_page_up
       page_up
-      @readline.list_sync
+      @readline.list_sync select_list_item
     end
 
   end

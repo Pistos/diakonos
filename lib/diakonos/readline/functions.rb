@@ -7,9 +7,8 @@ module Diakonos
       @done = true
     end
 
-    def accept
-      item = @diakonos.current_list_item
-      if @on_dirs == :go_into_dirs && item && File.directory?( item )
+    def accept( item )
+      if item && @on_dirs == :go_into_dirs && File.directory?( item )
         complete_input
       else
         @done = true
@@ -80,12 +79,10 @@ module Diakonos
       @input = @history[ @history_index ]
     end
 
-    def list_sync
-      line = @diakonos.select_list_item
-      if line
-        set_input line
-        cursor_write_input
-      end
+    def list_sync( line )
+      return  if line.nil?
+      set_input line
+      cursor_write_input
     end
 
   end
