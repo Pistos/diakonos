@@ -2,7 +2,7 @@ module Diakonos
 
   class Readline
 
-    attr_reader :input, :numbered_list
+    attr_reader :input
 
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
@@ -21,7 +21,7 @@ module Diakonos
 
       @do_complete = options[ :do_complete ] || ::Diakonos::DONT_COMPLETE
       @on_dirs = options[ :on_dirs ] || :go_into_dirs
-      @numbered_list = options [ :numbered_list ]
+      @numbered_list = options[ :numbered_list ]
 
       @block = block
 
@@ -51,7 +51,7 @@ module Diakonos
     end
 
     def set_input( input = '' )
-      if @numbered_list && input =~ /^\w  /
+      if numbered_list? && input =~ /^\w  /
         input = input[ 3..-1 ]
       end
       @input = input
@@ -67,8 +67,12 @@ module Diakonos
       cursor_write_input
     end
 
+    def numbered_list?
+      @numbered_list
+    end
+
     def handle_typeable( c )
-      if @numbered_list
+      if numbered_list?
         if(
           @diakonos.showing_list? &&
           ( (48..57).include?( c ) || (97..122).include?( c ) )
