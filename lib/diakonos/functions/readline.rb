@@ -65,6 +65,20 @@ module Diakonos
       @readline.delete_line
     end
 
+    def readline_delete_word
+      @readline.delete_word
+    end
+
+    def readline_grep_context_decrease
+      decrease_grep_context
+      @readline.call_block
+    end
+
+    def readline_grep_context_increase
+      increase_grep_context
+      @readline.call_block
+    end
+
     def readline_page_down
       page_down
       @readline.list_sync

@@ -58,6 +58,14 @@ module Diakonos
       cursor_write_input
     end
 
+    def delete_word
+      @input = @input.gsub( /\W+$/, '' ).gsub( /\w+$/, '' )
+      if @block
+        @block.call @input
+      end
+      cursor_write_input
+    end
+
     def history_up
       return  if @history_index < 1
       @history[ @history_index ] = @input
