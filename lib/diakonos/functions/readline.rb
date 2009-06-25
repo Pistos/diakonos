@@ -5,8 +5,16 @@ module Diakonos
       @readline.abort
     end
 
+    def readline_accept
+      @readline.accept
+    end
+
     def readline_backspace
       @readline.backspace
+    end
+
+    def readline_complete_input
+      @readline.complete_input
     end
 
     def readline_cursor_left

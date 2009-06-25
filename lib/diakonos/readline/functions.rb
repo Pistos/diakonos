@@ -7,6 +7,15 @@ module Diakonos
       @done = true
     end
 
+    def accept
+      item = @diakonos.current_list_item
+      if @on_dirs == :go_into_dirs && item && File.directory?( item )
+        complete_input
+      else
+        @done = true
+      end
+    end
+
     def backspace
       cursor_left
       delete

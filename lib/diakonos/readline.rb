@@ -87,12 +87,7 @@ module Diakonos
       when BACKSPACE, CTRL_H
         backspace
       when ENTER, Curses::KEY_F3
-        item = @diakonos.current_list_item
-        if @on_dirs == :go_into_dirs && item && File.directory?( item )
-          complete_input
-        else
-          @done = true
-        end
+        accept
       when ESCAPE, CTRL_C, CTRL_D, CTRL_Q
         abort
       when Curses::KEY_LEFT
