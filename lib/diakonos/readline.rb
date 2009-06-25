@@ -53,24 +53,9 @@ module Diakonos
 
       case c
       when Curses::KEY_DC
-        if @input_cursor < @input.length
-          @window.delch
-          set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
-          call_block
-        end
+        delete
       when BACKSPACE, CTRL_H
-        # Curses::KEY_LEFT
-        if @input_cursor > 0
-          @input_cursor += -1
-          @window.setpos( @window.cury, @window.curx - 1 )
-
-          # Curses::KEY_DC
-          if @input_cursor < @input.length
-            @window.delch
-            set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
-            call_block
-          end
-        end
+        backspace
       when ENTER, Curses::KEY_F3
         item = @diakonos.current_list_item
         if @on_dirs == :go_into_dirs && item && File.directory?( item )
@@ -82,15 +67,9 @@ module Diakonos
         @input = nil
         @done = true
       when Curses::KEY_LEFT
-        if @input_cursor > 0
-          @input_cursor += -1
-          @window.setpos( @window.cury, @window.curx - 1 )
-        end
+        cursor_left
       when Curses::KEY_RIGHT
-        if @input_cursor < @input.length
-          @input_cursor += 1
-          @window.setpos( @window.cury, @window.curx + 1 )
-        end
+        cursor_right
       when Curses::KEY_HOME
         @input_cursor = 0
         @window.setpos( @icury, @icurx )
