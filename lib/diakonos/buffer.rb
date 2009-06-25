@@ -122,6 +122,7 @@ module Diakonos
     def set_language( language )
       @settings = @diakonos.settings
       @language = language
+      @surround_pairs = @diakonos.surround_pairs[ 'all' ].merge( @diakonos.surround_pairs[ @language ] || Hash.new )
       @token_regexps = @diakonos.token_regexps[ 'all' ].merge( @diakonos.token_regexps[ @language ] || Hash.new )
       @close_token_regexps = @diakonos.close_token_regexps[ 'all' ].merge( @diakonos.close_token_regexps[ @language ] || Hash.new )
       @token_formats = @diakonos.token_formats[ 'all' ].merge( @diakonos.token_formats[ @language ] || Hash.new )
@@ -192,49 +193,18 @@ module Diakonos
       set_modified
     end
 
-
     def surround(text, parenthesis)
-      # TODO make this a class or instance variable, otherwise we are going to waste memory and processing time
-      # TODO make this configurable and language dependent
-      parentheses = {
-        "(" => ['( ', ' )'],
-        ")" => ['(', ')'],
-
-        "{" => ['{ ', ' }'],
-        "}" => ['{', '}'],
-
-        "[" => ['[ ', ' ]'],
-        "]" => ['[', ']'],
-
-        "<" => ['< ', ' >'],
-        ">" => ['<', '>'],
-
-        "'" => ['\'', '\''],
-        "\"" => ['"', '"'],
-
-        "/*" => ['/*', '*/'],
-        "<!--" => ['<!-- ', ' -->'],
-
-        /^<(.+?)>$/ => ['<\1>', '</\1>'],
-      }
-      r_parentheses = { }
-      parentheses.each do |key, value|
-        if key.is_a? String
-          key = Regexp.new("^#{Regexp.escape(key)}$")
-        end
-        r_parentheses[key] = value
-      end
-
-      pattern, pair = r_parentheses.select { |r, p| parenthesis =~ r }.to_a[0]
-      pair.map! do |paren|
-        parenthesis.gsub( pattern, paren )
-      end
+      pattern, pair = @surround_pairs.select { |r, p| parenthesis =~ r }.to_a[ 0 ]
 
       if pair.nil?
         $diakonos.set_iline "No matching parentheses pair found."
         return nil
       else
-        return pair[0] + text.join("\n") + pair[1]
+        pair.map! do |paren|
+          parenthesis.gsub( pattern, paren )
+        end
+
+        return pair[ 0 ] + text.join( "\n" ) + pair[ 1 ]
       end
     end
 

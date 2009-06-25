@@ -11,7 +11,7 @@ module Diakonos
   EOL_ALT_LAST_CHAR = 3
 
   class Diakonos
-    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers
+    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers, :surround_pairs
 
     def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
@@ -92,6 +92,7 @@ module Diakonos
       @filemasks           = Hash.new
       @bangmasks           = Hash.new
       @closers             = Hash.new
+      @surround_pairs      = Hash.new { |h,k| h[ k ] = Hash.new}
 
       @settings = Hash.new
       @setting_strings = Hash.new
@@ -173,6 +174,24 @@ module Diakonos
           @extensions.load( arg ).each do |conf_file|
             parse_configuration_file conf_file
           end
+        when /^lang\.(.+?)\.surround\.pair$/
+          language = $1
+
+          args = arg.split(/"\s+"/)
+          args.map! do |s|
+            s.gsub(/(?<!\\)"/, '').gsub(/\\"/, '"')
+          end
+
+          pair_key = args.shift
+
+          if pair_key =~ /^\/.+\/$/
+            pair_key = Regexp.new(pair_key[1..-2])
+          else
+            pair_key = Regexp.new("^#{Regexp.escape(pair_key)}$")
+          end
+
+          pair_parens = args
+          @surround_pairs[language][pair_key] = pair_parens
         when "key"
           if arg
             if /  / === arg
