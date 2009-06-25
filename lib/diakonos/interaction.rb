@@ -48,7 +48,8 @@ module Diakonos
       if @playing_macro
         retval = @macro_input_history.shift
       else
-        @readline = Readline.new( self, @win_interaction, prompt, options, &block )
+        cursor_pos = set_iline( prompt )
+        @readline = Readline.new( self, @win_interaction, cursor_pos, options, &block )
         retval = @readline.readline
         if @macro_history
           @macro_input_history.push retval
