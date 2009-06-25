@@ -99,17 +99,6 @@ module Diakonos
       end
     end
 
-    # Returns nil on cancel.
-    def readline
-      while ! @done
-        @diakonos.process_keystroke Array.new, 'input'
-      end
-
-      @diakonos.close_list_buffer
-
-      @history[ -1 ] = @input
-    end
-
     def redraw_input
       input = @input[ 0...Curses::cols ]
 
