@@ -63,6 +63,12 @@ module Diakonos
       @done
     end
 
+    def list_sync( line )
+      return  if line.nil?
+      set_input line
+      cursor_write_input
+    end
+
     def handle_typeable( c )
       if @numbered_completion
         if(

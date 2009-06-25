@@ -79,12 +79,6 @@ module Diakonos
       @input = @history[ @history_index ]
     end
 
-    def list_sync( line )
-      return  if line.nil?
-      set_input line
-      cursor_write_input
-    end
-
   end
 
 end
