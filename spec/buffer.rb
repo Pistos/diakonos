@@ -1,5 +1,10 @@
 require 'spec/preparation'
 
+def check_word_at( row, col, expected_word )
+  @b.cursor_to row, col
+  @b.word_under_cursor.should.equal expected_word
+end
+
 describe 'A Diakonos::Buffer' do
 
   before do
@@ -163,6 +168,29 @@ describe 'A Diakonos::Buffer' do
     original_lines = @b.to_a
     @b.delete_line.should.equal '#!/usr/bin/env ruby'
     @b.to_a.should.equal original_lines[ 1..-1 ]
+  end
+
+  it 'knows the word under the cursor' do
+    check_word_at 0, 16, 'ruby'
+    check_word_at 2, 0, nil
+    check_word_at 2, 2, 'This'
+    check_word_at 2, 3, 'This'
+    check_word_at 2, 4, 'This'
+    check_word_at 2, 5, 'This'
+    check_word_at 2, 6, nil
+    check_word_at 2, 45, 'tests'
+    check_word_at 2, 46, nil
+    check_word_at 2, 47, nil
+    check_word_at 3, 0, nil
+    check_word_at 5, 14, nil
+    check_word_at 5, 15, 'x'
+    check_word_at 5, 16, nil
+    check_word_at 14, 4, 'y'
+    check_word_at 14, 5, nil
+    check_word_at 14, 6, 'inspect'
+    check_word_at 21, 0, nil
+    check_word_at 22, 8, nil
+    check_word_at 22, 9, nil
   end
 
 end
