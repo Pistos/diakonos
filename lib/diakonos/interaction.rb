@@ -50,7 +50,15 @@ module Diakonos
       else
         cursor_pos = set_iline( prompt )
         @readline = Readline.new( self, @win_interaction, cursor_pos, options, &block )
-        retval = @readline.readline
+
+        # retval = @readline.readline
+        while ! @readline.done?
+          process_keystroke Array.new, 'input'
+        end
+        close_list_buffer
+        retval = @readline.input
+        options[ :history ][ -1 ] = @readline.input
+
         if @macro_history
           @macro_input_history.push retval
         end

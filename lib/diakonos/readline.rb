@@ -2,6 +2,8 @@ module Diakonos
 
   class Readline
 
+    attr_reader :input
+
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
     # @param options :initial_text, :completion_array, :history, :do_complete, :on_dirs
@@ -24,6 +26,23 @@ module Diakonos
       @numbered_completion = options [ :numbered_completion ]
 
       @block = block
+
+      # ---
+
+      @input = @initial_text.dup
+      if ! @input.empty?
+        call_block
+      end
+
+      @icurx = @window.curx
+      @icury = @window.cury
+      @window.addstr @initial_text
+      @input_cursor = @initial_text.length
+      @opened_list_file = false
+
+      if @do_complete
+        complete_input
+      end
     end
 
     def call_block
@@ -38,6 +57,10 @@ module Diakonos
         input = input[ 3..-1 ]
       end
       @input = input
+    end
+
+    def done?
+      @done
     end
 
     def handle_typeable( c )
@@ -72,25 +95,9 @@ module Diakonos
 
     # Returns nil on cancel.
     def readline
-      @input = @initial_text.dup
-      if ! @input.empty?
-        call_block
-      end
-
-      @icurx = @window.curx
-      @icury = @window.cury
-      @window.addstr @initial_text
-      @input_cursor = @initial_text.length
-      @opened_list_file = false
-
-      if @do_complete
-        complete_input
-      end
-
       while ! @done
         @diakonos.process_keystroke Array.new, 'input'
       end
-      @diakonos.debug_log 'done'
 
       @diakonos.close_list_buffer
 
