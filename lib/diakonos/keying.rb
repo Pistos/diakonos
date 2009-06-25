@@ -245,7 +245,7 @@ module Diakonos
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def process_keystroke( context = [], mode = 'edit', ch = nil )
-      ch ||= @win_main.getch
+      ch ||= @modes[ mode ].window.getch
       return  if ch.nil?
       c = ch.ord
 
@@ -268,7 +268,7 @@ module Diakonos
             ch = nil
             begin
               Timeout::timeout( 0.02 ) do
-                ch = @win_main.getch
+                ch = @modes[ mode ].window.getch
               end
             rescue Timeout::Error => e
               break
@@ -300,7 +300,11 @@ module Diakonos
 
         if function_and_args
           function, args = function_and_args
-          set_iline if not @settings[ "context.combined" ]
+          debug_log function
+          debug_log args
+          if mode != 'input' && ! @settings[ "context.combined" ]
+            set_iline
+          end
 
           if args
             to_eval = "#{function}( #{args} )"

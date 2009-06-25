@@ -114,11 +114,7 @@ module Diakonos
         end
         cursor_write_input
       when CTRL_K
-        @input = ""
-        if @block
-          @block.call @input
-        end
-        cursor_write_input
+        delete_line
       when Curses::KEY_F5
         @diakonos.decrease_grep_context
         call_block
@@ -182,8 +178,9 @@ module Diakonos
       end
 
       while ! @done
-        process_keystroke
+        @diakonos.process_keystroke Array.new, 'input'
       end
+      @diakonos.debug_log 'done'
 
       @diakonos.close_list_buffer
 

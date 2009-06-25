@@ -76,6 +76,9 @@ module Diakonos
         end
       end
 
+      @modes[ 'edit' ].window = @win_main
+      @modes[ 'input' ].window = @win_interaction
+
       @win_interaction.refresh
       @win_main.refresh
       if @win_line_numbers

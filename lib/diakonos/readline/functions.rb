@@ -2,11 +2,24 @@ module Diakonos
 
   class Readline
 
-    def delete
-      return  if @input_cursor >= @input.length
-      @window.delch
-      set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
-      call_block
+    def abort
+      @input = nil
+      @done = true
+    end
+
+    def backspace
+      cursor_left
+      delete
+    end
+
+    def cursor_bol
+      @input_cursor = 0
+      @window.setpos( @icury, @icurx )
+    end
+
+    def cursor_eol
+      @input_cursor = @input.length
+      @window.setpos( @window.cury, @icurx + @input.length )
     end
 
     def cursor_left
@@ -21,24 +34,19 @@ module Diakonos
       @window.setpos( @window.cury, @window.curx + 1 )
     end
 
-    def cursor_bol
-      @input_cursor = 0
-      @window.setpos( @icury, @icurx )
+    def delete
+      return  if @input_cursor >= @input.length
+      @window.delch
+      set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
+      call_block
     end
 
-    def cursor_eol
-      @input_cursor = @input.length
-      @window.setpos( @window.cury, @icurx + @input.length )
-    end
-
-    def abort
-      @input = nil
-      @done = true
-    end
-
-    def backspace
-      cursor_left
-      delete
+    def delete_line
+      @input = ""
+      if @block
+        @block.call @input
+      end
+      cursor_write_input
     end
 
   end
