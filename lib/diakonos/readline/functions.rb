@@ -21,6 +21,21 @@ module Diakonos
       @window.setpos( @window.cury, @window.curx + 1 )
     end
 
+    def cursor_bol
+      @input_cursor = 0
+      @window.setpos( @icury, @icurx )
+    end
+
+    def cursor_eol
+      @input_cursor = @input.length
+      @window.setpos( @window.cury, @icurx + @input.length )
+    end
+
+    def abort
+      @input = nil
+      @done = true
+    end
+
     def backspace
       cursor_left
       delete

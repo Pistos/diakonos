@@ -64,18 +64,15 @@ module Diakonos
           @done = true
         end
       when ESCAPE, CTRL_C, CTRL_D, CTRL_Q
-        @input = nil
-        @done = true
+        abort
       when Curses::KEY_LEFT
         cursor_left
       when Curses::KEY_RIGHT
         cursor_right
       when Curses::KEY_HOME
-        @input_cursor = 0
-        @window.setpos( @icury, @icurx )
+        cursor_bol
       when Curses::KEY_END
-        @input_cursor = @input.length
-        @window.setpos( @window.cury, @icurx + @input.length )
+        cursor_eol
       when TAB
         complete_input
       when Curses::KEY_NPAGE
