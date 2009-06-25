@@ -191,6 +191,8 @@ describe 'A Diakonos::Buffer' do
     check_word_at 21, 0, nil
     check_word_at 22, 8, nil
     check_word_at 22, 9, nil
+    check_word_at 26, 39, 'EOF'
+    check_word_at 26, 40, nil
   end
 
 end
