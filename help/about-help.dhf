@@ -19,13 +19,13 @@ someone else, such as a system administrator).
 When you are finished reading a document, close it with the close file key
 chord, <Ctrl-W>.
 
-To abort your search for help and close the help system, press <Esc>.
+To abort your search for help and close the help system, press <Esc> twice.
 
 ## Diakonos Help Files
 
 The help documents are normal files, and are opened just like other files in
 Diakonos.  You can copy code examples and configuration lines out of them
 and paste them in other buffers.  You can even create your own files (with a
-.dhf extension) and place them alongside the default help files.  
+.dhf extension) and place them alongside the default help files.
 
 Tags: diakonos help usage support

@@ -16,7 +16,7 @@
 While typing search expression:
 
 <Enter>             Confirm search expression
-<Esc>               Abort search
+<Esc> <Esc>         Abort search
 
 ### Grepping
 
@@ -30,7 +30,7 @@ While typing grep expression:
 <Enter>             Jump to selected grep result
 <F5>                Decrease context around matches
 <F6>                Increase context around matches
-<Esc>               Abort grep
+<Esc> <Esc>         Abort grep
 
 
 ## Searching for Text
@@ -38,8 +38,8 @@ While typing grep expression:
 Press <Ctrl-F> to perform a case-insensitive search for text.  You will be
 prompted for what to search for.  As you type your search expression,
 matching text will be highlighted.  You can try it right now as you read this
-document!  Press <Ctrl-F> and then type the word "text".  Press <Esc> to abort
-the search.  If the find.return_on_abort setting is set to true, then the
+document!  Press <Ctrl-F> and then type the word "text".  Press <Esc> twice to
+abort the search.  If the find.return_on_abort setting is set to true, then the
 cursor will return to where it was when the search began.  Otherwise, it will
 remain where the last search brought it.
 
@@ -80,7 +80,8 @@ Press <Alt-G> to begin grepping files under a directory (recursively).  Specify
 the directory, then press <Enter>.  Then begin typing a regular expression.
 The display will update as you type according to the matches found.  If you see
 a match you'd like to jump to, use <Down> (and <Up>) to select a match, and
-press <Enter> to view that line of that file.  Press <Esc> to abort the grep.
+press <Enter> to view that line of that file.  Press <Esc> twice to abort the
+grep.
 
 If you need to see more context around the matches, press <F6> during the grep.
 <F5> reduces the context.  The grep.context setting is used for the default
