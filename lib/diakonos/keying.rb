@@ -348,7 +348,23 @@ module Diakonos
         @current_buffer.insert_char c
         cursor_right Buffer::STILL_TYPING
       when 'input'
-        @readline.handle_typeable c
+        if @readline.numbered_list?
+          if(
+            showing_list? &&
+            ( (48..57).include?( c ) || (97..122).include?( c ) )
+          )
+            line = list_buffer.to_a.select { |l|
+              l =~ /^#{c.chr}  /
+            }[ 0 ]
+
+            if line
+              list_sync line
+              @readline.finish
+            end
+          end
+        else
+          @readline.handle_typeable c
+        end
       end
     end
 

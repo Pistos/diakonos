@@ -61,6 +61,10 @@ module Diakonos
       @done
     end
 
+    def finish
+      @done = true
+    end
+
     def list_sync( line )
       return  if line.nil?
       set_input line
@@ -72,33 +76,16 @@ module Diakonos
     end
 
     def handle_typeable( c )
-      if numbered_list?
-        if(
-          @diakonos.showing_list? &&
-          ( (48..57).include?( c ) || (97..122).include?( c ) )
-        )
-          line = @diakonos.list_buffer.to_a.select { |l|
-            l =~ /^#{c.chr}  /
-          }[ 0 ]
-
-          if line
-            set_input line
-            cursor_write_input
-            @done = true
-          end
-        end
+      if @input_cursor == @input.length
+        @input << c
+        @window.addch c
       else
-        if @input_cursor == @input.length
-          @input << c
-          @window.addch c
-        else
-          @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
-          @window.setpos( @window.cury, @window.curx + 1 )
-          redraw_input
-        end
-        @input_cursor += 1
-        call_block
+        @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
+        @window.setpos( @window.cury, @window.curx + 1 )
+        redraw_input
       end
+      @input_cursor += 1
+      call_block
     end
 
     def redraw_input
