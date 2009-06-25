@@ -209,7 +209,7 @@ module Diakonos
         else
           set_iline keychain_str_for( keychain_pressed ) + "..."
         end
-        process_keystroke( keychain_pressed )
+        process_keystroke keychain_pressed
       end
     end
 
@@ -230,7 +230,7 @@ module Diakonos
           partial_keychain = @modes[ 'edit' ].keymap.get_node( keychain_pressed )
           if partial_keychain
             set_iline( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
-            process_keystroke( keychain_pressed )
+            process_keystroke keychain_pressed
           else
             set_iline "There is no mapping for " + keychain_str_for( keychain_pressed )
           end
@@ -244,7 +244,7 @@ module Diakonos
 
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
-    def process_keystroke( context = [], ch = nil )
+    def process_keystroke( context = [], mode = 'edit', ch = nil )
       ch ||= @win_main.getch
       return  if ch.nil?
       c = ch.ord
@@ -289,14 +289,14 @@ module Diakonos
             @current_buffer.paste s
           end
           if ch
-            process_keystroke( [], ch )
+            process_keystroke( [], mode, ch )
           end
 
           return
         end
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @modes[ 'edit' ].keymap.get_leaf( keychain_pressed )
+        function_and_args = @modes[ mode ].keymap.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
@@ -324,17 +324,16 @@ module Diakonos
             show_exception e
           end
         else
-          partial_keychain = @modes[ 'edit' ].keymap.get_node( keychain_pressed )
+          partial_keychain = @modes[ mode ].keymap.get_node( keychain_pressed )
           if partial_keychain
             set_iline( keychain_str_for( keychain_pressed ) + "..." )
-            process_keystroke( keychain_pressed )
+            process_keystroke keychain_pressed
           else
             set_iline "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
           end
         end
       end
     end
-    protected :process_keystroke
 
     def type_character( c )
       @current_buffer.delete_selection( Buffer::DONT_DISPLAY )
