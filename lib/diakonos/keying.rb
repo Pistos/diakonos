@@ -257,10 +257,10 @@ module Diakonos
 
         if context.empty? && typeable?( c )
           if @macro_history
-            @macro_history.push "type_character #{c}"
+            @macro_history.push "type_character #{c}, #{mode.inspect}"
           end
           @there_was_non_movement = true
-          type_character c
+          type_character c, mode
 
           # Handle X windows paste
           s = ""
@@ -330,19 +330,26 @@ module Diakonos
         else
           partial_keychain = @modes[ mode ].keymap.get_node( keychain_pressed )
           if partial_keychain
-            set_iline( keychain_str_for( keychain_pressed ) + "..." )
-            process_keystroke keychain_pressed
-          else
+            if mode != 'input'
+              set_iline( keychain_str_for( keychain_pressed ) + "..." )
+            end
+            process_keystroke keychain_pressed, mode
+          elsif mode != 'input'
             set_iline "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
           end
         end
       end
     end
 
-    def type_character( c )
-      @current_buffer.delete_selection( Buffer::DONT_DISPLAY )
-      @current_buffer.insert_char c
-      cursor_right( Buffer::STILL_TYPING )
+    def type_character( c, mode = 'edit' )
+      case mode
+      when 'edit'
+        @current_buffer.delete_selection Buffer::DONT_DISPLAY
+        @current_buffer.insert_char c
+        cursor_right Buffer::STILL_TYPING
+      when 'input'
+        @readline.handle_typeable c
+      end
     end
 
   end
