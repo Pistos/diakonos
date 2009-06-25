@@ -619,7 +619,7 @@ module Diakonos
 
     # Returns an array of lines of the current paragraph.
     def paragraph_under_cursor
-      (first, _), (last, _) = paragraph_under_cursor_pos
+      ( first, _ ), ( last, _ ) = paragraph_under_cursor_pos
       @lines [ first..last ]
     end
 
@@ -627,12 +627,12 @@ module Diakonos
     # paragraph.
     def paragraph_under_cursor_pos
       if @lines[ @last_row ] =~ /^\s*$/
-        return [ [ @last_row, 0], [ @last_row, @lines[ @last_row ].length - 1] ]
+        return [ [ @last_row, 0 ], [ @last_row, @lines[ @last_row ].length - 1 ] ]
       end
       upper_boundary = 0
       lower_boundary = @lines.size - 1
 
-      @last_row.downto(0) do |i|
+      @last_row.downto( 0 ) do |i|
         line = @lines[ i ]
         if line =~ /^\s*$/
           upper_boundary = i + 1
