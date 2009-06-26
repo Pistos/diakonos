@@ -208,4 +208,10 @@ describe 'A Diakonos user can' do
     ]
   end
 
+  it 'surround selections with parentheses' do
+    @b.set_selection 4, 6, 4, 12
+    @d.surround_selection '('
+    @b[ 4 ].should.equal 'class ( Sample )'
+  end
+
 end

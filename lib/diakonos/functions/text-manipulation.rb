@@ -26,8 +26,10 @@ module Diakonos
       @current_buffer.comment_out
     end
 
-    def surround_selection
-      parenthesis = get_user_input( "Parenthesis: " )
+    def surround_selection( parenthesis = nil )
+      parenthesis ||= get_user_input( "Parenthesis: " )
+      return  if parenthesis.nil?
+
       text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
       if text
         @current_buffer.paste text
