@@ -5,6 +5,11 @@ def check_word_at( row, col, expected_word )
   @b.word_under_cursor.should.equal expected_word
 end
 
+def check_paragraph_at( row, col, expected_paragraph )
+  @b.cursor_to row, col
+  @b.paragraph_under_cursor.should.equal expected_paragraph
+end
+
 describe 'A Diakonos::Buffer' do
 
   before do
@@ -193,6 +198,41 @@ describe 'A Diakonos::Buffer' do
     check_word_at 22, 9, nil
     check_word_at 26, 39, 'EOF'
     check_word_at 26, 40, nil
+  end
+
+  it 'knows the paragraph under the cursor' do
+    check_paragraph_at 0, 0, [
+      '#!/usr/bin/env ruby',
+    ]
+    check_paragraph_at 2, 0, [
+      '# This is only a sample file used in the tests.',
+    ]
+    check_paragraph_at 4, 0, [
+      'class Sample',
+      '  attr_reader :x, :y',
+    ]
+    check_paragraph_at 7, 0, [
+      '  def initialize',
+      '    @x = 1',
+      '    @y = 2',
+      '  end',
+    ]
+    check_paragraph_at 14, 7, [
+      '  def inspection',
+      '    x.inspect',
+      '    y.inspect',
+      '  end',
+      'end',
+    ]
+    check_paragraph_at 22, 7, [
+      '{',
+      '  :just => :a,',
+      '  :test => :hash,',
+      '}',
+    ]
+    check_paragraph_at 26, 12, [
+      '# Comment at end, with no newline at EOF',
+    ]
   end
 
 end
