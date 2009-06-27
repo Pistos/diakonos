@@ -289,7 +289,11 @@ module Diakonos
             Regexp.new arg
           when 'closer'
             begin
-              eval( "Proc.new " + arg )
+              if arg =~ /^\{.+\}$/
+                eval( "Proc.new " + arg )
+              else
+                arg
+              end
             rescue Exception => e
               show_exception(
                 e,
