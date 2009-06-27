@@ -34,6 +34,9 @@ require 'diakonos/sized-array'
 
 require 'diakonos/version'
 require 'diakonos/installation'
+
+require 'diakonos/about'
+require 'diakonos/buffer-management'
 require 'diakonos/config'
 require 'diakonos/functions'
 require 'diakonos/functions/basics'
@@ -53,14 +56,13 @@ require 'diakonos/functions-deprecated'
 require 'diakonos/help'
 require 'diakonos/display'
 require 'diakonos/display/format'
-require 'diakonos/interaction'
+require 'diakonos/grep'
 require 'diakonos/hooks'
+require 'diakonos/interaction'
 require 'diakonos/keying'
 require 'diakonos/logging'
 require 'diakonos/list'
-require 'diakonos/buffer-management'
 require 'diakonos/sessions'
-require 'diakonos/grep'
 
 require 'diakonos/text-mark'
 require 'diakonos/bookmark'
@@ -137,6 +139,7 @@ module Diakonos
       @diff_filename  = File.join( @diakonos_home, 'text.diff' )
       @help_filename  = File.join( @help_dir, 'about-help.dhf' )
       @error_filename = File.join( @diakonos_home, 'diakonos.err' )
+      @about_filename = File.join( @diakonos_home, 'about.dhf' )
 
       @win_main         = nil
       @win_context      = nil

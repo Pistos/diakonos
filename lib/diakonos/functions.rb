@@ -1,6 +1,11 @@
 module Diakonos
   module Functions
 
+    def about
+      about_write
+      open_file @about_filename
+    end
+
     def delete_to( char = nil )
       if char.nil?
         set_iline "Type character to delete to..."
