@@ -307,20 +307,22 @@ module Diakonos
           end
 
           if args
-            to_eval = "#{function}( #{args} )"
+            formatted_function = "#{function}( #{args} )"
           else
-            to_eval = function
+            formatted_function = function
           end
 
           if @macro_history
-            @macro_history.push to_eval
+            @macro_history.push formatted_function
           end
 
           begin
-            eval to_eval, nil, "eval"
-            @last_commands << to_eval unless to_eval == "repeat_last"
+            args = []  if args.nil?
+            self.send function, *args
+
+            @last_commands << formatted_function  unless formatted_function == "repeat_last"
             if ! @there_was_non_movement
-              @there_was_non_movement = !( /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ === to_eval )
+              @there_was_non_movement = !( /^((cursor|page|scroll)(Up|Down|Left|Right)|find)/ === formatted_function )
             end
           rescue Exception => e
             debug_log e.message
