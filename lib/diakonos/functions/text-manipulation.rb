@@ -26,33 +26,6 @@ module Diakonos
       @current_buffer.comment_out
     end
 
-    def surround_selection( parenthesis = nil )
-      parenthesis ||= get_user_input( "Parenthesis: " )
-      return  if parenthesis.nil?
-
-      text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
-      if text
-        @current_buffer.paste text
-      end
-    end
-
-    def surround_word
-      ( start_row, start_col ), ( end_row, end_col ) = @current_buffer.word_under_cursor_pos
-      @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
-      surround_selection
-    end
-
-    def surround_line
-      @current_buffer.select_current_line
-      surround_selection
-    end
-
-    def surround_paragraph
-      ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
-      @current_buffer.set_selection( first, 0, last, length+1 )
-      surround_selection
-    end
-
     def complete_word( direction = :down )
       b = @current_buffer
       if b.selecting?
@@ -169,6 +142,33 @@ module Diakonos
           @current_buffer.paste new_lines
         end
       end
+    end
+
+    def surround_line
+      @current_buffer.select_current_line
+      surround_selection
+    end
+
+    def surround_paragraph
+      ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
+      @current_buffer.set_selection( first, 0, last, length+1 )
+      surround_selection
+    end
+
+    def surround_selection( parenthesis = nil )
+      parenthesis ||= get_user_input( "Parenthesis: " )
+      return  if parenthesis.nil?
+
+      text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
+      if text
+        @current_buffer.paste text
+      end
+    end
+
+    def surround_word
+      ( start_row, start_col ), ( end_row, end_col ) = @current_buffer.word_under_cursor_pos
+      @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
+      surround_selection
     end
 
     def uncomment
