@@ -9,6 +9,7 @@ Contributors: Pistos, dominikh
 - Added one-key selection in buffer list.
 - Added support for single line indentation.
 - Added extension system.
+- Added surround_selection and related functions.
 - Various bug fixes and refactorings.
 
 0.8.10
