@@ -197,19 +197,19 @@ module Diakonos
       else
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.get_leaf( keychain_pressed )
+        function_and_args = @modes[ 'edit' ].keymap.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
         end
 
-        partial_keychain = @keychains.get_node( keychain_pressed )
+        partial_keychain = @modes[ 'edit' ].keymap.get_node( keychain_pressed )
         if partial_keychain
           set_iline( "Part of existing keychain: " + keychain_str_for( keychain_pressed ) + "..." )
         else
           set_iline keychain_str_for( keychain_pressed ) + "..."
         end
-        process_keystroke( keychain_pressed )
+        process_keystroke keychain_pressed
       end
     end
 
@@ -221,16 +221,16 @@ module Diakonos
       else
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.get_leaf( keychain_pressed )
+        function_and_args = @modes[ 'edit' ].keymap.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
           set_iline "#{keychain_str_for( keychain_pressed )}  ->  #{function}( #{args} )"
         else
-          partial_keychain = @keychains.get_node( keychain_pressed )
+          partial_keychain = @modes[ 'edit' ].keymap.get_node( keychain_pressed )
           if partial_keychain
             set_iline( "Several mappings start with: " + keychain_str_for( keychain_pressed ) + "..." )
-            process_keystroke( keychain_pressed )
+            process_keystroke keychain_pressed
           else
             set_iline "There is no mapping for " + keychain_str_for( keychain_pressed )
           end
@@ -244,8 +244,8 @@ module Diakonos
 
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
-    def process_keystroke( context = [], ch = nil )
-      ch ||= @win_main.getch
+    def process_keystroke( context = [], mode = 'edit', ch = nil )
+      ch ||= @modes[ mode ].window.getch
       return  if ch.nil?
       c = ch.ord
 
@@ -255,54 +255,56 @@ module Diakonos
         capture_mapping c, context
       else
 
-        if context.empty?
-          if typeable?( c )
-            if @macro_history
-              @macro_history.push "type_character #{c}"
-            end
-            @there_was_non_movement = true
-            type_character c
-
-            # Handle X windows paste
-            s = ""
-            loop do
-              ch = nil
-              begin
-                Timeout::timeout( 0.02 ) do
-                  ch = @win_main.getch
-                end
-              rescue Timeout::Error => e
-                break
-              end
-              break  if ch.nil?
-
-              c = ch.ord
-              if typeable?( c )
-                s << c
-              elsif c == ENTER
-                s << "\n"
-              else
-                break
-              end
-            end
-
-            if ! s.empty?
-              @current_buffer.paste s
-            end
-            if ch
-              process_keystroke( [], ch )
-            end
-
-            return
+        if context.empty? && typeable?( c )
+          if @macro_history
+            @macro_history.push "type_character #{c}, #{mode.inspect}"
           end
+          @there_was_non_movement = true
+          type_character c, mode
+
+          # Handle X windows paste
+          s = ""
+          loop do
+            ch = nil
+            begin
+              Timeout::timeout( 0.02 ) do
+                ch = @modes[ mode ].window.getch
+              end
+            rescue Timeout::Error => e
+              break
+            end
+            break  if ch.nil?
+
+            c = ch.ord
+            if typeable?( c )
+              s << c
+            elsif c == ENTER
+              s << "\n"
+            else
+              break
+            end
+          end
+
+          if ! s.empty?
+            @current_buffer.paste s
+          end
+          if ch
+            process_keystroke( [], mode, ch )
+          end
+
+          return
         end
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @keychains.get_leaf( keychain_pressed )
+        function_and_args = @modes[ mode ].keymap.get_leaf( keychain_pressed )
 
         if function_and_args
           function, args = function_and_args
-          set_iline if not @settings[ "context.combined" ]
+          debug_log function
+          debug_log args
+          if mode != 'input' && ! @settings[ "context.combined" ]
+            set_iline
+          end
 
           if args
             to_eval = "#{function}( #{args} )"
@@ -326,22 +328,28 @@ module Diakonos
             show_exception e
           end
         else
-          partial_keychain = @keychains.get_node( keychain_pressed )
+          partial_keychain = @modes[ mode ].keymap.get_node( keychain_pressed )
           if partial_keychain
-            set_iline( keychain_str_for( keychain_pressed ) + "..." )
-            process_keystroke( keychain_pressed )
-          else
+            if mode != 'input'
+              set_iline( keychain_str_for( keychain_pressed ) + "..." )
+            end
+            process_keystroke keychain_pressed, mode
+          elsif mode != 'input'
             set_iline "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
           end
         end
       end
     end
-    protected :process_keystroke
 
-    def type_character( c )
-      @current_buffer.delete_selection( Buffer::DONT_DISPLAY )
-      @current_buffer.insert_char c
-      cursor_right( Buffer::STILL_TYPING )
+    def type_character( c, mode = 'edit' )
+      case mode
+      when 'edit'
+        @current_buffer.delete_selection Buffer::DONT_DISPLAY
+        @current_buffer.insert_char c
+        cursor_right Buffer::STILL_TYPING
+      when 'input'
+        @readline.handle_typeable c
+      end
     end
 
   end

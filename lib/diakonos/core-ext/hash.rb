@@ -56,47 +56,5 @@ class Hash
     end
   end
 
-  def leaves( _leaves = Set.new )
-    each_value do |value|
-      if value.respond_to?( :leaves )
-        _leaves.merge value.leaves( _leaves )
-      else
-        _leaves << value
-      end
-    end
-
-    _leaves
-  end
-
-  def paths_and_leaves( path_so_far = [], _paths_and_leaves = Set.new )
-    each do |key, value|
-      if value.respond_to?( :paths_and_leaves )
-        _paths_and_leaves.merge(
-          value.paths_and_leaves(
-            path_so_far + [ key ],
-            _paths_and_leaves
-          )
-        )
-      else
-        _paths_and_leaves << {
-          :path => path_so_far + [ key ],
-          :leaf => value
-        }
-      end
-    end
-
-    _paths_and_leaves
-  end
-
-  def each_path_and_leaf( path_so_far = [] )
-    each do |key, value|
-      if value.respond_to?( :each_path_and_leaf )
-        value.each_path_and_leaf( path_so_far + [ key ] ) { |path, leaf| yield( path, leaf ) }
-      else
-        yield( path_so_far + [ key ], value )
-      end
-    end
-  end
-
 end
 
