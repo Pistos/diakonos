@@ -4,8 +4,14 @@ module Diakonos
     def about_write
       File.open( @about_filename, "w" ) do |f|
         inst = ::Diakonos::INSTALL_SETTINGS
+        ext_loaded = @extensions.loaded_extensions.map { |e| "- #{e}" }.sort.join( "\n" )
+        ext_broken = @extensions.broken_extensions.map { |e| "- #{e}" }.sort.join( "\n" )
+
         f.puts %{
 # About Diakonos
+
+Licence:        MIT Licence
+Copyright:      Copyright (c) 2004-2009 Pistos
 
 ## Version
 
@@ -15,7 +21,13 @@ Install Time:   #{ File.mtime( File.join( inst[ :lib_dir ], 'diakonos', 'install
 
 ## Extensions
 
+### Loaded
 
+#{ext_loaded}
+
+### Broken
+
+#{ ! ext_broken.empty? ? ext_broken : '(none)' }
 
 ## Paths
 

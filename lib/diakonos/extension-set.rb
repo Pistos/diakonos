@@ -18,6 +18,8 @@ module Diakonos
     end
 
     def load( dir )
+      @extensions[ dir ] = false
+
       confs_to_parse = []
       ext_dir = File.join( @root_dir, dir )
       info = YAML.load_file( File.join( ext_dir, 'info.yaml' ) )
@@ -33,6 +35,18 @@ module Diakonos
       end
 
       confs_to_parse
+    end
+
+    def loaded?( ext_dir )
+      @extensions[ ext_dir ]
+    end
+
+    def loaded_extensions
+      @extensions.keys.find_all { |e| loaded?( e ) }
+    end
+
+    def broken_extensions
+      @extensions.keys.find_all { |e| ! loaded?( e ) }
     end
 
   end
