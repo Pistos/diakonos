@@ -156,6 +156,11 @@ module Diakonos
     end
 
     def surround_selection( parenthesis = nil )
+      if ! @current_buffer.selecting?
+        set_iline "Nothing selected."
+        return
+      end
+
       parenthesis ||= get_user_input( "Parenthesis: " )
       return  if parenthesis.nil?
 
