@@ -11,7 +11,7 @@ module Diakonos
 # About Diakonos
 
 Licence:        MIT Licence
-Copyright:      Copyright (c) 2004-2009 Pistos
+Copyright:      Copyright (c) 2004-#{ Time.now.year } Pistos
 
 ## Version
 
