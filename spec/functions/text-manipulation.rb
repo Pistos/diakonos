@@ -212,6 +212,32 @@ describe 'A Diakonos user can' do
     @b.set_selection 4, 6, 4, 12
     @d.surround_selection '('
     @b[ 4 ].should.equal 'class ( Sample )'
+    @d.undo
+
+    @b.set_selection 4, 0, 4, 12
+    @d.surround_selection '('
+    @b[ 4 ].should.equal '( class Sample )'
+    @d.undo
+
+    @b.set_selection 4, 0, 5, 20
+    @d.surround_selection '('
+    @b[ 4..5 ].should.equal [
+      '( class Sample',
+      '  attr_reader :x, :y )'
+    ]
+    @d.undo
+
+    @b.set_type 'html'
+
+    @b.set_selection 7, 2, 7, 5
+    @d.surround_selection '<!--'
+    @b[ 7 ].should.equal '  <!-- def --> initialize'
+    @d.undo
+
+    @b.set_selection 7, 2, 7, 5
+    @d.surround_selection '<span>'
+    @b[ 7 ].should.equal '  <span>def</span> initialize'
+    @d.undo
   end
 
 end
