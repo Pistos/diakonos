@@ -151,8 +151,10 @@ module Diakonos
 
     def surround_paragraph
       ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
-      @current_buffer.set_selection( first, 0, last, length+1 )
-      surround_selection
+      if first && last && length
+        @current_buffer.set_selection( first, 0, last, length+1 )
+        surround_selection
+      end
     end
 
     def surround_selection( parenthesis = nil )
@@ -167,8 +169,10 @@ module Diakonos
 
     def surround_word
       ( start_row, start_col ), ( end_row, end_col ) = @current_buffer.word_under_cursor_pos
-      @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
-      surround_selection
+      if start_row && start_col && end_row && end_col
+        @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
+        surround_selection
+      end
     end
 
     def uncomment
