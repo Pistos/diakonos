@@ -151,10 +151,8 @@ module Diakonos
 
     def surround_paragraph
       ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
-      if first && last && length
-        @current_buffer.set_selection( first, 0, last, length+1 )
-        surround_selection
-      end
+      @current_buffer.set_selection( first, 0, last, length+1 )
+      surround_selection
     end
 
     def surround_selection( parenthesis = nil )
