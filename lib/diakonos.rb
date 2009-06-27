@@ -132,11 +132,11 @@ module Diakonos
 
       init_help
 
-      @debug          = File.new( "#{@diakonos_home}/debug.log", 'w' )
-      @list_filename  = @diakonos_home + '/listing.txt'
-      @diff_filename  = @diakonos_home + '/text.diff'
-      @help_filename  = "#{@help_dir}/about-help.dhf"
-      @error_filename = "#{@diakonos_home}/diakonos.err"
+      @debug          = File.new( File.join( @diakonos_home, 'debug.log' ), 'w' )
+      @list_filename  = File.join( @diakonos_home, 'listing.txt' )
+      @diff_filename  = File.join( @diakonos_home, 'text.diff' )
+      @help_filename  = File.join( @help_dir, 'about-help.dhf' )
+      @error_filename = File.join( @diakonos_home, 'diakonos.err' )
 
       @win_main         = nil
       @win_context      = nil
