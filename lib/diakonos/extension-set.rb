@@ -8,7 +8,7 @@ module Diakonos
     end
 
     def scripts
-      @extensions.values.map { |e| e.scripts }.flatten
+      @extensions.values.find_all { |e| e }.map { |e| e.scripts }.flatten
     end
 
     def parse_version( s )
