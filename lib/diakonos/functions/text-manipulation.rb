@@ -162,11 +162,11 @@ module Diakonos
       end
 
       parenthesis ||= get_user_input( "Parenthesis: " )
-      return  if parenthesis.nil?
-
-      text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
-      if text
-        @current_buffer.paste text
+      if parenthesis
+        text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
+        if text
+          @current_buffer.paste text
+        end
       end
     end
 
