@@ -317,7 +317,6 @@ module Diakonos
           end
 
           begin
-            args = []  if args.nil?
             self.send function, *args
 
             @last_commands << formatted_function  unless formatted_function == "repeat_last"
