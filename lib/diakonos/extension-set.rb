@@ -42,7 +42,7 @@ module Diakonos
     end
 
     def loaded_extensions
-      @extensions.keys.find_all { |e| loaded?( e ) }
+      @extensions.values
     end
 
     def broken_extensions

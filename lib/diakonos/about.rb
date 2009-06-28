@@ -4,8 +4,21 @@ module Diakonos
     def about_write
       File.open( @about_filename, "w" ) do |f|
         inst = ::Diakonos::INSTALL_SETTINGS
-        ext_loaded = @extensions.loaded_extensions.map { |e| "- #{e}" }.sort.join( "\n" )
-        ext_broken = @extensions.broken_extensions.map { |e| "- #{e}" }.sort.join( "\n" )
+
+        ext_loaded = @extensions.loaded_extensions.sort_by { |e|
+          e.name.downcase
+        }.map { |e|
+          %{
+### #{e.name} #{e.version}
+#{e.description}
+          }.strip
+        }.join( "\n\n" )
+
+        ext_broken = @extensions.broken_extensions.sort_by { |e|
+          e.name.downcase
+        }.map { |e|
+          "### (BROKEN) #{e.name}"
+        }.join( "\n" )
 
         f.puts %{
 # About Diakonos
@@ -19,16 +32,6 @@ Version:        #{ ::Diakonos::VERSION }
 Code Date:      #{ ::Diakonos::LAST_MODIFIED }
 Install Time:   #{ File.mtime( File.join( inst[ :lib_dir ], 'diakonos', 'installation.rb' ) ) }
 
-## Extensions
-
-### Loaded
-
-#{ext_loaded}
-
-### Broken
-
-#{ ! ext_broken.empty? ? ext_broken : '(none)' }
-
 ## Paths
 
 Home dir:       #{ @diakonos_home }
@@ -40,6 +43,12 @@ Executable dir:     #{ inst[ :bin_dir ] }
 Help dir:           #{ inst[ :help_dir ] }
 System config dir:  #{ inst[ :conf_dir ] }
 System library dir: #{ inst[ :lib_dir ] }
+
+## Extensions
+
+#{ ext_loaded }
+
+#{ ext_broken }
         }.strip
       end
     end
