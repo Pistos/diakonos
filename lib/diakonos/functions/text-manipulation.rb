@@ -151,19 +151,22 @@ module Diakonos
 
     def surround_paragraph
       ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
-      if first && last && length
-        @current_buffer.set_selection( first, 0, last, length+1 )
-        surround_selection
-      end
+      @current_buffer.set_selection( first, 0, last, length+1 )
+      surround_selection
     end
 
     def surround_selection( parenthesis = nil )
-      parenthesis ||= get_user_input( "Parenthesis: " )
-      return  if parenthesis.nil?
+      if ! @current_buffer.selecting?
+        set_iline "Nothing selected."
+        return
+      end
 
-      text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
-      if text
-        @current_buffer.paste text
+      parenthesis ||= get_user_input( "Parenthesis: " )
+      if parenthesis
+        text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
+        if text
+          @current_buffer.paste text
+        end
       end
     end
 
