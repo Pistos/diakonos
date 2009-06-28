@@ -112,7 +112,7 @@ module Diakonos
         end
       end
       open_list_buffer
-      filename = get_user_input( "Switch to buffer: ", numbered_completion: true )
+      filename = get_user_input( "Switch to buffer: ", numbered_list: true )
       buffer = @buffers[ filename ]
       if buffer
         switch_to buffer

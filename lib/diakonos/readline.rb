@@ -2,15 +2,15 @@ module Diakonos
 
   class Readline
 
+    attr_reader :input
+
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
     # @param options :initial_text, :completion_array, :history, :do_complete, :on_dirs
-    def initialize( diakonos, window, prompt, options = {}, &block )
+    def initialize( diakonos, window, start_pos, options = {}, &block )
       @diakonos = diakonos
       @window = window
-      @prompt = prompt
-      pos = redraw_prompt
-      @window.setpos( 0, pos )
+      @window.setpos( 0, start_pos )
       @initial_text = options[ :initial_text ] || ''
       @completion_array = options[ :completion_array ]
       @list_filename = @diakonos.list_filename
@@ -21,63 +21,12 @@ module Diakonos
 
       @do_complete = options[ :do_complete ] || ::Diakonos::DONT_COMPLETE
       @on_dirs = options[ :on_dirs ] || :go_into_dirs
-
-      # TODO think of better name
-      @numbered_completion = options [ :numbered_completion ]
+      @numbered_list = options[ :numbered_list ]
 
       @block = block
-    end
 
-    def redraw_prompt
-      @diakonos.set_iline @prompt
-    end
+      # ---
 
-    def call_block
-      if @block
-        @block.call( @input )
-        @window.refresh
-      end
-    end
-
-    def set_input( input = '' )
-      if @numbered_completion && input =~ /^\w  /
-        input = input[ 3..-1 ]
-      end
-      @input = input
-    end
-
-    def handle_typeable( c )
-      if @numbered_completion
-        if(
-          @diakonos.showing_list? &&
-          ( (48..57).include?( c ) || (97..122).include?( c ) )
-        )
-          line = @diakonos.list_buffer.to_a.select { |l|
-            l =~ /^#{c.chr}  /
-          }[ 0 ]
-
-          if line
-            set_input line
-            cursor_write_input
-            @done = true
-          end
-        end
-      else
-        if @input_cursor == @input.length
-          @input << c
-          @window.addch c
-        else
-          @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
-          @window.setpos( @window.cury, @window.curx + 1 )
-          redraw_input
-        end
-        @input_cursor += 1
-        call_block
-      end
-    end
-
-    # Returns nil on cancel.
-    def readline
       @input = @initial_text.dup
       if ! @input.empty?
         call_block
@@ -92,15 +41,51 @@ module Diakonos
       if @do_complete
         complete_input
       end
+    end
 
-      while ! @done
-        @diakonos.process_keystroke Array.new, 'input'
+    def call_block
+      if @block
+        @block.call( @input )
+        @window.refresh
       end
-      @diakonos.debug_log 'done'
+    end
 
-      @diakonos.close_list_buffer
+    def set_input( input = '' )
+      if numbered_list? && input =~ /^\w  /
+        input = input[ 3..-1 ]
+      end
+      @input = input
+    end
 
-      @history[ -1 ] = @input
+    def done?
+      @done
+    end
+
+    def finish
+      @done = true
+    end
+
+    def list_sync( line )
+      return  if line.nil?
+      set_input line
+      cursor_write_input
+    end
+
+    def numbered_list?
+      @numbered_list
+    end
+
+    def handle_typeable( c )
+      if @input_cursor == @input.length
+        @input << c
+        @window.addch c
+      else
+        @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
+        @window.setpos( @window.cury, @window.curx + 1 )
+        redraw_input
+      end
+      @input_cursor += 1
+      call_block
     end
 
     def redraw_input
