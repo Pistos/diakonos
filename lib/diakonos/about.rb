@@ -14,10 +14,8 @@ module Diakonos
           }.strip
         }.join( "\n\n" )
 
-        ext_broken = @extensions.broken_extensions.sort_by { |e|
-          e.name.downcase
-        }.map { |e|
-          "### (BROKEN) #{e.name}"
+        ext_not_loaded = @extensions.not_loaded_extensions.sort.map { |e|
+          "### #{e} (NOT LOADED)"
         }.join( "\n" )
 
         f.puts %{
@@ -48,7 +46,7 @@ System library dir: #{ inst[ :lib_dir ] }
 
 #{ ext_loaded }
 
-#{ ext_broken }
+#{ ext_not_loaded }
         }.strip
       end
     end

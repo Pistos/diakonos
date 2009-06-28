@@ -42,10 +42,10 @@ module Diakonos
     end
 
     def loaded_extensions
-      @extensions.values
+      @extensions.values.find_all { |e| e }
     end
 
-    def broken_extensions
+    def not_loaded_extensions
       @extensions.keys.find_all { |e| ! loaded?( e ) }
     end
 
