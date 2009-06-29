@@ -80,12 +80,14 @@ uris: (recommended)
 
 licence: (optional) The licence of the extension's source code.
 
-diakonos: (required) Several subkeys tell Diakonos about what versions of
-      Diakonos the extension works with.
-    minimum: The minimum version of Diakonos required for the extension to
-      function properly.
-    tested: A list of Diakonos versions which the extension is known to run
-      under.
+requirements: (required) Several subkeys tell diakonos about what versions of
+      things the extension works with.
+    diakonos: (required) Several subkeys tell Diakonos about what versions of
+          Diakonos the extension works with.
+        minimum: The minimum version of Diakonos required for the extension to
+          function properly.
+        tested: A list of Diakonos versions which the extension is known to run
+          under.
 
 notes: (optional) Longer text describing the extension, its capabilities and
   its usage.  For multiple paragraphs, use the YAML syntax "notes: >", and
