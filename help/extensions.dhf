@@ -88,6 +88,8 @@ requirements: (required) Several subkeys tell diakonos about what versions of
           function properly.
         tested: A list of Diakonos versions which the extension is known to run
           under.
+    gems: (optional) If the extension needs any gems to function, they should be
+          listed here, with their minimum and tested versions given.
 
 notes: (optional) Longer text describing the extension, its capabilities and
   its usage.  For multiple paragraphs, use the YAML syntax "notes: >", and
