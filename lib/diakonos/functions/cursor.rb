@@ -1,7 +1,7 @@
 module Diakonos
   module Functions
 
-    # Returns true iff the cursor changed positions
+    # @return [true,false] true iff the cursor changed positions
     def cursor_down
       @current_buffer.cursor_to(
         @current_buffer.last_row + 1,
@@ -12,7 +12,7 @@ module Diakonos
       )
     end
 
-    # Returns true iff the cursor changed positions
+    # @return [true,false] true iff the cursor changed positions
     def cursor_left( stopped_typing = Buffer::STOPPED_TYPING )
       @current_buffer.cursor_to(
         @current_buffer.last_row,
@@ -31,7 +31,7 @@ module Diakonos
       )
     end
 
-    # Returns true iff the cursor changed positions
+    # @return [true,false] true iff the cursor changed positions
     def cursor_up
       @current_buffer.cursor_to(
         @current_buffer.last_row - 1,
@@ -42,35 +42,40 @@ module Diakonos
       )
     end
 
+    # Moves the cursor to the beginning of the current buffer.
     def cursor_bof
       @current_buffer.cursor_to( 0, 0, Buffer::DO_DISPLAY )
     end
 
+    # Moves the cursor to the beginning of the current line.
     def cursor_bol
       @current_buffer.cursor_to_bol
     end
 
+    # Moves the cursor to the end of the current line.
     def cursor_eol
       @current_buffer.cursor_to_eol
     end
 
+    # Moves the cursor to the end of the current buffer.
     def cursor_eof
       @current_buffer.cursor_to_eof
     end
 
-    # Top of view
+    # Moves the cursor to the top of the viewport of the current buffer.
     def cursor_tov
       @current_buffer.cursor_to_tov
     end
 
-    # Bottom of view
+    # Moves the cursor to the bottom of the viewport of the current buffer.
     def cursor_bov
       @current_buffer.cursor_to_bov
     end
 
+    # Pops the cursor stack of the current buffer.
     def cursor_return( dir_str = "backward" )
       stack_pointer, stack_size = @current_buffer.cursor_return( direction_of( dir_str, :backward ) )
-      set_iline( "Location: #{stack_pointer+1}/#{stack_size}" )
+      set_iline "Location: #{stack_pointer+1}/#{stack_size}"
     end
 
     def go_block_outer
@@ -86,6 +91,7 @@ module Diakonos
       @current_buffer.go_block_previous
     end
 
+    # Moves the cursor to the next occurrence of the given character.
     def go_to_char( char = nil )
       char ||= get_char( "Type character to go to..." )
 
@@ -97,6 +103,7 @@ module Diakonos
       end
     end
 
+    # Moves the cursor to the closest previous occurrence of the given character.
     def go_to_char_previous( char = nil )
       char ||= get_char( "Type character to go to..." )
 

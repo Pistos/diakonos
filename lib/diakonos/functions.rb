@@ -1,11 +1,14 @@
 module Diakonos
   module Functions
 
+    # Shows the About page, which gives information on Diakonos.
     def about
       about_write
       open_file @about_filename
     end
 
+    # Deletes characters up to, but not including, a given character.
+    # Also puts the deleted text into the clipboard.
     def delete_to( char = nil )
       if char.nil?
         set_iline "Type character to delete to..."
@@ -22,6 +25,10 @@ module Diakonos
       end
     end
 
+    # Deletes characters between, but not including, a given pair of
+    # characters.  Also puts the deleted text into the clipboard.
+    # Brace characters are intelligently matched with their opposite-side
+    # counterparts if the left-side brace is given (e.g. '[').
     def delete_to_and_from( char = nil )
       if char.nil?
         set_iline "Type character to delete to and from..."
@@ -38,6 +45,7 @@ module Diakonos
       end
     end
 
+    # Evaluates (executes) Ruby code.
     def evaluate( code_ = nil )
       if code_.nil?
         if @current_buffer.changing_selection
@@ -70,6 +78,7 @@ module Diakonos
       end
     end
 
+    # Starts the interactive help system.
     def help( prefill = '' )
       if ! File.exist?( @help_dir ) || Dir[ "#{@help_dir}/*" ].size == 0
         set_iline 'There are no help files installed.'
@@ -141,6 +150,7 @@ module Diakonos
       end
     end
 
+    # Loads Ruby code from file using Kernel#load.
     def load_script( name_ = nil )
       if name_.nil?
         name = get_user_input( "File to load as script: ", history: @rlh_files )
@@ -203,6 +213,7 @@ module Diakonos
       set_iline "Type any chain of keystrokes or key chords, then press Enter..."
     end
 
+    # Quits Diakonos (gracefully).
     def quit
       @quitting = true
       to_all = nil
@@ -234,6 +245,7 @@ module Diakonos
       refresh_all
     end
 
+    # Starts or stops macro recording.
     def toggle_macro_recording( name = nil )
       if @macro_history
         stop_recording_macro
@@ -242,10 +254,12 @@ module Diakonos
       end
     end
 
+    # Undoes the latest change made to the current_buffer.
     def undo( buffer = @current_buffer )
       buffer.undo
     end
 
+    # Redoes the latest change undone on the current_buffer.
     def unundo( buffer = @current_buffer )
       buffer.unundo
     end
