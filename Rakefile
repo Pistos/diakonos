@@ -19,3 +19,9 @@ rescue LoadError
     $stderr.puts "('gem install yard' in order to be able to generate Diakonos source code documentation.)"
   end
 end
+
+desc "Clean directory of gems and tarballs"
+task :clean do
+  system 'rm diakonos-*.*.*.tar.*'
+  system 'rm diakonos-*.*.*.gem'
+end
