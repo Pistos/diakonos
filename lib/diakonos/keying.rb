@@ -286,8 +286,14 @@ module Diakonos
           end
 
           if ! s.empty?
-            @current_buffer.paste s
+            case mode
+            when 'edit'
+              @current_buffer.paste s
+            when 'input'
+              @readline.paste s
+            end
           end
+
           if ch
             process_keystroke( [], mode, ch )
           end

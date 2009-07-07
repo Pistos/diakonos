@@ -88,6 +88,14 @@ module Diakonos
       call_block
     end
 
+    def paste( s )
+      @input = @input[ 0...@input_cursor ] + s + @input[ @input_cursor..-1 ]
+      @window.setpos( @window.cury, @window.curx + s.length )
+      redraw_input
+      @input_cursor += s.length
+      call_block
+    end
+
     def redraw_input
       input = @input[ 0...Curses::cols ]
 
