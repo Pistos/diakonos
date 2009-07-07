@@ -362,7 +362,7 @@ module Diakonos
             }[ 0 ]
 
             if line
-              list_sync line
+              @readline.list_sync line
               @readline.finish
             end
           end
