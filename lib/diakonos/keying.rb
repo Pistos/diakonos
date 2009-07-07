@@ -306,8 +306,6 @@ module Diakonos
 
         if function_and_args
           function, args = function_and_args
-          debug_log function
-          debug_log args
           if mode != 'input' && ! @settings[ "context.combined" ]
             set_iline
           end
