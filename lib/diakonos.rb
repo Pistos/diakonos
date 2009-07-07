@@ -295,7 +295,6 @@ module Diakonos
       session_buffer_number = @session[ 'current_buffer' ] || 1
 
       scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
-      debug_log "scripts: #{scripts.inspect}"
       scripts.each do |script|
         begin
           require script
