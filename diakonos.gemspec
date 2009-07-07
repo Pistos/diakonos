@@ -4,7 +4,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
     s.name = 'diakonos'
-    s.version = '0.8.10'
+    s.version = '0.8.11'
     s.summary = 'A usable console-based text editor.'
     s.description = 'Diakonos is a customizable, usable console-based text editor.'
     s.homepage = 'http://purepistos.net/diakonos'
@@ -24,11 +24,11 @@ Dear RubyGems administrator:
 As of version 0.8.8, Diakonos is no longer installed via RubyGems.  You may
 find that a Diakonos package is already available for your operating system's
 package manager.  There are packages for: Ubuntu, Debian, Gentoo, Arch Linux,
-Slackware, and Sourcemage.
+Slackware, Sourcemage, and possibly more.
 
 If there is no package for your system, you can install Diakonos manually:
 
-- Uninstall any previously installed diakonos gems
+- Uninstall any previously installed diakonos gems (including this one)
 - Acquire a tarball from http://purepistos.net/diakonos
 - Unpack the tarball
 - ruby install.rb --help
