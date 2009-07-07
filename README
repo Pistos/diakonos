@@ -1,9 +1,6 @@
-Diakonos
+= Diakonos
 
-========
-
-REQUIREMENTS
-============
+== REQUIREMENTS
 
 - Ruby 1.9+
 
@@ -11,8 +8,7 @@ Diakonos is built to run on Linux, but may run under other flavours of UNIX.
 It is known NOT to work under Windows (unless using Cygwin).
 
 
-DOWNLOAD
-========
+== DOWNLOAD
 
 The latest stable tarballs can be acquired from
 
@@ -23,8 +19,7 @@ The latest development code can be obtained from github:
   git clone git://github.com/Pistos/diakonos.git
 
 
-INSTALLATION
-============
+== INSTALLATION
 
 ruby install.rb --help
 ruby install.rb [installation parameters]
@@ -34,14 +29,12 @@ places like /usr .  However, Diakonos runs perfectly well in userspace, such
 as under ~/usr .
 
 
-UNINSTALLATION
-==============
+== UNINSTALLATION
 
   diakonos --uninstall
 
 
-USAGE
-=====
+== USAGE
 
 Run with any of these:
 
@@ -61,8 +54,9 @@ use the interactive help system.
 
 The source code repository is at http://github.com/Pistos/diakonos/tree/master .
 
-Send comments, feedback and tech support requests to
-irc.freenode.net:6667#mathetes or http://linis.purepistos.net .
+Send comments, feedback and tech support requests to the #mathetes channel on
+the FreeNode IRC network ( http://webchat.freenode.net/?channels=mathetes ),
+or http://linis.purepistos.net .
 
 Pistos
 http://purepistos.net/diakonos

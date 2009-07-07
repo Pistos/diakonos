@@ -144,34 +144,45 @@ module Diakonos
       end
     end
 
-    def surround_line
+    def surround_line( envelope = nil )
+      envelope ||= get_user_input( 'Surround with: ' )
+      return  if envelope.nil?
       @current_buffer.select_current_line
-      surround_selection
+      surround_selection envelope
     end
 
-    def surround_paragraph
+    def surround_paragraph( envelope = nil )
+      envelope ||= get_user_input( 'Surround with: ' )
+      return  if envelope.nil?
+
       ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
-      if first && last && length
-        @current_buffer.set_selection( first, 0, last, length+1 )
-        surround_selection
-      end
+      @current_buffer.set_selection( first, 0, last, length+1 )
+      surround_selection envelope
     end
 
     def surround_selection( parenthesis = nil )
-      parenthesis ||= get_user_input( "Parenthesis: " )
-      return  if parenthesis.nil?
+      if ! @current_buffer.selecting?
+        set_iline "Nothing selected."
+        return
+      end
 
-      text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
-      if text
-        @current_buffer.paste text
+      parenthesis ||= get_user_input( "Parenthesis: " )
+      if parenthesis
+        text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
+        if text
+          @current_buffer.paste text
+        end
       end
     end
 
-    def surround_word
+    def surround_word( envelope = nil )
+      envelope ||= get_user_input( 'Surround with: ' )
+      return  if envelope.nil?
+
       ( start_row, start_col ), ( end_row, end_col ) = @current_buffer.word_under_cursor_pos
       if start_row && start_col && end_row && end_col
         @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
-        surround_selection
+        surround_selection envelope
       end
     end
 

@@ -8,7 +8,7 @@ module Diakonos
     end
 
     def scripts
-      @extensions.values.map { |e| e.scripts }.flatten
+      @extensions.values.find_all { |e| e }.map { |e| e.scripts }.flatten
     end
 
     def parse_version( s )
@@ -18,13 +18,15 @@ module Diakonos
     end
 
     def load( dir )
+      @extensions[ dir ] = false
+
       confs_to_parse = []
       ext_dir = File.join( @root_dir, dir )
       info = YAML.load_file( File.join( ext_dir, 'info.yaml' ) )
 
-      if info[ 'diakonos' ]
+      if info[ 'requirements' ] && info[ 'requirements' ][ 'diakonos' ]
         this_version = parse_version( ::Diakonos::VERSION )
-        min_version = parse_version( info[ 'diakonos' ][ 'minimum' ] )
+        min_version = parse_version( info[ 'requirements' ][ 'diakonos' ][ 'minimum' ] )
         if min_version && this_version >= min_version
           extension = Extension.new( ext_dir )
           @extensions[ dir ] = extension
@@ -33,6 +35,18 @@ module Diakonos
       end
 
       confs_to_parse
+    end
+
+    def loaded?( ext_dir )
+      @extensions[ ext_dir ]
+    end
+
+    def loaded_extensions
+      @extensions.values.find_all { |e| e }
+    end
+
+    def not_loaded_extensions
+      @extensions.keys.find_all { |e| ! loaded?( e ) }
     end
 
   end

@@ -17,6 +17,7 @@ Contributors: Pistos, dominikh
 - Added support for single line indentation.
 - Added extension system.
 - Added surround_selection and related functions.
+- Added "about" page.
 - Various bug fixes and refactorings.
 
 0.8.10

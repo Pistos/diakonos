@@ -80,12 +80,16 @@ uris: (recommended)
 
 licence: (optional) The licence of the extension's source code.
 
-diakonos: (required) Several subkeys tell Diakonos about what versions of
-      Diakonos the extension works with.
-    minimum: The minimum version of Diakonos required for the extension to
-      function properly.
-    tested: A list of Diakonos versions which the extension is known to run
-      under.
+requirements: (required) Several subkeys tell diakonos about what versions of
+      things the extension works with.
+    diakonos: (required) Several subkeys tell Diakonos about what versions of
+          Diakonos the extension works with.
+        minimum: The minimum version of Diakonos required for the extension to
+          function properly.
+        tested: A list of Diakonos versions which the extension is known to run
+          under.
+    gems: (optional) If the extension needs any gems to function, they should be
+          listed here, with their minimum and tested versions given.
 
 notes: (optional) Longer text describing the extension, its capabilities and
   its usage.  For multiple paragraphs, use the YAML syntax "notes: >", and
@@ -98,6 +102,23 @@ Extension code is any valid Ruby code.  See http://purepistos.net/diakonos/rdoc/
 for source code documentation for Diakonos, and
 http://github.com/Pistos/diakonos/tree/master/extensions/dk-hello-world for an
 example of an extension.
+
+To have code execute on keypress, define a method in the Diakonos::Functions
+module.  All methods in Diakonos::Functions are exposed to the keying system,
+any method name can be referred to by the key directive in configuration files.
+
+Methods of Diakonos::Functions are run within the context of the main
+::Diakonos::Diakonos object.  In this context, you get access to all of the
+instance variables.  Some variables of note:
+
+  @current_buffer
+  @diakonos_home   String containing the user's Diakonos dir (usually ~/.diakonos)
+  @buffers         A BufferHash holding all the open buffers
+  @status_vars
+  @settings        A Hash containing all settings from all configuration files
+
+When not within a method of Diakonos::Functions, main ::Diakonos::Diakonos
+object can be referred to by using the global variable $diakonos.
 
 
 Tags: script scripts scripting program programming language ruby extend extension extensions plugin plug-in plugins plug-ins addon addons add-on add-ons package packages format layout structure load loading unload unloading activate deactivate activating deactivating install installing installation

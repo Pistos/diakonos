@@ -42,9 +42,11 @@ include ~/.diakonos/extra.conf
 
 If a setting is specified again (whether in the same file, or an included
 file), it overrides the previous setting given higher up in the configuration
-file(s).  Note that editing and saving custom configuration files will not
-cause the changes to be automatically loaded like they are with the default
-configuration file.  To reload all configuration files, press <F11>.
+file(s).  Note that editing and saving custom configuration files which reside
+outside of ~/.diakonos will not cause the changes to be automatically loaded
+like they are with configuration files in ~/.diakonos.  To reload all
+configuration files, quit and restart Diakonos, or press <Shift-F2> and type
+"load_configuration".
 
 ## Configuration inheritance
 

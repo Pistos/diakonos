@@ -15,10 +15,12 @@ module Diakonos
       @current_buffer.delete_selection
     end
 
+    # Calls Buffer#delete on the current_buffer.
     def delete
       @current_buffer.delete
     end
 
+    # Deletes the current line and adds it to the clipboard.
     def delete_line
       removed_text = @current_buffer.delete_line
       @clipboard.add_clip( [ removed_text, "" ] ) if removed_text
