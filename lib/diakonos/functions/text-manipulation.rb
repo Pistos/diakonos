@@ -145,16 +145,11 @@ module Diakonos
     end
 
     def surround_line( envelope = nil )
-      envelope ||= get_user_input( 'Surround with: ' )
-      return  if envelope.nil?
       @current_buffer.select_current_line
       surround_selection envelope
     end
 
     def surround_paragraph( envelope = nil )
-      envelope ||= get_user_input( 'Surround with: ' )
-      return  if envelope.nil?
-
       ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
       @current_buffer.set_selection( first, 0, last, length+1 )
       surround_selection envelope
@@ -166,7 +161,7 @@ module Diakonos
         return
       end
 
-      parenthesis ||= get_user_input( "Parenthesis: " )
+      parenthesis ||= get_user_input( "Surround with: " )
       if parenthesis
         text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
         if text
@@ -176,9 +171,6 @@ module Diakonos
     end
 
     def surround_word( envelope = nil )
-      envelope ||= get_user_input( 'Surround with: ' )
-      return  if envelope.nil?
-
       ( start_row, start_col ), ( end_row, end_col ) = @current_buffer.word_under_cursor_pos
       if start_row && start_col && end_row && end_col
         @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
