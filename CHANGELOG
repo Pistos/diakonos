@@ -6,7 +6,9 @@ Diakonos Changelog
 Contributors: Pistos
 
 - Refactored keying system.
+- Introduced keying modes.
 - Various other refactorings.
+- Bug fixes.
 
 0.8.11
 
