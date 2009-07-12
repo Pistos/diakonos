@@ -329,7 +329,7 @@ module Diakonos
       r = @last_row
       i = @lines[ r ].index( char, @last_col + 1 )
       if i
-        return cursor_to r, i
+        return cursor_to r, i, DO_DISPLAY
       end
 
       loop do
@@ -338,7 +338,7 @@ module Diakonos
 
         i = @lines[ r ].index( char )
         if i
-          return cursor_to r, i
+          return cursor_to r, i, DO_DISPLAY
         end
 
       end
@@ -348,7 +348,7 @@ module Diakonos
       r = @last_row
       i = @lines[ r ].rindex( char, @last_col - 1 )
       if i
-        return cursor_to r, i
+        return cursor_to r, i, DO_DISPLAY
       end
 
       loop do
@@ -357,7 +357,7 @@ module Diakonos
 
         i = @lines[ r ].rindex( char )
         if i
-          return cursor_to r, i
+          return cursor_to r, i, DO_DISPLAY
         end
       end
     end
