@@ -346,9 +346,12 @@ module Diakonos
 
     def go_to_char_previous( char )
       r = @last_row
-      i = @lines[ r ].rindex( char, @last_col - 1 )
-      if i
-        return cursor_to r, i, DO_DISPLAY
+      search_from = @last_col - 1
+      if search_from >= 0
+        i = @lines[ r ].rindex( char, search_from )
+        if i
+          return cursor_to r, i, DO_DISPLAY
+        end
       end
 
       loop do

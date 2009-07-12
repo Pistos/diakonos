@@ -60,6 +60,10 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 8,7
     @d.go_to_char '`'
     cursor_should_be_at 8,7
+
+    @b.cursor_to 18,0
+    @b.go_to_char 's'
+    cursor_should_be_at 19,0
   end
 
   it 'move the cursor to the closest previous occurrence of a character' do
@@ -77,6 +81,10 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 13,12
     @d.go_to_char_previous '%'
     cursor_should_be_at 13,12
+
+    @b.cursor_to 19,0
+    @b.go_to_char_previous 's'
+    cursor_should_be_at 18,0
   end
 
 end
