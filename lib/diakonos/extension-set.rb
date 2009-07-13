@@ -19,8 +19,8 @@ module Diakonos
       info = YAML.load_file( File.join( ext_dir, 'info.yaml' ) )
 
       if info[ 'requirements' ] && info[ 'requirements' ][ 'diakonos' ]
-        this_version = parse_version( ::Diakonos::VERSION )
-        min_version = parse_version( info[ 'requirements' ][ 'diakonos' ][ 'minimum' ] )
+        this_version = ::Diakonos.parse_version( ::Diakonos::VERSION )
+        min_version = ::Diakonos.parse_version( info[ 'requirements' ][ 'diakonos' ][ 'minimum' ] )
         if min_version && this_version >= min_version
           extension = Extension.new( ext_dir )
           @extensions[ dir ] = extension
