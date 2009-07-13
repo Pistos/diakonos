@@ -5,4 +5,5 @@ current file.  Each file has its own undo history.
 
 Use <Ctrl-Y> to redo one or more changes that you've undone.
 
-Tags: undo undoing mistake back revert
+
+Tags: undo undoing mistake back revert redo
