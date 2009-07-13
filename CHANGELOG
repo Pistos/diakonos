@@ -7,8 +7,9 @@ Contributors: Pistos
 
 - Refactored keying system.
 - Introduced keying modes.
-- Various other refactorings.
-- Bug fixes.
+- Ruby version now enforced, both at installation and run time.
+- Various refactorings.
+- Various bug fixes.
 
 0.8.11
 
