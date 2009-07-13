@@ -11,12 +11,6 @@ module Diakonos
       @extensions.values.find_all { |e| e }.map { |e| e.scripts }.flatten
     end
 
-    def parse_version( s )
-      if s
-        s.split( '.' ).map { |part| part.to_i }.extend( Comparable )
-      end
-    end
-
     def load( dir )
       @extensions[ dir ] = false
 
