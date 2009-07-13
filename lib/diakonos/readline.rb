@@ -17,7 +17,7 @@ module Diakonos
 
       @history = options[ :history ] || []
       @history << @initial_text
-      @history_index = @history.length - 1
+      @history_index = [ @history.length - 1, 0 ].max
 
       @do_complete = options[ :do_complete ] || ::Diakonos::DONT_COMPLETE
       @on_dirs = options[ :on_dirs ] || :go_into_dirs
