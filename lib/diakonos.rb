@@ -536,6 +536,8 @@ module Diakonos
 
 end
 
+::Diakonos.check_ruby_version
+
 if __FILE__ == $PROGRAM_NAME
   $diakonos = Diakonos::Diakonos.new( ARGV )
   $diakonos.start

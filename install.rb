@@ -180,6 +180,8 @@ end
     end
 
     def run
+      ::Diakonos.check_ruby_version
+
       # Libraries
       mkdir_ @lib_dir
       cp_ 'lib/diakonos.rb', @lib_dir
