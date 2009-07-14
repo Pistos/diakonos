@@ -83,6 +83,12 @@ module Diakonos
       elsif @input_cursor < @view_y
         @view_y = @input_cursor
       end
+
+      diff = ( @input_cursor - @view_y ) + 1 - ( Curses::cols - @start_pos )
+      if diff > 0
+        @view_y += diff
+      end
+
       @window.setpos( @window.cury, @start_pos + @input_cursor - @view_y )
       redraw_input
       call_block
@@ -95,10 +101,6 @@ module Diakonos
     def paste( s )
       @input = @input[ 0...@input_cursor ] + s + @input[ @input_cursor..-1 ]
       @input_cursor += s.length
-      diff = ( @input_cursor - @view_y ) + 1 - ( Curses::cols - @start_pos )
-      if diff > 0
-        @view_y += diff
-      end
       sync
     end
 
