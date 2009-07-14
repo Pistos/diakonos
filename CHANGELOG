@@ -8,6 +8,7 @@ Contributors: Pistos
 - Refactored keying system.
 - Introduced keying modes.
 - Ruby version now enforced, both at installation and run time.
+- Input line can now scroll if input is longer than screen width.
 - Various refactorings.
 - Various bug fixes.
 
