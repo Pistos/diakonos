@@ -16,8 +16,9 @@ module Diakonos
     end
 
     def backspace
-      cursor_left
-      delete
+      if cursor_left
+        delete
+      end
     end
 
     def cursor_bol
@@ -31,9 +32,10 @@ module Diakonos
     end
 
     def cursor_left
-      return  if @input_cursor < 1
+      return false  if @input_cursor < 1
       @input_cursor -= 1
       sync
+      true
     end
 
     def cursor_right
@@ -44,17 +46,13 @@ module Diakonos
 
     def delete
       return  if @input_cursor >= @input.length
-      @window.delch
-      set_input( @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ] )
-      call_block
+      @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+      sync
     end
 
     def delete_line
       @input = ""
-      if @block
-        @block.call @input
-      end
-      cursor_write_input
+      sync
     end
 
     def delete_word
