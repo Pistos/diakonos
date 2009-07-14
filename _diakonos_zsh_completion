@@ -1,0 +1,13 @@
+#compdef diakonos
+
+typeset -A opt_args
+local context state line
+local sessiondir
+sessiondir=${HOME}/.diakonos/sessions
+
+_arguments -n -s -S \
+  "-s[specify session]:session:_files -W $sessiondir" \
+  "*:file:_files" \
+  && return 0
+
+return 1
