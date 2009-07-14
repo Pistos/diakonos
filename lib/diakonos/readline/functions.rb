@@ -22,24 +22,24 @@ module Diakonos
 
     def cursor_bol
       @input_cursor = 0
-      @window.setpos( @icury, @icurx )
+      sync
     end
 
     def cursor_eol
       @input_cursor = @input.length
-      @window.setpos( @window.cury, @icurx + @input.length )
+      sync
     end
 
     def cursor_left
       return  if @input_cursor < 1
       @input_cursor -= 1
-      @window.setpos( @window.cury, @window.curx - 1 )
+      sync
     end
 
     def cursor_right
       return  if @input_cursor >= @input.length
       @input_cursor += 1
-      @window.setpos( @window.cury, @window.curx + 1 )
+      sync
     end
 
     def delete

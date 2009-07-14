@@ -80,6 +80,8 @@ module Diakonos
     def sync
       if @input_cursor > @input.length
         @input_cursor = @input.length
+      elsif @input_cursor < @view_y
+        @view_y = @input_cursor
       end
       @window.setpos( @window.cury, @start_pos + @input_cursor - @view_y )
       redraw_input
