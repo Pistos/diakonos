@@ -56,7 +56,10 @@ module Diakonos
     end
 
     def delete_word
-      @input = @input.gsub( /\W+$/, '' ).gsub( /\w+$/, '' )
+      head = @input[ 0...@input_cursor ]
+      chopped = head.sub( /\w+\W*$/, '' )
+      @input = chopped + @input[ @input_cursor..-1 ]
+      @input_cursor -= head.length - chopped.length
       sync
     end
 
