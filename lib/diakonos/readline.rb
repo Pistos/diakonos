@@ -10,6 +10,7 @@ module Diakonos
     def initialize( diakonos, window, start_pos, options = {}, &block )
       @diakonos = diakonos
       @window = window
+      @start_pos = start_pos
       @window.setpos( 0, start_pos )
       @initial_text = options[ :initial_text ] || ''
       @completion_array = options[ :completion_array ]
@@ -34,6 +35,7 @@ module Diakonos
 
       @icurx = @window.curx
       @icury = @window.cury
+      @view_y = 0
       @window.addstr @initial_text
       @input_cursor = @initial_text.length
       @opened_list_file = false
@@ -76,33 +78,31 @@ module Diakonos
     end
 
     def handle_typeable( c )
-      if @input_cursor == @input.length
-        @input << c
-        @window.addch c
-      else
-        @input = @input[ 0...@input_cursor ] + c.chr + @input[ @input_cursor..-1 ]
-        @window.setpos( @window.cury, @window.curx + 1 )
-        redraw_input
-      end
-      @input_cursor += 1
-      call_block
+      paste c.chr
     end
 
     def paste( s )
       @input = @input[ 0...@input_cursor ] + s + @input[ @input_cursor..-1 ]
-      @window.setpos( @window.cury, @window.curx + s.length )
-      redraw_input
       @input_cursor += s.length
+      diff = ( @input_cursor - @view_y ) + 1 - ( Curses::cols - @start_pos )
+      if diff > 0
+        @view_y += diff
+      end
+      @window.setpos( @window.cury, @start_pos + @input_cursor - @view_y )
+      redraw_input
       call_block
     end
 
     def redraw_input
-      input = @input[ 0...Curses::cols ]
+      input = @input[ @view_y...(@view_y + Curses::cols) ]
 
       curx = @window.curx
       cury = @window.cury
       @window.setpos( @icury, @icurx )
-      @window.addstr "%-#{ Curses::cols - curx }s%s" % [ input, " " * ( Curses::cols - input.length ) ]
+      @window.addstr "%-#{ Curses::cols - curx }s%s" % [
+        input,
+        " " * [ ( Curses::cols - input.length ), 0 ].max
+      ]
       @window.setpos( cury, curx )
       @window.refresh
     end
