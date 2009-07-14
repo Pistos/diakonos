@@ -77,6 +77,15 @@ module Diakonos
       @numbered_list
     end
 
+    def sync
+      if @input_cursor > @input.length
+        @input_cursor = @input.length
+      end
+      @window.setpos( @window.cury, @start_pos + @input_cursor - @view_y )
+      redraw_input
+      call_block
+    end
+
     def handle_typeable( c )
       paste c.chr
     end
@@ -88,9 +97,7 @@ module Diakonos
       if diff > 0
         @view_y += diff
       end
-      @window.setpos( @window.cury, @start_pos + @input_cursor - @view_y )
-      redraw_input
-      call_block
+      sync
     end
 
     def redraw_input

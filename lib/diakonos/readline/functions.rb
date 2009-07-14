@@ -59,10 +59,7 @@ module Diakonos
 
     def delete_word
       @input = @input.gsub( /\W+$/, '' ).gsub( /\w+$/, '' )
-      if @block
-        @block.call @input
-      end
-      cursor_write_input
+      sync
     end
 
     def history_up
