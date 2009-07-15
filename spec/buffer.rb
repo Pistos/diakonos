@@ -254,6 +254,13 @@ describe 'A Diakonos user' do
     @b[ @b.last_row ].should.equal '<div></div>'
     cursor_should_be_at @b.last_row, 5
 
+    @b.cursor_to_eol
+    @b.carriage_return
+    @b.paste "<div><span>"
+    @b.close_code
+    @b[ @b.last_row ].should.equal '<div><span></span>'
+    cursor_should_be_at @b.last_row, 11
+
     @b.set_type 'xml'
 
     @b.cursor_to_eol
@@ -265,10 +272,24 @@ describe 'A Diakonos user' do
 
     @b.cursor_to_eol
     @b.carriage_return
+    @b.paste "<xsl:call-template><xsl:choose>"
+    @b.close_code
+    @b[ @b.last_row ].should.equal '<xsl:call-template><xsl:choose></xsl:choose>'
+    cursor_should_be_at @b.last_row, 31
+
+    @b.cursor_to_eol
+    @b.carriage_return
     @b.paste "<xsl:call-template name='foo'>"
     @b.close_code
     @b[ @b.last_row ].should.equal "<xsl:call-template name='foo'></xsl:call-template>"
     cursor_should_be_at @b.last_row, 30
+
+    @b.cursor_to_eol
+    @b.carriage_return
+    @b.paste "<xsl:call-template name='foo'><xsl:if test='foo'>"
+    @b.close_code
+    @b[ @b.last_row ].should.equal "<xsl:call-template name='foo'><xsl:if test='foo'></xsl:if>"
+    cursor_should_be_at @b.last_row, 49
   end
 
 end
