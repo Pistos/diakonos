@@ -247,30 +247,28 @@ describe 'A Diakonos user' do
     @b.set_type 'html'
 
     @b.cursor_to 0,0
+    @b.cursor_to_eol
     @b.carriage_return
-    @b.cursor_to 0,0
     @b.paste "<div>"
     @b.close_code
-    @b[ 0 ].should.equal '<div></div>'
-    cursor_should_be_at 0, 5
+    @b[ @b.last_row ].should.equal '<div></div>'
+    cursor_should_be_at @b.last_row, 5
 
     @b.set_type 'xml'
 
-    @b.cursor_to 0,0
+    @b.cursor_to_eol
     @b.carriage_return
-    @b.cursor_to 0,0
     @b.paste "<xsl:call-template>"
     @b.close_code
-    @b[ 0 ].should.equal '<xsl:call-template></xsl:call-template>'
-    cursor_should_be_at 0, 19
+    @b[ @b.last_row ].should.equal '<xsl:call-template></xsl:call-template>'
+    cursor_should_be_at @b.last_row, 19
 
-    @b.cursor_to 0,0
+    @b.cursor_to_eol
     @b.carriage_return
-    @b.cursor_to 0,0
     @b.paste "<xsl:call-template name='foo'>"
     @b.close_code
-    @b[ 0 ].should.equal "<xsl:call-template name='foo'></xsl:call-template>"
-    cursor_should_be_at 0, 30
+    @b[ @b.last_row ].should.equal "<xsl:call-template name='foo'></xsl:call-template>"
+    cursor_should_be_at @b.last_row, 30
   end
 
 end
