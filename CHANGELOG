@@ -9,7 +9,7 @@ Contributors: Pistos
 - Introduced keying modes.
 - Ruby version now enforced, both at installation and run time.
 - Input line can now scroll if input is longer than screen width.
-- Added zsh completion function for session completion.
+- Added support for session completion in zsh and bash.
 - Various refactorings.
 - Various bug fixes.
 
