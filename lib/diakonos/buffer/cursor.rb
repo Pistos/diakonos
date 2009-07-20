@@ -71,7 +71,7 @@ module Diakonos
         end
         highlight_changed = old_pair != @text_marks[ :pair ]
 
-        if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
+        if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) ) || @settings[ 'view.current_line.format' ]
           display
         else
           @diakonos.display_mutex.synchronize do

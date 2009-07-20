@@ -260,6 +260,16 @@ module Diakonos
       end
     end
 
+    def highlight_current_line
+      format = @settings[ 'view.current_line.format' ]
+      return  if format.nil?
+
+      @win_main.setpos( @last_screen_y, 0 )
+      @win_main.attrset format
+      @win_main.addstr @lines[ @last_row ]
+      @win_main.refresh
+    end
+
     def display
       return  if @diakonos.testing
       return  if ! @diakonos.do_display
@@ -271,7 +281,6 @@ module Diakonos
             Curses::curs_set 0
 
             @continued_format_class = nil
-
             @pen_down = true
 
             # First, we have to "draw" off-screen, in order to check for opening of
@@ -343,7 +352,10 @@ module Diakonos
             if @win_line_numbers
               @win_line_numbers.refresh
             end
-            @win_main.setpos( @last_screen_y , @last_screen_x )
+
+            highlight_current_line
+
+            @win_main.setpos( @last_screen_y, @last_screen_x )
             @win_main.refresh
 
             if @language != @original_language
