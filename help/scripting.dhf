@@ -77,7 +77,7 @@ present, the following hooks are available:
 To hook onto one of these events, place code into the ~/.diakonos/scripts/
 directory.  Example hook code can be seen at
 
-  http://github.com/Pistos/diakonos/tree/master/scripts/git-branch.rb
+  http://github.com/Pistos/dk-git/blob/master/git-branch.rb
 
 Your code should create a Proc object (possibly with a block parameter,
 depending on the hook), and then register it with the following syntax:
