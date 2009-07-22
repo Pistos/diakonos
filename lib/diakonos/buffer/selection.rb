@@ -88,18 +88,15 @@ module Diakonos
       cursor_to( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
 
-    def select_block_outer
+    def select_wrapping_block
       initial_level = indentation_level( @last_row )
-      new_row = @last_row
-      passed = false
-      new_level = initial_level
-
+      end_row = start_row = new_row = @last_row
 
       # Find block end
       ( @last_row...@lines.size ).each do |row|
         next  if @lines[ row ].strip.empty?
         if indentation_level( row ) < initial_level
-          anchor_selection( row, 0, DONT_DISPLAY )
+          end_row = row
           break
         end
       end
@@ -107,21 +104,14 @@ module Diakonos
       # Go to block beginning
       ( 0...@last_row ).reverse_each do |row|
         next  if @lines[ row ].strip.empty?
-        level = indentation_level( row )
-        if ! passed
-          passed = ( level < initial_level )
-          new_level = level
-        else
-          if level < new_level
-            new_row = ( row+1..@last_row ).find { |r|
-              ! @lines[ r ].strip.empty?
-            }
-            break
-          end
+        if indentation_level( row ) < initial_level
+          start_row = row + 1
+          break
         end
       end
 
-      go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
+      anchor_selection( end_row, 0 )
+      cursor_to( start_row, 0, DO_DISPLAY )
     end
 
     def select( from_regexp, to_regexp, include_ending = true )

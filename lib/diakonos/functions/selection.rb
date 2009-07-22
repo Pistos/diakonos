@@ -60,8 +60,8 @@ module Diakonos
       update_status_line
     end
 
-    def select_block_outer
-      @current_buffer.select_block_outer
+    def select_wrapping_block
+      @current_buffer.select_wrapping_block
       update_status_line
     end
 
