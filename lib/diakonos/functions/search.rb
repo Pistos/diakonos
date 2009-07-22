@@ -51,7 +51,9 @@ module Diakonos
 
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
       direction = direction_of( dir_str )
-      if regexp_source_.nil?
+      if regexp_source_
+        regexp_source = regexp_source_
+      else
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copy_selection[ 0 ]
         end
@@ -69,13 +71,11 @@ module Diakonos
             @current_buffer.clear_matches Buffer::DO_DISPLAY
           end
         }
-      else
-        regexp_source = regexp_source_
       end
 
       if regexp_source
         find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
-      elsif starting_row and starting_col
+      elsif starting_row && starting_col
         @current_buffer.clear_matches
         if @settings[ 'find.return_on_abort' ]
           @current_buffer.cursor_to starting_row, starting_col, Buffer::DO_DISPLAY
