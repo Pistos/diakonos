@@ -58,14 +58,28 @@ module Diakonos
       !!selection_mark
     end
 
-    def select_current_line
-      @text_marks[ :selection ] = TextMark.new(
-        @last_row,
-        0,
-        @last_row,
-        @lines[ @last_row ].size,
-        @selection_formatting
-      )
+    def select_current_line( do_display = DONT_DISPLAY )
+      if do_display
+        selection_mode_normal
+        anchor_selection( @last_row, 0, DONT_DISPLAY )
+        if @last_row == @lines.size - 1
+          row = @last_row
+          col = @lines[ @last_row ].size
+        else
+          row = @last_row + 1
+          col = 0
+        end
+        cursor_to( row, col, DO_DISPLAY
+        )
+      else
+        @text_marks[ :selection ] = TextMark.new(
+          @last_row,
+          0,
+          @last_row,
+          @lines[ @last_row ].size,
+          @selection_formatting
+        )
+      end
       @lines[ @last_row ]
     end
 

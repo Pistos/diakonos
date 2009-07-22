@@ -55,5 +55,10 @@ module Diakonos
       update_status_line
     end
 
+    def select_line
+      @current_buffer.select_current_line Buffer::DO_DISPLAY
+      update_status_line
+    end
+
   end
 end
