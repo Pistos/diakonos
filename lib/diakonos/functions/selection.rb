@@ -56,7 +56,7 @@ module Diakonos
     end
 
     def select_line
-      @current_buffer.select_current_line Buffer::DO_DISPLAY
+      @current_buffer.select_current_line
       update_status_line
     end
 

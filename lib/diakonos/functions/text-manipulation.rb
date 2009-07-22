@@ -145,7 +145,7 @@ module Diakonos
     end
 
     def surround_line( envelope = nil )
-      @current_buffer.select_current_line
+      @current_buffer.set_selection_current_line
       surround_selection envelope
     end
 

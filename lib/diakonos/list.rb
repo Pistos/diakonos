@@ -22,13 +22,13 @@ module Diakonos
 
     def current_list_item
       if @list_buffer
-        @list_buffer.select_current_line
+        @list_buffer.set_selection_current_line
       end
     end
 
     def select_list_item
       if @list_buffer
-        line = @list_buffer.select_current_line
+        line = @list_buffer.set_selection_current_line
         @list_buffer.display
         line
       end
