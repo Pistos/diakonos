@@ -89,13 +89,20 @@ module Diakonos
     end
 
     def select_wrapping_block
-      initial_level = indentation_level( @last_row )
-      end_row = start_row = new_row = @last_row
+      block_level = indentation_level( @last_row )
+      if selecting?
+        block_level -= 1
+      end
+      if block_level <= 0
+        return select_all
+      end
+
+      end_row = start_row = @last_row
 
       # Find block end
       ( @last_row...@lines.size ).each do |row|
         next  if @lines[ row ].strip.empty?
-        if indentation_level( row ) < initial_level
+        if indentation_level( row ) < block_level
           end_row = row
           break
         end
@@ -104,7 +111,7 @@ module Diakonos
       # Go to block beginning
       ( 0...@last_row ).reverse_each do |row|
         next  if @lines[ row ].strip.empty?
-        if indentation_level( row ) < initial_level
+        if indentation_level( row ) < block_level
           start_row = row + 1
           break
         end
