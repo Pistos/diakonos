@@ -51,7 +51,7 @@ module Diakonos
 
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
       direction = direction_of( dir_str )
-      @current_buffer.search_area = nil
+      # @current_buffer.search_area = nil
       if regexp_source_
         regexp_source = regexp_source_
       else
@@ -104,7 +104,7 @@ module Diakonos
     end
 
     def find_exact( dir_str = "down", search_term_ = nil )
-      @current_buffer.search_area = nil
+      # @current_buffer.search_area = nil
       if search_term_.nil?
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copy_selection[ 0 ]

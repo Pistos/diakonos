@@ -75,7 +75,7 @@ module Diakonos
 
           # Check below the cursor.
 
-          ( (from_row + 1)..search_area.end_row ).each do |i|
+          ( (from_row + 1)...search_area.end_row ).each do |i|
             if index = @lines[ i ].index( regexp )
               match = Regexp.last_match
               found_text = match[ 0 ]
@@ -93,7 +93,7 @@ module Diakonos
           wrapped = true
 
           ( search_area.start_row...from_row ).each do |i|
-            if index = @lines[ i ].index( regexp )
+            if index = @lines[ i ].index( regexp, search_area.start_col )
               match = Regexp.last_match
               found_text = match[ 0 ]
               finding = Finding.new( i, index, i, index + found_text.length )
@@ -191,12 +191,12 @@ module Diakonos
         end
       end
 
-      if finding && ! (
-        search_area.contains?( finding.start_row, finding.start_col ) &&
-        search_area.contains?( finding.end_row, finding.end_col - 1 )
-      )
-        finding = nil
-      end
+      # if finding && ! (
+        # search_area.contains?( finding.start_row, finding.start_col ) &&
+        # search_area.contains?( finding.end_row, finding.end_col )
+      # )
+        # finding = nil
+      # end
 
       if ! finding
         remove_selection DONT_DISPLAY
