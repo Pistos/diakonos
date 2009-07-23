@@ -51,12 +51,18 @@ module Diakonos
 
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
       direction = direction_of( dir_str )
-      # @current_buffer.search_area = nil
       if regexp_source_
         regexp_source = regexp_source_
       else
-        if @current_buffer.changing_selection
-          selected_text = @current_buffer.copy_selection[ 0 ]
+        @current_buffer.search_area = nil
+        m = @current_buffer.selection_mark
+        if m
+          if m.start_row != m.end_row
+            @current_buffer.search_area = @current_buffer.selection_mark
+            @current_buffer.remove_selection
+          else
+            selected_text = @current_buffer.copy_selection[ 0 ]
+          end
         end
         starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
 
@@ -93,18 +99,8 @@ module Diakonos
       end
     end
 
-    def find_in_selection( *args )
-      if ! @current_buffer.selecting?
-        set_iline "First mark a selection to search within."
-        return
-      end
-      @current_buffer.search_area = @current_buffer.selection_mark
-      @current_buffer.remove_selection
-      find *args
-    end
-
     def find_exact( dir_str = "down", search_term_ = nil )
-      # @current_buffer.search_area = nil
+      @current_buffer.search_area = nil
       if search_term_.nil?
         if @current_buffer.changing_selection
           selected_text = @current_buffer.copy_selection[ 0 ]
