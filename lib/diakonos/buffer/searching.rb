@@ -15,11 +15,16 @@ module Diakonos
 
     attr_accessor :search_area
 
-    def establish_finding( regexps, from_row, from_col, match )
+    def establish_finding( regexps, search_area, from_row, from_col, match )
       found_text = match[ 0 ]
       finding = Finding.new( from_row, from_col, from_row, from_col + found_text.length )
       if finding.match( regexps, @lines )
-        finding
+        if(
+          search_area.contains?( finding.start_row, finding.start_col ) &&
+          search_area.contains?( finding.end_row, finding.end_col - 1 )
+        )
+          finding
+        end
       end
     end
 
@@ -71,7 +76,7 @@ module Diakonos
             ( @last_finding ? @last_finding.start_col : from_col ) + 1
           )
           if index
-            finding = establish_finding( regexps, from_row, index, Regexp.last_match )
+            finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
             throw :found  if finding
           end
 
@@ -80,14 +85,14 @@ module Diakonos
           ( (from_row + 1)...search_area.end_row ).each do |i|
             index = @lines[ i ].index( regexp )
             if index
-              finding = establish_finding( regexps, i, index, Regexp.last_match )
+              finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
               throw :found  if finding
             end
           end
 
           index = @lines[ search_area.end_row ][ 0...search_area.end_col ].index( regexp )
           if index
-            finding = establish_finding( regexps, search_area.end_row, index, Regexp.last_match )
+            finding = establish_finding( regexps, search_area, search_area.end_row, index, Regexp.last_match )
             throw :found  if finding
           end
 
@@ -97,14 +102,14 @@ module Diakonos
 
           index = @lines[ search_area.start_row ].index( regexp, search_area.start_col )
           if index
-            finding = establish_finding( regexps, search_area.start_row, index, Regexp.last_match )
+            finding = establish_finding( regexps, search_area, search_area.start_row, index, Regexp.last_match )
             throw :found  if finding
           end
 
           ( search_area.start_row+1...from_row ).each do |i|
             index = @lines[ i ].index( regexp )
             if index
-              finding = establish_finding( regexps, i, index, Regexp.last_match )
+              finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
               throw :found  if finding
             end
           end
@@ -118,7 +123,7 @@ module Diakonos
           end
           if index = @lines[ from_row ].index( regexp, index_col )
             if index <= ( @last_finding ? @last_finding.start_col : from_col )
-              finding = establish_finding( regexps, from_row, index, Regexp.last_match )
+              finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
               throw :found  if finding
             end
           end
@@ -188,13 +193,6 @@ module Diakonos
           end
         end
       end
-
-      # if finding && ! (
-        # search_area.contains?( finding.start_row, finding.start_col ) &&
-        # search_area.contains?( finding.end_row, finding.end_col )
-      # )
-        # finding = nil
-      # end
 
       if ! finding
         remove_selection DONT_DISPLAY
