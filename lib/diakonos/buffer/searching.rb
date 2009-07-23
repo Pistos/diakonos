@@ -129,29 +129,15 @@ module Diakonos
           # Check the current row first.
 
           col_to_check = ( @last_finding ? @last_finding.end_col : from_col ) - 1
-          if ( col_to_check >= 0 ) and ( index = @lines[ from_row ][ 0...col_to_check ].rindex( regexp ) )
-            match = Regexp.last_match
-            found_text = match[ 0 ]
-            finding = Finding.new( from_row, index, from_row, index + found_text.length )
-            if finding.match( regexps, @lines )
-              throw :found
-            else
-              finding = nil
-            end
+          if ( col_to_check >= 0 ) && ( index = @lines[ from_row ][ 0...col_to_check ].rindex( regexp ) )
+            establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
           end
 
           # Check above the cursor.
 
           (from_row - 1).downto( 0 ) do |i|
             if index = @lines[ i ].rindex( regexp )
-              match = Regexp.last_match
-              found_text = match[ 0 ]
-              finding = Finding.new( i, index, i, index + found_text.length )
-              if finding.match( regexps, @lines )
-                throw :found
-              else
-                finding = nil
-              end
+              establish_finding( regexps, search_area, i, index, Regexp.last_match )
             end
           end
 
@@ -161,14 +147,7 @@ module Diakonos
 
           (@lines.length - 1).downto(from_row + 1) do |i|
             if index = @lines[ i ].rindex( regexp )
-              match = Regexp.last_match
-              found_text = match[ 0 ]
-              finding = Finding.new( i, index, i, index + found_text.length )
-              if finding.match( regexps, @lines )
-                throw :found
-              else
-                finding = nil
-              end
+              establish_finding( regexps, search_area, i, index, Regexp.last_match )
             end
           end
 
@@ -177,14 +156,7 @@ module Diakonos
           search_col = ( @last_finding ? @last_finding.start_col : from_col ) + 1
           if index = @lines[ from_row ].rindex( regexp )
             if index > search_col
-              match = Regexp.last_match
-              found_text = match[ 0 ]
-              finding = Finding.new( from_row, index, from_row, index + found_text.length )
-              if finding.match( regexps, @lines )
-                throw :found
-              else
-                finding = nil
-              end
+              establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
             end
           end
         end
