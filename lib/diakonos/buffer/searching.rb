@@ -82,15 +82,18 @@ module Diakonos
 
           # Check below the cursor.
 
-          ( (from_row + 1)...search_area.end_row ).each do |i|
-            index = @lines[ i ].index( regexp )
+          ( (from_row + 1)..search_area.end_row ).each do |i|
+            line = @lines[ i ]
+            if i == search_area.end_row
+              line = line[ 0...search_area.end_col ]
+            end
+            index = line.index( regexp )
             if index
               finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
               throw :found  if finding
             end
           end
 
-          index = @lines[ search_area.end_row ][ 0...search_area.end_col ].index( regexp )
           if index
             finding = establish_finding( regexps, search_area, search_area.end_row, index, Regexp.last_match )
             throw :found  if finding
