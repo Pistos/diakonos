@@ -13,6 +13,8 @@ module Diakonos
       ']' => { partner: '[', direction: :backward },
     }
 
+    attr_accessor :search_area
+
     # Takes an array of Regexps, which represents a user-provided regexp,
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
@@ -28,6 +30,12 @@ module Diakonos
       from_row           = options[ :starting_row ] || @last_row
       from_col           = options[ :starting_col ] || @last_col
       show_context_after = options[ :show_context_after ]
+
+      search_area = @search_area || TextMark.new( 0, 0, @lines.size - 1, @lines[ -1 ].size, nil )
+
+      if ! search_area.contains?( from_row, from_col )
+        from_row, from_col = search_area.start_row, search_area.start_col
+      end
 
       if direction == :opposite
         case @last_search_direction
@@ -47,9 +55,14 @@ module Diakonos
       catch :found do
 
         if direction == :down
+
           # Check the current row first.
 
-          if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) + 1 )
+          index = @lines[ from_row ].index(
+            regexp,
+            ( @last_finding ? @last_finding.start_col : from_col ) + 1
+          )
+          if index
             match = Regexp.last_match
             found_text = match[ 0 ]
             finding = Finding.new( from_row, index, from_row, index + found_text.length )
@@ -62,7 +75,7 @@ module Diakonos
 
           # Check below the cursor.
 
-          ( (from_row + 1)...@lines.length ).each do |i|
+          ( (from_row + 1)..search_area.end_row ).each do |i|
             if index = @lines[ i ].index( regexp )
               match = Regexp.last_match
               found_text = match[ 0 ]
@@ -79,7 +92,7 @@ module Diakonos
 
           wrapped = true
 
-          ( 0...from_row ).each do |i|
+          ( search_area.start_row...from_row ).each do |i|
             if index = @lines[ i ].index( regexp )
               match = Regexp.last_match
               found_text = match[ 0 ]
@@ -94,8 +107,12 @@ module Diakonos
 
           # And finally, the other side of the current row.
 
-          #if index = @lines[ from_row ].index( regexp, ( @last_finding ? @last_finding.start_col : from_col ) - 1 )
-          if index = @lines[ from_row ].index( regexp )
+          if from_row == search_area.start_row
+            index_col = search_area.start_col
+          else
+            index_col = 0
+          end
+          if index = @lines[ from_row ].index( regexp, index_col )
             if index <= ( @last_finding ? @last_finding.start_col : from_col )
               match = Regexp.last_match
               found_text = match[ 0 ]
@@ -109,6 +126,7 @@ module Diakonos
           end
 
         elsif direction == :up
+
           # Check the current row first.
 
           col_to_check = ( @last_finding ? @last_finding.end_col : from_col ) - 1
@@ -173,6 +191,13 @@ module Diakonos
         end
       end
 
+      if finding && ! (
+        search_area.contains?( finding.start_row, finding.start_col ) &&
+        search_area.contains?( finding.end_row, finding.end_col - 1 )
+      )
+        finding = nil
+      end
+
       if ! finding
         remove_selection DONT_DISPLAY
         clear_matches DO_DISPLAY
@@ -181,7 +206,11 @@ module Diakonos
         end
       else
         if wrapped && ! options[ :quiet ]
-          @diakonos.set_iline( "(search wrapped around BOF/EOF)" )
+          if @search_area
+            @diakonos.set_iline( "(search wrapped around to start of search area)" )
+          else
+            @diakonos.set_iline( "(search wrapped around BOF/EOF)" )
+          end
         end
 
         remove_selection( DONT_DISPLAY )
@@ -371,7 +400,6 @@ module Diakonos
       found_row = nil
       found_col = nil
       found_text = nil
-      wrapped = false
 
       catch :found do
         if direction == :down

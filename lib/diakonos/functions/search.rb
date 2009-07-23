@@ -47,6 +47,7 @@ module Diakonos
         :show_context_after => @settings[ 'find.show_context_after' ]
       )
       @last_search_regexps = regexps
+      @current_buffer.search_area = nil
     end
 
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
@@ -92,6 +93,16 @@ module Diakonos
       end
     end
 
+    def find_in_selection( *args )
+      if ! @current_buffer.selecting?
+        set_iline "First mark a selection to search within."
+        return
+      end
+      @current_buffer.search_area = @current_buffer.selection_mark
+      @current_buffer.remove_selection
+      find *args
+    end
+
     def find_exact( dir_str = "down", search_term_ = nil )
       if search_term_.nil?
         if @current_buffer.changing_selection
@@ -110,6 +121,7 @@ module Diakonos
         regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
         @current_buffer.find( regexp, :direction => direction )
         @last_search_regexps = regexp
+        @current_buffer.search_area = nil
       end
     end
 
