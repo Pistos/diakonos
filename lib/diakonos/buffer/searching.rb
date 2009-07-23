@@ -85,12 +85,24 @@ module Diakonos
             end
           end
 
+          index = @lines[ search_area.end_row ][ 0...search_area.end_col ].index( regexp )
+          if index
+            finding = establish_finding( regexps, search_area.end_row, index, Regexp.last_match )
+            throw :found  if finding
+          end
+
           # Wrap around.
 
           wrapped = true
 
-          ( search_area.start_row...from_row ).each do |i|
-            index = @lines[ i ].index( regexp, search_area.start_col )
+          index = @lines[ search_area.start_row ].index( regexp, search_area.start_col )
+          if index
+            finding = establish_finding( regexps, search_area.start_row, index, Regexp.last_match )
+            throw :found  if finding
+          end
+
+          ( search_area.start_row+1...from_row ).each do |i|
+            index = @lines[ i ].index( regexp )
             if index
               finding = establish_finding( regexps, i, index, Regexp.last_match )
               throw :found  if finding
