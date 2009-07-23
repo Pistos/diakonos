@@ -14,6 +14,16 @@ module Diakonos
     def to_s
       "(#{start_row},#{start_col})-(#{end_row},#{end_col}) #{formatting}"
     end
+
+    def contains?( row, col )
+      if row == start_row
+        start_col <= col
+      elsif row == end_row
+        col < end_col
+      else
+        start_row < row || row < end_row
+      end
+    end
   end
 
 end
