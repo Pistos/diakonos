@@ -21,7 +21,7 @@ module Diakonos
       elsif row == end_row
         col < end_col
       else
-        start_row < row || row < end_row
+        start_row < row && row < end_row
       end
     end
   end
