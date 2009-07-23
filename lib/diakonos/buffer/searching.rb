@@ -173,8 +173,14 @@ module Diakonos
         end
       end
 
-      if finding
-        if wrapped and not options[ :quiet ]
+      if ! finding
+        remove_selection DONT_DISPLAY
+        clear_matches DO_DISPLAY
+        if ! options[ :quiet ]
+          @diakonos.set_iline "/#{regexp.source}/ not found."
+        end
+      else
+        if wrapped && ! options[ :quiet ]
           @diakonos.set_iline( "(search wrapped around BOF/EOF)" )
         end
 
@@ -235,12 +241,6 @@ module Diakonos
             paste [ actual_replacement ]
             # Do nothing further.
           end
-        end
-      else
-        remove_selection DONT_DISPLAY
-        clear_matches DO_DISPLAY
-        if not options[ :quiet ]
-          @diakonos.set_iline "/#{regexp.source}/ not found."
         end
       end
     end
@@ -366,7 +366,7 @@ module Diakonos
     end
 
     def seek( regexp, direction = :down )
-      return if regexp.nil? or regexp == //
+      return  if regexp.nil? || regexp == //
 
       found_row = nil
       found_col = nil
