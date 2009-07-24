@@ -13,6 +13,10 @@ module Diakonos
       ']' => { partner: '[', direction: :backward },
     }
 
+    def search_area?
+      !! @search_area
+    end
+
     def search_area=( mark )
       @search_area = mark
       if mark.nil?

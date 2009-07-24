@@ -12,6 +12,7 @@ Contributors: Pistos
 - Added support for session completion in zsh and bash.
 - Added select_line.
 - Added select_wrapping_block.
+- Added view.non_search_area.format.
 - Various refactorings.
 - Various bug fixes.
 

@@ -321,6 +321,9 @@ module Diakonos
           end
 
           begin
+            if @current_buffer.search_area? && ! ( /^(?:find|readline)/ === to_eval )
+              @current_buffer.search_area = nil
+            end
             eval to_eval, nil, "eval"
             @last_commands << to_eval  unless to_eval == "repeat_last"
             if ! @there_was_non_movement
