@@ -4,8 +4,8 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
     s.name = 'diakonos'
-    s.version = '0.8.11'
-    s.summary = 'A usable console-based text editor.'
+    s.version = '0.8.12'
+    s.summary = 'A Linux editor for the masses'
     s.description = 'Diakonos is a customizable, usable console-based text editor.'
     s.homepage = 'http://purepistos.net/diakonos'
     s.requirements << 'curses library for Ruby (not in default Ruby install on Debian or FreeBSD)'
