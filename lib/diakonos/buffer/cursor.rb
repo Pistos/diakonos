@@ -316,7 +316,7 @@ module Diakonos
         :row => row,
         :col => col
       }
-      if not @cursor_stack.include? new_state
+      if ! @cursor_stack.include? new_state
         @cursor_stack << new_state
         if clear_stack_pointer
           @cursor_stack_pointer = nil
