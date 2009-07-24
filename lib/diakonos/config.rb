@@ -308,7 +308,8 @@ module Diakonos
             'find.return_on_abort', 'fuzzy_file_find', 'view.line_numbers',
             'find.show_context_after', 'view.pairs.highlight'
           @settings[ command ] = arg.to_b
-        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format'
+        when "context.format", "context.separator.format", "status.format", 'view.line_numbers.format',
+            'view.non_search_area.format'
           @settings[ command ] = Display.to_formatting( arg )
         when /view\.column_markers\.(.+?)\.format/
           @column_markers[ $1 ][ :format ] = Display.to_formatting( arg )

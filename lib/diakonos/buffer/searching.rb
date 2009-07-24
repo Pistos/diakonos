@@ -13,7 +13,28 @@ module Diakonos
       ']' => { partner: '[', direction: :backward },
     }
 
-    attr_accessor :search_area
+    def search_area=( mark )
+      @search_area = mark
+      if mark.nil?
+        @text_marks.delete :search_area_pre
+        @text_marks.delete :search_area_post
+      else
+        @text_marks[ :search_area_pre ] = TextMark.new(
+          0,
+          0,
+          mark.start_row,
+          mark.start_col,
+          @settings[ 'view.non_search_area.format' ]
+        )
+        @text_marks[ :search_area_post ] = TextMark.new(
+          mark.end_row,
+          mark.end_col,
+          @lines.length - 1,
+          @lines[ -1 ].length,
+          @settings[ 'view.non_search_area.format' ]
+        )
+      end
+    end
 
     def establish_finding( regexps, search_area, from_row, from_col, match )
       found_text = match[ 0 ]
