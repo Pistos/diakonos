@@ -327,7 +327,7 @@ module Diakonos
             eval to_eval, nil, "eval"
             @last_commands << to_eval  unless to_eval == "repeat_last"
             if ! @there_was_non_movement
-              @there_was_non_movement = !( /^((cursor|page|scroll)_(up|down|left|right)|find)/ === to_eval )
+              @there_was_non_movement = !( /^((cursor|page|scroll)_?(up|down|left|right)|find)/i === to_eval )
             end
           rescue Exception => e
             debug_log e.message
