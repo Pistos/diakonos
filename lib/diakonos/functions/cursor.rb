@@ -40,11 +40,10 @@ module Diakonos
       end
 
       case direction
-      when :forward
-        @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
-      #when :backward
-      else
+      when :backward, 'backward'
         @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
+      when :forward, 'forward'
+        @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
       end
 
       return_pointer = @cursor_stack_pointer
