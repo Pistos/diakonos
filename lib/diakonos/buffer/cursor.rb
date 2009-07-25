@@ -87,38 +87,6 @@ module Diakonos
       changed
     end
 
-    def cursor_return( direction )
-      delta = 0
-      if @cursor_stack_pointer.nil?
-        push_cursor_state( @top_line, @last_row, @last_col, DONT_CLEAR_STACK_POINTER )
-        delta = 1
-      end
-      case direction
-      when :forward
-        @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
-        #when :backward
-      else
-        @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
-      end
-
-      return_pointer = @cursor_stack_pointer
-
-      if @cursor_stack_pointer < 0
-        return_pointer = @cursor_stack_pointer = 0
-      elsif @cursor_stack_pointer >= @cursor_stack.length
-        return_pointer = @cursor_stack_pointer = @cursor_stack.length - 1
-      else
-        cursor_state = @cursor_stack[ @cursor_stack_pointer ]
-        if cursor_state
-          pitch_view( cursor_state[ :top_line ] - @top_line, DONT_PITCH_CURSOR, DO_DISPLAY )
-          cursor_to( cursor_state[ :row ], cursor_state[ :col ] )
-          @diakonos.update_status_line
-        end
-      end
-
-      [ return_pointer, @cursor_stack.size ]
-    end
-
     def cursor_to_eof
       cursor_to( @lines.length - 1, @lines[ -1 ].length, DO_DISPLAY )
     end
@@ -308,21 +276,6 @@ module Diakonos
         end
       end
       go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
-    end
-
-    def push_cursor_state( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
-      new_state = {
-        :top_line => top_line,
-        :row => row,
-        :col => col
-      }
-      if ! @cursor_stack.include? new_state
-        @cursor_stack << new_state
-        if clear_stack_pointer
-          @cursor_stack_pointer = nil
-        end
-        @diakonos.clear_non_movement_flag
-      end
     end
 
     def go_to_char( char )

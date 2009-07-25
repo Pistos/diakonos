@@ -164,17 +164,24 @@ module Diakonos
       @current_buffer         = nil
       @buffer_history         = Array.new
       @buffer_history_pointer = nil
+
+      @cursor_stack           = Array.new
+      @cursor_stack_pointer   = nil
+
       @bookmarks              = Hash.new
+
       @macro_history          = nil
       @macro_input_history    = nil
       @macros                 = Hash.new
       @last_commands          = SizedArray.new( NUM_LAST_COMMANDS )
       @playing_macro          = false
+
       @display_mutex          = Mutex.new
       @display_queue_mutex    = Mutex.new
       @display_queue          = nil
       @do_display             = true
       @iline_mutex            = Mutex.new
+
       @tag_stack              = Array.new
       @last_search_regexps    = nil
       @iterated_choice        = nil

@@ -1,4 +1,8 @@
 module Diakonos
+
+  CLEAR_STACK_POINTER = true
+  DONT_CLEAR_STACK_POINTER = false
+
   module Functions
 
     # @return [true,false] true iff the cursor changed positions
@@ -20,6 +24,47 @@ module Diakonos
         Buffer::DO_DISPLAY,
         stopped_typing
       )
+    end
+
+    # Pops the cursor stack.
+    def cursor_return( direction = :backward )
+      delta = 0
+      if @cursor_stack_pointer.nil?
+        push_cursor_state(
+          @current_buffer.top_line,
+          @current_buffer.last_row,
+          @current_buffer.last_col,
+          DONT_CLEAR_STACK_POINTER
+        )
+        delta = 1
+      end
+
+      case direction
+      when :forward
+        @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
+      #when :backward
+      else
+        @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
+      end
+
+      return_pointer = @cursor_stack_pointer
+
+      if @cursor_stack_pointer < 0
+        return_pointer = @cursor_stack_pointer = 0
+      elsif @cursor_stack_pointer >= @cursor_stack.length
+        return_pointer = @cursor_stack_pointer = @cursor_stack.length - 1
+      else
+        cursor_state = @cursor_stack[ @cursor_stack_pointer ]
+        if cursor_state
+          buffer = cursor_state[ :buffer ]
+          switch_to buffer
+          buffer.pitch_view( cursor_state[ :top_line ] - buffer.top_line, Buffer::DONT_PITCH_CURSOR, Buffer::DO_DISPLAY )
+          buffer.cursor_to( cursor_state[ :row ], cursor_state[ :col ] )
+          update_status_line
+        end
+      end
+
+      set_iline "Location: #{return_pointer+1}/#{@cursor_stack.size}"
     end
 
     def cursor_right( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
@@ -70,12 +115,6 @@ module Diakonos
     # Moves the cursor to the bottom of the viewport of the current buffer.
     def cursor_bov
       @current_buffer.cursor_to_bov
-    end
-
-    # Pops the cursor stack of the current buffer.
-    def cursor_return( dir_str = "backward" )
-      stack_pointer, stack_size = @current_buffer.cursor_return( direction_of( dir_str, :backward ) )
-      set_iline "Location: #{stack_pointer+1}/#{stack_size}"
     end
 
     def go_block_outer
@@ -157,6 +196,22 @@ module Diakonos
       end
       update_status_line
       update_context_line
+    end
+
+    def push_cursor_state( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
+      new_state = {
+        buffer: @current_buffer,
+        top_line: top_line,
+        row: row,
+        col: col
+      }
+      if ! @cursor_stack.include? new_state
+        @cursor_stack << new_state
+        if clear_stack_pointer
+          @cursor_stack_pointer = nil
+        end
+        clear_non_movement_flag
+      end
     end
 
     def scroll_down

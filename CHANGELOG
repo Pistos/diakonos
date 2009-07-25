@@ -13,6 +13,8 @@ Contributors: Pistos
 - Added select_line.
 - Added select_wrapping_block.
 - Added view.non_search_area.format.
+- Fixed cursor stack.
+- Cursor stack is now global (cross-buffer).
 - Various refactorings.
 - Various bug fixes.
 

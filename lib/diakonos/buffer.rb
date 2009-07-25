@@ -22,8 +22,6 @@ module Diakonos
     START_FROM_BEGINNING = -1
     DO_PITCH_CURSOR = true
     DONT_PITCH_CURSOR = false
-    CLEAR_STACK_POINTER = true
-    DONT_CLEAR_STACK_POINTER = false
     STRIP_LINE = true
     DONT_STRIP_LINE = false
     USE_INDENT_IGNORE = true
@@ -79,8 +77,6 @@ module Diakonos
       @read_only = read_only
       @bookmarks = Array.new
       @lang_stack = Array.new
-      @cursor_stack = Array.new
-      @cursor_stack_pointer = nil
 
       configure
 
@@ -482,7 +478,7 @@ module Diakonos
 
         highlight_matches
         if @diakonos.there_was_non_movement
-          push_cursor_state( old_top_line, old_row, old_col )
+          @diakonos.push_cursor_state( old_top_line, old_row, old_col )
         end
       end
 
