@@ -116,6 +116,7 @@ module Diakonos
     # Display text on the interaction line.
     def set_iline( string = "" )
       return  if @testing
+      return  if @readline
       Curses::curs_set 0
       @win_interaction.setpos( 0, 0 )
       @win_interaction.addstr( "%-#{Curses::cols}s" % string )
