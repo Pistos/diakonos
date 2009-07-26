@@ -1,6 +1,17 @@
 module Diakonos
   module Functions
 
+    # Searches for matches of a regular expression in the current buffer.
+    # @param [String] dir_str
+    #   The direction to search; 'down' (default) or 'up'.
+    # @param [Boolean] case_sensitive
+    #   Whether or not the search should be case_sensitive.  Default is insensitive.
+    # @param [String] regexp_source_
+    #   The regular expression to search for.
+    # @param [String] replacement
+    #   If provided, do a find and replace, and replace matches with replacement.
+    # @see #find_exact
+    # @see #find_again
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
       direction = direction_of( dir_str )
       if regexp_source_
@@ -42,6 +53,11 @@ module Diakonos
       end
     end
 
+    # Search again for the most recently sought search term.
+    # @param [String] dir_str
+    #   The direction to search; 'up' or 'down'.
+    # @see #find
+    # @see #find_exact
     def find_again( dir_str = nil )
       if dir_str
         direction = direction_of( dir_str )
@@ -51,6 +67,13 @@ module Diakonos
       end
     end
 
+    # Search for an exact string (not a regular expression).
+    # @param [String] dir_str
+    #   The direction to search; 'down' (default) or 'up'.
+    # @param [String] search_term_
+    #   The thing to search for.
+    # @see #find
+    # @see #find_again
     def find_exact( dir_str = "down", search_term_ = nil )
       @current_buffer.search_area = nil
       if search_term_.nil?
@@ -73,15 +96,24 @@ module Diakonos
       end
     end
 
+    # Moves the cursor to the pair match of the current character, if any.
     def go_to_pair_match
       @current_buffer.go_to_pair_match
     end
 
+    # Wrapper method for calling #find for search and replace.
+    # @see #find
     def search_and_replace( case_sensitive = CASE_INSENSITIVE )
       find( "down", case_sensitive, nil, ASK_REPLACEMENT )
     end
     alias_method :find_and_replace, :search_and_replace
 
+    # Immediately moves the cursor to the next match of a regular expression.
+    # The user is not prompted for any value.
+    # @param [String] regexp_source
+    #   The regular expression to search for.
+    # @param [String] dir_str
+    #   The direction to search; 'down' (default) or 'up'.
     def seek( regexp_source, dir_str = "down" )
       if regexp_source
         direction = direction_of( dir_str )
