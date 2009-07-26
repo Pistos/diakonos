@@ -9,14 +9,13 @@ module Diakonos
       @current_buffer.collapse_whitespace
     end
 
+
     def columnize( delimiter = nil, num_spaces_padding = 0 )
-      if delimiter.nil?
-        delimiter = get_user_input(
-          "Column delimiter (regexp): ",
-          history: @rlh_general,
-          initial_text: @settings[ "lang.#{@current_buffer.original_language}.column_delimiters" ] || ''
-        )
-      end
+      delimiter ||= get_user_input(
+        "Column delimiter (regexp): ",
+        history: @rlh_general,
+        initial_text: @settings[ "lang.#{@current_buffer.original_language}.column_delimiters" ] || ''
+      )
       if delimiter && num_spaces_padding
         @current_buffer.columnize Regexp.new( delimiter ), num_spaces_padding
       end
