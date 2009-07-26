@@ -1,4 +1,9 @@
 module Diakonos
+
+  # The Diakonos::Functions module contains all the methods that can be mapped
+  # to keys in Diakonos.  New methods can be added to this module by
+  # extensions.
+
   module Functions
 
     # Shows the About page, which gives information on Diakonos.
