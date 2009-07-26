@@ -27,6 +27,8 @@ module Diakonos
     end
 
     # Pops the cursor stack.
+    # @param [Symbol] direction
+    #   Either :backward (default) or :forward.
     def cursor_return( direction = :backward )
       delta = 0
       if @cursor_stack_pointer.nil?
@@ -66,6 +68,7 @@ module Diakonos
       set_iline "Location: #{return_pointer+1}/#{@cursor_stack.size}"
     end
 
+    # @return [true,false] true iff the cursor changed positions
     def cursor_right( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
       @current_buffer.cursor_to(
         @current_buffer.last_row,
@@ -87,6 +90,7 @@ module Diakonos
     end
 
     # Moves the cursor to the beginning of the current buffer.
+    # @return [true,false] true iff the cursor changed positions
     def cursor_bof
       @current_buffer.cursor_to( 0, 0, Buffer::DO_DISPLAY )
     end
@@ -116,20 +120,27 @@ module Diakonos
       @current_buffer.cursor_to_bov
     end
 
+    # Moves the cursor to the beginning of the parent code block.
     def go_block_outer
       @current_buffer.go_block_outer
     end
+    # Moves the cursor to the beginning of the first child code block.
     def go_block_inner
       @current_buffer.go_block_inner
     end
+    # Moves the cursor to the beginning of the next code block at the same
+    # indentation level as the current one.
     def go_block_next
       @current_buffer.go_block_next
     end
+    # Moves the cursor to the beginning of the previous code block at the same
+    # indentation level as the current one.
     def go_block_previous
       @current_buffer.go_block_previous
     end
 
     # Moves the cursor to the next occurrence of the given character.
+    # @param [String] char  The character to go to
     def go_to_char( char = nil )
       char ||= get_char( "Type character to go to..." )
 
@@ -142,6 +153,7 @@ module Diakonos
     end
 
     # Moves the cursor to the closest previous occurrence of the given character.
+    # @param [String] char  The character to go to
     def go_to_char_previous( char = nil )
       char ||= get_char( "Type character to go to..." )
 
@@ -153,6 +165,8 @@ module Diakonos
       end
     end
 
+    # Prompts the user for a line number or line delta, with optional column
+    # number.  Moves the cursor there.
     def go_to_line_ask
       input = get_user_input( "Go to [line number|+lines][,column number]: " )
       if input
@@ -190,28 +204,25 @@ module Diakonos
       update_context_line
     end
 
-    def push_cursor_state( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
-      new_state = {
-        buffer: @current_buffer,
-        top_line: top_line,
-        row: row,
-        col: col
-      }
-      if ! @cursor_stack.include? new_state
-        @cursor_stack << new_state
-        if clear_stack_pointer
-          @cursor_stack_pointer = nil
-        end
-        clear_non_movement_flag
+    # Pitches the current buffer's view one screenful up.
+    def page_up
+      if @current_buffer.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+        cursor_bof
       end
+      update_status_line
+      update_context_line
     end
 
+    # Scrolls the current buffer's view down, as determined by the
+    # view.scroll_amount setting.
     def scroll_down
       @current_buffer.pitch_view( @settings[ "view.scroll_amount" ] || 1 )
       update_status_line
       update_context_line
     end
 
+    # Scrolls the current buffer's view up, as determined by the
+    # view.scroll_amount setting.
     def scroll_up
       if @settings[ "view.scroll_amount" ]
         @current_buffer.pitch_view( -@settings[ "view.scroll_amount" ] )
