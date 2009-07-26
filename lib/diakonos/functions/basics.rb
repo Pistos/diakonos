@@ -5,7 +5,9 @@ module Diakonos
     #
     # @see Diakonos::Buffer#delete
     def backspace
-      delete  if( @current_buffer.changing_selection or cursor_left( Buffer::STILL_TYPING ) )
+      if( @current_buffer.changing_selection || cursor_left( Buffer::STILL_TYPING ) )
+        delete
+      end
     end
 
     # Insert a carriage return (newline) at the current cursor location.
@@ -23,7 +25,9 @@ module Diakonos
     # Deletes the current line and adds it to the clipboard.
     def delete_line
       removed_text = @current_buffer.delete_line
-      @clipboard.add_clip( [ removed_text, "" ] ) if removed_text
+      if removed_text
+        @clipboard.add_clip( [ removed_text, "" ] )
+      end
     end
 
   end
