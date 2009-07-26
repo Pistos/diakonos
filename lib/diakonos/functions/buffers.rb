@@ -6,7 +6,7 @@ module Diakonos
     # @param [Diakonos::Buffer] buffer
     #   The buffer to close.  If no buffer is provided, defaults to the current buffer.
     # @param [Fixnum] to_all
-    #   the CHOICE to assume for the prompt.
+    #   The CHOICE to assume for the prompt.
     # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
     # @see Diakonos::CHOICE_YES
     # @see Diakonos::CHOICE_NO
@@ -100,6 +100,10 @@ module Diakonos
       choice
     end
 
+    # Opens the special "buffer selection" buffer, and prompts the user
+    # to select a buffer.  The user can select a buffer either with the
+    # arrow keys and the Enter key, or by pressing the key corresponding
+    # to an index presented in a left-hand column in the list.
     def list_buffers
       bullets = ('0'..'9').to_a + ('a'..'z').to_a
       with_list_file do |f|
@@ -119,9 +123,18 @@ module Diakonos
       end
     end
 
-    # Returns the buffer of the opened file, or nil.
-    # @param meta is metadata containing additional information on how to open
-    # the file
+    # Opens a file into a new Buffer.
+    # @param filename
+    #   The file to open.  If nil, an empty, unnamed buffer is opened.
+    # @param [Hash] meta
+    #   metadata containing additional information on how to open the file
+    # @option meta [Hash] 'cursor' (nil)
+    #   A Hash containing the 'row' and 'col' to position the cursor after opening.
+    # @option meta [Hash] 'display' (nil)
+    #   A Hash containing the 'top_line' and 'left_column' to use to position
+    #   the view after opening.
+    # @return [Buffer] the buffer of the opened file
+    # @return [NilClass] nil on failure
     def open_file( filename = nil, meta = {} )
       read_only    = !!meta[ 'read_only' ]
       force_revert = meta[ 'revert' ] || ASK_REVERT
@@ -222,6 +235,8 @@ module Diakonos
     end
     alias_method :new_file, :open_file
 
+    # Prompts the user for a file to open, then opens it with #open_file .
+    # @see #open_file
     def open_file_ask
       prefill = ''
 
@@ -258,9 +273,17 @@ module Diakonos
       end
     end
 
+    # Opens all files within a directory whose contents match a regular
+    # expression.
+    # @param regexp [String]
+    #   The regular expression used to match against.  If nil, the user is
+    #   prompted for a value.
+    # @param search_root [String]
+    #   The directory under which to recursively search for matches.  If nil,
+    #   the user is prompted for a value.
     def open_matching_files( regexp = nil, search_root = nil )
       regexp ||= get_user_input( "Regexp: ", history: @rlh_search )
-      return if regexp.nil?
+      return  if regexp.nil?
 
       if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
         prefill = $&
@@ -268,13 +291,13 @@ module Diakonos
         prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
       end
       search_root ||= get_user_input( "Search within: ", history: @rlh_files, initial_text: prefill )
-      return if search_root.nil?
+      return  if search_root.nil?
 
       files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
       if files.any?
         if files.size > 5
             choice = get_choice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
-            return if choice == CHOICE_NO
+            return  if choice == CHOICE_NO
         end
         files.each do |f|
           open_file f
@@ -313,6 +336,9 @@ module Diakonos
       end
     end
 
+    # Saves a buffer, then runs the :after_save hook on it.
+    # @param [Buffer] buffer
+    #   The buffer to save.  If nil, defaults to the current buffer.
     def save_file( buffer = @current_buffer )
       buffer.save
       run_hook_procs( :after_save, buffer )
@@ -335,6 +361,10 @@ module Diakonos
       end
     end
 
+    # Sets the type (language) of the current buffer.
+    # @param [String] type_
+    #   The type to set the current buffer to.
+    #   If nil, the user is prompted for a value.
     def set_buffer_type( type_ = nil )
       type = type_ || get_user_input( "Content type: " )
 
