@@ -5,28 +5,28 @@ module Diakonos
       :tab_size, :selection_mode
     attr_writer :desired_column, :read_only
 
-    TYPING = true
-    STOPPED_TYPING = true
-    STILL_TYPING = false
-    NO_SNAPSHOT = true
-    DO_DISPLAY = true
-    DONT_DISPLAY = false
-    READ_ONLY = true
-    READ_WRITE = false
-    ROUND_DOWN = false
-    ROUND_UP = true
-    PAD_END = true
-    DONT_PAD_END = false
-    MATCH_CLOSE = true
-    MATCH_ANY = false
-    START_FROM_BEGINNING = -1
-    DO_PITCH_CURSOR = true
-    DONT_PITCH_CURSOR = false
-    STRIP_LINE = true
-    DONT_STRIP_LINE = false
-    USE_INDENT_IGNORE = true
+    TYPING                 = true
+    STOPPED_TYPING         = true
+    STILL_TYPING           = false
+    NO_SNAPSHOT            = true
+    DO_DISPLAY             = true
+    DONT_DISPLAY           = false
+    READ_ONLY              = true
+    READ_WRITE             = false
+    ROUND_DOWN             = false
+    ROUND_UP               = true
+    PAD_END                = true
+    DONT_PAD_END           = false
+    MATCH_CLOSE            = true
+    MATCH_ANY              = false
+    START_FROM_BEGINNING   = -1
+    DO_PITCH_CURSOR        = true
+    DONT_PITCH_CURSOR      = false
+    STRIP_LINE             = true
+    DONT_STRIP_LINE        = false
+    USE_INDENT_IGNORE      = true
     DONT_USE_INDENT_IGNORE = false
-    WORD_REGEXP = /\w+/
+    WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
     def initialize( diakonos, name, key, read_only = false )
