@@ -46,7 +46,7 @@ module Diakonos
             loaded[ 'filename' ] &&
             loaded[ 'settings' ] &&
             loaded[ 'settings' ].respond_to?( :values ) &&
-            loaded[ 'name' ] &&
+            loaded.has_key?( 'name' ) &&
             (
               loaded[ 'files' ] &&
               loaded[ 'files' ].respond_to?( :each ) ||
