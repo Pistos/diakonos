@@ -1,6 +1,13 @@
 module Diakonos
   module Functions
 
+    def chdir( dir = nil )
+      dir ||= get_user_input( "Change to directory: ", initial_text: Dir.pwd )
+      if dir
+        Dir.chdir dir
+      end
+    end
+
     def sub_shell_variables( string )
       return  if string.nil?
 

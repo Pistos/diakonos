@@ -16,6 +16,7 @@ Contributors: Pistos
 - Fixed cursor stack.
 - Cursor stack is now global (cross-buffer).
 - Simplified switch_to_next_buffer and switch_to_prev_buffer; no more history.
+- Added chdir function.
 - Various refactorings.
 - Various bug fixes.
 
