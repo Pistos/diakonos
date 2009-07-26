@@ -98,10 +98,11 @@ notes: (optional) Longer text describing the extension, its capabilities and
 
 ## Extension Code
 
-Extension code is any valid Ruby code.  See http://purepistos.net/diakonos/rdoc/
+Extension code is any valid Ruby code.  See
+  http://rdoc.info/projects/Pistos/diakonos
 for source code documentation for Diakonos, and
-http://github.com/Pistos/diakonos/tree/master/extensions/dk-hello-world for an
-example of an extension.
+  http://github.com/Pistos/diakonos/tree/master/extensions/dk-hello-world
+for an example of an extension.
 
 To have code execute on keypress, define a method in the Diakonos::Functions
 module.  All methods in Diakonos::Functions are exposed to the keying system,
