@@ -47,6 +47,7 @@ module Diakonos
 
         if do_closure
           del_buffer_key = nil
+          del_buffer = nil
           previous_buffer = nil
           to_switch_to = nil
           switching = false
@@ -60,6 +61,7 @@ module Diakonos
             end
             if buf == buffer
               del_buffer_key = buffer_key
+              del_buffer = buf
               switching = true
               next
             end
@@ -88,6 +90,7 @@ module Diakonos
           end
 
           @buffers.delete del_buffer_key
+          cursor_stack_remove_buffer del_buffer
           save_session
 
           update_status_line
