@@ -162,8 +162,6 @@ module Diakonos
 
       @buffer_stack           = Array.new
       @current_buffer         = nil
-      @buffer_history         = Array.new
-      @buffer_history_pointer = nil
 
       @cursor_stack           = Array.new
       @cursor_stack_pointer   = nil

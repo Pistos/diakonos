@@ -80,8 +80,6 @@ module Diakonos
         end
         @diakonos.update_status_line
         @diakonos.update_context_line
-
-        @diakonos.remember_buffer self
       end
 
       changed

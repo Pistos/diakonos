@@ -22,13 +22,6 @@ module Diakonos
     end
     protected :switch_to
 
-    def remember_buffer( buffer )
-      if @buffer_history.last != buffer
-        @buffer_history << buffer
-        @buffer_history_pointer = @buffer_history.size - 1
-      end
-    end
-
     # The given buffer_number should be 1-based, not zero-based.
     # Returns nil if no such buffer exists.
     def buffer_number_to_name( buffer_number )
