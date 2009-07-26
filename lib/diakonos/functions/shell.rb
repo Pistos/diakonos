@@ -1,6 +1,8 @@
 module Diakonos
   module Functions
 
+    # Change the current working directory (CWD) of the Diakonos process.
+    # @param [String] dir  The directory to change to
     def chdir( dir = nil )
       dir ||= get_user_input( "Change to directory: ", initial_text: Dir.pwd )
       if dir
@@ -8,6 +10,17 @@ module Diakonos
       end
     end
 
+    # Substitutes Diakonos shell variables in a String.
+    # - $f: The current buffer's filename
+    # - $d: The current buffer's directory
+    # - $F: A space-separated list of all buffer filenames
+    # - $i: A string acquired from the user with a prompt
+    # - $c: The current clipboard text
+    # - $s: The currently selected text
+    # @param [String] string
+    #   The string containing variables to substitute
+    # @return [String]
+    #   A new String with values substituted for all variables
     def sub_shell_variables( string )
       return  if string.nil?
 
@@ -62,6 +75,19 @@ module Diakonos
       retval
     end
 
+    # Executes a command in a shell, captures the results, and displays them
+    # (if any) in a new buffer.  Substitutes Diakonos shell variables.
+    # Interaction with Diakonos is not possible while the shell is running.
+    # For asynchronous shelling, use #spawn.
+    #
+    # @param [String] command_
+    #   The shell command to execute
+    # @param [String] result_filename
+    #   The name of the temporary file to write the shell results to
+    # @see #sub_shell_variables
+    # @see #execute
+    # @see #spawn
+    # @see #paste_shell_result
     def shell( command_ = nil, result_filename = 'shell-result.txt' )
       command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
@@ -122,6 +148,18 @@ module Diakonos
       end
     end
 
+    # Executes a command in a shell, and displays the exit code.
+    # Results of the shell command are discarded.
+    # Substitutes Diakonos shell variables.
+    # Interaction with Diakonos is not possible while the shell is running.
+    # For asynchronous shelling, use #spawn.
+    #
+    # @param [String] command_
+    #   The shell command to execute
+    # @see #sub_shell_variables
+    # @see #shell
+    # @see #spawn
+    # @see #paste_shell_result
     def execute( command_ = nil )
       command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
@@ -132,10 +170,10 @@ module Diakonos
       Curses::close_screen
 
       success = system( command )
-      if not success
+      if ! success
         result = "Could not execute: #{command}"
       else
-        result = "Return code: #{$?}"
+        result = "Exit code: #{$?}"
       end
 
       Curses::init_screen
@@ -144,6 +182,18 @@ module Diakonos
       set_iline result
     end
 
+    # Executes a command in a shell, captures the results, and pastes them
+    # in the current buffer at the current cursor location.
+    # Substitutes Diakonos shell variables.
+    # Interaction with Diakonos is not possible while the shell is running.
+    # For asynchronous shelling, use #spawn.
+    #
+    # @param [String] command_
+    #   The shell command to execute
+    # @see #sub_shell_variables
+    # @see #execute
+    # @see #shell
+    # @see #spawn
     def paste_shell_result( command_ = nil )
       command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
@@ -165,6 +215,18 @@ module Diakonos
       refresh_all
     end
 
+    # Executes a command in a shell, captures the results, and pastes them
+    # in the current buffer at the current cursor location.
+    # Substitutes Diakonos shell variables.
+    # The shell is executed in a separate thread, so interaction with Diakonos
+    # is possible during execution.
+    #
+    # @param [String] command_
+    #   The shell command to execute
+    # @see #sub_shell_variables
+    # @see #execute
+    # @see #shell
+    # @see #paste_shell_result
     def spawn( command_ = nil )
       command = command_ || get_user_input( "Command: ", history: @rlh_shell )
 
