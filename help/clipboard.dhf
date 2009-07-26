@@ -34,5 +34,12 @@ To change to block selection mode, press <Alt-Shift-M,B>.  The status line will
 indicate "block" mode.  To change to normal selection mode, press
 <Alt-Shift-M,N>.  Mnemonic: M for Mark, B for Block, N for Normal.
 
+## Advanced Selection
+
+Press <Alt-space> to select the current code block.  That is, the lines which
+are at the same depth of indentation as the current line.  Press <Alt-space>
+more times to select each successive parent block (i.e., lines at shallower
+levels of indentation).
+
 
 Tags: clipboard copy cut paste kde klipper dcop select selecting selected unselect unselecting mark marking highlight eol line block column

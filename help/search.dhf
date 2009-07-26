@@ -52,6 +52,10 @@ cursor on the first match it found and select it.  That is, it selects the
 closest match below the point where you initiated the search.  Press <F3> to
 move the cursor to the next match.
 
+To clear the highlighting on matches, press <Ctrl-Alt-U>.
+
+### Advanced Searching
+
 Use <Alt-F> to do a case-sensitive regular expression search.  <Ctrl-Alt-F>
 will search upwards (backwards), and <Shift-F3> will repeat a search upwards.
 
@@ -61,7 +65,8 @@ There is no default key mapping for findExact; use <F12> to modify your
 configuration.  Alternatively, you can press <Shift-F2> and enter "findExact"
 to execute the function directly.
 
-To clear the highlighting on matches, press <Ctrl-Alt-U>.
+If you select text before searching, the search will be restricted to the
+selected text.  Even repeated searches with <F3> will be restricted.
 
 ## Replacing Text
 

@@ -11,7 +11,8 @@ Contributors: Pistos
 - Input line can now scroll if input is longer than screen width.
 - Added support for session completion in zsh and bash.
 - Added select_line.
-- Added select_wrapping_block.
+- Added select_wrapping_block (default key: Alt-space).
+- Searching is now restricted to the selected text, if any.
 - Added view.non_search_area.format.
 - Fixed cursor stack.
 - Cursor stack is now global (cross-buffer).
