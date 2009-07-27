@@ -60,7 +60,7 @@ module Diakonos
           @cursor_stack_pointer += 1
         end
       end
-      if @cursor_stack[ @cursor_stack_pointer ].nil?
+      if @cursor_stack[ @cursor_stack_pointer ].nil? && orig_ptr
         @cursor_stack_pointer = orig_ptr
       end
 
