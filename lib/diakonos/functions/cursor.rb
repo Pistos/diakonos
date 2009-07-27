@@ -31,6 +31,10 @@ module Diakonos
     # Pops the cursor stack.
     # @param [Symbol] direction
     #   Either :backward (default) or :forward.
+    # @param [Boolean] different_file
+    #   Whether to pop just one frame (default), or many frames until a different file is reached.
+    # @see Diakonos::DIFFERENT_FILE
+    # @see Diakonos::NOT_DIFFERENT_FILE
     def cursor_return( direction = :backward, different_file = NOT_DIFFERENT_FILE )
       delta = 0
       if @cursor_stack_pointer.nil?
