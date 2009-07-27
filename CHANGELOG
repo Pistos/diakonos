@@ -1,6 +1,12 @@
 Diakonos Changelog
 ------------------
 
+0.8.13
+
+Contributors: Pistos
+
+- Added different_file argument to cursor_return.
+
 0.8.12
 
 Contributors: Pistos
