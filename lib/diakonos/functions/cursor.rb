@@ -2,6 +2,8 @@ module Diakonos
 
   CLEAR_STACK_POINTER = true
   DONT_CLEAR_STACK_POINTER = false
+  DIFFERENT_FILE = true
+  NOT_DIFFERENT_FILE = false
 
   module Functions
 
@@ -29,7 +31,7 @@ module Diakonos
     # Pops the cursor stack.
     # @param [Symbol] direction
     #   Either :backward (default) or :forward.
-    def cursor_return( direction = :backward )
+    def cursor_return( direction = :backward, different_file = NOT_DIFFERENT_FILE )
       delta = 0
       if @cursor_stack_pointer.nil?
         push_cursor_state(
@@ -41,11 +43,21 @@ module Diakonos
         delta = 1
       end
 
+      orig_ptr = @cursor_stack_pointer
       case direction
       when :backward, 'backward'
         @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
+        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == @current_buffer
+          @cursor_stack_pointer -= 1
+        end
       when :forward, 'forward'
         @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
+        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == @current_buffer
+          @cursor_stack_pointer += 1
+        end
+      end
+      if @cursor_stack[ @cursor_stack_pointer ].nil?
+        @cursor_stack_pointer = orig_ptr
       end
 
       return_pointer = @cursor_stack_pointer
