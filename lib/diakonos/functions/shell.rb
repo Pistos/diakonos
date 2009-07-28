@@ -78,7 +78,9 @@ module Diakonos
     # Executes a command in a shell, captures the results, and displays them
     # (if any) in a new buffer.  Substitutes Diakonos shell variables.
     # Interaction with Diakonos is not possible while the shell is running.
-    # For asynchronous shelling, use #spawn.
+    # For asynchronous shelling, use #spawn.  The shell function does not
+    # allow interaction with applications run in the shell.  Use #execute
+    # for interactivity.
     #
     # @param [String] command_
     #   The shell command to execute
@@ -152,7 +154,8 @@ module Diakonos
     # Results of the shell command are discarded.
     # Substitutes Diakonos shell variables.
     # Interaction with Diakonos is not possible while the shell is running.
-    # For asynchronous shelling, use #spawn.
+    # For asynchronous shelling, use #spawn.  The #execute function allows
+    # interaction with shell programs that accept keyboard interaction.
     #
     # @param [String] command_
     #   The shell command to execute
