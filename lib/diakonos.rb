@@ -267,7 +267,6 @@ module Diakonos
         end
       end
     end
-    protected :parse_options
 
     def print_usage
       puts "Usage: #{$0} [options] [file] [file...]"
@@ -279,7 +278,6 @@ module Diakonos
       puts "\t-s, --load-session <session identifier>\tLoad a session"
       puts "\t--uninstall[-without-confirmation]\tUninstall Diakonos"
     end
-    protected :print_usage
 
     def clear_non_movement_flag
       @there_was_non_movement = false
@@ -472,7 +470,6 @@ module Diakonos
       @macro_input_history = Array.new
       set_iline "Started macro recording."
     end
-    protected :start_recording_macro
 
     def stop_recording_macro
       @macro_history.pop  # Remove the stop_recording_macro command itself
@@ -481,7 +478,6 @@ module Diakonos
       @macro_input_history = nil
       set_iline "Stopped macro recording."
     end
-    protected :stop_recording_macro
 
     def load_tags
       @tags = Hash.new

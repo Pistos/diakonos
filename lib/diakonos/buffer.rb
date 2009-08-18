@@ -136,7 +136,6 @@ module Diakonos
       @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] || "" )
       @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] || DEFAULT_TAB_SIZE )
     end
-    protected :set_language
 
     def [] ( arg )
       @lines[ arg ]

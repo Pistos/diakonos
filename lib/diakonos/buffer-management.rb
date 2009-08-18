@@ -20,7 +20,6 @@ module Diakonos
 
       switched
     end
-    protected :switch_to
 
     # The given buffer_number should be 1-based, not zero-based.
     # Returns nil if no such buffer exists.
