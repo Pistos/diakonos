@@ -29,14 +29,17 @@ module Diakonos
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
-    def initialize( name, read_only = false )
+    def initialize( name = nil, read_only = false )
       @name = name
       @modified = false
       @last_modification_check = Time.now
 
       @buffer_states = Array.new
       @cursor_states = Array.new
-      if @name
+      if @name.nil?
+        @lines = Array.new
+        @lines[ 0 ] = ""
+      else
         @name = File.expand_path( @name )
         if FileTest.exists? @name
           @lines = IO.readlines( @name )
@@ -50,10 +53,8 @@ module Diakonos
           @lines = Array.new
           @lines[ 0 ] = ""
         end
-      else
-        @lines = Array.new
-        @lines[ 0 ] = ""
       end
+
       @current_buffer_state = 0
 
       @top_line = 0
