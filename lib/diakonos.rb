@@ -290,6 +290,7 @@ module Diakonos
       @files.each do |file|
         @buffers << Buffer.new( file[ 'filepath' ] )
       end
+      @files = []
       @read_only_files.each do |file|
         @buffers << Buffer.new( file[ 'filepath' ], Buffer::READ_ONLY )
       end
