@@ -71,7 +71,9 @@ module Diakonos
       return  if session_file.nil?
       return  if @testing && pid_session?( session_file )
 
-      @session[ 'buffers' ] = @buffers.collect { |buffer|
+      @session[ 'buffers' ] = @buffers.reject { |buffer|
+        buffer.name.nil?
+      }.collect { |buffer|
         {
           'filepath' => buffer.name,
           'read_only' => buffer.read_only,
