@@ -133,7 +133,7 @@ module Diakonos
         len = @input.length
         matches = @completion_array.find_all { |el| el[ 0...len ] == @input && len <= el.length }
       else
-        path = File.expand_path( @input )
+        path = File.expand_path( @input || '.' )
         if FileTest.directory? path
           path << '/'
         end
