@@ -278,7 +278,7 @@ module Diakonos
             c = ch.ord
             if typeable?( c )
               s << c
-            elsif c == ENTER
+            elsif c == ENTER && mode == 'edit'
               s << "\n"
             else
               break
