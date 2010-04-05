@@ -118,8 +118,10 @@ module Diakonos
         end
 
         case @settings[ 'clipboard.external' ]
-        when 'klipper'
+        when 'klipper', 'klipper-dcop'
           @clipboard = ClipboardKlipper.new
+        when 'klipper-dbus'
+          @clipboard = ClipboardKlipperDBus.new
         when 'xclip'
           @clipboard = ClipboardXClip.new
         else
