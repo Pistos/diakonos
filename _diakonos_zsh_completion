@@ -3,7 +3,7 @@
 typeset -A opt_args
 local context state line
 local sessiondir
-sessiondir=${HOME}/.diakonos/sessions
+sessiondir="${HOME}/.diakonos/sessions"
 
 _arguments -n -s -S \
   "-s[specify session]:session:_files -W $sessiondir" \
