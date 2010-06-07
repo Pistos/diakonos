@@ -1,7 +1,7 @@
 module Diakonos
 
-  # Same interface as Diakonos::Clipboard, except interacts with Klipper in KDE 3 (via dcop)
-  class ClipboardKlipper
+  # Same interface as Diakonos::Clipboard, except interacts with Klipper in KDE4 (via dbus)
+  class ClipboardKlipperDBus
 
     def initialize
     end
@@ -14,7 +14,7 @@ module Diakonos
 
       # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
       # Thank you to pgas from irc.freenode.net#bash for help with this.
-      `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
+      `clipping=$(cat #{clip_filename};printf "_"); dbus-send --type=method_call --dest=org.kde.klipper /klipper org.kde.klipper.klipper.setClipboardContents string:"${clipping%_}"`
       true
     end
 
@@ -29,7 +29,7 @@ module Diakonos
     # ------------------------------
 
     def clip
-      text = `dcop klipper klipper getClipboardContents`.split( "\n", -1 )
+      text = `dbus-send --print-reply --dest=org.kde.klipper /klipper org.kde.klipper.klipper.getClipboardContents | awk 'BEGIN { output = ""; } { if ( NR > 1 ) { output = output $0 "\\n"; } } END { print substr(output, 12, length(output) - 13); }'`.split( "\n", -1 )
       # getClipboardContents puts an extra newline on end; pop it off.
       text.pop
       text
