@@ -92,7 +92,9 @@ module Diakonos
     end
 
     # Check if the file which is being edited has been modified since
-    # the last time we checked it; return true if so, false otherwise.
+    # the last time we checked it.
+    # @return true if file has been modified
+    # @return false if file has not been modified
     def file_modified?
       modified = false
 
