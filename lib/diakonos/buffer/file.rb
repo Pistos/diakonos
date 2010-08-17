@@ -18,7 +18,7 @@ module Diakonos
         else
           proceed = true
 
-          if prompt_overwrite && FileTest.exists? name
+          if prompt_overwrite && FileTest.exists?( name )
             proceed = false
             choice = @diakonos.get_choice(
               "Overwrite existing '#{name}'?",
