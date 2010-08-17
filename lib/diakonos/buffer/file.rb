@@ -133,10 +133,6 @@ module Diakonos
         @diakonos.set_iline "Warning: Modifying a read-only file."
       end
 
-      if ! @modified && file_modified?
-        reverted = @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
-      end
-
       @modified = use_md5 ? file_different? : true
       if ! reverted
         clear_matches

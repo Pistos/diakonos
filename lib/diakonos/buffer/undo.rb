@@ -7,6 +7,11 @@ module Diakonos
 
     def take_snapshot( typing = false )
       do_it = false
+
+      if ! @modified && file_modified? && file_different?
+        return  if @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+      end
+
       if @typing != typing
         @typing = typing
         # If we just started typing, take a snapshot, but don't continue
