@@ -265,6 +265,7 @@ module Diakonos
     def replace_all( regexp, replacement )
       return  if( regexp.nil? or replacement.nil? )
 
+      take_snapshot
       @lines = @lines.collect { |line|
         line.gsub( regexp, replacement )
       }

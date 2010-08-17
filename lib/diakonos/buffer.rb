@@ -519,6 +519,7 @@ module Diakonos
         lines << line
       end
       if @lines[ start_row...end_row ] != lines
+        take_snapshot
         @lines[ start_row...end_row ] = lines
         set_modified
       end
