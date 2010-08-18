@@ -134,12 +134,10 @@ module Diakonos
       end
 
       @modified = use_md5 ? file_different? : true
-      if ! reverted
-        clear_matches
-        if do_display
-          @diakonos.update_status_line
-          display
-        end
+      clear_matches
+      if do_display
+        @diakonos.update_status_line
+        display
       end
     end
 
