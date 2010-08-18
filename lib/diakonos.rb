@@ -360,6 +360,8 @@ module Diakonos
 
         if ! @settings[ 'suppress_welcome' ]
           open_file "#{@help_dir}/welcome.dhf"
+        else
+          @current_buffer.seek /<<<</
         end
 
         begin
