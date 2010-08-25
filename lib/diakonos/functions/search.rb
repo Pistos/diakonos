@@ -52,6 +52,17 @@ module Diakonos
         end
       end
     end
+    # Searches for matches of the latest clipboard item in the current buffer.
+    # Note that the clipboard item is interpreted as a regular expression.
+    # Only the last line of multi-line clipboard items is used.
+    # @param [String] dir_str
+    #   The direction to search; 'down' (default) or 'up'.
+    # @param [Boolean] case_sensitive
+    #   Whether or not the search should be case_sensitive.  Default is insensitive.
+    # @see #find
+    def find_clip( dir_str = "down", case_sensitive = CASE_INSENSITIVE )
+      find dir_str, case_sensitive, @clipboard.clip[-1]
+    end
 
     # Search again for the most recently sought search term.
     # @param [String] dir_str
