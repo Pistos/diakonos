@@ -317,16 +317,17 @@ module Diakonos
           @column_markers[ $1 ][ :format ] = Display.to_formatting( arg )
         when "logfile"
           @logfilename = File.expand_path( arg )
-        when "context.separator", "status.left", "status.right", "status.filler",
-            "status.modified_str", "status.unnamed_str", "status.selecting_str",
-            "status.read_only_str", /^lang\..+?\.indent\.ignore\.charset$/,
+        when "context.separator", /^lang\..+?\.indent\.ignore\.charset$/,
             /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
             /^lang\.(.+?)\.column_delimiters$/,
             "view.nonfilelines.character",
-            'interaction.blink_string', 'diff_command', 'session.default_session',
+            'diff_command', 'session.default_session',
             'clipboard.external'
           @settings[ command ] = arg
-        when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format'
+        when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format',
+            "status.filler", "status.left", "status.right",
+            "status.modified_str", "status.unnamed_str", "status.selecting_str",
+            "status.read_only_str", 'interaction.blink_string'
           @settings[ command ] = arg.gsub( /^["']|["']$/, '' )
         when "status.vars"
           @settings[ command ] = arg.split( /\s+/ )
