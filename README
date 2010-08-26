@@ -46,8 +46,7 @@ Ruby.
 
 Run with any of these:
 
-  diakonos
-  diakonos <filename> [filename...]
+  diakonos [filename...]
   diakonos -m <regexp>
 
 or, for other options and arguments,
