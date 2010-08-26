@@ -1,4 +1,4 @@
-require 'spec/preparation'
+require_relative '../preparation'
 
 describe 'A Diakonos user can' do
 

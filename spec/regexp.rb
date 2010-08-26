@@ -1,4 +1,4 @@
-require 'spec/preparation'
+require_relative 'preparation'
 
 describe 'A Regexp' do
   it 'knows if beginning-of-string is used' do

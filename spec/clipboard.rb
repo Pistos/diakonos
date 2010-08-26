@@ -1,4 +1,4 @@
-require 'spec/preparation'
+require_relative 'preparation'
 
 describe 'A Diakonos::Clipboard' do
   it 'can accept new clips via #add_clip' do

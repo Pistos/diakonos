@@ -1,4 +1,4 @@
-require 'spec/preparation'
+require_relative 'preparation'
 
 describe 'A KeyMap' do
   it 'can delete a key path' do

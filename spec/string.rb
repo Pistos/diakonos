@@ -1,4 +1,4 @@
-require 'spec/preparation'
+require_relative 'preparation'
 
 describe 'A String' do
   it 'can be interpreted as and converted to a boolean' do

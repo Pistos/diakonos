@@ -1,4 +1,4 @@
-require 'spec/preparation'
+require_relative 'preparation'
 
 describe 'A SizedArray' do
   it 'can be instantiated with a size parameter' do

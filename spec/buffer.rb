@@ -1,4 +1,4 @@
-require 'spec/preparation'
+require_relative 'preparation'
 
 def check_word_at( row, col, expected_word )
   @b.cursor_to row, col
