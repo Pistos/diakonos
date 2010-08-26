@@ -31,6 +31,11 @@ You may need root privileges on the system in order to install to system-wide
 places like /usr .  However, Diakonos runs perfectly well in userspace, such
 as under ~/usr .
 
+If you use RVM[1], note that Diakonos installs very easily into an RVM-based
+Ruby.
+
+[1]: http://rvm.beginrescueend.com/
+
 
 == UNINSTALLATION
 
