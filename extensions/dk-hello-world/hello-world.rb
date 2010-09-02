@@ -2,7 +2,7 @@ module Diakonos
   module Functions
 
     def hello_world
-      @current_buffer.paste "Hello, world!"
+      @buffer_current.paste "Hello, world!"
     end
 
   end
