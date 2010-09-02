@@ -366,6 +366,20 @@ module Diakonos
           @settings[ command ] = arg.to_f
         end
       end
+
+      @surround_pairs.each_key do |language|
+        @surround_pairs[ language ].merge! @surround_pairs[ 'all' ]
+      end
+      @token_regexps.each_key do |language|
+        @token_regexps[ language ].merge! @token_regexps[ 'all' ]
+      end
+      @close_token_regexps.each_key do |language|
+        @close_token_regexps[ language ].merge! @close_token_regexps[ 'all' ]
+      end
+      @token_formats.each_key do |language|
+        @token_formats[ language ].merge! @token_formats[ 'all' ]
+      end
+
     end
 
   end
