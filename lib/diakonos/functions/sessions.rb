@@ -1,6 +1,10 @@
 module Diakonos
   module Functions
 
+    def merge_session_settings
+      @settings.merge! @session[ 'settings' ]
+    end
+
     def change_session_setting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
       if key_.nil?
         key = get_user_input( "Setting: " )
@@ -21,6 +25,7 @@ module Diakonos
           value = value.to_b
         end
         @session[ 'settings' ][ key ] = value
+        merge_session_settings
         redraw  if do_redraw
         set_iline "#{key} = #{value}"
       end
@@ -92,6 +97,7 @@ module Diakonos
       end
       if value != nil   # explicitly true or false
         @session[ 'settings' ][ key ] = value
+        merge_session_settings
         redraw  if do_redraw
         set_iline "#{key} = #{value}"
       end

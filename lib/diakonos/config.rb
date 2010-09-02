@@ -11,7 +11,7 @@ module Diakonos
   EOL_ALT_LAST_CHAR = 3
 
   class Diakonos
-    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers, :surround_pairs
+    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers, :surround_pairs, :settings
 
     def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
@@ -111,11 +111,7 @@ module Diakonos
         parse_configuration_file @global_diakonos_conf
         parse_configuration_file @diakonos_conf
 
-        # Session settings override config file settings.
-
-        @session[ 'settings' ].each do |key,value|
-          @settings[ key ] = value
-        end
+        merge_session_settings
 
         case @settings[ 'clipboard.external' ]
         when 'klipper', 'klipper-dcop'
