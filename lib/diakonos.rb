@@ -508,10 +508,6 @@ module Diakonos
       end
     end
 
-    def settings
-      @settings.merge @session[ 'settings' ]
-    end
-
     def escape_quotes( str )
       temp = ''
       str.each_byte do |b|

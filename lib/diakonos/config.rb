@@ -11,7 +11,7 @@ module Diakonos
   EOL_ALT_LAST_CHAR = 3
 
   class Diakonos
-    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers, :surround_pairs
+    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers, :surround_pairs, :settings
 
     def fetch_conf( location = "v#{VERSION}" )
       require 'open-uri'
@@ -111,11 +111,7 @@ module Diakonos
         parse_configuration_file @global_diakonos_conf
         parse_configuration_file @diakonos_conf
 
-        # Session settings override config file settings.
-
-        @session[ 'settings' ].each do |key,value|
-          @settings[ key ] = value
-        end
+        merge_session_settings
 
         case @settings[ 'clipboard.external' ]
         when 'klipper', 'klipper-dcop'
@@ -366,6 +362,20 @@ module Diakonos
           @settings[ command ] = arg.to_f
         end
       end
+
+      @surround_pairs.each_key do |language|
+        @surround_pairs[ language ] = @surround_pairs[ 'all' ].merge( @surround_pairs[ language ] )
+      end
+      @token_regexps.each_key do |language|
+        @token_regexps[ language ] = @token_regexps[ 'all' ].merge( @token_regexps[ language ])
+      end
+      @close_token_regexps.each_key do |language|
+        @close_token_regexps[ language ] = @close_token_regexps[ 'all' ].merge( @close_token_regexps[ language ] )
+      end
+      @token_formats.each_key do |language|
+        @token_formats[ language ] = @token_formats[ 'all' ].merge( @token_formats[ language ] )
+      end
+
     end
 
   end
