@@ -2,28 +2,28 @@ module Diakonos
   module Functions
 
     def indent
-      if ! @current_buffer.changing_selection
-        @current_buffer.indent
+      if ! buffer_current.changing_selection
+        buffer_current.indent
       else
         @do_display = false
-        mark = @current_buffer.selection_mark
+        mark = buffer_current.selection_mark
         if mark.end_col > 0
           end_row = mark.end_row
         else
           end_row = mark.end_row - 1
         end
         (mark.start_row..end_row).each do |row|
-          @current_buffer.indent row, Buffer::DONT_DISPLAY
+          buffer_current.indent row, Buffer::DONT_DISPLAY
         end
         @do_display = true
-        @current_buffer.display
+        buffer_current.display
       end
     end
 
     def insert_spaces( num_spaces )
       if num_spaces > 0
-        @current_buffer.delete_selection
-        @current_buffer.insert_string( " " * num_spaces )
+        buffer_current.delete_selection
+        buffer_current.insert_string( " " * num_spaces )
         cursor_right( Buffer::STILL_TYPING, num_spaces )
       end
     end
@@ -33,37 +33,37 @@ module Diakonos
     end
 
     def parsed_indent
-      if( @current_buffer.changing_selection )
+      if( buffer_current.changing_selection )
         @do_display = false
-        mark = @current_buffer.selection_mark
+        mark = buffer_current.selection_mark
         (mark.start_row..mark.end_row).each do |row|
-          @current_buffer.parsed_indent row, Buffer::DONT_DISPLAY
+          buffer_current.parsed_indent row, Buffer::DONT_DISPLAY
         end
         @do_display = true
-        @current_buffer.display
+        buffer_current.display
       else
-        @current_buffer.parsed_indent
+        buffer_current.parsed_indent
       end
       update_status_line
       update_context_line
     end
 
     def unindent
-      if( @current_buffer.changing_selection )
+      if( buffer_current.changing_selection )
         @do_display = false
-        mark = @current_buffer.selection_mark
+        mark = buffer_current.selection_mark
         if mark.end_col > 0
           end_row = mark.end_row
         else
           end_row = mark.end_row - 1
         end
         (mark.start_row..end_row).each do |row|
-          @current_buffer.unindent row, Buffer::DONT_DISPLAY
+          buffer_current.unindent row, Buffer::DONT_DISPLAY
         end
         @do_display = true
-        @current_buffer.display
+        buffer_current.display
       else
-        @current_buffer.unindent
+        buffer_current.unindent
       end
     end
 

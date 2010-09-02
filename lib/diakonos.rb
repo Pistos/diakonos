@@ -485,8 +485,8 @@ module Diakonos
 
     def load_tags
       @tags = Hash.new
-      if @current_buffer && @current_buffer.name
-        path = File.expand_path( File.dirname( @current_buffer.name ) )
+      if buffer_current && buffer_current.name
+        path = File.expand_path( File.dirname( buffer_current.name ) )
         tagfile = path + "/tags"
       else
         tagfile = "./tags"

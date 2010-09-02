@@ -7,8 +7,8 @@ module Diakonos
       # If necessary, prompt for tag name.
 
       if tag_.nil?
-        if @current_buffer.changing_selection
-          selected_text = @current_buffer.copy_selection[ 0 ]
+        if buffer_current.changing_selection
+          selected_text = buffer_current.copy_selection[ 0 ]
         end
         tag_name = get_user_input(
           "Tag name: ",
@@ -28,15 +28,15 @@ module Diakonos
           tag = tag_array[ 0 ]
         end
         @last_tag = tag
-        @tag_stack.push [ @current_buffer.name, @current_buffer.last_row, @current_buffer.last_col ]
+        @tag_stack.push [ buffer_current.name, buffer_current.last_row, buffer_current.last_col ]
         if switch_to( @buffers[ tag.file ] )
-          #@current_buffer.go_to_line( 0 )
+          #buffer_current.go_to_line( 0 )
         else
           open_file tag.file
         end
         line_number = tag.command.to_i
         if line_number > 0
-          @current_buffer.go_to_line( line_number - 1 )
+          buffer_current.go_to_line( line_number - 1 )
         else
           find( "down", CASE_SENSITIVE, tag.command )
         end
@@ -46,7 +46,7 @@ module Diakonos
     end
 
     def go_to_tag_under_cursor
-      go_to_tag @current_buffer.word_under_cursor
+      go_to_tag buffer_current.word_under_cursor
     end
 
     def pop_tag
@@ -55,7 +55,7 @@ module Diakonos
         if not switch_to( @buffers[ tag[ 0 ] ] )
           open_file tag[ 0 ]
         end
-        @current_buffer.cursor_to( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
+        buffer_current.cursor_to( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )
       else
         set_iline "Tag stack empty."
       end

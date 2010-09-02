@@ -9,7 +9,7 @@ module Diakonos
       end
 
       if name
-        @bookmarks[ name ] = Bookmark.new( @current_buffer, @current_buffer.current_row, @current_buffer.current_column, name )
+        @bookmarks[ name ] = Bookmark.new( buffer_current, buffer_current.current_row, buffer_current.current_column, name )
         set_iline "Added bookmark #{@bookmarks[ name ].to_s}."
       end
     end
@@ -33,11 +33,11 @@ module Diakonos
     end
 
     def go_to_next_bookmark
-      @current_buffer.go_to_next_bookmark
+      buffer_current.go_to_next_bookmark
     end
 
     def go_to_previous_bookmark
-      @current_buffer.go_to_previous_bookmark
+      buffer_current.go_to_previous_bookmark
     end
 
     def remove_named_bookmark( name_ = nil )
@@ -54,7 +54,7 @@ module Diakonos
     end
 
     def toggle_bookmark
-      @current_buffer.toggle_bookmark
+      buffer_current.toggle_bookmark
     end
 
   end

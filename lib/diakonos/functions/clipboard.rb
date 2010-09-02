@@ -3,13 +3,13 @@ module Diakonos
 
     # Copies the currently selected text to clipboard then unselects.
     def copy_selection
-      @clipboard.add_clip @current_buffer.copy_selection
+      @clipboard.add_clip buffer_current.copy_selection
       remove_selection
     end
 
     # Copies the currently selected text to clipboard, then deletes it.
     def cut_selection
-      if @clipboard.add_clip( @current_buffer.copy_selection )
+      if @clipboard.add_clip( buffer_current.copy_selection )
         delete
       end
     end
@@ -19,7 +19,7 @@ module Diakonos
     # append the line to the previous clip instead of making
     # a new clip.
     def delete_and_store_line
-      removed_text = @current_buffer.delete_line
+      removed_text = buffer_current.delete_line
       if removed_text
         clip = [ removed_text, "" ]
         if @last_commands[ -1 ] =~ /^delete_and_store_line/
@@ -33,7 +33,7 @@ module Diakonos
     # Deletes the text from the current cursor position to the end of the line,
     # then adds the deleted text to the clipboard.
     def delete_to_eol
-      removed_text = @current_buffer.delete_to_eol
+      removed_text = buffer_current.delete_to_eol
       if removed_text
         @clipboard.add_clip removed_text
       end
@@ -41,7 +41,7 @@ module Diakonos
 
     # Pastes the current clipboard item at the current cursor position.
     def paste
-      @current_buffer.paste @clipboard.clip
+      buffer_current.paste @clipboard.clip
     end
 
     # Opens a new buffer showing a list of all internal clipboard items.

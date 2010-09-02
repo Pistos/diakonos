@@ -17,17 +17,17 @@ module Diakonos
       if regexp_source_
         regexp_source = regexp_source_
       else
-        @current_buffer.search_area = nil
-        m = @current_buffer.selection_mark
+        buffer_current.search_area = nil
+        m = buffer_current.selection_mark
         if m
           if m.start_row != m.end_row
-            @current_buffer.search_area = @current_buffer.selection_mark
-            @current_buffer.remove_selection
+            buffer_current.search_area = buffer_current.selection_mark
+            buffer_current.remove_selection
           else
-            selected_text = @current_buffer.copy_selection[ 0 ]
+            selected_text = buffer_current.copy_selection[ 0 ]
           end
         end
-        starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+        starting_row, starting_col = buffer_current.last_row, buffer_current.last_col
 
         regexp_source = get_user_input(
           "Search regexp: ",
@@ -37,8 +37,8 @@ module Diakonos
           if input.length > 1
             find_ direction, case_sensitive, input, nil, starting_row, starting_col, QUIET
           else
-            @current_buffer.remove_selection Buffer::DONT_DISPLAY
-            @current_buffer.clear_matches Buffer::DO_DISPLAY
+            buffer_current.remove_selection Buffer::DONT_DISPLAY
+            buffer_current.clear_matches Buffer::DO_DISPLAY
           end
         }
       end
@@ -46,9 +46,9 @@ module Diakonos
       if regexp_source
         find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
       elsif starting_row && starting_col
-        @current_buffer.clear_matches
+        buffer_current.clear_matches
         if @settings[ 'find.return_on_abort' ]
-          @current_buffer.cursor_to starting_row, starting_col, Buffer::DO_DISPLAY
+          buffer_current.cursor_to starting_row, starting_col, Buffer::DO_DISPLAY
         end
       end
     end
@@ -72,9 +72,9 @@ module Diakonos
     def find_again( dir_str = nil )
       if dir_str
         direction = direction_of( dir_str )
-        @current_buffer.find_again( @last_search_regexps, direction )
+        buffer_current.find_again( @last_search_regexps, direction )
       else
-        @current_buffer.find_again( @last_search_regexps )
+        buffer_current.find_again( @last_search_regexps )
       end
     end
 
@@ -86,10 +86,10 @@ module Diakonos
     # @see #find
     # @see #find_again
     def find_exact( dir_str = "down", search_term_ = nil )
-      @current_buffer.search_area = nil
+      buffer_current.search_area = nil
       if search_term_.nil?
-        if @current_buffer.changing_selection
-          selected_text = @current_buffer.copy_selection[ 0 ]
+        if buffer_current.changing_selection
+          selected_text = buffer_current.copy_selection[ 0 ]
         end
         search_term = get_user_input(
           "Search for: ",
@@ -102,14 +102,14 @@ module Diakonos
       if search_term
         direction = direction_of( dir_str )
         regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
-        @current_buffer.find( regexp, :direction => direction )
+        buffer_current.find( regexp, :direction => direction )
         @last_search_regexps = regexp
       end
     end
 
     # Moves the cursor to the pair match of the current character, if any.
     def go_to_pair_match
-      @current_buffer.go_to_pair_match
+      buffer_current.go_to_pair_match
     end
 
     # Wrapper method for calling #find for search and replace.
@@ -129,7 +129,7 @@ module Diakonos
       if regexp_source
         direction = direction_of( dir_str )
         regexp = Regexp.new( regexp_source )
-        @current_buffer.seek( regexp, direction )
+        buffer_current.seek( regexp, direction )
       end
     end
 
