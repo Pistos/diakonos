@@ -259,12 +259,12 @@ module Diakonos
       end
     end
 
-    # Undoes the latest change made to the current_buffer.
+    # Undoes the latest change made to the current buffer.
     def undo( buffer = buffer_current )
       buffer.undo
     end
 
-    # Redoes the latest change undone on the current_buffer.
+    # Redoes the latest change undone on the current buffer.
     def unundo( buffer = buffer_current )
       buffer.unundo
     end

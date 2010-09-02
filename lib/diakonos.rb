@@ -164,7 +164,7 @@ module Diakonos
       @y = 0
 
       @buffer_stack           = Array.new
-      @current_buffer         = nil
+      @buffer_current         = nil
 
       @cursor_stack           = Array.new
       @cursor_stack_pointer   = nil
@@ -300,7 +300,7 @@ module Diakonos
       set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
 
       session_buffers = session_startup
-      session_buffer_number = @session[ 'current_buffer' ] || 1
+      session_buffer_number = @session[ 'buffer_current' ] || 1
 
       scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
       scripts.each do |script|
@@ -361,7 +361,7 @@ module Diakonos
         if ! @settings[ 'suppress_welcome' ]
           open_file "#{@help_dir}/welcome.dhf"
         else
-          @current_buffer.seek /<<<</
+          @buffer_current.seek /<<<</
         end
 
         begin

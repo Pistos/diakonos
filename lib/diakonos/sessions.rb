@@ -11,7 +11,7 @@ module Diakonos
         'settings' => Hash.new,
         'name' => name,
         'buffers' => [],
-        'current_buffer' => 1,
+        'buffer_current' => 1,
         'dir' => Dir.getwd,
       }
     end

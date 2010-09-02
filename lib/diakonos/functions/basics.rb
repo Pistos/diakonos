@@ -17,7 +17,7 @@ module Diakonos
       buffer_current.delete_selection
     end
 
-    # Calls Buffer#delete on the current_buffer.
+    # Calls Buffer#delete on the current buffer.
     def delete
       buffer_current.delete
     end

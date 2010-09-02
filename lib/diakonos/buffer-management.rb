@@ -1,16 +1,16 @@
 module Diakonos
   class Diakonos
-    attr_reader :current_buffer
+    attr_reader :buffer_current
 
     def switch_to( buffer )
       switched = false
       if buffer
-        @buffer_stack -= [ @current_buffer ]
-        if @current_buffer
-          @buffer_stack.push @current_buffer
+        @buffer_stack -= [ @buffer_current ]
+        if @buffer_current
+          @buffer_stack.push @buffer_current
         end
-        @current_buffer = buffer
-        @session[ 'current_buffer' ] = buffer_to_number( buffer )
+        @buffer_current = buffer
+        @session[ 'buffer_current' ] = buffer_to_number( buffer )
         run_hook_procs( :after_buffer_switch, buffer )
         update_status_line
         update_context_line
@@ -54,7 +54,7 @@ module Diakonos
       buffer_number
     end
 
-    def show_buffer_file_diff( buffer = @current_buffer )
+    def show_buffer_file_diff( buffer = @buffer_current )
       current_text_file = @diakonos_home + '/current-buffer'
       buffer.save_copy( current_text_file )
       `#{@settings[ 'diff_command' ]} #{current_text_file} #{buffer.name} > #{@diff_filename}`
