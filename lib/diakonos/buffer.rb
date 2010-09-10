@@ -29,8 +29,7 @@ module Diakonos
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
-    def initialize( diakonos, name, key, read_only = false )
-      @diakonos = diakonos
+    def initialize( name, key, read_only = false )
       @name = name
       @key = key
       @modified = false
@@ -90,7 +89,7 @@ module Diakonos
         end
         @modified = ( @modified or tabs_subbed )
         if tabs_subbed
-          @diakonos.set_iline "(spaces substituted for tab characters)"
+          $diakonos.set_iline "(spaces substituted for tab characters)"
         end
       end
 
@@ -100,8 +99,8 @@ module Diakonos
 
     def configure(
       language = (
-        @diakonos.get_language_from_shabang( @lines[ 0 ] ) or
-        @diakonos.get_language_from_name( @name ) or
+        $diakonos.get_language_from_shabang( @lines[ 0 ] ) or
+        $diakonos.get_language_from_name( @name ) or
         LANG_TEXT
       )
     )
@@ -111,22 +110,22 @@ module Diakonos
     end
 
     def reset_display
-      @win_main = @diakonos.win_main
-      @win_line_numbers = @diakonos.win_line_numbers
+      @win_main = $diakonos.win_main
+      @win_line_numbers = $diakonos.win_line_numbers
     end
 
     def set_language( language )
-      @settings = @diakonos.settings
+      @settings = $diakonos.settings
       @language = language
-      @surround_pairs = @diakonos.surround_pairs[ @language ] || Hash.new
-      @token_regexps = @diakonos.token_regexps[ @language ] || Hash.new
-      @close_token_regexps = @diakonos.close_token_regexps[ @language ] || Hash.new
-      @token_formats = @diakonos.token_formats[ @language ] || Hash.new
-      @indenters = @diakonos.indenters[ @language ]
-      @indenters_next_line = @diakonos.indenters_next_line[ @language ]
-      @unindenters = @diakonos.unindenters[ @language ]
+      @surround_pairs = $diakonos.surround_pairs[ @language ] || Hash.new
+      @token_regexps = $diakonos.token_regexps[ @language ] || Hash.new
+      @close_token_regexps = $diakonos.close_token_regexps[ @language ] || Hash.new
+      @token_formats = $diakonos.token_formats[ @language ] || Hash.new
+      @indenters = $diakonos.indenters[ @language ]
+      @indenters_next_line = $diakonos.indenters_next_line[ @language ]
+      @unindenters = $diakonos.unindenters[ @language ]
       @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
-      @closers = @diakonos.closers[ @language ] || Hash.new
+      @closers = $diakonos.closers[ @language ] || Hash.new
       @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
       @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] || 4 )
       @indent_roundup = @settings[ "lang.#{@language}.indent.roundup" ].nil? ? true : @settings[ "lang.#{@language}.indent.roundup" ]
@@ -402,7 +401,7 @@ module Diakonos
     def row_to_y( row )
       return nil if row.nil?
       y = row - @top_line
-      y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
+      y = nil if ( y < 0 ) or ( y > @top_line + $diakonos.main_window_height - 1 )
       y
     end
 
@@ -440,8 +439,8 @@ module Diakonos
 
       if new_top_line < 0
         @top_line = 0
-      elsif new_top_line + @diakonos.main_window_height > @lines.length
-        @top_line = [ @lines.length - @diakonos.main_window_height, 0 ].max
+      elsif new_top_line + $diakonos.main_window_height > @lines.length
+        @top_line = [ @lines.length - $diakonos.main_window_height, 0 ].max
       else
         @top_line = new_top_line
       end
@@ -454,7 +453,7 @@ module Diakonos
         @last_row += changed
       end
 
-      height = [ @diakonos.main_window_height, @lines.length ].min
+      height = [ $diakonos.main_window_height, @lines.length ].min
 
       @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
       if @last_row - @top_line < @settings[ "view.margin.y" ]
@@ -476,8 +475,8 @@ module Diakonos
         end
 
         highlight_matches
-        if @diakonos.there_was_non_movement
-          @diakonos.push_cursor_state( old_top_line, old_row, old_col )
+        if $diakonos.there_was_non_movement
+          $diakonos.push_cursor_state( old_top_line, old_row, old_col )
         end
       end
 

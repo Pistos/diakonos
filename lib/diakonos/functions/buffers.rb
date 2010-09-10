@@ -210,7 +210,7 @@ module Diakonos
         end
 
         if do_open
-          buffer = Buffer.new( self, filename, buffer_key, read_only )
+          buffer = Buffer.new( filename, buffer_key, read_only )
           run_hook_procs( :after_open, buffer )
           @buffers[ buffer_key ] = buffer
           save_session

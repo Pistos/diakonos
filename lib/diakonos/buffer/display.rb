@@ -147,12 +147,12 @@ module Diakonos
     end
 
     def paint_column_markers
-      @diakonos.column_markers.each_value do |data|
+      $diakonos.column_markers.each_value do |data|
         column = data[ :column ]
         next  if column.nil?
         next  if column > Curses::cols - @left_column || column - @left_column < 0
 
-        num_lines_to_paint = [ @diakonos.main_window_height, @lines.size - @top_line ].min
+        num_lines_to_paint = [ $diakonos.main_window_height, @lines.size - @top_line ].min
         ( 0...num_lines_to_paint ).each do |row|
           @win_main.setpos( row, column - @left_column )
           @win_main.attrset data[ :format ]
@@ -197,7 +197,7 @@ module Diakonos
 
           if @lang_stack.length > 0
             prev_lang, close_token_class = @lang_stack[ -1 ]
-            close_index, close_match_text = find_closing_match( substr, @diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
+            close_index, close_match_text = find_closing_match( substr, $diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
             if close_match_text and close_index <= first_index
               if close_index > 0
                 # Print any remaining text in the embedded language
@@ -261,12 +261,12 @@ module Diakonos
     end
 
     def display
-      return  if @diakonos.testing
-      return  if ! @diakonos.do_display
+      return  if $diakonos.testing
+      return  if ! $diakonos.do_display
 
       Thread.new do
 
-        if @diakonos.display_mutex.try_lock
+        if $diakonos.display_mutex.try_lock
           begin
             Curses::curs_set 0
 
@@ -302,7 +302,7 @@ module Diakonos
 
             # Draw each on-screen line.
             y = 0
-            @lines[ @top_line...(@diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
+            @lines[ @top_line...($diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
               if @win_line_numbers
                 @win_line_numbers.setpos( y, 0 )
                 @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
@@ -321,7 +321,7 @@ module Diakonos
             end
 
             # Paint the empty space below the file if the file is too short to fit in one screen.
-            ( y...@diakonos.main_window_height ).each do |y|
+            ( y...$diakonos.main_window_height ).each do |y|
               if @win_line_numbers
                 @win_line_numbers.setpos( y, 0 )
                 @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
@@ -352,16 +352,16 @@ module Diakonos
 
             Curses::curs_set 1
           rescue Exception => e
-            @diakonos.log( "Display Exception:" )
-            @diakonos.log( e.message )
-            @diakonos.log( e.backtrace.join( "\n" ) )
+            $diakonos.log( "Display Exception:" )
+            $diakonos.log( e.message )
+            $diakonos.log( e.backtrace.join( "\n" ) )
             show_exception e
           end
 
-          @diakonos.display_mutex.unlock
-          @diakonos.display_dequeue
+          $diakonos.display_mutex.unlock
+          $diakonos.display_dequeue
         else
-          @diakonos.display_enqueue( self )
+          $diakonos.display_enqueue( self )
         end
 
       end

@@ -190,14 +190,14 @@ module Diakonos
         remove_selection DONT_DISPLAY
         clear_matches DO_DISPLAY
         if ! options[ :quiet ]
-          @diakonos.set_iline "/#{regexp.source}/ not found."
+          $diakonos.set_iline "/#{regexp.source}/ not found."
         end
       else
         if wrapped && ! options[ :quiet ]
           if @search_area
-            @diakonos.set_iline( "(search wrapped around to start of search area)" )
+            $diakonos.set_iline( "(search wrapped around to start of search area)" )
           else
-            @diakonos.set_iline( "(search wrapped around BOF/EOF)" )
+            $diakonos.set_iline( "(search wrapped around BOF/EOF)" )
           end
         end
 
@@ -239,7 +239,7 @@ module Diakonos
             end
           }
 
-          choice = auto_choice || @diakonos.get_choice(
+          choice = auto_choice || $diakonos.get_choice(
             "Replace?",
             [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
             CHOICE_YES
@@ -277,7 +277,7 @@ module Diakonos
     def highlight_matches( regexp = @highlight_regexp )
       @highlight_regexp = regexp
       return  if @highlight_regexp.nil?
-      found_marks = @lines[ @top_line...(@top_line + @diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
+      found_marks = @lines[ @top_line...(@top_line + $diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
         TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
       end
       @text_marks[ :found ] = found_marks
@@ -458,7 +458,7 @@ module Diakonos
       ::Diakonos.grep_array(
         Regexp.new( regexp_source ),
         @lines,
-        @diakonos.settings[ 'grep.context' ],
+        $diakonos.settings[ 'grep.context' ],
         "#{File.basename( @name )}:",
         @key
       )
