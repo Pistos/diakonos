@@ -364,16 +364,16 @@ module Diakonos
       end
 
       @surround_pairs.each_key do |language|
-        @surround_pairs[ language ] = @surround_pairs[ 'all' ].merge( @surround_pairs[ language ] )
+        @surround_pairs[ language ] = @surround_pairs[ 'all' ].merge( @surround_pairs[ language ] || Hash.new )
       end
       @token_regexps.each_key do |language|
-        @token_regexps[ language ] = @token_regexps[ 'all' ].merge( @token_regexps[ language ])
+        @token_regexps[ language ] = @token_regexps[ 'all' ].merge( @token_regexps[ language ] || Hash.new )
       end
       @close_token_regexps.each_key do |language|
-        @close_token_regexps[ language ] = @close_token_regexps[ 'all' ].merge( @close_token_regexps[ language ] )
+        @close_token_regexps[ language ] = @close_token_regexps[ 'all' ].merge( @close_token_regexps[ language ] || Hash.new )
       end
       @token_formats.each_key do |language|
-        @token_formats[ language ] = @token_formats[ 'all' ].merge( @token_formats[ language ] )
+        @token_formats[ language ] = @token_formats[ 'all' ].merge( @token_formats[ language ] || Hash.new )
       end
 
     end
