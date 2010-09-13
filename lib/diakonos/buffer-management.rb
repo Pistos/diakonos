@@ -21,36 +21,24 @@ module Diakonos
       switched
     end
 
-    # The given buffer_number should be 1-based, not zero-based.
-    # Returns nil if no such buffer exists.
+    # @param [Fixnum] buffer_number should be 1-based, not zero-based.
+    # @return nil if no such buffer exists.
     def buffer_number_to_name( buffer_number )
-      return nil if buffer_number < 1
+      return nil  if buffer_number < 1
 
-      number = 1
-      buffer_name = nil
-      @buffers.each_key do |name|
-        if number == buffer_number
-          buffer_name = name
-          break
-        end
-        number += 1
+      b = @buffers[ buffer_number - 1 ]
+      if b
+        b.name
       end
-      buffer_name
     end
 
-    # The returned value is 1-based, not zero-based.
-    # Returns nil if no such buffer exists.
+    # @return [Fixnum] 1-based, not zero-based.
+    # @return nil if no such buffer exists.
     def buffer_to_number( buffer )
-      number = 1
-      buffer_number = nil
-      @buffers.each_value do |b|
-        if b == buffer
-          buffer_number = number
-          break
-        end
-        number += 1
+      i = @buffers.index( buffer )
+      if i
+        i + 1
       end
-      buffer_number
     end
 
     def show_buffer_file_diff( buffer = @buffer_current )

@@ -50,7 +50,7 @@ module Diakonos
           File.delete @session[ 'filename' ]
         end
         @session = nil
-        @buffers.each_value do |buffer|
+        @buffers.each do |buffer|
           close_file buffer
         end
         new_session( path )

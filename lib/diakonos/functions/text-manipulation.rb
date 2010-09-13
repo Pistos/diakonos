@@ -34,7 +34,7 @@ module Diakonos
       partial = b.word_before_cursor
       return  if partial.nil?
 
-      all_words = @buffers.values.find_all { |b_|
+      all_words = @buffers.find_all { |b_|
         b_.original_language == b.original_language
       }.collect { |b_|
         b_.words( /^#{Regexp.escape(partial)}./ )

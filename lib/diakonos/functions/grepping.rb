@@ -6,7 +6,7 @@ module Diakonos
     end
 
     def grep_buffers( regexp_source = nil )
-      grep_( regexp_source, *@buffers.values )
+      grep_( regexp_source, *@buffers )
     end
 
     def grep_session_dir( regexp_source = nil )

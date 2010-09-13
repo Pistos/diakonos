@@ -126,7 +126,7 @@ module Diakonos
         @log = File.open( @logfilename, "a" )
 
         if @buffers
-          @buffers.each_value do |buffer|
+          @buffers.each do |buffer|
             buffer.configure
           end
         end

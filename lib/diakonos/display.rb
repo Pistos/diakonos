@@ -85,7 +85,7 @@ module Diakonos
         @win_line_numbers.refresh
       end
 
-      @buffers.each_value do |buffer|
+      @buffers.each do |buffer|
         buffer.reset_display
       end
     end

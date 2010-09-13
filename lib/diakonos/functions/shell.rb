@@ -33,7 +33,7 @@ module Diakonos
 
       # space-separated list of all buffer filenames
       name_array = Array.new
-      @buffers.each_value do |b|
+      @buffers.each do |b|
         name_array.push b.name
       end
       retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )

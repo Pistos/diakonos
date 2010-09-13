@@ -29,7 +29,7 @@ module Diakonos
         end
         @last_tag = tag
         @tag_stack.push [ buffer_current.name, buffer_current.last_row, buffer_current.last_col ]
-        if switch_to( @buffers[ tag.file ] )
+        if switch_to( @buffers.find { |b| b.name == tag.file } )
           #buffer_current.go_to_line( 0 )
         else
           open_file tag.file
@@ -52,7 +52,7 @@ module Diakonos
     def pop_tag
       tag = @tag_stack.pop
       if tag
-        if not switch_to( @buffers[ tag[ 0 ] ] )
+        if not switch_to( @buffers.find { |b| b.name == tag[ 0 ] } )
           open_file tag[ 0 ]
         end
         buffer_current.cursor_to( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )

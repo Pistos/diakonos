@@ -223,17 +223,16 @@ module Diakonos
       @quitting = true
       to_all = nil
       save_session
-      @buffers.each_value do |buffer|
-        if buffer.modified?
-          switch_to buffer
-          closure_choice = close_file( buffer, to_all )
-          case closure_choice
-          when CHOICE_CANCEL
-            @quitting = false
-            break
-          when CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL
-            to_all = closure_choice
-          end
+      @buffers.each do |buffer|
+        next  if ! buffer.modified?
+        switch_to buffer
+        closure_choice = close_file( buffer, to_all )
+        case closure_choice
+        when CHOICE_CANCEL
+          @quitting = false
+          break
+        when CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL
+          to_all = closure_choice
         end
       end
     end

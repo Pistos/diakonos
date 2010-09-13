@@ -14,7 +14,7 @@ module Diakonos
       return nil  if buffer.nil?
 
       choice = nil
-      if ! @buffers.has_value?( buffer )
+      if ! @buffers.include?( buffer )
         log "No such buffer: #{buffer.name}"
         return nil
       end
@@ -48,7 +48,6 @@ module Diakonos
       end
 
       if do_closure
-        del_buffer_key = nil
         del_buffer = nil
         previous_buffer = nil
         to_switch_to = nil
@@ -56,29 +55,30 @@ module Diakonos
 
         # Search the buffer hash for the buffer we want to delete,
         # and mark the one we will switch to after deletion.
-        @buffers.each do |buffer_key,buf|
+        @buffers.each do |b|
           if switching
-            to_switch_to = buf
+            to_switch_to = b
             break
           end
-          if buf == buffer
-            del_buffer_key = buffer_key
-            del_buffer = buf
+
+          if b == buffer
+            del_buffer = b
             switching = true
             next
           end
-          previous_buffer = buf
+
+          previous_buffer = b
         end
 
         buf = nil
         while(
-          ( not @buffer_stack.empty? ) and
-          ( not @buffers.values.include?( buf ) ) or
-          ( @buffers.key( buf ) == del_buffer_key )
+          @buffer_stack.any? &&
+          ! @buffers.include?( buf ) ||
+          buf == del_buffer
         ) do
           buf = @buffer_stack.pop
         end
-        if @buffers.values.include?( buf )
+        if @buffers.include?( buf )
           to_switch_to = buf
         end
 
@@ -91,7 +91,7 @@ module Diakonos
           open_file
         end
 
-        @buffers.delete del_buffer_key
+        @buffers.delete del_buffer
         cursor_stack_remove_buffer del_buffer
         save_session
 
@@ -109,7 +109,7 @@ module Diakonos
     def list_buffers
       bullets = ('0'..'9').to_a + ('a'..'z').to_a
       with_list_file do |f|
-        @buffers.keys.sort.each_with_index do |name, index|
+        @buffers.collect { |b| b.name }.sort.each_with_index do |name, index|
           bullet = bullets[ index ]
           if bullet
             bullet << '  '
@@ -119,7 +119,7 @@ module Diakonos
       end
       open_list_buffer
       filename = get_user_input( "Switch to buffer: ", numbered_list: true )
-      buffer = @buffers[ filename ]
+      buffer = @buffers.find { |b| b.name == filename }
       if buffer
         switch_to buffer
       end
@@ -160,8 +160,8 @@ module Diakonos
         end
         buffer_key = filename
         if(
-          ( not force_revert ) &&
-          ( (existing_buffer = @buffers[ filename ]) != nil ) &&
+          ! force_revert &&
+          ( ( existing_buffer = @buffers.find { |b| b.name == filename } ) != nil ) &&
           ( filename !~ /\.diakonos/ ) &&
           existing_buffer.file_different?
         )
@@ -212,7 +212,7 @@ module Diakonos
         if do_open
           buffer = Buffer.new( filename, buffer_key, read_only )
           run_hook_procs( :after_open, buffer )
-          @buffers[ buffer_key ] = buffer
+          @buffers << buffer
           save_session
           if switch_to( buffer )
             if line_number
@@ -356,8 +356,6 @@ module Diakonos
       if file
         old_name = buffer_current.name
         if buffer_current.save( file, PROMPT_OVERWRITE )
-          @buffers.delete old_name
-          @buffers[ buffer_current.name ] = buffer_current
           save_session
         end
       end
@@ -392,10 +390,7 @@ module Diakonos
     def switch_to_buffer_number( buffer_number_ )
       buffer_number = buffer_number_.to_i
       return  if buffer_number < 1
-      buffer_name = buffer_number_to_name( buffer_number )
-      if buffer_name
-        switch_to( @buffers[ buffer_name ] )
-      end
+      switch_to @buffers[ buffer_number - 1 ]
     end
 
     def switch_to_next_buffer

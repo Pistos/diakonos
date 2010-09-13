@@ -153,7 +153,7 @@ module Diakonos
       @win_status       = nil
       @win_interaction  = nil
       @win_line_numbers = nil
-      @buffers = BufferHash.new
+      @buffers = Array.new
 
       load_configuration
 
