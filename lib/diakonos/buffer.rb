@@ -117,10 +117,10 @@ module Diakonos
     def set_language( language )
       @settings = $diakonos.settings
       @language = language
-      @surround_pairs = $diakonos.surround_pairs[ @language ] || Hash.new
-      @token_regexps = $diakonos.token_regexps[ @language ] || Hash.new
-      @close_token_regexps = $diakonos.close_token_regexps[ @language ] || Hash.new
-      @token_formats = $diakonos.token_formats[ @language ] || Hash.new
+      @surround_pairs = $diakonos.surround_pairs[ @language ]
+      @token_regexps = $diakonos.token_regexps[ @language ]
+      @close_token_regexps = $diakonos.close_token_regexps[ @language ]
+      @token_formats = $diakonos.token_formats[ @language ]
       @indenters = $diakonos.indenters[ @language ]
       @indenters_next_line = $diakonos.indenters_next_line[ @language ]
       @unindenters = $diakonos.unindenters[ @language ]
