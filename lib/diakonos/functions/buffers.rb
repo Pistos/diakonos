@@ -159,10 +159,11 @@ module Diakonos
           filename, line_number = $1, ( $2.to_i - 1 )
         end
         buffer_key = filename
+        existing_buffer = @buffers.find { |b| b.name == filename }
         if(
           ! force_revert &&
-          ( ( existing_buffer = @buffers.find { |b| b.name == filename } ) != nil ) &&
           ( filename !~ /\.diakonos/ ) &&
+          existing_buffer &&
           existing_buffer.file_different?
         )
           show_buffer_file_diff( existing_buffer ) do
