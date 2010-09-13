@@ -111,6 +111,19 @@ module Diakonos
         parse_configuration_file @global_diakonos_conf
         parse_configuration_file @diakonos_conf
 
+        @surround_pairs.each_key do |language|
+          @surround_pairs[ language ] = @surround_pairs[ 'all' ].merge( @surround_pairs[ language ] || Hash.new )
+        end
+        @token_regexps.each_key do |language|
+          @token_regexps[ language ] = @token_regexps[ 'all' ].merge( @token_regexps[ language ] || Hash.new )
+        end
+        @close_token_regexps.each_key do |language|
+          @close_token_regexps[ language ] = @close_token_regexps[ 'all' ].merge( @close_token_regexps[ language ] || Hash.new )
+        end
+        @token_formats.each_key do |language|
+          @token_formats[ language ] = @token_formats[ 'all' ].merge( @token_formats[ language ] || Hash.new )
+        end
+
         merge_session_settings
 
         case @settings[ 'clipboard.external' ]
@@ -361,19 +374,6 @@ module Diakonos
         when "context.delay", 'interaction.blink_duration', 'interaction.choice_delay'
           @settings[ command ] = arg.to_f
         end
-      end
-
-      @surround_pairs.each_key do |language|
-        @surround_pairs[ language ] = @surround_pairs[ 'all' ].merge( @surround_pairs[ language ] || Hash.new )
-      end
-      @token_regexps.each_key do |language|
-        @token_regexps[ language ] = @token_regexps[ 'all' ].merge( @token_regexps[ language ] || Hash.new )
-      end
-      @close_token_regexps.each_key do |language|
-        @close_token_regexps[ language ] = @close_token_regexps[ 'all' ].merge( @close_token_regexps[ language ] || Hash.new )
-      end
-      @token_formats.each_key do |language|
-        @token_formats[ language ] = @token_formats[ 'all' ].merge( @token_formats[ language ] || Hash.new )
       end
 
     end
