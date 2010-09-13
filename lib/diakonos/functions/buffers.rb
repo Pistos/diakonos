@@ -162,12 +162,12 @@ module Diakonos
         existing_buffer = @buffers.find { |b| b.name == filename }
 
         if existing_buffer
-          do_open = false
+          do_open = ( filename =~ /\.diakonos/ )
           switch_to existing_buffer
 
           if(
+            ! do_open &&
             ! force_revert &&
-            ( filename !~ /\.diakonos/ ) &&
             existing_buffer.file_different?
           )
             show_buffer_file_diff( existing_buffer ) do
@@ -178,7 +178,6 @@ module Diakonos
               case choice
               when CHOICE_YES
                 do_open = true
-                close_file( existing_buffer, CHOICE_NO )
               when CHOICE_NO
                 do_open = false
               end
@@ -220,8 +219,12 @@ module Diakonos
 
         if do_open
           buffer = Buffer.new( filename, buffer_key, read_only )
+          if existing_buffer
+            @buffers[ @buffers.index( existing_buffer ) ] = buffer
+          else
+            @buffers << buffer
+          end
           run_hook_procs( :after_open, buffer )
-          @buffers << buffer
           save_session
           if switch_to( buffer )
             if line_number
