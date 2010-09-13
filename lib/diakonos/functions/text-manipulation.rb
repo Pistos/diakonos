@@ -83,11 +83,11 @@ module Diakonos
     end
 
     def operate_on_string(
-        ruby_code = get_user_input(
-          'Ruby code: ',
-          history: @rlh_general,
-          initial_text: 'str.'
-        )
+      ruby_code = get_user_input(
+        'Ruby code: ',
+        history: @rlh_general,
+        initial_text: 'str.'
+      )
     )
       if ruby_code
         str = @current_buffer.selected_string
@@ -98,11 +98,11 @@ module Diakonos
     end
 
     def operate_on_lines(
-        ruby_code = get_user_input(
-          'Ruby code: ',
-          history: @rlh_general,
-          initial_text: 'lines.collect { |l| l }'
-        )
+      ruby_code = get_user_input(
+        'Ruby code: ',
+        history: @rlh_general,
+        initial_text: 'lines.collect { |l| l }'
+      )
     )
       if ruby_code
         lines = @current_buffer.selected_text
@@ -121,11 +121,11 @@ module Diakonos
     end
 
     def operate_on_each_line(
-        ruby_code = get_user_input(
-          'Ruby code: ',
-          history: @rlh_general,
-          initial_text: 'line.'
-        )
+      ruby_code = get_user_input(
+        'Ruby code: ',
+        history: @rlh_general,
+        initial_text: 'line.'
+      )
     )
       if ruby_code
         lines = @current_buffer.selected_text
