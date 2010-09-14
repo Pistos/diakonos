@@ -29,7 +29,7 @@ module Diakonos
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
-    def initialize( name = nil, read_only = false )
+    def initialize( name = nil, read_only = READ_WRITE )
       @name = name
       @modified = false
       @last_modification_check = Time.now
