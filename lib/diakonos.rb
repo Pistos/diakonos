@@ -337,10 +337,9 @@ module Diakonos
         end
       end
 
-      switch_to_buffer_number 1
-
-      update_status_line
-      update_context_line
+      if @buffer_current.nil?
+        switch_to_buffer_number 1
+      end
 
       if @post_load_script
         eval @post_load_script
