@@ -214,7 +214,18 @@ module Diakonos
         end
 
         if do_open
-          buffer = Buffer.new( filename, read_only )
+          buffer = Buffer.new(
+            filename,
+            'read_only' => read_only,
+            'display' => {
+              'top_line' => top_line,
+              'left_column' => left_column,
+            },
+            'cursor' => {
+              'row' => last_row,
+              'col' => last_col,
+            }
+          )
           if existing_buffer
             @buffers[ @buffers.index( existing_buffer ) ] = buffer
           else
@@ -226,15 +237,6 @@ module Diakonos
             if line_number
               buffer.go_to_line( line_number, 0 )
             else
-              if top_line
-                buffer.pitch_view_to( top_line, Buffer::DONT_PITCH_CURSOR, Buffer::DONT_DISPLAY )
-              end
-              if left_column
-                buffer.pan_view_to( left_column, Buffer::DONT_DISPLAY )
-              end
-              if last_row && last_col
-                buffer.cursor_to( last_row, last_col, Buffer::DONT_DISPLAY )
-              end
               buffer.display
             end
           end

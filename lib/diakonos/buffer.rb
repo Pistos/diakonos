@@ -29,7 +29,20 @@ module Diakonos
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
-    def initialize( name = nil, read_only = READ_WRITE )
+    # @param [String] name
+    #   A file path (which is expanded internally)
+    # @param [Hash] options
+    # @option options [Boolean] 'read_only' (READ_WRITE)
+    #   Whether the buffer should be protected from modification
+    # @option options [Hash] 'cursor'
+    #   A Hash containing 'row' and/or 'col' indicating where the cursor should
+    #   initially be placed.  Defaults: 0 and 0
+    # @option options [Hash] 'display'
+    #   A Hash containing 'top_line' and 'left_column' indicating where the view
+    #   should be positioned in the file.  Defaults: 0 and 0
+    # @see READ_WRITE
+    # @see READ_ONLY
+    def initialize( name = nil, options = {} )
       @name = name
       @modified = false
       @last_modification_check = Time.now
@@ -57,9 +70,10 @@ module Diakonos
 
       @current_buffer_state = 0
 
-      @top_line = 0
-      @left_column = 0
-      @desired_column = 0
+      options[ 'display' ] ||= Hash.new
+      @top_line = options[ 'display' ][ 'top_line' ] || 0
+      @left_column = options[ 'display' ][ 'left_column' ] ||  0
+      @desired_column = @left_column
       @mark_anchor = nil
       @text_marks = Hash.new
       @selection_mode = :normal
@@ -68,12 +82,13 @@ module Diakonos
       @last_search = nil
       @changing_selection = false
       @typing = false
-      @last_col = 0
-      @last_screen_col = 0
-      @last_screen_y = 0
-      @last_screen_x = 0
-      @last_row = 0
-      @read_only = read_only
+      options[ 'cursor' ] ||= Hash.new
+      @last_col = options[ 'cursor' ][ 'col' ] || 0
+      @last_row = options[ 'cursor' ][ 'row' ] || 0
+      @last_screen_y = @last_row - @top_line
+      @last_screen_x = @last_col - @left_column
+      @last_screen_col = @last_screen_x
+      @read_only = options[ 'read_only' ] || READ_WRITE
       @bookmarks = Array.new
       @lang_stack = Array.new
 

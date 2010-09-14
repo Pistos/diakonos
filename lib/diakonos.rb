@@ -296,8 +296,8 @@ module Diakonos
       end
       session_buffers = session_startup
       session_buffer_number = @session[ 'current_buffer' ] || 1
-      @files.each do |file|
-        @buffers << Buffer.new( file[ 'filepath' ] )
+      @files.each do |file_info|
+        @buffers << Buffer.new( file_info[ 'filepath' ], file_info )
       end
       if @buffers.empty?
         @buffers << Buffer.new( nil )
