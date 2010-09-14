@@ -294,6 +294,11 @@ module Diakonos
       @read_only_files.each do |file|
         @buffers << Buffer.new( file[ 'filepath' ], Buffer::READ_ONLY )
       end
+      session_buffers = session_startup
+      session_buffer_number = @session[ 'current_buffer' ] || 1
+      @files.each do |file|
+        @buffers << Buffer.new( file[ 'filepath' ] )
+      end
       if @buffers.empty?
         @buffers << Buffer.new( nil )
       end
@@ -306,9 +311,6 @@ module Diakonos
         help_key = 'F1'
       end
       set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
-
-      session_buffers = session_startup
-      session_buffer_number = @session[ 'buffer_current' ] || 1
 
       scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
       scripts.each do |script|
