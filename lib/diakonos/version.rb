@@ -1,6 +1,6 @@
 module Diakonos
   VERSION       = '0.8.13'
-  LAST_MODIFIED = 'September 13, 2010'
+  LAST_MODIFIED = 'September 14, 2010'
 
   def self.parse_version( s )
     if s

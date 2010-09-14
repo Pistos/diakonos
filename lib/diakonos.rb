@@ -287,6 +287,16 @@ module Diakonos
     def start
       require 'diakonos/window'
 
+      @files.each do |file|
+        @buffers << Buffer.new( file[ 'filepath' ] )
+      end
+      @read_only_files.each do |file|
+        @buffers << Buffer.new( file[ 'filepath' ], Buffer::READ_ONLY )
+      end
+      if @buffers.empty?
+        @buffers << Buffer.new( nil )
+      end
+
       initialize_display
 
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
@@ -318,64 +328,44 @@ module Diakonos
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
 
-      num_opened = 0
-      if @files.length == 0 && @read_only_files.length == 0
-        if open_file
-          num_opened += 1
-        end
-      else
-        @files.each do |file|
-          if open_file( file[ 'filepath' ], file )
-            num_opened += 1
-          end
-        end
-        @read_only_files.each do |file|
-          if open_file( file[ 'filepath' ], 'read_only' => true )
-            num_opened += 1
-          end
-        end
-      end
-
       if session_buffers
         session_buffers.each do |buffer|
           close_file buffer
         end
       end
 
-      if num_opened > 0
-        switch_to_buffer_number 1
+      switch_to_buffer_number 1
 
-        update_status_line
-        update_context_line
+      update_status_line
+      update_context_line
 
-        if @post_load_script
-          eval @post_load_script
-        end
-
-        run_hook_procs :after_startup
-        switch_to_buffer_number session_buffer_number
-
-        if ! @settings[ 'suppress_welcome' ]
-          open_file "#{@help_dir}/welcome.dhf"
-        else
-          @buffer_current.seek /<<<</
-        end
-
-        begin
-          # Main keyboard loop.
-          while ! @quitting
-            process_keystroke
-            @win_main.refresh
-          end
-        rescue SignalException => e
-          debug_log "Terminated by signal (#{e.message})"
-        end
-
-        cleanup_display
-        cleanup_session
-
-        @debug.close
+      if @post_load_script
+        eval @post_load_script
       end
+
+      run_hook_procs :after_startup
+      switch_to_buffer_number session_buffer_number
+
+      if ! @settings[ 'suppress_welcome' ]
+        open_file "#{@help_dir}/welcome.dhf"
+      else
+        @buffer_current.seek /<<<</
+      end
+
+      begin
+        # Main keyboard loop.
+        while ! @quitting
+          process_keystroke
+          @win_main.refresh
+        end
+      rescue SignalException => e
+        debug_log "Terminated by signal (#{e.message})"
+      end
+
+      cleanup_display
+      cleanup_session
+
+      @debug.close
     end
 
     def uninstall( confirm = true )
