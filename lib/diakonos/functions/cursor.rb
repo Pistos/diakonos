@@ -187,6 +187,7 @@ module Diakonos
       input = get_user_input( "Go to [line number|+lines][,column number]: " )
       if input
         row = nil
+        col = 0
 
         if input =~ /([+-]\d+)/
           row = buffer_current.last_row + $1.to_i
