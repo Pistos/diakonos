@@ -1,7 +1,7 @@
 module Diakonos
 
   class Buffer
-    attr_reader :name, :key, :original_language, :changing_selection, :read_only,
+    attr_reader :name, :original_language, :changing_selection, :read_only,
       :tab_size, :selection_mode
     attr_writer :desired_column, :read_only
 
@@ -29,9 +29,8 @@ module Diakonos
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
-    def initialize( name, key, read_only = false )
+    def initialize( name, read_only = false )
       @name = name
-      @key = key
       @modified = false
       @last_modification_check = Time.now
 
@@ -141,8 +140,8 @@ module Diakonos
     end
 
     def == (other)
-      return false if other.nil?
-      key == other.key
+      return false  if other.nil?
+      @name == other.name
     end
 
     def length

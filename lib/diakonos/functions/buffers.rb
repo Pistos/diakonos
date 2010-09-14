@@ -151,14 +151,10 @@ module Diakonos
 
       do_open = true
       buffer = nil
-      if filename.nil?
-        buffer_key = @untitled_id
-        @untitled_id += 1
-      else
+      if filename
         if filename =~ /^(.+):(\d+)$/
           filename, line_number = $1, ( $2.to_i - 1 )
         end
-        buffer_key = filename
         existing_buffer = @buffers.find { |b| b.name == filename }
 
         if existing_buffer
@@ -218,7 +214,7 @@ module Diakonos
         end
 
         if do_open
-          buffer = Buffer.new( filename, buffer_key, read_only )
+          buffer = Buffer.new( filename, read_only )
           if existing_buffer
             @buffers[ @buffers.index( existing_buffer ) ] = buffer
           else

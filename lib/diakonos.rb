@@ -158,7 +158,6 @@ module Diakonos
       load_configuration
 
       @quitting    = false
-      @untitled_id = 0
 
       @x = 0
       @y = 0

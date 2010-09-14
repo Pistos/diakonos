@@ -460,7 +460,7 @@ module Diakonos
         @lines,
         $diakonos.settings[ 'grep.context' ],
         "#{File.basename( @name )}:",
-        @key
+        @name
       )
     end
 
