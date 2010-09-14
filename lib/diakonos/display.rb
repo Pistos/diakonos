@@ -193,7 +193,10 @@ module Diakonos
           filler = ""
         end
         str = status_left + filler + status_right
-      rescue ArgumentError => e
+      rescue ArgumentError, TypeError => e
+        debug_log e
+        debug_log e.backtrace[ 0 ]
+        debug_log "var_array: #{var_array.inspect}"
         str = "%-#{Curses::cols}s" % "(status line configuration error)"
       end
       str
