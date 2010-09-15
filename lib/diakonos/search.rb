@@ -36,7 +36,7 @@ module Diakonos
         set_iline( "Searching literally; #{exception_thrown.message}" )
       end
 
-      @current_buffer.find(
+      buffer_current.find(
         regexps,
         :direction          => direction,
         :replacement        => replacement,

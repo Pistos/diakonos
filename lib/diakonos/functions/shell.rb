@@ -27,13 +27,13 @@ module Diakonos
       retval = string.dup
 
       # Current buffer filename
-      retval.gsub!( /\$f/, ( $1 or "" ) + File.expand_path( @current_buffer.name || "" ) )
+      retval.gsub!( /\$f/, ( $1 or "" ) + File.expand_path( buffer_current.name || "" ) )
       # Current buffer dir
-      retval.gsub!( /\$d/, ( $1 or "" ) + File.dirname( File.expand_path( @current_buffer.name || '' ) ) )
+      retval.gsub!( /\$d/, ( $1 or "" ) + File.dirname( File.expand_path( buffer_current.name || '' ) ) )
 
       # space-separated list of all buffer filenames
       name_array = Array.new
-      @buffers.each_value do |b|
+      @buffers.each do |b|
         name_array.push b.name
       end
       retval.gsub!( /\$F/, ( $1 or "" ) + ( name_array.join(' ') or "" ) )
@@ -43,7 +43,7 @@ module Diakonos
         user_input = get_user_input(
           "Argument: ",
           history: @rlh_shell,
-          initial_text: @current_buffer.selected_string
+          initial_text: buffer_current.selected_string
         )
         retval.gsub!( /\$i/, user_input )
       end
@@ -64,7 +64,7 @@ module Diakonos
         text_filename = @diakonos_home + "/selected.txt"
 
         File.open( text_filename, "w" ) do |textfile|
-          selected_text = @current_buffer.selected_text
+          selected_text = buffer_current.selected_text
           if selected_text
             textfile.puts( selected_text.join( "\n" ) )
           end
@@ -207,7 +207,7 @@ module Diakonos
       Curses::close_screen
 
       begin
-        @current_buffer.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
+        buffer_current.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
       rescue Exception => e
         debug_log e.message
         debug_log e.backtrace.join( "\n\t" )

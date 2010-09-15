@@ -2,11 +2,11 @@ module Diakonos
   module Functions
 
     def close_code
-      @current_buffer.close_code
+      buffer_current.close_code
     end
 
     def collapse_whitespace
-      @current_buffer.collapse_whitespace
+      buffer_current.collapse_whitespace
     end
 
 
@@ -14,19 +14,19 @@ module Diakonos
       delimiter ||= get_user_input(
         "Column delimiter (regexp): ",
         history: @rlh_general,
-        initial_text: @settings[ "lang.#{@current_buffer.original_language}.column_delimiters" ] || ''
+        initial_text: @settings[ "lang.#{buffer_current.original_language}.column_delimiters" ] || ''
       )
       if delimiter && num_spaces_padding
-        @current_buffer.columnize Regexp.new( delimiter ), num_spaces_padding
+        buffer_current.columnize Regexp.new( delimiter ), num_spaces_padding
       end
     end
 
     def comment_out
-      @current_buffer.comment_out
+      buffer_current.comment_out
     end
 
     def complete_word( direction = :down )
-      b = @current_buffer
+      b = buffer_current
       if b.selecting?
         old_word = b.word_before_cursor
         b.delete_selection
@@ -34,7 +34,7 @@ module Diakonos
       partial = b.word_before_cursor
       return  if partial.nil?
 
-      all_words = @buffers.values.find_all { |b_|
+      all_words = @buffers.find_all { |b_|
         b_.original_language == b.original_language
       }.collect { |b_|
         b_.words( /^#{Regexp.escape(partial)}./ )
@@ -75,11 +75,11 @@ module Diakonos
     end
 
     def join_lines_upward
-      @current_buffer.join_lines_upward( @current_buffer.current_row, Buffer::STRIP_LINE )
+      buffer_current.join_lines_upward( buffer_current.current_row, Buffer::STRIP_LINE )
     end
 
     def join_lines
-      @current_buffer.join_lines( @current_buffer.current_row, Buffer::STRIP_LINE )
+      buffer_current.join_lines( buffer_current.current_row, Buffer::STRIP_LINE )
     end
 
     def operate_on_string(
@@ -90,9 +90,9 @@ module Diakonos
       )
     )
       if ruby_code
-        str = @current_buffer.selected_string
+        str = buffer_current.selected_string
         if str and not str.empty?
-          @current_buffer.paste eval( ruby_code )
+          buffer_current.paste eval( ruby_code )
         end
       end
     end
@@ -105,7 +105,7 @@ module Diakonos
       )
     )
       if ruby_code
-        lines = @current_buffer.selected_text
+        lines = buffer_current.selected_text
         if lines and not lines.empty?
           if lines[ -1 ].empty?
             lines.pop
@@ -115,7 +115,7 @@ module Diakonos
           if popped
             new_lines << ''
           end
-          @current_buffer.paste new_lines
+          buffer_current.paste new_lines
         end
       end
     end
@@ -128,7 +128,7 @@ module Diakonos
       )
     )
       if ruby_code
-        lines = @current_buffer.selected_text
+        lines = buffer_current.selected_text
         if lines and not lines.empty?
           if lines[ -1 ].empty?
             lines.pop
@@ -138,51 +138,51 @@ module Diakonos
           if popped
             new_lines << ''
           end
-          @current_buffer.paste new_lines
+          buffer_current.paste new_lines
         end
       end
     end
 
     def surround_line( envelope = nil )
-      @current_buffer.set_selection_current_line
+      buffer_current.set_selection_current_line
       surround_selection envelope
     end
 
     def surround_paragraph( envelope = nil )
-      ( first, _ ), ( last, length ) = @current_buffer.paragraph_under_cursor_pos
-      @current_buffer.set_selection( first, 0, last, length+1 )
+      ( first, _ ), ( last, length ) = buffer_current.paragraph_under_cursor_pos
+      buffer_current.set_selection( first, 0, last, length+1 )
       surround_selection envelope
     end
 
     def surround_selection( parenthesis = nil )
-      if ! @current_buffer.selecting?
+      if ! buffer_current.selecting?
         set_iline "Nothing selected."
         return
       end
 
       parenthesis ||= get_user_input( "Surround with: " )
       if parenthesis
-        text = @current_buffer.surround( @current_buffer.selected_text, parenthesis )
+        text = buffer_current.surround( buffer_current.selected_text, parenthesis )
         if text
-          @current_buffer.paste text
+          buffer_current.paste text
         end
       end
     end
 
     def surround_word( envelope = nil )
-      ( start_row, start_col ), ( end_row, end_col ) = @current_buffer.word_under_cursor_pos
+      ( start_row, start_col ), ( end_row, end_col ) = buffer_current.word_under_cursor_pos
       if start_row && start_col && end_row && end_col
-        @current_buffer.set_selection( start_row, start_col, end_row, end_col+1 )
+        buffer_current.set_selection( start_row, start_col, end_row, end_col+1 )
         surround_selection envelope
       end
     end
 
     def uncomment
-      @current_buffer.uncomment
+      buffer_current.uncomment
     end
 
     def wrap_paragraph
-      @current_buffer.wrap_paragraph
+      buffer_current.wrap_paragraph
     end
 
   end

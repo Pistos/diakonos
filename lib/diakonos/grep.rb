@@ -53,11 +53,11 @@ module Diakonos
     end
 
     def grep_( regexp_source, *buffers )
-      original_buffer = @current_buffer
-      if @current_buffer.changing_selection
-        selected_text = @current_buffer.copy_selection[ 0 ]
+      original_buffer = buffer_current
+      if buffer_current.changing_selection
+        selected_text = buffer_current.copy_selection[ 0 ]
       end
-      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+      starting_row, starting_col = buffer_current.last_row, buffer_current.last_col
 
       selected = get_user_input(
         "Grep regexp: ",

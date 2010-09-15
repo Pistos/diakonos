@@ -21,7 +21,7 @@ module Diakonos
         set_iline
       end
       if char
-        removed_text = @current_buffer.delete_to char
+        removed_text = buffer_current.delete_to char
         if removed_text
           @clipboard.add_clip removed_text
         else
@@ -41,7 +41,7 @@ module Diakonos
         set_iline
       end
       if char
-        removed_text = @current_buffer.delete_to_and_from char
+        removed_text = buffer_current.delete_to_and_from char
         if removed_text
           @clipboard.add_clip( [ removed_text ] )
         else
@@ -53,8 +53,8 @@ module Diakonos
     # Evaluates (executes) Ruby code.
     def evaluate( code_ = nil )
       if code_.nil?
-        if @current_buffer.changing_selection
-          selected_text = @current_buffer.copy_selection[ 0 ]
+        if buffer_current.changing_selection
+          selected_text = buffer_current.copy_selection[ 0 ]
         end
         code = get_user_input(
           "Ruby code: ",
@@ -223,17 +223,16 @@ module Diakonos
       @quitting = true
       to_all = nil
       save_session
-      @buffers.each_value do |buffer|
-        if buffer.modified?
-          switch_to buffer
-          closure_choice = close_file( buffer, to_all )
-          case closure_choice
-          when CHOICE_CANCEL
-            @quitting = false
-            break
-          when CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL
-            to_all = closure_choice
-          end
+      @buffers.each do |buffer|
+        next  if ! buffer.modified?
+        switch_to buffer
+        closure_choice = close_file( buffer, to_all )
+        case closure_choice
+        when CHOICE_CANCEL
+          @quitting = false
+          break
+        when CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL
+          to_all = closure_choice
         end
       end
     end
@@ -259,13 +258,13 @@ module Diakonos
       end
     end
 
-    # Undoes the latest change made to the current_buffer.
-    def undo( buffer = @current_buffer )
+    # Undoes the latest change made to the current buffer.
+    def undo( buffer = buffer_current )
       buffer.undo
     end
 
-    # Redoes the latest change undone on the current_buffer.
-    def unundo( buffer = @current_buffer )
+    # Redoes the latest change undone on the current buffer.
+    def unundo( buffer = buffer_current )
       buffer.unundo
     end
 

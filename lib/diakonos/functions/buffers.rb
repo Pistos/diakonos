@@ -10,94 +10,93 @@ module Diakonos
     # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
     # @see Diakonos::CHOICE_YES
     # @see Diakonos::CHOICE_NO
-    def close_file( buffer = @current_buffer, to_all = nil )
-      return nil if buffer.nil?
+    def close_file( buffer = buffer_current, to_all = nil )
+      return nil  if buffer.nil?
 
       choice = nil
-      if @buffers.has_value?( buffer )
-        do_closure = true
-
-        if buffer.modified?
-          if not buffer.read_only
-            if to_all.nil?
-              choices = [ CHOICE_YES, CHOICE_NO, CHOICE_CANCEL ]
-              if @quitting
-                choices.concat [ CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL ]
-              end
-              choice = get_choice(
-                "Save changes to #{buffer.nice_name}?",
-                choices,
-                CHOICE_CANCEL
-              )
-            else
-              choice = to_all
-            end
-
-            case choice
-            when CHOICE_YES, CHOICE_YES_TO_ALL
-              do_closure = true
-              save_file buffer
-            when CHOICE_NO, CHOICE_NO_TO_ALL
-              do_closure = true
-            when CHOICE_CANCEL
-              do_closure = false
-            end
-          end
-        end
-
-        if do_closure
-          del_buffer_key = nil
-          del_buffer = nil
-          previous_buffer = nil
-          to_switch_to = nil
-          switching = false
-
-          # Search the buffer hash for the buffer we want to delete,
-          # and mark the one we will switch to after deletion.
-          @buffers.each do |buffer_key,buf|
-            if switching
-              to_switch_to = buf
-              break
-            end
-            if buf == buffer
-              del_buffer_key = buffer_key
-              del_buffer = buf
-              switching = true
-              next
-            end
-            previous_buffer = buf
-          end
-
-          buf = nil
-          while(
-            ( not @buffer_stack.empty? ) and
-            ( not @buffers.values.include?( buf ) ) or
-            ( @buffers.key( buf ) == del_buffer_key )
-          ) do
-            buf = @buffer_stack.pop
-          end
-          if @buffers.values.include?( buf )
-            to_switch_to = buf
-          end
-
-          if to_switch_to
-            switch_to( to_switch_to )
-          elsif previous_buffer
-            switch_to( previous_buffer )
-          else
-            # No buffers left.  Open a new blank one.
-            open_file
-          end
-
-          @buffers.delete del_buffer_key
-          cursor_stack_remove_buffer del_buffer
-          save_session
-
-          update_status_line
-          update_context_line
-        end
-      else
+      if ! @buffers.include?( buffer )
         log "No such buffer: #{buffer.name}"
+        return nil
+      end
+
+      do_closure = true
+
+      if buffer.modified? && ! buffer.read_only
+        if to_all
+          choice = to_all
+        else
+          choices = [ CHOICE_YES, CHOICE_NO, CHOICE_CANCEL ]
+          if @quitting
+            choices.concat [ CHOICE_YES_TO_ALL, CHOICE_NO_TO_ALL ]
+          end
+          choice = get_choice(
+            "Save changes to #{buffer.nice_name}?",
+            choices,
+            CHOICE_CANCEL
+          )
+        end
+
+        case choice
+        when CHOICE_YES, CHOICE_YES_TO_ALL
+          do_closure = true
+          save_file buffer
+        when CHOICE_NO, CHOICE_NO_TO_ALL
+          do_closure = true
+        when CHOICE_CANCEL
+          do_closure = false
+        end
+      end
+
+      if do_closure
+        del_buffer = nil
+        previous_buffer = nil
+        to_switch_to = nil
+        switching = false
+
+        # Search the buffer hash for the buffer we want to delete,
+        # and mark the one we will switch to after deletion.
+        @buffers.each do |b|
+          if switching
+            to_switch_to = b
+            break
+          end
+
+          if b == buffer
+            del_buffer = b
+            switching = true
+            next
+          end
+
+          previous_buffer = b
+        end
+
+        buf = nil
+        while(
+          @buffer_stack.any? &&
+          ! @buffers.include?( buf ) ||
+          buf == del_buffer
+        ) do
+          buf = @buffer_stack.pop
+        end
+        if @buffers.include?( buf )
+          to_switch_to = buf
+        end
+
+        if to_switch_to
+          switch_to( to_switch_to )
+        elsif previous_buffer
+          switch_to( previous_buffer )
+        else
+          # No buffers left.  Open a new blank one.
+          open_file
+        end
+
+        @buffers.delete del_buffer
+        cursor_stack_remove_buffer del_buffer
+        save_session
+
+        update_status_line
+        update_context_line
       end
 
       choice
@@ -110,7 +109,7 @@ module Diakonos
     def list_buffers
       bullets = ('0'..'9').to_a + ('a'..'z').to_a
       with_list_file do |f|
-        @buffers.keys.sort.each_with_index do |name, index|
+        @buffers.collect { |b| b.name }.sort.each_with_index do |name, index|
           bullet = bullets[ index ]
           if bullet
             bullet << '  '
@@ -120,7 +119,7 @@ module Diakonos
       end
       open_list_buffer
       filename = get_user_input( "Switch to buffer: ", numbered_list: true )
-      buffer = @buffers[ filename ]
+      buffer = @buffers.find { |b| b.name == filename }
       if buffer
         switch_to buffer
       end
@@ -152,28 +151,32 @@ module Diakonos
 
       do_open = true
       buffer = nil
-      if filename.nil?
-        buffer_key = @untitled_id
-        @untitled_id += 1
-      else
+      if filename
         if filename =~ /^(.+):(\d+)$/
           filename, line_number = $1, ( $2.to_i - 1 )
         end
-        buffer_key = filename
-        if(
-          ( not force_revert ) &&
-          ( (existing_buffer = @buffers[ filename ]) != nil ) &&
-          ( filename !~ /\.diakonos/ ) &&
-          existing_buffer.file_different?
-        )
-          show_buffer_file_diff( existing_buffer ) do
-            choice = get_choice(
-              "Load on-disk version of #{existing_buffer.nice_name}?",
-              [ CHOICE_YES, CHOICE_NO ]
-            )
-            case choice
-            when CHOICE_NO
-              do_open = false
+        existing_buffer = @buffers.find { |b| b.name == filename }
+
+        if existing_buffer
+          do_open = ( filename =~ /\.diakonos/ )
+          switch_to existing_buffer
+
+          if(
+            ! do_open &&
+            ! force_revert &&
+            existing_buffer.file_different?
+          )
+            show_buffer_file_diff( existing_buffer ) do
+              choice = get_choice(
+                "Load on-disk version of #{existing_buffer.nice_name}?",
+                [ CHOICE_YES, CHOICE_NO ]
+              )
+              case choice
+              when CHOICE_YES
+                do_open = true
+              when CHOICE_NO
+                do_open = false
+              end
             end
           end
         end
@@ -211,23 +214,29 @@ module Diakonos
         end
 
         if do_open
-          buffer = Buffer.new( self, filename, buffer_key, read_only )
+          buffer = Buffer.new(
+            filename,
+            'read_only' => read_only,
+            'display' => {
+              'top_line' => top_line,
+              'left_column' => left_column,
+            },
+            'cursor' => {
+              'row' => last_row,
+              'col' => last_col,
+            }
+          )
+          if existing_buffer
+            @buffers[ @buffers.index( existing_buffer ) ] = buffer
+          else
+            @buffers << buffer
+          end
           run_hook_procs( :after_open, buffer )
-          @buffers[ buffer_key ] = buffer
           save_session
           if switch_to( buffer )
             if line_number
               buffer.go_to_line( line_number, 0 )
             else
-              if top_line
-                buffer.pitch_view_to( top_line, Buffer::DONT_PITCH_CURSOR, Buffer::DONT_DISPLAY )
-              end
-              if left_column
-                buffer.pan_view_to( left_column, Buffer::DONT_DISPLAY )
-              end
-              if last_row && last_col
-                buffer.cursor_to( last_row, last_col, Buffer::DONT_DISPLAY )
-              end
               buffer.display
             end
           end
@@ -243,11 +252,11 @@ module Diakonos
     def open_file_ask
       prefill = ''
 
-      if @current_buffer
-        if @current_buffer.current_line =~ %r#(/\w+)+/\w+\.\w+#
+      if buffer_current
+        if buffer_current.current_line =~ %r#(/\w+)+/\w+\.\w+#
           prefill = $&
-        elsif @current_buffer.name
-          prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+        elsif buffer_current.name
+          prefill = File.expand_path( File.dirname( buffer_current.name ) ) + "/"
         end
       end
 
@@ -288,10 +297,10 @@ module Diakonos
       regexp ||= get_user_input( "Regexp: ", history: @rlh_search )
       return  if regexp.nil?
 
-      if @current_buffer.current_line =~ %r{\w*/[/\w.]+}
+      if buffer_current.current_line =~ %r{\w*/[/\w.]+}
         prefill = $&
       else
-        prefill = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+        prefill = File.expand_path( File.dirname( buffer_current.name ) ) + "/"
       end
       search_root ||= get_user_input( "Search within: ", history: @rlh_files, initial_text: prefill )
       return  if search_root.nil?
@@ -328,12 +337,12 @@ module Diakonos
 
       if do_revert
         open_file(
-          @current_buffer.name,
+          buffer_current.name,
           'read_only' => false,
           'revert' => FORCE_REVERT,
           'cursor' => {
-            'row' => @current_buffer.last_row,
-            'col' => @current_buffer.last_col
+            'row' => buffer_current.last_row,
+            'col' => buffer_current.last_col
           }
         )
       end
@@ -342,23 +351,21 @@ module Diakonos
     # Saves a buffer, then runs the :after_save hook on it.
     # @param [Buffer] buffer
     #   The buffer to save.  If nil, defaults to the current buffer.
-    def save_file( buffer = @current_buffer )
+    def save_file( buffer = buffer_current )
       buffer.save
       run_hook_procs( :after_save, buffer )
     end
 
     def save_file_as
-      if @current_buffer && @current_buffer.name
-        path = File.expand_path( File.dirname( @current_buffer.name ) ) + "/"
+      if buffer_current && buffer_current.name
+        path = File.expand_path( File.dirname( buffer_current.name ) ) + "/"
         file = get_user_input( "Filename: ", history: @rlh_files, initial_text: path )
       else
         file = get_user_input( "Filename: ", history: @rlh_files )
       end
       if file
-        old_name = @current_buffer.name
-        if @current_buffer.save( file, PROMPT_OVERWRITE )
-          @buffers.delete old_name
-          @buffers[ @current_buffer.name ] = @current_buffer
+        old_name = buffer_current.name
+        if buffer_current.save( file, PROMPT_OVERWRITE )
           save_session
         end
       end
@@ -372,7 +379,7 @@ module Diakonos
       type = type_ || get_user_input( "Content type: " )
 
       if type
-        if @current_buffer.set_type( type )
+        if buffer_current.set_type( type )
           update_status_line
           update_context_line
         end
@@ -383,9 +390,9 @@ module Diakonos
     # Otherwise, the read_only state of the current buffer is set to read_only.
     def set_read_only( read_only = nil )
       if read_only
-        @current_buffer.read_only = read_only
+        buffer_current.read_only = read_only
       else
-        @current_buffer.read_only = ( not @current_buffer.read_only )
+        buffer_current.read_only = ( ! buffer_current.read_only )
       end
       update_status_line
     end
@@ -393,18 +400,15 @@ module Diakonos
     def switch_to_buffer_number( buffer_number_ )
       buffer_number = buffer_number_.to_i
       return  if buffer_number < 1
-      buffer_name = buffer_number_to_name( buffer_number )
-      if buffer_name
-        switch_to( @buffers[ buffer_name ] )
-      end
+      switch_to @buffers[ buffer_number - 1 ]
     end
 
     def switch_to_next_buffer
-      switch_to_buffer_number( buffer_to_number( @current_buffer ) + 1 )
+      switch_to_buffer_number( buffer_to_number( buffer_current ) + 1 )
     end
 
     def switch_to_previous_buffer
-      switch_to_buffer_number( buffer_to_number( @current_buffer ) - 1 )
+      switch_to_buffer_number( buffer_to_number( buffer_current ) - 1 )
     end
 
   end

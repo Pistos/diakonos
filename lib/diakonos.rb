@@ -153,18 +153,17 @@ module Diakonos
       @win_status       = nil
       @win_interaction  = nil
       @win_line_numbers = nil
-      @buffers = BufferHash.new
+      @buffers = Array.new
 
       load_configuration
 
       @quitting    = false
-      @untitled_id = 0
 
       @x = 0
       @y = 0
 
       @buffer_stack           = Array.new
-      @current_buffer         = nil
+      @buffer_current         = nil
 
       @cursor_stack           = Array.new
       @cursor_stack_pointer   = nil
@@ -267,7 +266,6 @@ module Diakonos
         end
       end
     end
-    protected :parse_options
 
     def print_usage
       puts "Usage: #{$0} [options] [file] [file...]"
@@ -279,7 +277,6 @@ module Diakonos
       puts "\t-s, --load-session <session identifier>\tLoad a session"
       puts "\t--uninstall[-without-confirmation]\tUninstall Diakonos"
     end
-    protected :print_usage
 
     def clear_non_movement_flag
       @there_was_non_movement = false
@@ -290,6 +287,22 @@ module Diakonos
     def start
       require 'diakonos/window'
 
+      @files.each do |file|
+        @buffers << Buffer.new( file[ 'filepath' ] )
+      end
+      @files = []
+      @read_only_files.each do |file|
+        @buffers << Buffer.new( file[ 'filepath' ], Buffer::READ_ONLY )
+      end
+      session_buffers = session_startup
+      session_buffer_number = @session[ 'current_buffer' ] || 1
+      @files.each do |file_info|
+        @buffers << Buffer.new( file_info[ 'filepath' ], file_info )
+      end
+      if @buffers.empty?
+        @buffers << Buffer.new( nil )
+      end
+
       initialize_display
 
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
@@ -298,9 +311,6 @@ module Diakonos
         help_key = 'F1'
       end
       set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
-
-      session_buffers = session_startup
-      session_buffer_number = @session[ 'current_buffer' ] || 1
 
       scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
       scripts.each do |script|
@@ -321,64 +331,39 @@ module Diakonos
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
 
-      num_opened = 0
-      if @files.length == 0 && @read_only_files.length == 0
-        if open_file
-          num_opened += 1
-        end
-      else
-        @files.each do |file|
-          if open_file( file[ 'filepath' ], file )
-            num_opened += 1
-          end
-        end
-        @read_only_files.each do |file|
-          if open_file( file[ 'filepath' ], 'read_only' => true )
-            num_opened += 1
-          end
-        end
-      end
-
       if session_buffers
         session_buffers.each do |buffer|
           close_file buffer
         end
       end
 
-      if num_opened > 0
-        switch_to_buffer_number 1
-
-        update_status_line
-        update_context_line
-
-        if @post_load_script
-          eval @post_load_script
-        end
-
-        run_hook_procs :after_startup
-        switch_to_buffer_number session_buffer_number
-
-        if ! @settings[ 'suppress_welcome' ]
-          open_file "#{@help_dir}/welcome.dhf"
-        else
-          @current_buffer.seek /<<<</
-        end
-
-        begin
-          # Main keyboard loop.
-          while ! @quitting
-            process_keystroke
-            @win_main.refresh
-          end
-        rescue SignalException => e
-          debug_log "Terminated by signal (#{e.message})"
-        end
-
-        cleanup_display
-        cleanup_session
-
-        @debug.close
+      if @post_load_script
+        eval @post_load_script
       end
+
+      run_hook_procs :after_startup
+      switch_to_buffer_number session_buffer_number
+
+      if ! @settings[ 'suppress_welcome' ]
+        open_file "#{@help_dir}/welcome.dhf"
+      else
+        @buffer_current.seek /<<<</
+      end
+
+      begin
+        # Main keyboard loop.
+        while ! @quitting
+          process_keystroke
+          @win_main.refresh
+        end
+      rescue SignalException => e
+        debug_log "Terminated by signal (#{e.message})"
+      end
+
+      cleanup_display
+      cleanup_session
+
+      @debug.close
     end
 
     def uninstall( confirm = true )
@@ -472,7 +457,6 @@ module Diakonos
       @macro_input_history = Array.new
       set_iline "Started macro recording."
     end
-    protected :start_recording_macro
 
     def stop_recording_macro
       @macro_history.pop  # Remove the stop_recording_macro command itself
@@ -481,12 +465,11 @@ module Diakonos
       @macro_input_history = nil
       set_iline "Stopped macro recording."
     end
-    protected :stop_recording_macro
 
     def load_tags
       @tags = Hash.new
-      if @current_buffer && @current_buffer.name
-        path = File.expand_path( File.dirname( @current_buffer.name ) )
+      if buffer_current && buffer_current.name
+        path = File.expand_path( File.dirname( buffer_current.name ) )
         tagfile = path + "/tags"
       else
         tagfile = "./tags"

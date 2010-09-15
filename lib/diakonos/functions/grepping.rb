@@ -2,11 +2,11 @@ module Diakonos
   module Functions
 
     def grep( regexp_source = nil )
-      grep_( regexp_source, @current_buffer )
+      grep_( regexp_source, buffer_current )
     end
 
     def grep_buffers( regexp_source = nil )
-      grep_( regexp_source, *@buffers.values )
+      grep_( regexp_source, *@buffers )
     end
 
     def grep_session_dir( regexp_source = nil )
@@ -26,11 +26,11 @@ module Diakonos
       end
       dir = File.expand_path( dir )
 
-      original_buffer = @current_buffer
-      if @current_buffer.changing_selection
-        selected_text = @current_buffer.copy_selection[ 0 ]
+      original_buffer = buffer_current
+      if buffer_current.changing_selection
+        selected_text = buffer_current.copy_selection[ 0 ]
       end
-      starting_row, starting_col = @current_buffer.last_row, @current_buffer.last_col
+      starting_row, starting_col = buffer_current.last_row, buffer_current.last_col
 
       selected = get_user_input(
         "Grep regexp: ",

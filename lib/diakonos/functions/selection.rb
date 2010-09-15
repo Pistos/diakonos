@@ -3,23 +3,23 @@ module Diakonos
 
     # Begins selecting text by anchoring (marking) the start of a selection.
     def anchor_selection
-      @current_buffer.anchor_selection
+      buffer_current.anchor_selection
       update_status_line
     end
 
     # Removes the highlighting from any text that matches the most recent
     # search.
     def clear_matches
-      @current_buffer.clear_matches Buffer::DO_DISPLAY
+      buffer_current.clear_matches Buffer::DO_DISPLAY
     end
 
     def remove_selection
-      @current_buffer.remove_selection
+      buffer_current.remove_selection
       update_status_line
     end
 
     def select_all
-      @current_buffer.select_all
+      buffer_current.select_all
     end
 
     def select_block( beginning = nil, ending = nil, including_ending = true )
@@ -36,32 +36,32 @@ module Diakonos
         end
       end
       if beginning and ending
-        @current_buffer.select( beginning, ending, including_ending )
+        buffer_current.select( beginning, ending, including_ending )
       end
     end
 
     def selection_mode_block
-      @current_buffer.selection_mode_block
+      buffer_current.selection_mode_block
       update_status_line
     end
 
     def selection_mode_normal
-      @current_buffer.selection_mode_normal
+      buffer_current.selection_mode_normal
       update_status_line
     end
 
     def toggle_selection
-      @current_buffer.toggle_selection
+      buffer_current.toggle_selection
       update_status_line
     end
 
     def select_line
-      @current_buffer.select_current_line
+      buffer_current.select_current_line
       update_status_line
     end
 
     def select_wrapping_block
-      @current_buffer.select_wrapping_block
+      buffer_current.select_wrapping_block
       update_status_line
     end
 

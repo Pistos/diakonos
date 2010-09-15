@@ -9,9 +9,9 @@ module Diakonos
 
     # @return [true,false] true iff the cursor changed positions
     def cursor_down
-      @current_buffer.cursor_to(
-        @current_buffer.last_row + 1,
-        @current_buffer.last_col,
+      buffer_current.cursor_to(
+        buffer_current.last_row + 1,
+        buffer_current.last_col,
         Buffer::DO_DISPLAY,
         Buffer::STOPPED_TYPING,
         DONT_ADJUST_ROW
@@ -20,9 +20,9 @@ module Diakonos
 
     # @return [true,false] true iff the cursor changed positions
     def cursor_left( stopped_typing = Buffer::STOPPED_TYPING )
-      @current_buffer.cursor_to(
-        @current_buffer.last_row,
-        @current_buffer.last_col - 1,
+      buffer_current.cursor_to(
+        buffer_current.last_row,
+        buffer_current.last_col - 1,
         Buffer::DO_DISPLAY,
         stopped_typing
       )
@@ -39,9 +39,9 @@ module Diakonos
       delta = 0
       if @cursor_stack_pointer.nil?
         push_cursor_state(
-          @current_buffer.top_line,
-          @current_buffer.last_row,
-          @current_buffer.last_col,
+          buffer_current.top_line,
+          buffer_current.last_row,
+          buffer_current.last_col,
           DONT_CLEAR_STACK_POINTER
         )
         delta = 1
@@ -51,12 +51,12 @@ module Diakonos
       case direction
       when :backward, 'backward'
         @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
-        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == @current_buffer
+        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == buffer_current
           @cursor_stack_pointer -= 1
         end
       when :forward, 'forward'
         @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
-        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == @current_buffer
+        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == buffer_current
           @cursor_stack_pointer += 1
         end
       end
@@ -86,9 +86,9 @@ module Diakonos
 
     # @return [true,false] true iff the cursor changed positions
     def cursor_right( stopped_typing = Buffer::STOPPED_TYPING, amount = 1 )
-      @current_buffer.cursor_to(
-        @current_buffer.last_row,
-        @current_buffer.last_col + amount,
+      buffer_current.cursor_to(
+        buffer_current.last_row,
+        buffer_current.last_col + amount,
         Buffer::DO_DISPLAY,
         stopped_typing
       )
@@ -96,9 +96,9 @@ module Diakonos
 
     # @return [true,false] true iff the cursor changed positions
     def cursor_up
-      @current_buffer.cursor_to(
-        @current_buffer.last_row - 1,
-        @current_buffer.last_col,
+      buffer_current.cursor_to(
+        buffer_current.last_row - 1,
+        buffer_current.last_col,
         Buffer::DO_DISPLAY,
         Buffer::STOPPED_TYPING,
         DONT_ADJUST_ROW
@@ -108,51 +108,51 @@ module Diakonos
     # Moves the cursor to the beginning of the current buffer.
     # @return [true,false] true iff the cursor changed positions
     def cursor_bof
-      @current_buffer.cursor_to( 0, 0, Buffer::DO_DISPLAY )
+      buffer_current.cursor_to( 0, 0, Buffer::DO_DISPLAY )
     end
 
     # Moves the cursor to the beginning of the current line.
     def cursor_bol
-      @current_buffer.cursor_to_bol
+      buffer_current.cursor_to_bol
     end
 
     # Moves the cursor to the end of the current line.
     def cursor_eol
-      @current_buffer.cursor_to_eol
+      buffer_current.cursor_to_eol
     end
 
     # Moves the cursor to the end of the current buffer.
     def cursor_eof
-      @current_buffer.cursor_to_eof
+      buffer_current.cursor_to_eof
     end
 
     # Moves the cursor to the top of the viewport of the current buffer.
     def cursor_tov
-      @current_buffer.cursor_to_tov
+      buffer_current.cursor_to_tov
     end
 
     # Moves the cursor to the bottom of the viewport of the current buffer.
     def cursor_bov
-      @current_buffer.cursor_to_bov
+      buffer_current.cursor_to_bov
     end
 
     # Moves the cursor to the beginning of the parent code block.
     def go_block_outer
-      @current_buffer.go_block_outer
+      buffer_current.go_block_outer
     end
     # Moves the cursor to the beginning of the first child code block.
     def go_block_inner
-      @current_buffer.go_block_inner
+      buffer_current.go_block_inner
     end
     # Moves the cursor to the beginning of the next code block at the same
     # indentation level as the current one.
     def go_block_next
-      @current_buffer.go_block_next
+      buffer_current.go_block_next
     end
     # Moves the cursor to the beginning of the previous code block at the same
     # indentation level as the current one.
     def go_block_previous
-      @current_buffer.go_block_previous
+      buffer_current.go_block_previous
     end
 
     # Moves the cursor to the next occurrence of the given character.
@@ -161,7 +161,7 @@ module Diakonos
       char ||= get_char( "Type character to go to..." )
 
       if char
-        moved = @current_buffer.go_to_char( char )
+        moved = buffer_current.go_to_char( char )
         if ! moved
           set_iline "'#{char}' not found."
         end
@@ -174,7 +174,7 @@ module Diakonos
       char ||= get_char( "Type character to go to..." )
 
       if char
-        moved = @current_buffer.go_to_char_previous( char )
+        moved = buffer_current.go_to_char_previous( char )
         if ! moved
           set_iline "'#{char}' not found."
         end
@@ -187,10 +187,11 @@ module Diakonos
       input = get_user_input( "Go to [line number|+lines][,column number]: " )
       if input
         row = nil
+        col = 0
 
         if input =~ /([+-]\d+)/
-          row = @current_buffer.last_row + $1.to_i
-          col = @current_buffer.last_col
+          row = buffer_current.last_row + $1.to_i
+          col = buffer_current.last_col
         else
           input = input.split( /\D+/ ).collect { |n| n.to_i }
           if input.size > 0
@@ -206,15 +207,15 @@ module Diakonos
         end
 
         if row
-          @current_buffer.go_to_line( row, col )
+          buffer_current.go_to_line( row, col )
         end
       end
     end
 
     # Pitches the current buffer's view one screenful down.
     def page_down
-      if @current_buffer.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
-        @current_buffer.cursor_to_eof
+      if buffer_current.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+        buffer_current.cursor_to_eof
       end
       update_status_line
       update_context_line
@@ -222,7 +223,7 @@ module Diakonos
 
     # Pitches the current buffer's view one screenful up.
     def page_up
-      if @current_buffer.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+      if buffer_current.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
         cursor_bof
       end
       update_status_line
@@ -232,7 +233,7 @@ module Diakonos
     # Scrolls the current buffer's view down, as determined by the
     # view.scroll_amount setting.
     def scroll_down
-      @current_buffer.pitch_view( @settings[ "view.scroll_amount" ] || 1 )
+      buffer_current.pitch_view( @settings[ "view.scroll_amount" ] || 1 )
       update_status_line
       update_context_line
     end
@@ -241,9 +242,9 @@ module Diakonos
     # view.scroll_amount setting.
     def scroll_up
       if @settings[ "view.scroll_amount" ]
-        @current_buffer.pitch_view( -@settings[ "view.scroll_amount" ] )
+        buffer_current.pitch_view( -@settings[ "view.scroll_amount" ] )
       else
-        @current_buffer.pitch_view( -1 )
+        buffer_current.pitch_view( -1 )
       end
       update_status_line
       update_context_line

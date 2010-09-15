@@ -15,7 +15,7 @@ describe 'A Diakonos user' do
   it 'can grep the open buffers' do
     dir = File.dirname( File.expand_path( __FILE__ ) )
 
-    @d.actually_grep( 'inspect', @d.current_buffer )
+    @d.actually_grep( 'inspect', @d.buffer_current )
     lines = File.readlines( @d.list_filename )
     lines[ 0 ].should.match %r(^sample-file\.rb:13:   def inspection {100,} \| #{dir}/test-files/sample-file\.rb:13\n$)
     lines[ 1 ].should.match %r(^sample-file\.rb:14:     x\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:14\n$)

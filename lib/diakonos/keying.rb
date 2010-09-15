@@ -190,9 +190,9 @@ module Diakonos
     def capture_keychain( c, context )
       if c == ENTER
         @capturing_keychain = false
-        @current_buffer.delete_selection
+        buffer_current.delete_selection
         str = keychain_str_for( context )
-        @current_buffer.insert_string str
+        buffer_current.insert_string str
         cursor_right( Buffer::STILL_TYPING, str.length )
       else
         keychain_pressed = context.concat [ c ]
@@ -216,7 +216,7 @@ module Diakonos
     def capture_mapping( c, context )
       if c == ENTER
         @capturing_mapping = false
-        @current_buffer.delete_selection
+        buffer_current.delete_selection
         set_iline
       else
         keychain_pressed = context.concat [ c ]
@@ -278,7 +278,7 @@ module Diakonos
             c = ch.ord
             if typeable?( c )
               s << c
-            elsif c == ENTER
+            elsif c == ENTER && mode == 'edit'
               s << "\n"
             else
               break
@@ -288,7 +288,7 @@ module Diakonos
           if ! s.empty?
             case mode
             when 'edit'
-              @current_buffer.paste s
+              buffer_current.paste s
             when 'input'
               @readline.paste s
             end
@@ -321,8 +321,8 @@ module Diakonos
           end
 
           begin
-            if @current_buffer.search_area? && ! ( /^(?:find|readline)/ === to_eval )
-              @current_buffer.search_area = nil
+            if buffer_current.search_area? && ! ( /^(?:find|readline)/ === to_eval )
+              buffer_current.search_area = nil
             end
             eval to_eval, nil, "eval"
             @last_commands << to_eval  unless to_eval == "repeat_last"
@@ -351,8 +351,8 @@ module Diakonos
     def type_character( c, mode = 'edit' )
       case mode
       when 'edit'
-        @current_buffer.delete_selection Buffer::DONT_DISPLAY
-        @current_buffer.insert_char c
+        buffer_current.delete_selection Buffer::DONT_DISPLAY
+        buffer_current.insert_char c
         cursor_right Buffer::STILL_TYPING
       when 'input'
         if @readline.numbered_list?

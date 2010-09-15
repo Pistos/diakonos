@@ -85,7 +85,7 @@ module Diakonos
         @win_line_numbers.refresh
       end
 
-      @buffers.each_value do |buffer|
+      @buffers.each do |buffer|
         buffer.reset_display
       end
     end
@@ -95,7 +95,7 @@ module Diakonos
       initialize_display
       update_status_line
       update_context_line
-      @current_buffer.display
+      buffer_current.display
     end
 
     def main_window_height
@@ -134,14 +134,14 @@ module Diakonos
       @settings[ "status.vars" ].each do |var|
         case var
         when "buffer_number"
-          var_array.push buffer_to_number( @current_buffer )
+          var_array.push buffer_to_number( buffer_current )
         when "col"
-          var_array.push( @current_buffer.last_screen_col + 1 )
+          var_array.push( buffer_current.last_screen_col + 1 )
         when "filename"
-          name = @current_buffer.nice_name
+          name = buffer_current.nice_name
           var_array.push name[ ([ truncation, name.length ].min)..-1 ]
         when "modified"
-          if @current_buffer.modified?
+          if buffer_current.modified?
             var_array.push @settings[ "status.modified_str" ]
           else
             var_array.push ""
@@ -149,23 +149,23 @@ module Diakonos
         when "num_buffers"
           var_array.push @buffers.length
         when "num_lines"
-          var_array.push @current_buffer.length
+          var_array.push buffer_current.length
         when "row", "line"
-          var_array.push( @current_buffer.last_row + 1 )
+          var_array.push( buffer_current.last_row + 1 )
         when "read_only"
-          if @current_buffer.read_only
+          if buffer_current.read_only
             var_array.push @settings[ "status.read_only_str" ]
           else
             var_array.push ""
           end
         when "selecting"
-          if @current_buffer.changing_selection
+          if buffer_current.changing_selection
             var_array.push @settings[ "status.selecting_str" ]
           else
             var_array.push ""
           end
         when 'selection_mode'
-          case @current_buffer.selection_mode
+          case buffer_current.selection_mode
           when :block
             var_array.push 'block'
           else
@@ -174,7 +174,7 @@ module Diakonos
         when 'session_name'
           var_array.push @session[ 'name' ]
         when "type"
-          var_array.push @current_buffer.original_language
+          var_array.push buffer_current.original_language
         when /^@/
           var_array.push @status_vars[ var ]
         end
@@ -193,7 +193,10 @@ module Diakonos
           filler = ""
         end
         str = status_left + filler + status_right
-      rescue ArgumentError => e
+      rescue ArgumentError, TypeError => e
+        debug_log e
+        debug_log e.backtrace[ 0 ]
+        debug_log "var_array: #{var_array.inspect}"
         str = "%-#{Curses::cols}s" % "(status line configuration error)"
       end
       str
@@ -220,8 +223,7 @@ module Diakonos
 
       @context_thread.exit  if @context_thread
       @context_thread = Thread.new do
-
-        context = @current_buffer.context
+        context = buffer_current.context
 
         Curses::curs_set 0
         @win_context.setpos( 0, 0 )
@@ -254,7 +256,7 @@ module Diakonos
           @win_context.refresh
         end
         @display_mutex.synchronize do
-          @win_main.setpos( @current_buffer.last_screen_y, @current_buffer.last_screen_x )
+          @win_main.setpos( buffer_current.last_screen_y, buffer_current.last_screen_x )
           @win_main.refresh
         end
         Curses::curs_set 1

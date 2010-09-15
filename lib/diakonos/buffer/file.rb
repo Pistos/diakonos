@@ -10,17 +10,17 @@ module Diakonos
       end
 
       if @read_only && FileTest.exists?( @name ) && FileTest.exists?( name ) && ( File.stat( @name ).ino == File.stat( name ).ino )
-        @diakonos.set_iline "#{name} cannot be saved since it is read-only."
+        $diakonos.set_iline "#{name} cannot be saved since it is read-only."
       else
         @read_only = false
         if name.nil?
-          @diakonos.save_file_as
+          $diakonos.save_file_as
         else
           proceed = true
 
           if prompt_overwrite && FileTest.exists?( name )
             proceed = false
-            choice = @diakonos.get_choice(
+            choice = $diakonos.get_choice(
               "Overwrite existing '#{name}'?",
               [ CHOICE_YES, CHOICE_NO ],
               CHOICE_NO
@@ -34,7 +34,7 @@ module Diakonos
           end
 
           if file_modified?
-            proceed = ! @diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+            proceed = ! $diakonos.revert( "File has been altered externally.  Load on-disk version?" )
           end
 
           if proceed
@@ -43,15 +43,15 @@ module Diakonos
             @last_modification_check = File.mtime( @name )
             saved = true
 
-            if @name =~ /#{@diakonos.diakonos_home}\/.*\.conf/
-              @diakonos.load_configuration
-              @diakonos.initialize_display
+            if @name =~ /#{$diakonos.diakonos_home}\/.*\.conf/
+              $diakonos.load_configuration
+              $diakonos.initialize_display
             end
 
             @modified = false
 
             display
-            @diakonos.update_status_line
+            $diakonos.update_status_line
           end
         end
       end
@@ -130,13 +130,13 @@ module Diakonos
 
     def set_modified( do_display = DO_DISPLAY, use_md5 = DONT_USE_MD5 )
       if @read_only
-        @diakonos.set_iline "Warning: Modifying a read-only file."
+        $diakonos.set_iline "Warning: Modifying a read-only file."
       end
 
       @modified = use_md5 ? file_different? : true
       clear_matches
       if do_display
-        @diakonos.update_status_line
+        $diakonos.update_status_line
         display
       end
     end

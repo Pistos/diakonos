@@ -13,7 +13,7 @@ end
 describe 'A Diakonos::Buffer' do
 
   before do
-    @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
+    @b = Diakonos::Buffer.new( SAMPLE_FILE )
   end
 
   it 'can provide selected text' do
@@ -74,9 +74,9 @@ describe 'A Diakonos::Buffer' do
     @b.indentation_level( 25 ).should.equal 0
 
     indentation_file = File.join( TEST_DIR, 'indentation.test1' )
-    b2 = Diakonos::Buffer.new( $diakonos, indentation_file, indentation_file )
+    b2 = Diakonos::Buffer.new( indentation_file )
     indentation_file = File.join( TEST_DIR, 'indentation.test2' )
-    b3 = Diakonos::Buffer.new( $diakonos, indentation_file, indentation_file )
+    b3 = Diakonos::Buffer.new( indentation_file )
 
     b2.indentation_level( 0 ).should.equal 0
     b3.indentation_level( 0 ).should.equal 0
@@ -140,7 +140,7 @@ describe 'A Diakonos::Buffer' do
 
     # -------
 
-    @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE_C, SAMPLE_FILE_C )
+    @b = Diakonos::Buffer.new( SAMPLE_FILE_C )
 
     indent_rows 0, 14
     @b.save_copy TEMP_FILE_C
@@ -240,7 +240,7 @@ end
 describe 'A Diakonos user' do
 
   before do
-    @b = Diakonos::Buffer.new( $diakonos, SAMPLE_FILE, SAMPLE_FILE )
+    @b = Diakonos::Buffer.new( SAMPLE_FILE )
   end
 
   it 'can close XML tags' do

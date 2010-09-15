@@ -11,7 +11,7 @@ module Diakonos
         'settings' => Hash.new,
         'name' => name,
         'buffers' => [],
-        'current_buffer' => 1,
+        'buffer_current' => 1,
         'dir' => Dir.getwd,
       }
     end
@@ -71,9 +71,11 @@ module Diakonos
       return  if session_file.nil?
       return  if @testing && pid_session?( session_file )
 
-      @session[ 'buffers' ] = @buffers.collect { |filepath,buffer|
+      @session[ 'buffers' ] = @buffers.reject { |buffer|
+        buffer.name.nil?
+      }.collect { |buffer|
         {
-          'filepath' => buffer.name ? filepath : nil,
+          'filepath' => buffer.name,
           'read_only' => buffer.read_only,
           'cursor'   => {
             'row' => buffer.last_row,

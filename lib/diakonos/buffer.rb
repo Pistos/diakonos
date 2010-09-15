@@ -1,7 +1,7 @@
 module Diakonos
 
   class Buffer
-    attr_reader :name, :key, :original_language, :changing_selection, :read_only,
+    attr_reader :name, :original_language, :changing_selection, :read_only,
       :tab_size, :selection_mode
     attr_writer :desired_column, :read_only
 
@@ -29,16 +29,30 @@ module Diakonos
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
-    def initialize( diakonos, name, key, read_only = false )
-      @diakonos = diakonos
+    # @param [String] name
+    #   A file path (which is expanded internally)
+    # @param [Hash] options
+    # @option options [Boolean] 'read_only' (READ_WRITE)
+    #   Whether the buffer should be protected from modification
+    # @option options [Hash] 'cursor'
+    #   A Hash containing 'row' and/or 'col' indicating where the cursor should
+    #   initially be placed.  Defaults: 0 and 0
+    # @option options [Hash] 'display'
+    #   A Hash containing 'top_line' and 'left_column' indicating where the view
+    #   should be positioned in the file.  Defaults: 0 and 0
+    # @see READ_WRITE
+    # @see READ_ONLY
+    def initialize( name = nil, options = {} )
       @name = name
-      @key = key
       @modified = false
       @last_modification_check = Time.now
 
       @buffer_states = Array.new
       @cursor_states = Array.new
-      if @name
+      if @name.nil?
+        @lines = Array.new
+        @lines[ 0 ] = ""
+      else
         @name = File.expand_path( @name )
         if FileTest.exists? @name
           @lines = IO.readlines( @name )
@@ -52,15 +66,14 @@ module Diakonos
           @lines = Array.new
           @lines[ 0 ] = ""
         end
-      else
-        @lines = Array.new
-        @lines[ 0 ] = ""
       end
+
       @current_buffer_state = 0
 
-      @top_line = 0
-      @left_column = 0
-      @desired_column = 0
+      options[ 'display' ] ||= Hash.new
+      @top_line = options[ 'display' ][ 'top_line' ] || 0
+      @left_column = options[ 'display' ][ 'left_column' ] ||  0
+      @desired_column = @left_column
       @mark_anchor = nil
       @text_marks = Hash.new
       @selection_mode = :normal
@@ -69,12 +82,13 @@ module Diakonos
       @last_search = nil
       @changing_selection = false
       @typing = false
-      @last_col = 0
-      @last_screen_col = 0
-      @last_screen_y = 0
-      @last_screen_x = 0
-      @last_row = 0
-      @read_only = read_only
+      options[ 'cursor' ] ||= Hash.new
+      @last_col = options[ 'cursor' ][ 'col' ] || 0
+      @last_row = options[ 'cursor' ][ 'row' ] || 0
+      @last_screen_y = @last_row - @top_line
+      @last_screen_x = @last_col - @left_column
+      @last_screen_col = @last_screen_x
+      @read_only = options[ 'read_only' ] || READ_WRITE
       @bookmarks = Array.new
       @lang_stack = Array.new
 
@@ -90,7 +104,7 @@ module Diakonos
         end
         @modified = ( @modified or tabs_subbed )
         if tabs_subbed
-          @diakonos.set_iline "(spaces substituted for tab characters)"
+          $diakonos.set_iline "(spaces substituted for tab characters)"
         end
       end
 
@@ -100,8 +114,8 @@ module Diakonos
 
     def configure(
       language = (
-        @diakonos.get_language_from_shabang( @lines[ 0 ] ) or
-        @diakonos.get_language_from_name( @name ) or
+        $diakonos.get_language_from_shabang( @lines[ 0 ] ) or
+        $diakonos.get_language_from_name( @name ) or
         LANG_TEXT
       )
     )
@@ -111,22 +125,22 @@ module Diakonos
     end
 
     def reset_display
-      @win_main = @diakonos.win_main
-      @win_line_numbers = @diakonos.win_line_numbers
+      @win_main = $diakonos.win_main
+      @win_line_numbers = $diakonos.win_line_numbers
     end
 
     def set_language( language )
-      @settings = @diakonos.settings
+      @settings = $diakonos.settings
       @language = language
-      @surround_pairs = @diakonos.surround_pairs[ @language ] || Hash.new
-      @token_regexps = @diakonos.token_regexps[ @language ] || Hash.new
-      @close_token_regexps = @diakonos.close_token_regexps[ @language ] || Hash.new
-      @token_formats = @diakonos.token_formats[ @language ] || Hash.new
-      @indenters = @diakonos.indenters[ @language ]
-      @indenters_next_line = @diakonos.indenters_next_line[ @language ]
-      @unindenters = @diakonos.unindenters[ @language ]
+      @surround_pairs = $diakonos.surround_pairs[ @language ]
+      @token_regexps = $diakonos.token_regexps[ @language ]
+      @close_token_regexps = $diakonos.close_token_regexps[ @language ]
+      @token_formats = $diakonos.token_formats[ @language ]
+      @indenters = $diakonos.indenters[ @language ]
+      @indenters_next_line = $diakonos.indenters_next_line[ @language ]
+      @unindenters = $diakonos.unindenters[ @language ]
       @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
-      @closers = @diakonos.closers[ @language ] || Hash.new
+      @closers = $diakonos.closers[ @language ] || Hash.new
       @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
       @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] || 4 )
       @indent_roundup = @settings[ "lang.#{@language}.indent.roundup" ].nil? ? true : @settings[ "lang.#{@language}.indent.roundup" ]
@@ -136,15 +150,14 @@ module Diakonos
       @indent_ignore_charset = ( @settings[ "lang.#{@language}.indent.ignore.charset" ] || "" )
       @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] || DEFAULT_TAB_SIZE )
     end
-    protected :set_language
 
     def [] ( arg )
       @lines[ arg ]
     end
 
     def == (other)
-      return false if other.nil?
-      key == other.key
+      return false  if other.nil?
+      @name == other.name
     end
 
     def length
@@ -403,7 +416,7 @@ module Diakonos
     def row_to_y( row )
       return nil if row.nil?
       y = row - @top_line
-      y = nil if ( y < 0 ) or ( y > @top_line + @diakonos.main_window_height - 1 )
+      y = nil if ( y < 0 ) or ( y > @top_line + $diakonos.main_window_height - 1 )
       y
     end
 
@@ -441,8 +454,8 @@ module Diakonos
 
       if new_top_line < 0
         @top_line = 0
-      elsif new_top_line + @diakonos.main_window_height > @lines.length
-        @top_line = [ @lines.length - @diakonos.main_window_height, 0 ].max
+      elsif new_top_line + $diakonos.main_window_height > @lines.length
+        @top_line = [ @lines.length - $diakonos.main_window_height, 0 ].max
       else
         @top_line = new_top_line
       end
@@ -455,7 +468,7 @@ module Diakonos
         @last_row += changed
       end
 
-      height = [ @diakonos.main_window_height, @lines.length ].min
+      height = [ $diakonos.main_window_height, @lines.length ].min
 
       @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
       if @last_row - @top_line < @settings[ "view.margin.y" ]
@@ -477,8 +490,8 @@ module Diakonos
         end
 
         highlight_matches
-        if @diakonos.there_was_non_movement
-          @diakonos.push_cursor_state( old_top_line, old_row, old_col )
+        if $diakonos.there_was_non_movement
+          $diakonos.push_cursor_state( old_top_line, old_row, old_col )
         end
       end
 

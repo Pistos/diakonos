@@ -74,12 +74,12 @@ module Diakonos
         if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
           display
         else
-          @diakonos.display_mutex.synchronize do
+          $diakonos.display_mutex.synchronize do
             @win_main.setpos( @last_screen_y, @last_screen_x )
           end
         end
-        @diakonos.update_status_line
-        @diakonos.update_context_line
+        $diakonos.update_status_line
+        $diakonos.update_context_line
       end
 
       changed
@@ -145,7 +145,7 @@ module Diakonos
     end
     # Bottom of view
     def cursor_to_bov
-      cursor_to( row_of( 0 + @diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
+      cursor_to( row_of( 0 + $diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
     end
 
     # col and row are given relative to the buffer, not any window or screen.
@@ -158,7 +158,7 @@ module Diakonos
         amount = (-1) * @settings[ "view.jump.y" ]
         break if( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
       end
-      while row > @top_line + @diakonos.main_window_height - 1 - @settings[ "view.margin.y" ]
+      while row > @top_line + $diakonos.main_window_height - 1 - @settings[ "view.margin.y" ]
         amount = @settings[ "view.jump.y" ]
         break if( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
       end
@@ -167,7 +167,7 @@ module Diakonos
         amount = (-1) * @settings[ "view.jump.x" ]
         break if( pan_view( amount, DONT_DISPLAY ) != amount )
       end
-      while col > @left_column + @diakonos.main_window_width - @settings[ "view.margin.x" ] - 2
+      while col > @left_column + $diakonos.main_window_width - @settings[ "view.margin.x" ] - 2
         amount = @settings[ "view.jump.x" ]
         break if( pan_view( amount, DONT_DISPLAY ) != amount )
       end
