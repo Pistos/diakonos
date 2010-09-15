@@ -13,11 +13,29 @@ describe 'A Diakonos user can' do
   end
 
   it 'open a file at a specific line number' do
-    b = @d.open_file( "#{SAMPLE_FILE_LONGER}:45" )
-    b.current_row.should.equal 44
-    b.current_column.should.equal 0
-    b.top_line.should.equal 5
-    b.left_column.should.equal 0
+    @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:45" )
+    cursor_should_be_at 44, 0
+
+    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:50:" )
+    cursor_should_be_at 49, 0
+
+    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:54: in `block in methodname'" )
+    cursor_should_be_at 53, 0
+
+    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @b = @d.open_file( "        from #{SAMPLE_FILE_LONGER}:57: in `block in methodname'" )
+    cursor_should_be_at 56, 0
+
+    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @b = @d.open_file( %{  File "#{SAMPLE_FILE_LONGER}", line 55, in decoration} )
+    cursor_should_be_at 54, 0
+
+    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @b = @d.open_file( " at #{SAMPLE_FILE_LONGER} line 61" )
+    cursor_should_be_at 60, 0
+
   end
 
 

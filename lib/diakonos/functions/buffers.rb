@@ -152,7 +152,16 @@ module Diakonos
       do_open = true
       buffer = nil
       if filename
-        if filename =~ /^(.+):(\d+)$/
+        if(
+          # Ruby
+          filename =~ /from (.+):(\d+)/ ||
+          # Python
+          filename =~ /File "(.+)", line (\d+)/ ||
+          # Perl
+          filename =~ /at (.+) line (\d+)/ ||
+          # generic
+          filename =~ /^(.+):(\d+)/
+        )
           filename, line_number = $1, ( $2.to_i - 1 )
         end
         existing_buffer = @buffers.find { |b| b.name == filename }

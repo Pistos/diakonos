@@ -56,6 +56,24 @@ module MyModule
       # blah
     end
 
+    def method6
+      # blah
+      # blah
+      # blah
+      # blah
+      # blah
+      # blah
+    end
+
+    def method7
+      # blah
+      # blah
+      # blah
+      # blah
+      # blah
+      # blah
+    end
+
   end
 
 end
