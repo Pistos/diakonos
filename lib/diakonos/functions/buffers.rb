@@ -243,7 +243,7 @@ module Diakonos
         end
       end
 
-      buffer
+      buffer || existing_buffer
     end
     alias_method :new_file, :open_file
 
