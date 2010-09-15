@@ -13,6 +13,9 @@ end
 if ! Object.const_defined? 'SAMPLE_FILE'
   SAMPLE_FILE = File.join( TEST_DIR, '/sample-file.rb' )
 end
+if ! Object.const_defined? 'SAMPLE_FILE_LONGER'
+  SAMPLE_FILE_LONGER = File.join( TEST_DIR, '/longer-sample-file.rb' )
+end
 if ! Object.const_defined? 'SAMPLE_FILE_C'
   SAMPLE_FILE_C = File.join( TEST_DIR, '/sample-file.c' )
 end
