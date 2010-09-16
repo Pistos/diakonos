@@ -156,14 +156,10 @@ module Diakonos
         existing_buffer = @buffers.find { |b| b.name == filename }
 
         if existing_buffer
-          do_open = ( filename =~ /\.diakonos/ )
+          do_open = force_revert || ( filename =~ /\.diakonos/ )
           switch_to existing_buffer
 
-          if(
-            ! do_open &&
-            ! force_revert &&
-            existing_buffer.file_different?
-          )
+          if ! do_open && existing_buffer.file_different?
             show_buffer_file_diff( existing_buffer ) do
               choice = get_choice(
                 "Load on-disk version of #{existing_buffer.nice_name}?",
