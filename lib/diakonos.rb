@@ -349,6 +349,10 @@ module Diakonos
         switch_to_buffer_number 1
       end
 
+      @buffers.each do |b|
+        b.cursor_to( b.last_row, b.last_col, Buffer::DONT_DISPLAY )
+      end
+
       if ! @settings[ 'suppress_welcome' ]
         open_file "#{@help_dir}/welcome.dhf"
       else
