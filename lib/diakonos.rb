@@ -290,7 +290,7 @@ module Diakonos
       require 'diakonos/window'
 
       @files.each do |file|
-        @buffers << Buffer.new( file[ 'filepath' ] )
+        @buffers << Buffer.new( file[ 'filepath' ], file )
       end
       @files = []
       @read_only_files.each do |file|
@@ -523,6 +523,24 @@ module Diakonos
         :backward
       else
         default
+      end
+    end
+
+    # @return [Array] the filename and line number parsed
+    def parse_filename_and_line_number( s )
+      if(
+        # Ruby
+        s =~ /from (.+):(\d+)/ ||
+        # Python
+        s =~ /File "(.+)", line (\d+)/ ||
+        # Perl
+        s =~ /at (.+) line (\d+)/ ||
+        # generic
+        s =~ /^(.+):(\d+)/
+      )
+        [ $1, ( $2.to_i - 1 ) ]
+      else
+        [ s, nil ]
       end
     end
 

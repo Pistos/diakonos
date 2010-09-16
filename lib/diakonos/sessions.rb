@@ -23,11 +23,12 @@ module Diakonos
     end
 
     def session_file_hash_for( filepath )
+      filepath, line_number = parse_filename_and_line_number( filepath )
       {
         'filepath'  => filepath,
         'read_only' => false,
         'cursor'    => {
-          'row' => 0,
+          'row' => line_number || 0,
           'col' => 0,
         },
         'display'   => {
