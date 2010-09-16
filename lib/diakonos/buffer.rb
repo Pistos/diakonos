@@ -42,8 +42,8 @@ module Diakonos
     #   should be positioned in the file.  Defaults: 0 and 0
     # @see READ_WRITE
     # @see READ_ONLY
-    def initialize( name = nil, options = {} )
-      @name = name
+    def initialize( options = {} )
+      @name = options[ 'filepath' ]
       @modified = false
       @last_modification_check = Time.now
 

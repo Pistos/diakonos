@@ -213,7 +213,7 @@ module Diakonos
 
         if do_open
           buffer = Buffer.new(
-            filename,
+            'filepath' => filename,
             'read_only' => read_only,
             'display' => {
               'top_line' => top_line,

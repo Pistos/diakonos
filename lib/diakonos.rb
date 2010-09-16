@@ -290,19 +290,19 @@ module Diakonos
       require 'diakonos/window'
 
       @files.each do |file|
-        @buffers << Buffer.new( file[ 'filepath' ], file )
+        @buffers << Buffer.new( file )
       end
       @files = []
       @read_only_files.each do |file|
-        @buffers << Buffer.new( file[ 'filepath' ], file )
+        @buffers << Buffer.new( file )
       end
       session_buffers = session_startup
       session_buffer_number = @session[ 'buffer_current' ] || 1
       @files.each do |file_info|
-        @buffers << Buffer.new( file_info[ 'filepath' ], file_info )
+        @buffers << Buffer.new( file_info )
       end
       if @buffers.empty?
-        @buffers << Buffer.new( nil )
+        @buffers << Buffer.new
       end
 
       initialize_display
