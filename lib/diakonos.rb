@@ -247,7 +247,9 @@ module Diakonos
             print_usage
             exit 1
           else
-            @read_only_files.push session_file_hash_for( filename )
+            h = session_file_hash_for( filename )
+            h[ 'read_only' ] = true
+            @read_only_files.push h
           end
         when '-s', '--load-session'
           @session_to_load = session_filepath_for( argv.shift )
@@ -292,7 +294,7 @@ module Diakonos
       end
       @files = []
       @read_only_files.each do |file|
-        @buffers << Buffer.new( file[ 'filepath' ], Buffer::READ_ONLY )
+        @buffers << Buffer.new( file[ 'filepath' ], file )
       end
       session_buffers = session_startup
       session_buffer_number = @session[ 'buffer_current' ] || 1
