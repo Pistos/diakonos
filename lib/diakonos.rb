@@ -295,7 +295,7 @@ module Diakonos
         @buffers << Buffer.new( file[ 'filepath' ], Buffer::READ_ONLY )
       end
       session_buffers = session_startup
-      session_buffer_number = @session[ 'current_buffer' ] || 1
+      session_buffer_number = @session[ 'buffer_current' ] || 1
       @files.each do |file_info|
         @buffers << Buffer.new( file_info[ 'filepath' ], file_info )
       end
@@ -342,7 +342,10 @@ module Diakonos
       end
 
       run_hook_procs :after_startup
-      switch_to_buffer_number session_buffer_number
+      if ! switch_to_buffer_number( session_buffer_number )
+        debug_log "Failed to switch to buffer #{session_buffer_number.inspect}"
+        switch_to_buffer_number 1
+      end
 
       if ! @settings[ 'suppress_welcome' ]
         open_file "#{@help_dir}/welcome.dhf"
