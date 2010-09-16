@@ -152,7 +152,7 @@ module Diakonos
       do_open = true
       buffer = nil
       if filename
-        filename, line_number = parse_filename_and_line_number( filename )
+        filename, last_row = parse_filename_and_line_number( filename )
         existing_buffer = @buffers.find { |b| b.name == filename }
 
         if existing_buffer
@@ -228,13 +228,15 @@ module Diakonos
           run_hook_procs( :after_open, buffer )
           save_session
           if switch_to( buffer )
-            if line_number
-              buffer.go_to_line( line_number, 0 )
+            if last_row
+              buffer.cursor_to last_row, last_col || 0
             else
               buffer.display
             end
           end
         end
+      elsif existing_buffer && last_row
+        existing_buffer.cursor_to last_row, last_col || 0
       end
 
       buffer || existing_buffer
