@@ -29,9 +29,9 @@ module Diakonos
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
-    # @param [String] name
-    #   A file path (which is expanded internally)
     # @param [Hash] options
+    # @option options [String] 'filepath'
+    #   A file path (which is expanded internally)
     # @option options [Boolean] 'read_only' (READ_WRITE)
     #   Whether the buffer should be protected from modification
     # @option options [Hash] 'cursor'
