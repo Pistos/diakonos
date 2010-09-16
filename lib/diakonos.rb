@@ -247,7 +247,9 @@ module Diakonos
             print_usage
             exit 1
           else
-            @read_only_files.push session_file_hash_for( filename )
+            h = session_file_hash_for( filename )
+            h[ 'read_only' ] = true
+            @read_only_files.push h
           end
         when '-s', '--load-session'
           @session_to_load = session_filepath_for( argv.shift )
@@ -288,19 +290,19 @@ module Diakonos
       require 'diakonos/window'
 
       @files.each do |file|
-        @buffers << Buffer.new( file[ 'filepath' ] )
+        @buffers << Buffer.new( file )
       end
       @files = []
       @read_only_files.each do |file|
-        @buffers << Buffer.new( file[ 'filepath' ], Buffer::READ_ONLY )
+        @buffers << Buffer.new( file )
       end
       session_buffers = session_startup
       session_buffer_number = @session[ 'buffer_current' ] || 1
       @files.each do |file_info|
-        @buffers << Buffer.new( file_info[ 'filepath' ], file_info )
+        @buffers << Buffer.new( file_info )
       end
       if @buffers.empty?
-        @buffers << Buffer.new( nil )
+        @buffers << Buffer.new
       end
 
       initialize_display
@@ -345,6 +347,10 @@ module Diakonos
       if ! switch_to_buffer_number( session_buffer_number )
         debug_log "Failed to switch to buffer #{session_buffer_number.inspect}"
         switch_to_buffer_number 1
+      end
+
+      @buffers.each do |b|
+        b.cursor_to( b.last_row, b.last_col, Buffer::DONT_DISPLAY )
       end
 
       if ! @settings[ 'suppress_welcome' ]
@@ -521,6 +527,24 @@ module Diakonos
         :backward
       else
         default
+      end
+    end
+
+    # @return [Array] the filename and line number parsed
+    def parse_filename_and_line_number( s )
+      if(
+        # Ruby
+        s =~ /from (.+):(\d+)/ ||
+        # Python
+        s =~ /File "(.+)", line (\d+)/ ||
+        # Perl
+        s =~ /at (.+) line (\d+)/ ||
+        # generic
+        s =~ /^(.+):(\d+)/
+      )
+        [ $1, ( $2.to_i - 1 ) ]
+      else
+        [ s, nil ]
       end
     end
 

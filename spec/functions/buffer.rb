@@ -38,5 +38,11 @@ describe 'A Diakonos user can' do
 
   end
 
+  it 'start up Diakonos and open a file at a specific line' do
+    d2 = Diakonos::Diakonos.new [ '-e', 'quit', '--test', "#{SAMPLE_FILE_LONGER}:45" ]
+    d2.start
+    @b = d2.buffer_current
+    cursor_should_be_at 44, 0
+  end
 
 end

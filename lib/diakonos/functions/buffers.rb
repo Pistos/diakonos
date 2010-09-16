@@ -152,29 +152,14 @@ module Diakonos
       do_open = true
       buffer = nil
       if filename
-        if(
-          # Ruby
-          filename =~ /from (.+):(\d+)/ ||
-          # Python
-          filename =~ /File "(.+)", line (\d+)/ ||
-          # Perl
-          filename =~ /at (.+) line (\d+)/ ||
-          # generic
-          filename =~ /^(.+):(\d+)/
-        )
-          filename, line_number = $1, ( $2.to_i - 1 )
-        end
+        filename, last_row = parse_filename_and_line_number( filename )
         existing_buffer = @buffers.find { |b| b.name == filename }
 
         if existing_buffer
-          do_open = ( filename =~ /\.diakonos/ )
+          do_open = force_revert || ( filename =~ /\.diakonos/ )
           switch_to existing_buffer
 
-          if(
-            ! do_open &&
-            ! force_revert &&
-            existing_buffer.file_different?
-          )
+          if ! do_open && existing_buffer.file_different?
             show_buffer_file_diff( existing_buffer ) do
               choice = get_choice(
                 "Load on-disk version of #{existing_buffer.nice_name}?",
@@ -224,7 +209,7 @@ module Diakonos
 
         if do_open
           buffer = Buffer.new(
-            filename,
+            'filepath' => filename,
             'read_only' => read_only,
             'display' => {
               'top_line' => top_line,
@@ -243,13 +228,15 @@ module Diakonos
           run_hook_procs( :after_open, buffer )
           save_session
           if switch_to( buffer )
-            if line_number
-              buffer.go_to_line( line_number, 0 )
+            if last_row
+              buffer.cursor_to last_row, last_col || 0
             else
               buffer.display
             end
           end
         end
+      elsif existing_buffer && last_row
+        existing_buffer.cursor_to last_row, last_col || 0
       end
 
       buffer || existing_buffer
