@@ -98,6 +98,32 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 11,0
   end
 
+  it 'will not comment out blank lines' do
+    @b.cursor_to 3,0
+    @b.selection_mark.should.be.nil
+    @b.to_a[ 3 ].should.equal ''
+    @d.comment_out
+    @b.to_a[ 3 ].should.equal ''
+
+    @b.cursor_to 6,0
+    @b.selection_mark.should.be.nil
+    @b.to_a[ 6 ].should.equal ''
+    @d.comment_out
+    @b.to_a[ 6 ].should.equal ''
+
+    @b.cursor_to 5,0
+    @d.anchor_selection
+    3.times { @d.cursor_down }
+    @d.comment_out
+    @b.to_a[ 5..7 ].should.equal [
+      '  # attr_reader :x, :y',
+      '',
+      '  # def initialize',
+    ]
+    @b.selection_mark.should.not.be.nil
+    cursor_should_be_at 8,0
+  end
+
   it 'delete until a character' do
     @b.cursor_to 5,2
     @b.to_a[ 5 ].should.equal '  attr_reader :x, :y'
