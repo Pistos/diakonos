@@ -345,6 +345,7 @@ module Diakonos
       take_snapshot
       one_modified = false
       selected_lines.each do |line|
+        next  if line.strip.empty?
         old_line = line.dup
         line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
         line << @settings[ "lang.#{@language}.comment_close_string" ].to_s
