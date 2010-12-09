@@ -314,6 +314,29 @@ module Diakonos
       end
     end
 
+    # Places a buffer at a new position in the array of Buffers
+    # after shifting down (index+1) all existing Buffers from that position onwards.
+    # @param to [Fixnum] The new 1-based position of the buffer to move
+    # @param from [Fixnum] The original 1-based position of the buffer to move.  Default: current buffer
+    def renumber_buffer( to, from = nil )
+      if to < 1
+        raise "Invalid buffer index: #{to.inspect}"
+      end
+      if from && from < 1
+        raise "Invalid buffer index: #{from.inspect}"
+      end
+
+      from ||= buffer_to_number( buffer_current )
+      from_ = from - 1
+      to_   = to - 1
+      b = @buffers[from_]
+      @buffers.delete_at from_
+      @buffers.insert( to_, b )
+      @buffers.compact!
+
+      update_status_line
+    end
+
     # If the prompt is non-nil, ask the user yes or no question first.
     def revert( prompt = nil )
       do_revert = true

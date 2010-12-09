@@ -45,4 +45,75 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 44, 0
   end
 
+  it 'renumber a buffer' do
+    @d.open_file SAMPLE_FILE_LONGER
+    @d.open_file SAMPLE_FILE_C
+
+    numbered_buffer_should_be_named 2, 'sample-file.rb'
+    numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.c'
+
+    @d.switch_to_buffer_number 2
+    name = File.basename( @d.buffer_current.name )
+    name.should.equal 'sample-file.rb'
+
+    @d.renumber_buffer 4
+    name = File.basename( @d.buffer_current.name )
+    name.should.equal 'sample-file.rb'
+    numbered_buffer_should_be_named 2, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 3, 'sample-file.c'
+    numbered_buffer_should_be_named 4, 'sample-file.rb'
+
+    @d.switch_to_buffer_number 3
+    name = File.basename( @d.buffer_current.name )
+    name.should.equal 'sample-file.c'
+
+    @d.renumber_buffer 2
+    name = File.basename( @d.buffer_current.name )
+    name.should.equal 'sample-file.c'
+    numbered_buffer_should_be_named 2, 'sample-file.c'
+    numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.rb'
+
+    @d.switch_to_buffer_number 2
+    name = File.basename( @d.buffer_current.name )
+    name.should.equal 'sample-file.c'
+
+    @d.renumber_buffer 2
+    numbered_buffer_should_be_named 2, 'sample-file.c'
+    numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.rb'
+
+    name = File.basename( @d.buffer_current.name )
+    name.should.equal 'sample-file.c'
+    @d.renumber_buffer 5
+    numbered_buffer_should_be_named 2, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 3, 'sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.c'
+
+    @d.renumber_buffer 99
+    numbered_buffer_should_be_named 2, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 3, 'sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.c'
+
+    @d.renumber_buffer 1
+    numbered_buffer_should_be_named 1, 'sample-file.c'
+    numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.rb'
+
+    should.raise do
+      @d.renumber_buffer 0
+    end
+    numbered_buffer_should_be_named 1, 'sample-file.c'
+    numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.rb'
+
+    should.raise do
+      @d.renumber_buffer -1
+    end
+    numbered_buffer_should_be_named 1, 'sample-file.c'
+    numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
+    numbered_buffer_should_be_named 4, 'sample-file.rb'
+  end
+
 end

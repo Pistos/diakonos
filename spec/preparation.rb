@@ -34,6 +34,12 @@ def cursor_should_be_at( row, col )
   @b.current_column.should.equal col
 end
 
+def numbered_buffer_should_be_named( number, name_expected )
+  name = File.basename( @d.buffer_number_to_name( number ) )
+  name.should.equal name_expected
+end
+
+
 if $diakonos.nil?
   $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
   $diakonos.start
