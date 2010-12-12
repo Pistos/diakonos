@@ -107,21 +107,33 @@ module Diakonos
     # arrow keys and the Enter key, or by pressing the key corresponding
     # to an index presented in a left-hand column in the list.
     def list_buffers
-      bullets = ('0'..'9').to_a + ('a'..'z').to_a
+      bullets = ( ('0'..'9').to_a + ('a'..'z').to_a ).map { |s| "#{s}  " }
+      buffers_unnamed = @buffers.find_all { |b| b.name.nil? }
+      buffers_named = @buffers.find_all { |b| b.name }
+
       with_list_file do |f|
-        @buffers.collect { |b| b.name }.sort.each_with_index do |name, index|
-          bullet = bullets[ index ]
-          if bullet
-            bullet << '  '
+        if buffers_unnamed.size == 1
+          bullet = bullets.shift
+          f.puts "#{bullet}(unnamed buffer)"
+        else
+          buffers_unnamed.each_with_index do |b,i|
+            bullet = bullets.shift
+            f.puts "#{bullet}(unnamed buffer #{i+1})"
           end
+        end
+
+        buffers_named.collect { |b| b.name }.sort.each_with_index do |name, index|
+          bullet = bullets.shift
           f.puts "#{bullet}#{name}"
         end
       end
       open_list_buffer
       filename = get_user_input( "Switch to buffer: ", numbered_list: true )
-      buffer = @buffers.find { |b| b.name == filename }
+      buffer = buffers_named.find { |b| b.name == filename }
       if buffer
         switch_to buffer
+      elsif filename =~ /\(unnamed buffer( \d+)?/
+        switch_to( buffers_unnamed[ $1.to_i - 1 ] )
       end
     end
 
