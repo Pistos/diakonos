@@ -202,7 +202,7 @@ end
       # Documentation
       mkdir_ @help_dir
       mkdir_ @doc_dir
-      cp_ %w( README CHANGELOG LICENCE ), @doc_dir
+      cp_ %w( README.rdoc CHANGELOG LICENCE ), @doc_dir
       cp_ Dir[ 'help/*' ], @help_dir
 
       write_installation_settings
