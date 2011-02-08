@@ -350,6 +350,7 @@ module Diakonos
       end
 
       @buffers.each do |b|
+        run_hook_procs :after_open, b
         b.cursor_to( b.last_row, b.last_col, Buffer::DONT_DISPLAY )
       end
 
