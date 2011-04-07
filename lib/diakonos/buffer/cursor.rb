@@ -276,10 +276,13 @@ module Diakonos
       go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
     end
 
-    def go_to_char( char )
+    def go_to_char( char, after = ON_CHAR )
       r = @last_row
       i = @lines[ r ].index( char, @last_col + 1 )
       if i
+        if after
+          i += 1
+        end
         return cursor_to r, i, DO_DISPLAY
       end
 
@@ -289,18 +292,23 @@ module Diakonos
 
         i = @lines[ r ].index( char )
         if i
+          if after
+            i += 1
+          end
           return cursor_to r, i, DO_DISPLAY
         end
-
       end
     end
 
-    def go_to_char_previous( char )
+    def go_to_char_previous( char, after = ON_CHAR )
       r = @last_row
       search_from = @last_col - 1
       if search_from >= 0
         i = @lines[ r ].rindex( char, search_from )
         if i
+          if after
+            i += 1
+          end
           return cursor_to r, i, DO_DISPLAY
         end
       end
@@ -311,6 +319,9 @@ module Diakonos
 
         i = @lines[ r ].rindex( char )
         if i
+          if after
+            i += 1
+          end
           return cursor_to r, i, DO_DISPLAY
         end
       end

@@ -157,11 +157,11 @@ module Diakonos
 
     # Moves the cursor to the next occurrence of the given character.
     # @param [String] char  The character to go to
-    def go_to_char( char = nil )
+    def go_to_char( after = nil, char = nil )
       char ||= get_char( "Type character to go to..." )
 
       if char
-        moved = buffer_current.go_to_char( char )
+        moved = buffer_current.go_to_char( char, after == :after ? AFTER_CHAR : ON_CHAR )
         if ! moved
           set_iline "'#{char}' not found."
         end
@@ -170,11 +170,12 @@ module Diakonos
 
     # Moves the cursor to the closest previous occurrence of the given character.
     # @param [String] char  The character to go to
-    def go_to_char_previous( char = nil )
+    def go_to_char_previous( after = nil, char = nil )
       char ||= get_char( "Type character to go to..." )
 
       if char
-        moved = buffer_current.go_to_char_previous( char )
+
+        moved = buffer_current.go_to_char_previous( char, after == :after ? AFTER_CHAR : ON_CHAR )
         if ! moved
           set_iline "'#{char}' not found."
         end

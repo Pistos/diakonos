@@ -103,6 +103,8 @@ module Diakonos
   DONT_PROMPT_OVERWRITE = false
   QUIET                 = true
   NOISY                 = false
+  AFTER_CHAR            = true
+  ON_CHAR               = false
 
   DEFAULT_TAB_SIZE = 8
 
