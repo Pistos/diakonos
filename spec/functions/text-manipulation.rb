@@ -135,16 +135,33 @@ describe 'A Diakonos user can' do
   it 'delete between matching characters' do
     @b.cursor_to 2,15
     @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
-    @d.delete_to_and_from 'h'
+    @d.delete_to_and_from :not_inclusive, 'h'
     @b.to_a[ 2 ].should.equal '# Thhe tests.'
     cursor_should_be_at 2,4
 
     @b.cursor_to 22,2
-    @d.delete_to_and_from '{'
+    @d.delete_to_and_from :not_inclusive, '{'
     lines = @b.to_a
     lines.size.should.equal 24
     lines[ 21..22 ].should.equal [
       '{}',
+      '',
+    ]
+  end
+
+  it 'delete between matching characters, inclusive' do
+    @b.cursor_to 2,15
+    @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
+    @d.delete_to_and_from :inclusive, 'h'
+    @b.to_a[ 2 ].should.equal '# Te tests.'
+    cursor_should_be_at 2,3
+
+    @b.cursor_to 22,2
+    @d.delete_to_and_from :inclusive, '{'
+    lines = @b.to_a
+    lines.size.should.equal 24
+    lines[ 21..22 ].should.equal [
+      '',
       '',
     ]
   end

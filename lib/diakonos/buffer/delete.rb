@@ -97,7 +97,7 @@ module Diakonos
       end
     end
 
-    def delete_to_and_from( char )
+    def delete_to_and_from( char, inclusive = NOT_INCLUSIVE )
       remove_selection( DONT_DISPLAY )  if selection_mark
 
       start_char = end_char = char
@@ -137,8 +137,13 @@ module Diakonos
       end_row = row
 
       if start_index && end_index
-        cursor_to( start_row, start_index+1 )
-        delete_from_to( start_row, start_index+1, end_row, end_index )
+        if inclusive
+          end_index += 1
+        else
+          start_index += 1
+        end
+        cursor_to( start_row, start_index )
+        delete_from_to( start_row, start_index, end_row, end_index )
       end
     end
 

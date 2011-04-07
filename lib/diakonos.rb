@@ -105,6 +105,8 @@ module Diakonos
   NOISY                 = false
   AFTER_CHAR            = true
   ON_CHAR               = false
+  INCLUSIVE             = true
+  NOT_INCLUSIVE         = false
 
   DEFAULT_TAB_SIZE = 8
 

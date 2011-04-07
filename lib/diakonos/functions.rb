@@ -34,14 +34,17 @@ module Diakonos
     # characters.  Also puts the deleted text into the clipboard.
     # Brace characters are intelligently matched with their opposite-side
     # counterparts if the left-side brace is given (e.g. '[').
-    def delete_to_and_from( char = nil )
+    def delete_to_and_from( inclusive = nil, char = nil )
       if char.nil?
         set_iline "Type character to delete to and from..."
         char = @win_main.getch
         set_iline
       end
       if char
-        removed_text = buffer_current.delete_to_and_from char
+        removed_text = buffer_current.delete_to_and_from(
+          char,
+          inclusive == :inclusive ? INCLUSIVE : NOT_INCLUSIVE
+        )
         if removed_text
           @clipboard.add_clip( [ removed_text ] )
         else
