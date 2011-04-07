@@ -96,6 +96,7 @@ module Diakonos
       @bangmasks           = Hash.new
       @closers             = Hash.new
       @surround_pairs      = Hash.new { |h,k| h[ k ] = Hash.new}
+      @fuzzy_ignores       = Array.new
 
       @settings = Hash.new
       @setting_strings = Hash.new
@@ -339,7 +340,7 @@ module Diakonos
         when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/,
             "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
             "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
-            'view.line_numbers.width'
+            'view.line_numbers.width', 'fuzzy_file_find.max_files'
           @settings[ command ] = arg.to_i
         when "view.jump.x", "view.jump.y"
           @settings[ command ] = [ arg.to_i, 1 ].max
@@ -369,6 +370,8 @@ module Diakonos
           end
         when "context.delay", 'interaction.blink_duration', 'interaction.choice_delay'
           @settings[ command ] = arg.to_f
+        when 'fuzzy_file_find.ignore'
+          @fuzzy_ignores << arg
         end
       end
 
