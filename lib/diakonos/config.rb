@@ -90,7 +90,7 @@ module Diakonos
       @token_formats       = Hash.new { |h,k| h[ k ] = Hash.new }
       @column_markers      = Hash.new { |h,k| h[ k ] = Hash.new }
       @indenters           = Hash.new
-      @indenters_next_line  = Hash.new
+      @indenters_next_line = Hash.new
       @unindenters         = Hash.new
       @filemasks           = Hash.new
       @bangmasks           = Hash.new

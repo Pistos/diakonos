@@ -153,11 +153,11 @@ module Diakonos
       @win_status       = nil
       @win_interaction  = nil
       @win_line_numbers = nil
-      @buffers = Array.new
+      @buffers          = Array.new
 
       load_configuration
 
-      @quitting    = false
+      @quitting         = false
 
       @x = 0
       @y = 0
