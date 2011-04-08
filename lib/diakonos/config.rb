@@ -109,8 +109,10 @@ module Diakonos
       @colour_pairs = Array.new
 
       begin
-        parse_configuration_file @global_diakonos_conf
-        parse_configuration_file @diakonos_conf
+        @configs = []
+        @config_problems = []
+        parse_configuration_file( @global_diakonos_conf )
+        parse_configuration_file( @diakonos_conf )
 
         languages = @surround_pairs.keys | @token_regexps.keys | @close_token_regexps.keys | @token_formats.keys
 
@@ -185,10 +187,13 @@ module Diakonos
       end
     end
 
+    # @return an Array of problem descriptions (Strings)
     def parse_configuration_file( filename )
+      return  if @configs.include? filename
+      @configs << filename
       return  if ! FileTest.exists? filename
 
-      IO.foreach( filename ) do |line|
+      IO.readlines( filename ).each_with_index do |line,line_number|
         line.chomp!
         # Skip comments
         next  if line[ 0 ] == ?#
@@ -201,17 +206,22 @@ module Diakonos
         if arg.nil?
           command, arg = line.split( /\s+/, 2 )
           next  if command.nil?
+          if arg.nil?
+            @config_problems << "Configuration file '#{filename}' has an error on line #{line_number+1}"
+            next
+          end
         end
+
         command = command.downcase
 
         @setting_strings[ command ] = arg
 
         case command
         when "include"
-          parse_configuration_file File.expand_path( arg )
+          parse_configuration_file( File.expand_path( arg ) )
         when 'load_extension'
           @extensions.load( arg ).each do |conf_file|
-            parse_configuration_file conf_file
+            parse_configuration_file( conf_file )
           end
         when /^lang\.(.+?)\.surround\.pair$/
           language = $1
@@ -374,7 +384,6 @@ module Diakonos
           @fuzzy_ignores << arg
         end
       end
-
     end
 
   end

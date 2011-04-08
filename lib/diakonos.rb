@@ -364,6 +364,16 @@ module Diakonos
         b.cursor_to( b.last_row, b.last_col, Buffer::DONT_DISPLAY )
       end
 
+      if @config_problems.any?
+        File.open( @error_filename, "w" ) do |f|
+          f.puts "There are #{@config_problems.size} problems with the configuration file(s):"
+          @config_problems.each do |p|
+            f.puts p
+          end
+        end
+        open_file @error_filename
+      end
+
       if ! @settings[ 'suppress_welcome' ]
         open_file "#{@help_dir}/welcome.dhf"
       else
