@@ -302,7 +302,9 @@ module Diakonos
       @read_only_files.each do |file|
         @buffers << Buffer.new( file )
       end
-      session_buffers = session_startup
+      if ! @testing
+        session_buffers = session_startup
+      end
       session_buffer_number = @session[ 'buffer_current' ] || 1
       @files.each do |file_info|
         @buffers << Buffer.new( file_info )
