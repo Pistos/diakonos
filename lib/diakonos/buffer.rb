@@ -275,7 +275,7 @@ module Diakonos
             h[ :closer ].call( lm ).to_s
           end
           r, c = @last_row, @last_col
-          paste str, @indent_closers
+          paste str, !TYPING, @indent_closers
           cursor_to r, c
           if /%_/ === str
             find( [ /%_/ ], :direction => :down, :replacement => '', :auto_choice => CHOICE_YES_AND_STOP )

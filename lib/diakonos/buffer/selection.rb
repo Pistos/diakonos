@@ -266,7 +266,7 @@ module Diakonos
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
-    def paste( text, do_parsed_indent = false )
+    def paste( text, typing = ! TYPING, do_parsed_indent = false )
       return  if text.nil?
 
       if not text.kind_of? Array
@@ -278,9 +278,9 @@ module Diakonos
         end
       end
 
-      take_snapshot
+      take_snapshot typing
 
-      delete_selection( DONT_DISPLAY )
+      delete_selection DONT_DISPLAY
 
       row = @last_row
       col = @last_col
@@ -291,7 +291,7 @@ module Diakonos
         if do_parsed_indent
           parsed_indent row, DONT_DISPLAY
         end
-        cursor_to( @last_row, @last_col + text[ 0 ].length )
+        cursor_to( @last_row, @last_col + text[ 0 ].length, DONT_DISPLAY, ! typing )
       elsif text.length > 1
 
         case @selection_mode
