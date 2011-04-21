@@ -188,7 +188,8 @@ module Diakonos
     end
 
     # @return an Array of problem descriptions (Strings)
-    def parse_configuration_file( filename )
+    def parse_configuration_file( filename_ )
+      filename = File.realpath( filename_ )
       return  if @configs.include? filename
       @configs << filename
       return  if ! FileTest.exists? filename
