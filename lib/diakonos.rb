@@ -6,7 +6,7 @@
 # :title: Diakonos
 #
 # Author:: Pistos (irc.freenode.net)
-# http://purepistos.net/diakonos
+# http://diakonos.pist0s.ca/
 # Copyright (c) 2004-2011 Pistos
 #
 # This software is released under the MIT licence.
@@ -469,7 +469,7 @@ module Diakonos
           f.puts
           f.puts "----------------------------------------------------"
           f.puts "If you can reproduce this error, please report it at"
-          f.puts "http://linis.purepistos.net/ticket/list/Diakonos !"
+          f.puts "https://github.com/Pistos/diakonos/issues !"
           f.puts "----------------------------------------------------"
           f.puts e.backtrace
         end
