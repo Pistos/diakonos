@@ -84,6 +84,10 @@ module Diakonos
       if @win_line_numbers
         @win_line_numbers.refresh
       end
+
+      if buffer_current
+        buffer_current.reset_display
+      end
     end
 
     def redraw
