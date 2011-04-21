@@ -5,6 +5,8 @@ module Diakonos
       File.open( @about_filename, "w" ) do |f|
         inst = ::Diakonos::INSTALL_SETTINGS
 
+        configs = @configs.join("\n")
+
         ext_loaded = @extensions.loaded_extensions.sort_by { |e|
           e.name.downcase
         }.map { |e|
@@ -41,6 +43,10 @@ Executable dir:     #{ inst[ :bin_dir ] }
 Help dir:           #{ inst[ :help_dir ] }
 System config dir:  #{ inst[ :conf_dir ] }
 System library dir: #{ inst[ :lib_dir ] }
+
+### Configuration Files
+
+#{ configs }
 
 ## Extensions
 
