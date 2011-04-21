@@ -11,6 +11,7 @@ module Diakonos
       @extensions.values.find_all { |e| e }.map { |e| e.scripts }.flatten
     end
 
+    # @return an Array of configuration filenames to parse
     def load( dir )
       @extensions[ dir ] = false
 

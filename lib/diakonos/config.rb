@@ -111,8 +111,8 @@ module Diakonos
       begin
         @configs = []
         @config_problems = []
-        parse_configuration_file( @global_diakonos_conf )
-        parse_configuration_file( @diakonos_conf )
+        parse_configuration_file @global_diakonos_conf
+        parse_configuration_file @diakonos_conf
 
         languages = @surround_pairs.keys | @token_regexps.keys | @close_token_regexps.keys | @token_formats.keys
 
@@ -187,11 +187,13 @@ module Diakonos
       end
     end
 
+    # @param [String] filename_ the config file to parse
+    # @param [String] including_filename the config file which calls include on this one
     # @return an Array of problem descriptions (Strings)
-    def parse_configuration_file( filename_ )
+    def parse_configuration_file( filename_, including_filename = nil )
       filename = File.realpath( filename_ )
-      return  if @configs.include? filename
-      @configs << filename
+      return  if @configs.any? { |c| c[:filename] == filename }
+      @configs << { filename: filename, source: including_filename }
       return  if ! FileTest.exists? filename
 
       IO.readlines( filename ).each_with_index do |line,line_number|
@@ -219,10 +221,10 @@ module Diakonos
 
         case command
         when "include"
-          parse_configuration_file( File.expand_path( arg ) )
+          parse_configuration_file( File.expand_path( arg ), filename )
         when 'load_extension'
           @extensions.load( arg ).each do |conf_file|
-            parse_configuration_file( conf_file )
+            parse_configuration_file conf_file
           end
         when /^lang\.(.+?)\.surround\.pair$/
           language = $1
