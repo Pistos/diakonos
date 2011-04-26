@@ -46,7 +46,7 @@ module Diakonos
         end
         list_buffer = open_list_buffer
         list_buffer.highlight_matches regexp
-        list_buffer.display
+        display_buffer list_buffer
       rescue RegexpError
         # Do nothing
       end

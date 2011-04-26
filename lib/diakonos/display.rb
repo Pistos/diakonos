@@ -97,7 +97,7 @@ module Diakonos
       initialize_display
       update_status_line
       update_context_line
-      buffer_current.display
+      display_buffer buffer_current
     end
 
     def main_window_height

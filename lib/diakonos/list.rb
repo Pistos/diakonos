@@ -29,7 +29,7 @@ module Diakonos
     def select_list_item
       if @list_buffer
         line = @list_buffer.set_selection_current_line
-        @list_buffer.display
+        display_buffer @list_buffer
         line
       end
     end
