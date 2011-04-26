@@ -293,12 +293,9 @@ module Diakonos
 
           @display_queue_mutex.synchronize do
             if @display_queue
-              Thread.new( @display_queue ) do |b|
-                @display_mutex.lock
-                @display_mutex.unlock
-                b.display
-              end
+              b = @display_queue
               @display_queue = nil
+              display_buffer b
             end
           end
         end
