@@ -266,7 +266,9 @@ module Diakonos
 
       Thread.new do
 
-        if $diakonos.display_mutex.try_lock
+        if ! $diakonos.display_mutex.try_lock
+          $diakonos.display_enqueue( self )
+        else
           begin
             Curses::curs_set 0
 
@@ -360,8 +362,6 @@ module Diakonos
 
           $diakonos.display_mutex.unlock
           $diakonos.display_dequeue
-        else
-          $diakonos.display_enqueue( self )
         end
 
       end
