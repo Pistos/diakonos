@@ -267,23 +267,44 @@ module Diakonos
       @context_thread.priority = -2
     end
 
-    def display_enqueue( buffer )
-      @display_queue_mutex.synchronize do
-        @display_queue = buffer
-      end
-    end
+    def display_buffer( buffer )
+      return  if @testing
+      return  if ! @do_display
 
-    def display_dequeue
-      @display_queue_mutex.synchronize do
-        if @display_queue
-          Thread.new( @display_queue ) do |b|
-            @display_mutex.lock
-            @display_mutex.unlock
-            b.display
+      Thread.new do
+
+        if ! @display_mutex.try_lock
+          @display_queue_mutex.synchronize do
+            @display_queue = buffer
           end
-          @display_queue = nil
+        else
+          begin
+            Curses::curs_set 0
+            buffer.display
+            Curses::curs_set 1
+          rescue Exception => e
+            $diakonos.log( "Display Exception:" )
+            $diakonos.log( e.message )
+            $diakonos.log( e.backtrace.join( "\n" ) )
+            show_exception e
+          end
+
+          @display_mutex.unlock
+
+          @display_queue_mutex.synchronize do
+            if @display_queue
+              Thread.new( @display_queue ) do |b|
+                @display_mutex.lock
+                @display_mutex.unlock
+                b.display
+              end
+              @display_queue = nil
+            end
+          end
         end
+
       end
+
     end
 
     def show_message( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
