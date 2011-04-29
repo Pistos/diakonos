@@ -136,7 +136,7 @@ module Diakonos
           error_file = open_file( @error_filename )
 
           choice = get_choice(
-            "Send your search terms to purepistos.net to help improve Diakonos?",
+            "Would you like to send your search terms over the Internet to help improve Diakonos?",
             [ CHOICE_YES, CHOICE_NO ]
           )
           case choice
@@ -145,7 +145,7 @@ module Diakonos
             require 'uri'
 
             res = Net::HTTP.post_form(
-              URI.parse( 'http://dh.purepistos.net/' ),
+              URI.parse( 'http://dh.pist0s.ca/' ),
               { 'q' => selected }
             )
             # TODO: let them choose "never" and "always"
