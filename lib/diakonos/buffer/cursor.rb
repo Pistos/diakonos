@@ -53,36 +53,34 @@ module Diakonos
       @last_row = row
       @last_col = col
       @last_screen_col = new_col
-      changed = ( @last_row != old_last_row || @last_col != old_last_col )
-      if changed
-        record_mark_start_and_end
 
-        removed = false
-        if not @changing_selection and selecting?
-          remove_selection( DONT_DISPLAY )
-          removed = true
-        end
+      record_mark_start_and_end
 
-        old_pair = @text_marks[ :pair ]
-        if @settings[ 'view.pairs.highlight' ]
-          highlight_pair
-        elsif old_pair
-          clear_pair_highlight
-        end
-        highlight_changed = old_pair != @text_marks[ :pair ]
-
-        if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
-          display
-        else
-          $diakonos.display_mutex.synchronize do
-            @win_main.setpos( @last_screen_y, @last_screen_x )
-          end
-        end
-        $diakonos.update_status_line
-        $diakonos.update_context_line
+      removed = false
+      if not @changing_selection and selecting?
+        remove_selection( DONT_DISPLAY )
+        removed = true
       end
 
-      changed
+      old_pair = @text_marks[ :pair ]
+      if @settings[ 'view.pairs.highlight' ]
+        highlight_pair
+      elsif old_pair
+        clear_pair_highlight
+      end
+      highlight_changed = old_pair != @text_marks[ :pair ]
+
+      if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
+        display
+      else
+        $diakonos.display_mutex.synchronize do
+          @win_main.setpos( @last_screen_y, @last_screen_x )
+        end
+      end
+      $diakonos.update_status_line
+      $diakonos.update_context_line
+
+      ( @last_row != old_last_row || @last_col != old_last_col )
     end
 
     def cursor_to_eof
