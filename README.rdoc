@@ -28,8 +28,20 @@ You may need root privileges on the system in order to install to system-wide
 places like /usr .  However, Diakonos runs perfectly well in userspace, such
 as under ~/usr .
 
+=== RVM
+
 If you use RVM[1], note that Diakonos installs very easily into an RVM-based
 Ruby.
+
+After installing Diakonos under RVM, you can symlink to the installed binary,
+and that will allow you to use Diakonos with that specific Ruby version no
+matter what the current RVM Ruby is.  Example:
+
+  mkdir -p ~/bin
+  cd ~/bin
+  ln -s /home/pistos/.rvm/rubies/ruby-1.9.2-p180/bin/diakonos
+
+Then ensure that ~/bin is in your PATH.
 
 [1]: http://rvm.beginrescueend.com/
 
