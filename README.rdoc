@@ -2,7 +2,7 @@
 
 == REQUIREMENTS
 
-- Ruby 1.9.1
+- Ruby 1.9.2+
 
 Diakonos is built to run on Linux, but may run under other flavours of UNIX.
 It is known NOT to work under Windows (unless using Cygwin).
