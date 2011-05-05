@@ -111,6 +111,13 @@ module Diakonos
       retval
     end
 
+    def drawing_transaction
+      @mutex_cursor.synchronize do
+        Curses::curs_set 0
+        yield
+      end
+    end
+
     def main_window_width
       Curses::cols
     end
@@ -119,11 +126,11 @@ module Diakonos
     def set_iline( string = "" )
       return  if @testing
       return  if @readline
-      Curses::curs_set 0
-      @win_interaction.setpos( 0, 0 )
-      @win_interaction.addstr( "%-#{Curses::cols}s" % string )
-      @win_interaction.refresh
-      Curses::curs_set 1
+      drawing_transaction do
+        @win_interaction.setpos( 0, 0 )
+        @win_interaction.addstr( "%-#{Curses::cols}s" % string )
+        @win_interaction.refresh
+      end
       string.length
     end
 
@@ -212,11 +219,11 @@ module Diakonos
       if str.length > Curses::cols
         str = build_status_line( str.length - Curses::cols )
       end
-      Curses::curs_set 0
-      @win_status.setpos( 0, 0 )
-      @win_status.addstr str
-      @win_status.refresh
-      Curses::curs_set 1
+      drawing_transaction do
+        @win_status.setpos( 0, 0 )
+        @win_status.addstr str
+        @win_status.refresh
+      end
     end
 
     def update_context_line
@@ -227,41 +234,41 @@ module Diakonos
       @context_thread = Thread.new do
         context = buffer_current.context
 
-        Curses::curs_set 0
-        @win_context.setpos( 0, 0 )
-        chars_printed = 0
-        if context.length > 0
-          truncation = [ @settings[ "context.max_levels" ], context.length ].min
-          max_length = [
-            ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
-            ( @settings[ "context.max_segment_width" ] or Curses::cols )
-          ].min
-          line = nil
-          context_subset = context[ 0...truncation ]
-          context_subset = context_subset.collect do |line|
-            line.strip[ 0...max_length ]
+        drawing_transaction do
+          @win_context.setpos( 0, 0 )
+          chars_printed = 0
+          if context.length > 0
+            truncation = [ @settings[ "context.max_levels" ], context.length ].min
+            max_length = [
+              ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
+              ( @settings[ "context.max_segment_width" ] or Curses::cols )
+            ].min
+            line = nil
+            context_subset = context[ 0...truncation ]
+            context_subset = context_subset.collect do |line|
+              line.strip[ 0...max_length ]
+            end
+
+            context_subset.each do |line|
+              @win_context.attrset @settings[ "context.format" ]
+              @win_context.addstr line
+              chars_printed += line.length
+              @win_context.attrset @settings[ "context.separator.format" ]
+              @win_context.addstr @settings[ "context.separator" ]
+              chars_printed += @settings[ "context.separator" ].length
+            end
           end
 
-          context_subset.each do |line|
+          @iline_mutex.synchronize do
             @win_context.attrset @settings[ "context.format" ]
-            @win_context.addstr line
-            chars_printed += line.length
-            @win_context.attrset @settings[ "context.separator.format" ]
-            @win_context.addstr @settings[ "context.separator" ]
-            chars_printed += @settings[ "context.separator" ].length
+            @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
+            @win_context.refresh
+          end
+          @display_mutex.synchronize do
+            @win_main.setpos( buffer_current.last_screen_y, buffer_current.last_screen_x )
+            @win_main.refresh
           end
         end
-
-        @iline_mutex.synchronize do
-          @win_context.attrset @settings[ "context.format" ]
-          @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
-          @win_context.refresh
-        end
-        @display_mutex.synchronize do
-          @win_main.setpos( buffer_current.last_screen_y, buffer_current.last_screen_x )
-          @win_main.refresh
-        end
-        Curses::curs_set 1
       end
 
       @context_thread.priority = -2
@@ -279,9 +286,9 @@ module Diakonos
           end
         else
           begin
-            Curses::curs_set 0
-            buffer.display
-            Curses::curs_set 1
+            drawing_transaction do
+              buffer.display
+            end
           rescue Exception => e
             $diakonos.log( "Display Exception:" )
             $diakonos.log( e.message )

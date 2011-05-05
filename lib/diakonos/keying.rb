@@ -245,7 +245,9 @@ module Diakonos
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def process_keystroke( context = [], mode = 'edit', ch = nil )
+      Curses::curs_set 1
       ch ||= @modes[ mode ].window.getch
+
       return  if ch.nil?
       c = ch.ord
 
