@@ -16,7 +16,7 @@ module Diakonos
           buffer_current.indent row, Buffer::DONT_DISPLAY
         end
         @do_display = true
-        buffer_current.display
+        display_buffer buffer_current
       end
     end
 
@@ -40,7 +40,7 @@ module Diakonos
           buffer_current.parsed_indent row, Buffer::DONT_DISPLAY
         end
         @do_display = true
-        buffer_current.display
+        display_buffer buffer_current
       else
         buffer_current.parsed_indent
       end
@@ -61,7 +61,7 @@ module Diakonos
           buffer_current.unindent row, Buffer::DONT_DISPLAY
         end
         @do_display = true
-        buffer_current.display
+        display_buffer buffer_current
       else
         buffer_current.unindent
       end

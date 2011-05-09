@@ -243,7 +243,7 @@ module Diakonos
             if last_row
               buffer.cursor_to last_row, last_col || 0
             else
-              buffer.display
+              display_buffer buffer
             end
           end
         end

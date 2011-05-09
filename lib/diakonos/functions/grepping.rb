@@ -66,7 +66,7 @@ module Diakonos
         rescue RegexpError => e
           # ignore
         end
-        list_buffer.display
+        display_buffer list_buffer
       }
 
       if selected

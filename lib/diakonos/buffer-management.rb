@@ -16,7 +16,7 @@ module Diakonos
       run_hook_procs( :after_buffer_switch, buffer )
       update_status_line
       update_context_line
-      buffer.display
+      display_buffer buffer
 
       true
     end
