@@ -79,8 +79,11 @@ module Diakonos
         end
         if line != ""
           # No final newline character
+          if @settings[ "eof_newline" ]
+            line << "\n"
+            @lines << ''
+          end
           f.print line
-          f.print "\n" if @settings[ "eof_newline" ]
         end
 
         if @settings[ 'strip_trailing_whitespace_on_save' ]
