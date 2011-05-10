@@ -235,7 +235,11 @@ module Diakonos
           if existing_buffer
             @buffers[ @buffers.index( existing_buffer ) ] = buffer
           else
-            @buffers << buffer
+            if @settings['open_as_first_buffer']
+              @buffers.unshift buffer
+            else
+              @buffers << buffer
+            end
           end
           run_hook_procs( :after_open, buffer )
           save_session
