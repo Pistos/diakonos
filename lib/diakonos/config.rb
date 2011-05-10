@@ -40,42 +40,44 @@ module Diakonos
 
       conf_dir = INSTALL_SETTINGS[ :conf_dir ]
       @global_diakonos_conf = "#{conf_dir}/diakonos.conf"
-      @diakonos_conf = @config_filename || "#{@diakonos_home}/diakonos.conf"
+      if ! @testing
+        @diakonos_conf = @config_filename || "#{@diakonos_home}/diakonos.conf"
 
-      if ! FileTest.exists?( @diakonos_conf )
-        if FileTest.exists?( @global_diakonos_conf )
-          puts "No personal configuration file found."
-          puts "Would you like to copy the system-wide configuration file (#{@global_diakonos_conf}) to use"
-          $stdout.print "as a basis for your personal configuration (recommended)? (y/n)"; $stdout.flush
-          answer = $stdin.gets
-          if answer =~ /^y/i
-            require 'fileutils'
-            FileUtils.cp @global_diakonos_conf, @diakonos_conf
-          end
-        else
-          if @testing
-            File.open( @diakonos_conf, 'w' ) do |f|
-              f.puts File.read( './diakonos.conf' )
+        if ! FileTest.exists?( @diakonos_conf )
+          if FileTest.exists?( @global_diakonos_conf )
+            puts "No personal configuration file found."
+            puts "Would you like to copy the system-wide configuration file (#{@global_diakonos_conf}) to use"
+            $stdout.print "as a basis for your personal configuration (recommended)? (y/n)"; $stdout.flush
+            answer = $stdin.gets
+            if answer =~ /^y/i
+              require 'fileutils'
+              FileUtils.cp @global_diakonos_conf, @diakonos_conf
             end
           else
-            puts "diakonos.conf not found in any of:"
-            puts "  #{conf_dir}"
-            puts "  #{@diakonos_home}"
-            puts "At least one configuration file must exist."
-            $stdout.print "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
-            answer = $stdin.gets
+            if @testing
+              File.open( @diakonos_conf, 'w' ) do |f|
+                f.puts File.read( './diakonos.conf' )
+              end
+            else
+              puts "diakonos.conf not found in any of:"
+              puts "  #{conf_dir}"
+              puts "  #{@diakonos_home}"
+              puts "At least one configuration file must exist."
+              $stdout.print "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
+              answer = $stdin.gets
 
-            case answer
-            when /^y/i
-              if not fetch_conf
-                fetch_conf 'master'
+              case answer
+              when /^y/i
+                if not fetch_conf
+                  fetch_conf 'master'
+                end
               end
             end
-          end
 
-          if not FileTest.exists?( @diakonos_conf )
-            puts "Terminating due to lack of configuration file."
-            exit 1
+            if not FileTest.exists?( @diakonos_conf )
+              puts "Terminating due to lack of configuration file."
+              exit 1
+            end
           end
         end
       end
@@ -191,6 +193,7 @@ module Diakonos
     # @param [String] including_filename the config file which calls include on this one
     # @return an Array of problem descriptions (Strings)
     def parse_configuration_file( filename_, including_filename = nil )
+      return  if filename_.nil?
       filename = File.realpath( filename_ )
       return  if @configs.any? { |c| c[:filename] == filename }
       @configs << { filename: filename, source: including_filename }
