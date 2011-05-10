@@ -374,7 +374,7 @@ module Diakonos
         open_file @error_filename
       end
 
-      if ! @settings[ 'suppress_welcome' ]
+      if ! @testing && ! @settings[ 'suppress_welcome' ]
         open_file "#{@help_dir}/welcome.dhf"
       else
         @buffer_current.seek /<<<</
