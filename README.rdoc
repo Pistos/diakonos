@@ -21,8 +21,8 @@ The latest development code can be obtained from github:
 
 == INSTALLATION
 
-ruby install.rb --help
-ruby install.rb [installation parameters]
+  ruby install.rb --help
+  ruby install.rb [installation parameters]
 
 You may need root privileges on the system in order to install to system-wide
 places like /usr .  However, Diakonos runs perfectly well in userspace, such
