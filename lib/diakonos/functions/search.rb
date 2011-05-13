@@ -14,6 +14,7 @@ module Diakonos
     # @see #find_again
     def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
       direction = direction_of( dir_str )
+
       if regexp_source_
         regexp_source = regexp_source_
       else
@@ -51,6 +52,7 @@ module Diakonos
           buffer_current.cursor_to starting_row, starting_col, Buffer::DO_DISPLAY
         end
       end
+
     end
     # Searches for matches of the latest clipboard item in the current buffer.
     # Note that the clipboard item is interpreted as a regular expression.
