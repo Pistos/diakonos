@@ -2,6 +2,8 @@ module Diakonos
 
   class Buffer
 
+    attr_reader :text_marks
+
     CHARACTER_PAIRS = {
       '(' => { partner: ')', direction: :forward },
       '<' => { partner: '>', direction: :forward },
@@ -277,8 +279,8 @@ module Diakonos
     def highlight_matches( regexp = @highlight_regexp )
       @highlight_regexp = regexp
       return  if @highlight_regexp.nil?
-      found_marks = @lines[ @top_line...(@top_line + $diakonos.main_window_height) ].grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
-        TextMark.new( @top_line + line_index, start_col, @top_line + line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
+      found_marks = @lines.grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
+        TextMark.new( line_index, start_col, line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
       end
       @text_marks[ :found ] = found_marks
     end

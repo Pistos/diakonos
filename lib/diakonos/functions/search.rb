@@ -46,6 +46,7 @@ module Diakonos
 
       if regexp_source
         find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
+        set_iline_if_empty "#{buffer_current.text_marks[:found].size} matches found"
       elsif starting_row && starting_col
         buffer_current.clear_matches
         if @settings[ 'find.return_on_abort' ]
@@ -78,6 +79,7 @@ module Diakonos
       else
         buffer_current.find_again( @last_search_regexps )
       end
+      set_iline_if_empty "#{buffer_current.text_marks[:found].size} matches found"
     end
 
     # Search for an exact string (not a regular expression).

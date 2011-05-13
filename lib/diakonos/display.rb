@@ -119,12 +119,20 @@ module Diakonos
     def set_iline( string = "" )
       return  if @testing
       return  if @readline
+
+      @iline = string
       Curses::curs_set 0
       @win_interaction.setpos( 0, 0 )
-      @win_interaction.addstr( "%-#{Curses::cols}s" % string )
+      @win_interaction.addstr( "%-#{Curses::cols}s" % @iline )
       @win_interaction.refresh
       Curses::curs_set 1
       string.length
+    end
+
+    def set_iline_if_empty( string )
+      if @iline.empty?
+        set_iline string
+      end
     end
 
     def set_status_variable( identifier, value )
