@@ -76,6 +76,9 @@ describe 'A Diakonos user can' do
     numbered_buffer_should_be_named 4, 'sample-file.rb'
 
     @d.switch_to_buffer_number 2
+    # Switch twice because of Diakonos' behaviour of switching to previous
+    # buffer when trying to switching to the current buffer.
+    @d.switch_to_buffer_number 2
     name = File.basename( @d.buffer_current.name )
     name.should.equal 'sample-file.c'
 

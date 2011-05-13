@@ -439,6 +439,10 @@ module Diakonos
     def switch_to_buffer_number( buffer_number_ )
       buffer_number = buffer_number_.to_i
       return  if buffer_number < 1
+      if @buffer_number_last && buffer_number == buffer_to_number(buffer_current)
+        buffer_number = @buffer_number_last
+      end
+      @buffer_number_last = buffer_to_number(buffer_current)
       switch_to @buffers[ buffer_number - 1 ]
     end
 
