@@ -1,6 +1,7 @@
 module Diakonos
   class Diakonos
 
+    # @return [Fixnum] the number of replacements made
     def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
       return  if regexp_source.nil? || regexp_source.empty?
 
@@ -36,16 +37,20 @@ module Diakonos
         set_iline( "Searching literally; #{exception_thrown.message}" )
       end
 
-      buffer_current.find(
+      # The execution order of the #find and the @last_search_regexps assignment is likely deliberate
+      num_replacements = buffer_current.find(
         regexps,
         :direction          => direction,
         :replacement        => replacement,
         :starting_row       => starting_row,
         :starting_col       => starting_col,
         :quiet              => quiet,
-        :show_context_after => @settings[ 'find.show_context_after' ]
+        :show_context_after => @settings[ 'find.show_context_after' ],
+        :starting           => true
       )
       @last_search_regexps = regexps
+
+      num_replacements
     end
 
   end

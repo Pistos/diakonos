@@ -45,16 +45,16 @@ module Diakonos
       end
 
       if regexp_source
-        find_ direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY
-        set_iline_if_empty "#{buffer_current.text_marks[:found].size} matches found"
+        num_replacements = find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY )
+        show_number_of_matches_found( replacement ? num_replacements : nil )
       elsif starting_row && starting_col
         buffer_current.clear_matches
         if @settings[ 'find.return_on_abort' ]
           buffer_current.cursor_to starting_row, starting_col, Buffer::DO_DISPLAY
         end
       end
-
     end
+
     # Searches for matches of the latest clipboard item in the current buffer.
     # Note that the clipboard item is interpreted as a regular expression.
     # Only the last line of multi-line clipboard items is used.
@@ -79,7 +79,7 @@ module Diakonos
       else
         buffer_current.find_again( @last_search_regexps )
       end
-      set_iline_if_empty "#{buffer_current.text_marks[:found].size} matches found"
+      show_number_of_matches_found
     end
 
     # Search for an exact string (not a regular expression).
@@ -134,6 +134,16 @@ module Diakonos
         direction = direction_of( dir_str )
         regexp = Regexp.new( regexp_source )
         buffer_current.seek( regexp, direction )
+      end
+    end
+
+    def show_number_of_matches_found( num_replacements = nil )
+      return  if buffer_current.num_matches_found.nil?
+
+      if num_replacements
+        set_iline_if_empty "#{num_replacements} out of #{buffer_current.num_matches_found} match(es) replaced"
+      else
+        set_iline_if_empty "#{buffer_current.num_matches_found} match(es) found"
       end
     end
 

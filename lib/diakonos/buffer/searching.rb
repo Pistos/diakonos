@@ -2,7 +2,7 @@ module Diakonos
 
   class Buffer
 
-    attr_reader :text_marks
+    attr_reader :num_matches_found
 
     CHARACTER_PAIRS = {
       '(' => { partner: ')', direction: :forward },
@@ -59,6 +59,7 @@ module Diakonos
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
     # element.
+    # @return [Fixnum] the number of replacements made
     def find( regexps, options = {} )
       return  if regexps.nil?
       regexp = regexps[ 0 ]
@@ -71,8 +72,13 @@ module Diakonos
       from_col           = options[ :starting_col ] || @last_col
       show_context_after = options[ :show_context_after ]
 
-      search_area = @search_area || TextMark.new( 0, 0, @lines.size - 1, @lines[ -1 ].size, nil )
+      if options[:starting]
+        @num_matches_found = nil
+      end
 
+      num_replacements = 0
+
+      search_area = @search_area || TextMark.new( 0, 0, @lines.size - 1, @lines[ -1 ].size, nil )
       if ! search_area.contains?( from_row, from_col )
         from_row, from_col = search_area.start_row, search_area.start_col
       end
@@ -191,7 +197,7 @@ module Diakonos
       if ! finding
         remove_selection DONT_DISPLAY
         clear_matches DO_DISPLAY
-        if ! options[ :quiet ]
+        if ! options[ :quiet ] && ( replacement.nil? || num_replacements == 0 )
           $diakonos.set_iline "/#{regexp.source}/ not found."
         end
       else
@@ -242,38 +248,46 @@ module Diakonos
           }
 
           choice = auto_choice || $diakonos.get_choice(
-            "Replace?",
+            "#{num_matches_found} match(es) - Replace this one?",
             [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
             CHOICE_YES
           )
           case choice
           when CHOICE_YES
             paste [ actual_replacement ]
-            find( regexps, :direction => direction, :replacement => replacement )
+            num_replacements += 1 + find( regexps, :direction => direction, :replacement => replacement )
           when CHOICE_ALL
-            replace_all( regexp, replacement )
+            num_replacements += replace_all( regexp, replacement )
           when CHOICE_NO
-            find( regexps, :direction => direction, :replacement => replacement )
+            num_replacements += find( regexps, :direction => direction, :replacement => replacement )
           when CHOICE_CANCEL
             # Do nothing further.
           when CHOICE_YES_AND_STOP
             paste [ actual_replacement ]
+            num_replacements += 1
             # Do nothing further.
           end
         end
       end
+
+      num_replacements
     end
 
+    # @return [Fixnum] the number of replacements made
     def replace_all( regexp, replacement )
       return  if( regexp.nil? or replacement.nil? )
 
+      num_replacements = 0
+
       take_snapshot
       @lines = @lines.collect { |line|
+        num_replacements += line.scan(regexp).size
         line.gsub( regexp, replacement )
       }
       set_modified
       clear_matches
       display
+      num_replacements
     end
 
     def highlight_matches( regexp = @highlight_regexp )
@@ -283,6 +297,7 @@ module Diakonos
         TextMark.new( line_index, start_col, line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
       end
       @text_marks[ :found ] = found_marks
+      @num_matches_found ||= found_marks.size
     end
 
     def clear_matches( do_display = DONT_DISPLAY )
