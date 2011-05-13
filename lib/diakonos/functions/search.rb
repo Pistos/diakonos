@@ -140,10 +140,14 @@ module Diakonos
     def show_number_of_matches_found( num_replacements = nil )
       return  if buffer_current.num_matches_found.nil?
 
+      num_found = buffer_current.num_matches_found
+      if num_found != 1
+        plural = 'es'
+      end
       if num_replacements
-        set_iline_if_empty "#{num_replacements} out of #{buffer_current.num_matches_found} match(es) replaced"
+        set_iline_if_empty "#{num_replacements} out of #{num_found} match#{plural} replaced"
       else
-        set_iline_if_empty "#{buffer_current.num_matches_found} match(es) found"
+        set_iline_if_empty "#{num_found} match#{plural} found"
       end
     end
 

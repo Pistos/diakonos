@@ -248,7 +248,7 @@ module Diakonos
           }
 
           choice = auto_choice || $diakonos.get_choice(
-            "#{num_matches_found} match(es) - Replace this one?",
+            "#{num_matches_found} match#{ num_matches_found != 1 ? 'es' : '' } - Replace this one?",
             [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
             CHOICE_YES
           )
