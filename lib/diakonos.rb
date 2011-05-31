@@ -378,7 +378,10 @@ module Diakonos
       if ! @testing && ! @settings[ 'suppress_welcome' ]
         open_file "#{@help_dir}/welcome.dhf"
       else
-        find  'down', CASE_INSENSITIVE, '^<{4,}', NO_REPLACEMENT
+        conflict_regexp_source = '^<{4,}'
+        if seek(conflict_regexp_source)
+          find  'down', CASE_INSENSITIVE, conflict_regexp_source, NO_REPLACEMENT
+        end
       end
 
       begin

@@ -434,7 +434,6 @@ module Diakonos
         else
           # Check the current row first.
 
-          #col_to_check = ( @last_found_col or @last_col ) - 1
           col_to_check = @last_col - 1
           if col_to_check >= 0
             index, match_text = @lines[ @last_row ].group_rindex( regexp, col_to_check )
@@ -461,11 +460,9 @@ module Diakonos
       end
 
       if found_text
-        #@last_found_row = found_row
-        #@last_found_col = found_col
         cursor_to( found_row, found_col )
-
         display
+        true
       end
     end
 
