@@ -114,6 +114,7 @@ module Diakonos
   ASK_REVERT   = false
 
   ASK_REPLACEMENT = true
+  NO_REPLACEMENT  = nil
 
   CASE_SENSITIVE   = true
   CASE_INSENSITIVE = false
@@ -377,7 +378,7 @@ module Diakonos
       if ! @testing && ! @settings[ 'suppress_welcome' ]
         open_file "#{@help_dir}/welcome.dhf"
       else
-        @buffer_current.seek /<<<</
+        find  'down', CASE_INSENSITIVE, '^<{4,}', NO_REPLACEMENT
       end
 
       begin
