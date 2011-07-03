@@ -2,7 +2,8 @@ module Diakonos
   class Diakonos
 
     # @return [Fixnum] the number of replacements made
-    def find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, quiet )
+    def find_( options = {} )
+      regexp_source, replacement = options.values_at( :regexp_source, :replacement )
       return  if regexp_source.nil? || regexp_source.empty?
 
       rs_array = regexp_source.newline_split
@@ -15,11 +16,11 @@ module Diakonos
           $VERBOSE = nil
           regexps << Regexp.new(
             source,
-            case_sensitive ? nil : Regexp::IGNORECASE
+            options[:case_sensitive] ? nil : Regexp::IGNORECASE
           )
           $VERBOSE = warning_verbosity
         rescue RegexpError => e
-          if not exception_thrown
+          if ! exception_thrown
             exception_thrown = e
             source = Regexp.escape( source )
             retry
@@ -33,18 +34,18 @@ module Diakonos
         replacement = get_user_input( "Replace with: ", history: @rlh_search )
       end
 
-      if exception_thrown and not quiet
-        set_iline( "Searching literally; #{exception_thrown.message}" )
+      if exception_thrown && ! options[:quiet]
+        set_iline "Searching literally; #{exception_thrown.message}"
       end
 
       # The execution order of the #find and the @last_search_regexps assignment is likely deliberate
       num_replacements = buffer_current.find(
         regexps,
-        :direction          => direction,
+        :direction          => options[:direction],
         :replacement        => replacement,
-        :starting_row       => starting_row,
-        :starting_col       => starting_col,
-        :quiet              => quiet,
+        :starting_row       => options[:starting_row],
+        :starting_col       => options[:starting_col],
+        :quiet              => options[:quiet],
         :show_context_after => @settings[ 'find.show_context_after' ],
         :starting           => true
       )

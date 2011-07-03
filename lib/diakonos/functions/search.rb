@@ -36,7 +36,14 @@ module Diakonos
           initial_text: selected_text || ""
         ) { |input|
           if input.length > 1
-            find_ direction, case_sensitive, input, nil, starting_row, starting_col, QUIET
+            find_(
+              direction: direction,
+              case_sensitive: case_sensitive,
+              regexp_source: input,
+              starting_row: starting_row,
+              starting_col: starting_col,
+              quiet: true
+            )
           else
             buffer_current.remove_selection Buffer::DONT_DISPLAY
             buffer_current.clear_matches Buffer::DO_DISPLAY
@@ -45,7 +52,15 @@ module Diakonos
       end
 
       if regexp_source
-        num_replacements = find_( direction, case_sensitive, regexp_source, replacement, starting_row, starting_col, NOISY )
+        num_replacements = find_(
+          direction: direction,
+          case_sensitive: case_sensitive,
+          regexp_source: regexp_source,
+          replacement: replacement,
+          starting_row: starting_row,
+          starting_col: starting_col,
+          quiet: false
+        )
         show_number_of_matches_found( replacement ? num_replacements : nil )
       elsif starting_row && starting_col
         buffer_current.clear_matches
