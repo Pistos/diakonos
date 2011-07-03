@@ -98,7 +98,7 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 11,0
   end
 
-  it 'will not comment out blank lines' do
+  it 'not comment out blank lines' do
     @b.cursor_to 3,0
     @b.selection_mark.should.be.nil
     @b.to_a[ 3 ].should.equal ''
