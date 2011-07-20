@@ -437,25 +437,21 @@ module Diakonos
     end
 
     def get_language_from_name( name )
-      retval = nil
       @filemasks.each do |language,filemask|
         if name =~ filemask
-          retval = language
-          break
+          return language
         end
       end
-      retval
+      nil
     end
 
     def get_language_from_shabang( first_line )
-      retval = nil
       @bangmasks.each do |language,bangmask|
         if first_line =~ bangmask
-          retval = language
-          break
+          return language
         end
       end
-      retval
+      nil
     end
 
     def show_exception( e, probable_causes = [ "Unknown" ] )
@@ -508,7 +504,10 @@ module Diakonos
       else
         tagfile = "./tags"
       end
-      if FileTest.exists? tagfile
+
+      if ! FileTest.exists? tagfile
+        set_iline "(tags file not found)"
+      else
         IO.foreach( tagfile ) do |line_|
           line = line_.chomp
           # <tagname>\t<filepath>\t<line number or regexp>\t<kind of tag>
@@ -520,8 +519,6 @@ module Diakonos
           @tags[ tag ] ||= Array.new
           @tags[ tag ].push CTag.new( file, command, kind, rest )
         end
-      else
-        set_iline "(tags file not found)"
       end
     end
 
