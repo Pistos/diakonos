@@ -46,24 +46,24 @@ module Diakonos
     end
 
     def undo
-      if @current_buffer_state < @buffer_states.length - 1
-        @current_buffer_state += 1
-        @lines = @buffer_states[ @current_buffer_state ]
-        cursor_to( @cursor_states[ @current_buffer_state - 1 ][ 0 ], @cursor_states[ @current_buffer_state - 1 ][ 1 ] )
-        $diakonos.set_iline "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-        set_modified DO_DISPLAY, DO_USE_MD5
-      end
+      return  if @current_buffer_state >= @buffer_states.length - 1
+
+      @current_buffer_state += 1
+      @lines = @buffer_states[ @current_buffer_state ]
+      cursor_to( @cursor_states[ @current_buffer_state - 1 ][ 0 ], @cursor_states[ @current_buffer_state - 1 ][ 1 ] )
+      $diakonos.set_iline "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
+      set_modified DO_DISPLAY, DO_USE_MD5
     end
 
     # Since redo is a Ruby keyword...
     def unundo
-      if @current_buffer_state > 0
-        @current_buffer_state += -1
-        @lines = @buffer_states[ @current_buffer_state ]
-        cursor_to( @cursor_states[ @current_buffer_state ][ 0 ], @cursor_states[ @current_buffer_state ][ 1 ] )
-        $diakonos.set_iline "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
-        set_modified DO_DISPLAY, DO_USE_MD5
-      end
+      return  if @current_buffer_state <= 0
+
+      @current_buffer_state += -1
+      @lines = @buffer_states[ @current_buffer_state ]
+      cursor_to( @cursor_states[ @current_buffer_state ][ 0 ], @cursor_states[ @current_buffer_state ][ 1 ] )
+      $diakonos.set_iline "Undo level: #{@current_buffer_state} of #{@buffer_states.length - 1}"
+      set_modified DO_DISPLAY, DO_USE_MD5
     end
 
   end
