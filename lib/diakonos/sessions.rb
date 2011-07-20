@@ -73,12 +73,14 @@ module Diakonos
       if @session
         @files.concat @session['buffers']
         rlh = @session['readline_histories']
-        @rlh_general  = rlh['general']
-        @rlh_files    = rlh['files']
-        @rlh_search   = rlh['search']
-        @rlh_shell    = rlh['shell']
-        @rlh_help     = rlh['help']
-        @rlh_sessions = rlh['sessions']
+        if rlh
+          @rlh_general  = rlh['general'] || @rlh_general
+          @rlh_files    = rlh['files'] || @rlh_files
+          @rlh_search   = rlh['search'] || @rlh_search
+          @rlh_shell    = rlh['shell'] || @rlh_shell
+          @rlh_help     = rlh['help'] || @rlh_help
+          @rlh_sessions = rlh['sessions'] || @rlh_sessions
+        end
       end
     end
 
