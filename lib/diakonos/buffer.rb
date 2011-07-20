@@ -77,7 +77,7 @@ module Diakonos
       @mark_anchor = nil
       @text_marks = Hash.new
       @selection_mode = :normal
-      @last_search_regexps = nil
+      @last_search_regexps = Array( options['last_search_regexps'] ).map { |r| Regexp.new(r) }
       @highlight_regexp = nil
       @last_search = nil
       @changing_selection = false

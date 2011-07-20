@@ -2,7 +2,7 @@ module Diakonos
 
   class Buffer
 
-    attr_reader :num_matches_found
+    attr_reader :num_matches_found, :last_search_regexps
 
     CHARACTER_PAIRS = {
       '(' => { partner: ')', direction: :forward },
