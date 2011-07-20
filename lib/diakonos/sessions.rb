@@ -3,7 +3,7 @@ module Diakonos
 
     def new_session( filepath )
       basename = File.basename( filepath )
-      if not pid_session?( filepath )
+      if ! pid_session?( filepath )
         name = basename
       end
       @session = {
@@ -39,32 +39,46 @@ module Diakonos
     end
 
     def load_session_data( filename )
-      return  if not File.exist? filename
+      return  if ! File.exist? filename
+
       File.open( filename ) do |f|
-        loaded = YAML::load( f )
-        if loaded
-          if(
-            loaded[ 'filename' ] &&
-            loaded[ 'settings' ] &&
-            loaded[ 'settings' ].respond_to?( :values ) &&
-            loaded.has_key?( 'name' ) &&
-            (
-              loaded[ 'files' ] &&
-              loaded[ 'files' ].respond_to?( :each ) ||
-              loaded[ 'buffers' ] &&
-              loaded[ 'buffers' ].respond_to?( :each )
-            )
+        loaded = YAML::load( f ) or break
+
+        if(
+          loaded[ 'filename' ] &&
+          loaded[ 'settings' ] &&
+          loaded[ 'settings' ].respond_to?( :values ) &&
+          loaded.has_key?( 'name' ) &&
+          (
+            loaded[ 'files' ] &&
+            loaded[ 'files' ].respond_to?( :each ) ||
+            loaded[ 'buffers' ] &&
+            loaded[ 'buffers' ].respond_to?( :each )
           )
-            # Convert old sessions
-            if loaded[ 'files' ]
-              loaded[ 'buffers' ] = loaded[ 'files' ].map { |f|
-                session_file_hash_for f
-              }
-              loaded.delete 'files'
-            end
-            @session = loaded
+        )
+          # Convert old sessions
+          if loaded[ 'files' ]
+            loaded[ 'buffers' ] = loaded[ 'files' ].map { |f|
+              session_file_hash_for f
+            }
+            loaded.delete 'files'
           end
+          @session = loaded
         end
+      end
+    end
+
+    def load_session( session_file )
+      load_session_data session_file
+      if @session
+        @files.concat @session['buffers']
+        rlh = @session['readline_histories']
+        @rlh_general  = rlh['general']
+        @rlh_files    = rlh['files']
+        @rlh_search   = rlh['search']
+        @rlh_shell    = rlh['shell']
+        @rlh_help     = rlh['help']
+        @rlh_sessions = rlh['sessions']
       end
     end
 
@@ -88,6 +102,16 @@ module Diakonos
           },
         }
       }.compact
+
+      @session['readline_histories'] = {
+        'general'  => @rlh_general,
+        'files'    => @rlh_files,
+        'search'   => @rlh_search,
+        'shell'    => @rlh_shell,
+        'help'     => @rlh_help,
+        'sessions' => @rlh_sessions,
+      }
+
       File.open( session_file, 'w' ) do |f|
         f.puts @session.to_yaml
       end
@@ -114,10 +138,8 @@ module Diakonos
         pid_session = @session
         @session = nil
         session_path = session_filepath_for( @session_to_load )
-        load_session_data session_path
-        if @session
-          @files.concat @session[ 'buffers' ]
-        else
+        load_session session_path
+        if ! @session
           new_session session_path
         end
       else
@@ -140,14 +162,13 @@ module Diakonos
           choice = get_choice(
             "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
             [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ],
-            index > 0 ? CHOICE_NO : nil
+            index > 0 ?  CHOICE_NO : nil
           )
 
           case choice
           when CHOICE_YES
-            load_session_data session_file
+            load_session session_file
             if @session
-              @files.concat @session[ 'buffers' ]
               File.delete session_file
               break
             end
@@ -159,10 +180,7 @@ module Diakonos
         if session_buffers.empty? && @files.empty? && @settings[ 'session.default_session' ]
           session_file = session_filepath_for( @settings[ 'session.default_session' ] )
           if File.exist? session_file
-            load_session_data session_file
-            if @session
-              @files.concat @session[ 'buffers' ]
-            end
+            load_session session_file
           end
         end
       end
