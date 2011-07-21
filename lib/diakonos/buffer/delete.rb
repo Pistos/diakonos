@@ -97,6 +97,23 @@ module Diakonos
       end
     end
 
+    def delete_from( char )
+      remove_selection( DONT_DISPLAY )  if selection_mark
+
+      first_row = row = @last_row
+      index = @lines[ @last_row ].rindex( char, @last_col-1 )
+
+      while row > 0 && index.nil?
+        row -= 1
+        index = @lines[ row ].rindex( char )
+      end
+
+      if index
+        delete_from_to( row, index+1, first_row, @last_col )
+        cursor_to( row, index+1 )
+      end
+    end
+
     def delete_to_and_from( char, inclusive = NOT_INCLUSIVE )
       remove_selection( DONT_DISPLAY )  if selection_mark
 

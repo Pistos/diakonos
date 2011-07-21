@@ -132,6 +132,13 @@ describe 'A Diakonos user can' do
     @b.to_a[ 5 ].should.equal '  :x, :y'
   end
 
+  it 'delete from a character' do
+    @b.cursor_to 12,11
+    @d.delete_from ' '
+    cursor_should_be_at 12,6
+    @b.to_a[12].should.equal '  def ction'
+  end
+
   it 'delete between matching characters' do
     @b.cursor_to 2,15
     @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'

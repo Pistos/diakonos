@@ -30,6 +30,25 @@ module Diakonos
       end
     end
 
+    # Deletes characters starting from (but not including) a given character
+    # up to (but not including) the current cursor position.
+    # Also puts the deleted text into the clipboard.
+    def delete_from( char = nil )
+      if char.nil?
+        set_iline "Type character to delete from..."
+        char = @win_main.getch
+        set_iline
+      end
+      if char
+        removed_text = buffer_current.delete_from char
+        if removed_text
+          @clipboard.add_clip removed_text
+        else
+          set_iline "'#{char}' not found."
+        end
+      end
+    end
+
     # Deletes characters between, but not including, a given pair of
     # characters.  Also puts the deleted text into the clipboard.
     # Brace characters are intelligently matched with their opposite-side
