@@ -137,6 +137,23 @@ describe 'A Diakonos user can' do
     @d.delete_from ' '
     cursor_should_be_at 12,6
     @b.to_a[12].should.equal '  def ction'
+
+    @b.cursor_to 7,6
+    @d.delete_from ' '
+    cursor_should_be_at 7,6
+    @b.to_a[7].should.equal '  def initialize'
+
+    @b.cursor_to 7,5
+    @d.delete_from ' '
+    cursor_should_be_at 7,2
+    @b.to_a[7].should.equal '   initialize'
+  end
+
+  it 'not delete from a non-existent character' do
+    @b.cursor_to 7,6
+    @d.delete_from '@'
+    @b.should.not.be.modified
+    @b.to_a[7].should.equal '  def initialize'
   end
 
   it 'delete between matching characters' do
