@@ -13,15 +13,18 @@ module Diakonos
       buffer_current.clear_matches Buffer::DO_DISPLAY
     end
 
+    # Unselects any current selection (stops selecting).
     def remove_selection
       buffer_current.remove_selection
       update_status_line
     end
 
+    # Selects the entire buffer contents.
     def select_all
       buffer_current.select_all
     end
 
+    # Selects text between two regexps.
     def select_block( beginning = nil, ending = nil, including_ending = true )
       if beginning.nil?
         input = get_user_input( "Start at regexp: " )
@@ -40,26 +43,33 @@ module Diakonos
       end
     end
 
+    # Changes selection mode to block mode (rectangular selection).
     def selection_mode_block
       buffer_current.selection_mode_block
       update_status_line
     end
 
+    # Changes selection mode to normal mode (flow selection).
     def selection_mode_normal
       buffer_current.selection_mode_normal
       update_status_line
     end
 
+    # If currently selecting, stops selecting.
+    # If not currently selecting, begins selecting.
     def toggle_selection
       buffer_current.toggle_selection
       update_status_line
     end
 
+    # Selects the current line.
     def select_line
       buffer_current.select_current_line
       update_status_line
     end
 
+    # Selects the code block which wraps the current cursor position.
+    # Execute multiple times in succession to select increasingly outer code blocks.
     def select_wrapping_block
       buffer_current.select_wrapping_block
       update_status_line
