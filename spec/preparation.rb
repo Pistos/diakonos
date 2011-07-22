@@ -39,6 +39,14 @@ def numbered_buffer_should_be_named( number, name_expected )
   name.should.equal name_expected
 end
 
+def selection_should_be( start_row, start_col, end_row, end_col )
+  s = @b.selection_mark
+  s.should.not.be.nil
+  s.start_row.should.equal start_row
+  s.end_row.should.equal end_row
+  s.start_col.should.equal start_col
+  s.end_col.should.equal end_col
+end
 
 if $diakonos.nil?
   $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]

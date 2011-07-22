@@ -121,6 +121,29 @@ module Diakonos
       cursor_to( start_row, 0, DO_DISPLAY )
     end
 
+    def select_word
+      coords = word_under_cursor_pos( or_after: true )
+      if coords
+        cursor_to *coords[1]
+        set_selection *(coords.flatten)
+        display
+      end
+    end
+
+    def select_word_another
+      m = selection_mark
+      if m.nil?
+        select_word
+      else
+        row, col, _ = pos_of_next( /\w\b/, @last_row, @last_col )
+        if row && col
+          cursor_to row, col+1
+          set_selection m.start_row, m.start_col, row, col+1
+          display
+        end
+      end
+    end
+
     def select( from_regexp, to_regexp, include_ending = true )
       start_row = nil
 
