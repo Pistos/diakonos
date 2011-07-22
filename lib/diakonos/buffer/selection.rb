@@ -123,9 +123,12 @@ module Diakonos
 
     def select_word
       coords = word_under_cursor_pos( or_after: true )
-      if coords
+      if coords.nil?
+        remove_selection
+      else
+        cursor_to *coords[0]
+        anchor_selection
         cursor_to *coords[1]
-        set_selection *(coords.flatten)
         display
       end
     end
@@ -137,9 +140,7 @@ module Diakonos
       else
         row, col, _ = pos_of_next( /\w\b/, @last_row, @last_col )
         if row && col
-          cursor_to row, col+1
-          set_selection m.start_row, m.start_col, row, col+1
-          display
+          cursor_to row, col+1, DO_DISPLAY
         end
       end
     end

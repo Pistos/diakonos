@@ -78,7 +78,11 @@ describe 'A Diakonos user can' do
     @d.select_word
     selection_should_be 2,2, 2,6
     cursor_should_be_at 2,6
+    @d.cursor_right
+    selection_should_be 2,2, 2,7
+    cursor_should_be_at 2,7
 
+    @d.remove_selection
     @b.cursor_to 26,40
     @d.select_word
     s = @b.selection_mark
@@ -103,7 +107,11 @@ describe 'A Diakonos user can' do
     @d.select_word_another
     selection_should_be 2,2, 2,23
     cursor_should_be_at 2,23
+    @d.cursor_right
+    selection_should_be 2,2, 2,24
+    cursor_should_be_at 2,24
 
+    @d.remove_selection
     @b.cursor_to 26,34
     @d.select_word
     selection_should_be 26,34, 26,36
