@@ -130,7 +130,7 @@ module Diakonos
     end
 
     def set_iline_if_empty( string )
-      if @iline.empty?
+      if @iline.nil? || @iline.empty?
         set_iline string
       end
     end

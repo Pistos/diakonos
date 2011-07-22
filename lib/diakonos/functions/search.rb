@@ -126,6 +126,32 @@ module Diakonos
       end
     end
 
+    # Search for a string surrounded by word boundaries.
+    # @param [String] dir_str
+    #   The direction to search; 'down' (default) or 'up'.
+    # @param [String] search_term_
+    #   The thing to search for.
+    # @see #find
+    # @see #find_again
+    def find_word( dir_str = "down", search_term_ = nil )
+      if search_term_.nil?
+        if buffer_current.changing_selection
+          selected_text = buffer_current.copy_selection[ 0 ]
+        end
+        search_term = get_user_input(
+          "Search for: ",
+          history: @rlh_search,
+          initial_text: selected_text || ""
+        )
+      else
+        search_term = search_term_
+      end
+
+      if search_term
+        find dir_str, CASE_INSENSITIVE, "\\b#{search_term}\\b"
+      end
+    end
+
     # Moves the cursor to the pair match of the current character, if any.
     def go_to_pair_match
       buffer_current.go_to_pair_match

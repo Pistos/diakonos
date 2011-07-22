@@ -25,6 +25,16 @@ describe 'A Diakonos user' do
     @d.close_list_buffer
   end
 
+  it 'can find words' do
+    @d.find_word 'down', 'is'
+    cursor_should_be_at 2,9
+    selection_should_be 2,7, 2,9
+
+    @d.find_word 'down', 'InSpEcT'
+    cursor_should_be_at 13,13
+    selection_should_be 13,6, 13,13
+  end
+
 end
 
 describe 'A Diakonos Buffer' do
