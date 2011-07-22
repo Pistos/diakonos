@@ -325,7 +325,7 @@ module Diakonos
               buffer_current.search_area = nil
             end
             eval to_eval, nil, "eval"
-            @last_commands << to_eval  unless to_eval == "repeat_last"
+            @functions_last << to_eval  unless to_eval == "repeat_last"
             if ! @there_was_non_movement
               @there_was_non_movement = !( /^((cursor|page|scroll)_?(up|down|left|right)|find|seek)/i === to_eval )
             end

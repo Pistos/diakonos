@@ -22,7 +22,7 @@ module Diakonos
       removed_text = buffer_current.delete_line
       if removed_text
         clip = [ removed_text, "" ]
-        if @last_commands[ -1 ] =~ /^delete_and_store_line/
+        if @functions_last[ -1 ] =~ /^delete_and_store_line/
           @clipboard.append_to_clip clip
         else
           @clipboard.add_clip clip

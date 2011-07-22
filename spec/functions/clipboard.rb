@@ -74,20 +74,20 @@ describe 'A Diakonos user can' do
 
     @d.cursor_bof
     @d.delete_and_store_line
-    @d.last_commands << 'delete_and_store_line'
+    @d.functions_last << 'delete_and_store_line'
     @d.clipboard.clip.should.equal( [
       '#!/usr/bin/env ruby',
       '',
     ] )
     @d.delete_and_store_line
-    @d.last_commands << 'delete_and_store_line'
+    @d.functions_last << 'delete_and_store_line'
     @d.clipboard.clip.should.equal( [
       '#!/usr/bin/env ruby',
       '',
       '',
     ] )
     @d.delete_and_store_line
-    @d.last_commands << 'delete_and_store_line'
+    @d.functions_last << 'delete_and_store_line'
     @d.clipboard.clip.should.equal( [
       '#!/usr/bin/env ruby',
       '',

@@ -121,13 +121,11 @@ module Diakonos
 
   LANG_TEXT = 'text'
 
-  NUM_LAST_COMMANDS = 2
-
   class Diakonos
 
     attr_reader :diakonos_home, :script_dir, :clipboard,
       :list_filename, :hooks, :indenters, :indenters_next_line, :unindenters, :closers,
-      :last_commands, :there_was_non_movement, :do_display, :testing
+      :functions_last, :there_was_non_movement, :do_display, :testing
 
     include ::Diakonos::Functions
 
@@ -178,7 +176,7 @@ module Diakonos
       @macro_history          = nil
       @macro_input_history    = nil
       @macros                 = Hash.new
-      @last_commands          = SizedArray.new( NUM_LAST_COMMANDS )
+      @functions_last         = SizedArray.new(2)
       @playing_macro          = false
 
       @display_mutex          = Mutex.new

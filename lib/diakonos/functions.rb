@@ -260,7 +260,7 @@ module Diakonos
     end
 
     def repeat_last
-      eval @last_commands[ -1 ] if not @last_commands.empty?
+      eval @functions_last[ -1 ] if not @functions_last.empty?
     end
 
     # Send the Diakonos job to background, as if with Ctrl-Z
