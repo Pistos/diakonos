@@ -78,7 +78,7 @@ module Diakonos
     # Selects the word at the current cursor position.
     # If the cursor is not on a word character, the first word following the cursor is selected.
     def select_word
-      coords = buffer_current.word_under_cursor_pos
+      coords = buffer_current.word_under_cursor_pos( or_after: true )
       if coords
         buffer_current.set_selection *(coords.flatten)
         buffer_current.display

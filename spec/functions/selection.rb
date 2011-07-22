@@ -86,14 +86,19 @@ describe 'A Diakonos user can' do
     s.start_col.should.equal 2
     s.end_col.should.equal 6
 
-    # @b.cursor_to 2,1
-    # @d.select_word
-    # s = @b.selection_mark
-    # s.should.not.be.nil
-    # s.start_row.should.equal 2
-    # s.end_row.should.equal 2
-    # s.start_col.should.equal 2
-    # s.end_col.should.equal 6
+    @b.cursor_to 2,1
+    @d.select_word
+    s = @b.selection_mark
+    s.should.not.be.nil
+    s.start_row.should.equal 2
+    s.end_row.should.equal 2
+    s.start_col.should.equal 2
+    s.end_col.should.equal 6
+
+    @b.cursor_to 26,40
+    @d.select_word
+    s = @b.selection_mark
+    s.should.be.nil
   end
 
 end

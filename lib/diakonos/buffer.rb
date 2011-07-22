@@ -579,10 +579,14 @@ module Diakonos
       @lines[ @last_row ][ col1...col2 ]
     end
 
-    def word_under_cursor_pos
+    def word_under_cursor_pos( options = {} )
+      or_after = options[:or_after]
       @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
         last_match = Regexp.last_match
-        if last_match.begin( 0 ) <= @last_col && @last_col < last_match.end( 0 )
+        if (
+          last_match.begin( 0 ) <= @last_col && @last_col < last_match.end( 0 ) ||
+          or_after && last_match.begin(0) > @last_col
+        )
           return [
             [ @last_row, last_match.begin( 0 ) ],
             [ @last_row, last_match.end( 0 ) ],
