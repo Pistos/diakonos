@@ -83,14 +83,15 @@ module Diakonos
         end
 
         if to_switch_to
-          switch_to( to_switch_to )
+          switch_to to_switch_to
         elsif previous_buffer
-          switch_to( previous_buffer )
+          switch_to previous_buffer
         else
           # No buffers left.  Open a new blank one.
           open_file
         end
 
+        @buffer_closed = del_buffer
         @buffers.delete del_buffer
         cursor_stack_remove_buffer del_buffer
         save_session
@@ -147,6 +148,10 @@ module Diakonos
     # @option meta [Hash] 'display' (nil)
     #   A Hash containing the 'top_line' and 'left_column' to use to position
     #   the view after opening.
+    # @option meta [Boolean] 'read_only' (false)
+    #   Whether to open the file in read-only (unmodifiable) mode
+    # @option meta [Boolean] 'revert' (false)
+    #   Whether to skip asking about reverting to on-disk file contents (if different)
     # @return [Buffer] the buffer of the opened file
     # @return [NilClass] nil on failure
     def open_file( filename = nil, meta = {} )
@@ -164,7 +169,8 @@ module Diakonos
       do_open = true
       buffer = nil
       if filename
-        filename, last_row = parse_filename_and_line_number( filename )
+        filename, last_row_ = parse_filename_and_line_number( filename )
+        last_row = last_row_ || last_row
         existing_buffer = @buffers.find { |b| b.name == filename }
 
         if existing_buffer

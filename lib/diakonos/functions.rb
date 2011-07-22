@@ -280,9 +280,24 @@ module Diakonos
       end
     end
 
-    # Undoes the latest change made to the current buffer.
+    # Undoes the latest change made to the current buffer,
+    # or reopens the file that was just closed.
     def undo( buffer = buffer_current )
-      buffer.undo
+      if @functions_last[-1] == 'close_file'
+        open_file(
+          @buffer_closed.name,
+          'cursor' => {
+            'row' => @buffer_closed.last_row,
+            'col' => @buffer_closed.last_col,
+          },
+          'display' => {
+            'top_line' => @buffer_closed.top_line,
+            'left_col' => @buffer_closed.left_column,
+          }
+        )
+      else
+        buffer.undo
+      end
     end
 
     # Redoes the latest change undone on the current buffer.
