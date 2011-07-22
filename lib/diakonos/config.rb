@@ -161,7 +161,7 @@ module Diakonos
       end
     end
 
-    def map_key( arg, mode = 'edit' )
+    def map_key( arg, keymap = @modes['edit'].keymap )
       return  if arg.nil?
 
       if /  / === arg
@@ -181,10 +181,10 @@ module Diakonos
       end
 
       if function_and_args.nil?
-        @modes[ mode ].keymap.delete_key_path( keystrokes )
+        keymap.delete_key_path( keystrokes )
       else
         function, function_args = function_and_args.split( /\s+/, 2 )
-        @modes[ mode ].keymap.set_key_path(
+        keymap.set_key_path(
           keystrokes,
           [ function, function_args ]
         )
@@ -249,11 +249,14 @@ module Diakonos
 
           pair_parens = args
           @surround_pairs[ language ][ pair_key ] = pair_parens
-        when "key"
+        when 'key'
           map_key arg
         when 'mkey'
           mode, arg_ = arg.split( /\s+/, 2 )
-          map_key arg_, mode
+          map_key arg_, @modes[mode].keymap
+        when 'key.after'
+          function, args = arg.split( /\s+/, 2 )
+          map_key args, @modes['edit'].keymap_after[function]
         when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/, /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
           get_token_regexp( @token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/

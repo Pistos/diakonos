@@ -302,10 +302,15 @@ module Diakonos
         end
         keychain_pressed = context.concat [ c ]
 
-        function_and_args = @modes[ mode ].keymap.get_leaf( keychain_pressed )
+        function_and_args = (
+          @modes[mode].keymap_after[@function_last].get_leaf( keychain_pressed ) ||
+          @modes[mode].keymap.get_leaf( keychain_pressed )
+        )
 
         if function_and_args
           function, args = function_and_args
+          @function_last = function
+
           if mode != 'input' && ! @settings[ "context.combined" ]
             set_iline
           end
