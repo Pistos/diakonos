@@ -255,11 +255,11 @@ module Diakonos
           case choice
           when CHOICE_YES
             paste [ actual_replacement ]
-            num_replacements += 1 + find( regexps, :direction => direction, :replacement => replacement )
+            num_replacements += 1 + find( regexps, direction: direction, replacement: replacement )
           when CHOICE_ALL
             num_replacements += replace_all( regexp, replacement )
           when CHOICE_NO
-            num_replacements += find( regexps, :direction => direction, :replacement => replacement )
+            num_replacements += find( regexps, direction: direction, replacement: replacement )
           when CHOICE_CANCEL
             # Do nothing further.
           when CHOICE_YES_AND_STOP
@@ -396,7 +396,7 @@ module Diakonos
         @last_search_regexps = last_search_regexps
       end
       if @last_search_regexps
-        find( @last_search_regexps, :direction => direction )
+        find @last_search_regexps, direction: direction
       end
     end
 

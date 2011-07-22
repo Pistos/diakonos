@@ -12,8 +12,10 @@ module Diakonos
     #   If provided, do a find and replace, and replace matches with replacement.
     # @see #find_exact
     # @see #find_again
-    def find( dir_str = "down", case_sensitive = CASE_INSENSITIVE, regexp_source_ = nil, replacement = nil )
-      direction = direction_of( dir_str )
+    def find( regexp_source_ = nil, options = {} )
+      direction = direction_of( options[:direction] )
+      case_sensitive = options[:case_sensitive]
+      replacement = options[:replacement]
 
       if regexp_source_
         regexp_source = regexp_source_
@@ -79,7 +81,7 @@ module Diakonos
     #   Whether or not the search should be case_sensitive.  Default is insensitive.
     # @see #find
     def find_clip( dir_str = "down", case_sensitive = CASE_INSENSITIVE )
-      find dir_str, case_sensitive, @clipboard.clip[-1]
+      find @clipboard.clip[-1], direction: dir_str, case_sensitive: case_sensitive
     end
 
     # Search again for the most recently sought search term.
@@ -148,7 +150,7 @@ module Diakonos
       end
 
       if search_term
-        find dir_str, CASE_INSENSITIVE, "\\b#{search_term}\\b"
+        find "\\b#{search_term}\\b", direction: dir_str
       end
     end
 
@@ -160,7 +162,7 @@ module Diakonos
     # Wrapper method for calling #find for search and replace.
     # @see #find
     def search_and_replace( case_sensitive = CASE_INSENSITIVE )
-      find( "down", case_sensitive, nil, ASK_REPLACEMENT )
+      find nil, case_sensitive: case_sensitive, replacement: ASK_REPLACEMENT
     end
     alias_method :find_and_replace, :search_and_replace
 

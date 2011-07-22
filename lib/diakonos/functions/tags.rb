@@ -38,7 +38,7 @@ module Diakonos
         if line_number > 0
           buffer_current.go_to_line( line_number - 1 )
         else
-          find( "down", CASE_SENSITIVE, tag.command )
+          find tag.command case_sensitive: true
         end
       elsif tag_name
         set_iline "No such tag: '#{tag_name}'"

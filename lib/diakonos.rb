@@ -378,7 +378,7 @@ module Diakonos
       else
         conflict_regexp_source = '^<{4,}'
         if seek(conflict_regexp_source)
-          find  'down', CASE_INSENSITIVE, conflict_regexp_source, NO_REPLACEMENT
+          find conflict_regexp_source
         end
       end
 
