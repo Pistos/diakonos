@@ -169,6 +169,7 @@ module Diakonos
       else
         keystrings, function_and_args = arg.split( /;/, 2 )
       end
+
       keystrokes = Array.new
       keystrings.split( /\s+/ ).each do |ks_str|
         codes = Keying.keycodes_for( ks_str )
@@ -178,6 +179,7 @@ module Diakonos
           keystrokes.concat codes
         end
       end
+
       if function_and_args.nil?
         @modes[ mode ].keymap.delete_key_path( keystrokes )
       else
