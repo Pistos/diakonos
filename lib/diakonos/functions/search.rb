@@ -16,6 +16,7 @@ module Diakonos
       direction = direction_of( options[:direction] )
       case_sensitive = options[:case_sensitive]
       replacement = options[:replacement]
+      word_only = options[:word_only]
 
       if regexp_source_
         regexp_source = regexp_source_
@@ -38,10 +39,11 @@ module Diakonos
           initial_text: selected_text || ""
         ) { |input|
           if input.length > 1
+            regexp_source = word_only ? "\\b#{input}\\b" : input
             find_(
               direction: direction,
               case_sensitive: case_sensitive,
-              regexp_source: input,
+              regexp_source: regexp_source,
               starting_row: starting_row,
               starting_col: starting_col,
               quiet: true
@@ -54,6 +56,9 @@ module Diakonos
       end
 
       if regexp_source
+        if word_only
+          regexp_source = "\\b#{regexp_source}\\b"
+        end
         num_replacements = find_(
           direction: direction,
           case_sensitive: case_sensitive,
@@ -125,32 +130,6 @@ module Diakonos
         regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
         buffer_current.find( regexp, :direction => direction )
         @last_search_regexps = regexp
-      end
-    end
-
-    # Search for a string surrounded by word boundaries.
-    # @param [String] dir_str
-    #   The direction to search; 'down' (default) or 'up'.
-    # @param [String] search_term_
-    #   The thing to search for.
-    # @see #find
-    # @see #find_again
-    def find_word( dir_str = "down", search_term_ = nil )
-      if search_term_.nil?
-        if buffer_current.changing_selection
-          selected_text = buffer_current.copy_selection[ 0 ]
-        end
-        search_term = get_user_input(
-          "Search for: ",
-          history: @rlh_search,
-          initial_text: selected_text || ""
-        )
-      else
-        search_term = search_term_
-      end
-
-      if search_term
-        find "\\b#{search_term}\\b", direction: dir_str
       end
     end
 

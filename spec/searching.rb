@@ -26,11 +26,11 @@ describe 'A Diakonos user' do
   end
 
   it 'can find words' do
-    @d.find_word 'down', 'is'
+    @d.find 'is', word_only: true
     cursor_should_be_at 2,9
     selection_should_be 2,7, 2,9
 
-    @d.find_word 'down', 'InSpEcT'
+    @d.find 'InSpEcT', word_only: true
     cursor_should_be_at 13,13
     selection_should_be 13,6, 13,13
   end
