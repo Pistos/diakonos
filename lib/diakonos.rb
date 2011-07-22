@@ -241,7 +241,7 @@ module Diakonos
           files = `egrep -rl '#{regexp}' *`.split( /\n/ )
           if files.any?
             @files.concat( files.map { |f| session_file_hash_for f } )
-            script = "\nfind 'down', CASE_SENSITIVE, '#{regexp}'"
+            script = "\nfind '#{regexp}', case_sensitive: true"
             @post_load_script << script
           end
         when '-ro'
@@ -531,23 +531,6 @@ module Diakonos
         temp << b
       end
       temp
-    end
-
-    def direction_of( str, default = :down )
-      case str
-      when "up"
-        :up
-      when /other/
-        :opposite
-      when "down"
-        :down
-      when "forward"
-        :forward
-      when "backward"
-        :backward
-      else
-        default
-      end
     end
 
     # @return [Array] the filename and line number parsed

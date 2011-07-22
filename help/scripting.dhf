@@ -59,7 +59,7 @@ After the startup scripts are require-d, Diakonos evaluates any Ruby code given
 with the -e command line argument.  Here is an example of using the -e argument
 to initiate a search on startup:
 
-  diakonos -e 'find "down", CASE_SENSITIVE, "search expression"' filename
+  diakonos -e 'find "search expression", case_sensitive: true' filename
 
 See also the documentation on extensions.
 

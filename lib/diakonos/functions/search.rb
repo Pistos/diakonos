@@ -6,8 +6,8 @@ module Diakonos
     #   The regular expression to search for.
     # @param [Hash] options
     #   Options that alter how the search is performed
-    # @option options [String] :direction ('down')
-    #   The direction to search; 'down' or 'up'.
+    # @option options [Symbol] :direction (:down)
+    #   The direction to search; :down or :up.
     # @option options [Boolean] :case_sensitive (false)
     #   Whether or not the search should be case_sensitive.
     # @option options [String] replacement
@@ -18,7 +18,7 @@ module Diakonos
     # @see #find_again
     # @see #find_clip
     def find( regexp_source_ = nil, options = {} )
-      direction = direction_of( options[:direction] )
+      direction = options[:direction] || :down
       case_sensitive = options[:case_sensitive]
       replacement = options[:replacement]
       word_only = options[:word_only]
@@ -85,23 +85,22 @@ module Diakonos
     # Searches for matches of the latest clipboard item in the current buffer.
     # Note that the clipboard item is interpreted as a regular expression.
     # Only the last line of multi-line clipboard items is used.
-    # @param [String] dir_str
-    #   The direction to search; 'down' (default) or 'up'.
+    # @param [String] direction
+    #   The direction to search.  :down (default) or :up.
     # @param [Boolean] case_sensitive
     #   Whether or not the search should be case_sensitive.  Default is insensitive.
     # @see #find
-    def find_clip( dir_str = "down", case_sensitive = CASE_INSENSITIVE )
-      find @clipboard.clip[-1], direction: dir_str, case_sensitive: case_sensitive
+    def find_clip( direction = :down, case_sensitive = CASE_INSENSITIVE )
+      find @clipboard.clip[-1], direction: direction, case_sensitive: case_sensitive
     end
 
     # Search again for the most recently sought search term.
-    # @param [String] dir_str
-    #   The direction to search; 'up' or 'down'.
+    # @param [String] direction
+    #   The direction to search; :down or :up.
     # @see #find
     # @see #find_exact
-    def find_again( dir_str = nil )
-      if dir_str
-        direction = direction_of( dir_str )
+    def find_again( direction = :down )
+      if direction
         buffer_current.find_again( @last_search_regexps, direction )
       else
         buffer_current.find_again( @last_search_regexps )
@@ -110,13 +109,13 @@ module Diakonos
     end
 
     # Search for an exact string (not a regular expression).
-    # @param [String] dir_str
-    #   The direction to search; 'down' (default) or 'up'.
+    # @param [Symbol] direction
+    #   The direction to search; :down (default) or :up.
     # @param [String] search_term_
     #   The thing to search for.
     # @see #find
     # @see #find_again
-    def find_exact( dir_str = "down", search_term_ = nil )
+    def find_exact( direction = :down, search_term_ = nil )
       buffer_current.search_area = nil
       if search_term_.nil?
         if buffer_current.changing_selection
@@ -131,7 +130,6 @@ module Diakonos
         search_term = search_term_
       end
       if search_term
-        direction = direction_of( dir_str )
         regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
         buffer_current.find( regexp, :direction => direction )
         @last_search_regexps = regexp
@@ -154,11 +152,10 @@ module Diakonos
     # The user is not prompted for any value.
     # @param [String] regexp_source
     #   The regular expression to search for.
-    # @param [String] dir_str
-    #   The direction to search; 'down' (default) or 'up'.
-    def seek( regexp_source, dir_str = "down" )
+    # @param [Symbol] direction
+    #   The direction to search; :down (default) or :up.
+    def seek( regexp_source, direction = :down )
       if regexp_source
-        direction = direction_of( dir_str )
         regexp = Regexp.new( regexp_source )
         buffer_current.seek( regexp, direction )
       end

@@ -336,7 +336,7 @@ module Diakonos
         files.each do |f|
           open_file f
         end
-        find regexp, direction: 'down', case_sensitive: true
+        find regexp, direction: :down, case_sensitive: true
       end
     end
 
