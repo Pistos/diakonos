@@ -6,13 +6,13 @@ module Diakonos
     #   The regular expression to search for.
     # @param [Hash] options
     #   Options that alter how the search is performed
-    # @option options [String] :direction
-    #   The direction to search; 'down' (default) or 'up'.
-    # @option options [Boolean] :case_sensitive
-    #   Whether or not the search should be case_sensitive.  Default is insensitive.
+    # @option options [String] :direction ('down')
+    #   The direction to search; 'down' or 'up'.
+    # @option options [Boolean] :case_sensitive (false)
+    #   Whether or not the search should be case_sensitive.
     # @option options [String] replacement
     #   If provided, do a find and replace, and replace matches with replacement.
-    # @option options [Boolean] :word_only
+    # @option options [Boolean] :word_only (false)
     #   Whether or not to search with word boundaries
     # @see #find_exact
     # @see #find_again
