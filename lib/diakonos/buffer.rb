@@ -576,7 +576,7 @@ module Diakonos
 
       col1 = pos[ 0 ][ 1 ]
       col2 = pos[ 1 ][ 1 ]
-      @lines[ @last_row ][ col1..col2 ]
+      @lines[ @last_row ][ col1...col2 ]
     end
 
     def word_under_cursor_pos
@@ -585,7 +585,7 @@ module Diakonos
         if last_match.begin( 0 ) <= @last_col && @last_col < last_match.end( 0 )
           return [
             [ @last_row, last_match.begin( 0 ) ],
-            [ @last_row, last_match.end( 0 ) - 1 ],
+            [ @last_row, last_match.end( 0 ) ],
           ]
         end
       end

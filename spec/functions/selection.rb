@@ -58,4 +58,42 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 0,0
   end
 
+  it 'select the word at the cursor position' do
+    @b.cursor_to 2,4
+    @d.select_word
+    s = @b.selection_mark
+    s.should.not.be.nil
+    s.start_row.should.equal 2
+    s.end_row.should.equal 2
+    s.start_col.should.equal 2
+    s.end_col.should.equal 6
+
+    @b.cursor_to 2,2
+    @d.select_word
+    s = @b.selection_mark
+    s.should.not.be.nil
+    s.start_row.should.equal 2
+    s.end_row.should.equal 2
+    s.start_col.should.equal 2
+    s.end_col.should.equal 6
+
+    @b.cursor_to 2,5
+    @d.select_word
+    s = @b.selection_mark
+    s.should.not.be.nil
+    s.start_row.should.equal 2
+    s.end_row.should.equal 2
+    s.start_col.should.equal 2
+    s.end_col.should.equal 6
+
+    # @b.cursor_to 2,1
+    # @d.select_word
+    # s = @b.selection_mark
+    # s.should.not.be.nil
+    # s.start_row.should.equal 2
+    # s.end_row.should.equal 2
+    # s.start_col.should.equal 2
+    # s.end_col.should.equal 6
+  end
+
 end

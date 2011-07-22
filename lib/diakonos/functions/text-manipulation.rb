@@ -172,7 +172,7 @@ module Diakonos
     def surround_word( envelope = nil )
       ( start_row, start_col ), ( end_row, end_col ) = buffer_current.word_under_cursor_pos
       if start_row && start_col && end_row && end_col
-        buffer_current.set_selection( start_row, start_col, end_row, end_col+1 )
+        buffer_current.set_selection( start_row, start_col, end_row, end_col )
         surround_selection envelope
       end
     end
