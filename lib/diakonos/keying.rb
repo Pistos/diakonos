@@ -280,7 +280,12 @@ module Diakonos
             break  if ch.nil?
 
             c = ch.ord
-            if typeable?( c )
+            # UTF-8
+            if 193 < c && c < 241
+              ch_second = @modes[mode].window.getch
+              char = [c, ch_second.ord].pack('C*').force_encoding('utf-8')
+              s << char
+            elsif typeable?( c )
               s << c
             elsif c == ENTER && mode == 'edit'
               s << "\n"
