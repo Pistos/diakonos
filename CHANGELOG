@@ -14,6 +14,7 @@ Diakonos Changelog
 - Added select_word_another function.  Mapped to <Ctrl-space> after select_word.
 - Added search for word, mapped to <Ctrl-Alt-F> by default.
 - Undo now opens any just-closed file.
+- Fixed find_again behaviour for buffers without search history.
 
 0.8.14
 

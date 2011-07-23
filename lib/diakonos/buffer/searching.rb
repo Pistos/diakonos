@@ -392,7 +392,7 @@ module Diakonos
     end
 
     def find_again( last_search_regexps, direction = @last_search_direction )
-      if @last_search_regexps.nil?
+      if @last_search_regexps.nil? || @last_search_regexps.empty?
         @last_search_regexps = last_search_regexps
       end
       if @last_search_regexps
