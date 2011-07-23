@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.8.16
+
+- Added experimental UTF-8 support.
+
 0.8.15
 
 - Introduced open_as_first_buffer setting (default false).

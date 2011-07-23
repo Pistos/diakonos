@@ -94,10 +94,6 @@ module Diakonos
       call_block
     end
 
-    def handle_typeable( c )
-      paste c.chr
-    end
-
     def paste( s )
       @input = @input[ 0...@input_cursor ] + s + @input[ @input_cursor..-1 ]
       @input_cursor += s.length

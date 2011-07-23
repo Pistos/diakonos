@@ -249,6 +249,14 @@ module Diakonos
       return  if ch.nil?
       c = ch.ord
 
+      # UTF-8
+      if 193 < c && c < 241
+        ch_second = @modes[mode].window.getch
+        char = [c, ch_second.ord].pack('C*').force_encoding('utf-8')
+        type_character char, mode
+        return
+      end
+
       if @capturing_keychain
         capture_keychain c, context
       elsif @capturing_mapping
@@ -256,11 +264,7 @@ module Diakonos
       else
 
         if context.empty? && typeable?( c )
-          if @macro_history
-            @macro_history.push "type_character #{c}, #{mode.inspect}"
-          end
-          @there_was_non_movement = true
-          type_character c, mode
+          type_character ch, mode
 
           # Handle X windows paste
           s = ""
@@ -354,19 +358,26 @@ module Diakonos
     end
 
     def type_character( c, mode = 'edit' )
+      if @macro_history
+        @macro_history.push "type_character #{c}, #{mode.inspect}"
+      end
+      @there_was_non_movement = true
+
       case mode
       when 'edit'
         buffer_current.delete_selection Buffer::DONT_DISPLAY
-        buffer_current.insert_char c
+        buffer_current.insert_string c
         cursor_right Buffer::STILL_TYPING
       when 'input'
-        if @readline.numbered_list?
+        if ! @readline.numbered_list?
+          @readline.paste c
+        else
           if(
             showing_list? &&
-            ( (48..57).include?( c ) || (97..122).include?( c ) )
+            ( (48..57).include?( c.ord ) || (97..122).include?( c.ord ) )
           )
             line = list_buffer.to_a.select { |l|
-              l =~ /^#{c.chr}  /
+              l =~ /^#{c}  /
             }[ 0 ]
 
             if line
@@ -374,8 +385,6 @@ module Diakonos
               @readline.finish
             end
           end
-        else
-          @readline.handle_typeable c
         end
       end
     end
