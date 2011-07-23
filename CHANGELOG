@@ -1,11 +1,45 @@
 Diakonos Changelog
 ------------------
 
+0.8.15
+
+- Introduced open_as_first_buffer setting (default false).
+- Now shows number of matches found after searching.
+- Now shows number of replacements made.
+- Now switches to previous buffer when switching to the current buffer by number.
+- Last search and readline histories are now saved to sessions.
+- Added delete_from function.
+- Added key.after configuration directive for history-sensitive key mapping.
+- Added select_word function.  Mapped to <Ctrl-space, Ctrl-space> by default.
+- Added select_word_another function.  Mapped to <Ctrl-space> after select_word.
+- Added search for word, mapped to <Ctrl-Alt-F> by default.
+- Undo now opens any just-closed file.
+
+0.8.14
+
+- comment_out now skips blank lines.
+- Added renumber_buffer function.  Default <Ctrl-B, number>.
+- Can now configure fuzzy_file_find.ignore globs and fuzzy_file_find.max_files.
+- go_to_char and go_to_char_previous now support an optional :after argument.
+- delete_to_and_from now supports an optional :inclusive argument.
+- More effecient marking of undo points when pasting external text or typing fast.
+- Added more info about config files in About page.
+- Display-related bug fixes and improvements.
+- Ruby 1.9.2 is now the minimum Ruby version required for Diakonos.
+
 0.8.13
 
 Contributors: Pistos
 
 - Added different_file argument to cursor_return.
+- Remapped different-file cursor_return to <Alt-`> and <Alt-Shift-`>.
+- Added KDE4 Klipper support (via dbus).
+- Now automatically jumps to first merge conflict (if any) on startup.
+- Added find_clip function.
+- Now switches to existing buffer when trying to open a file that is already loaded.
+- Now supports more formats for opening files at specific line numbers.
+- Added keys to switch to buffers 10 through 19.  <Alt-0, Alt-0> through <Alt-0, Alt-9>.
+- Numerous minor fixes and improvements.
 
 0.8.12
 
