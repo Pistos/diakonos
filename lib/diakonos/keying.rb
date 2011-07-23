@@ -250,9 +250,28 @@ module Diakonos
       c = ch.ord
 
       # UTF-8
-      if 193 < c && c < 241
-        ch_second = @modes[mode].window.getch
-        char = [c, ch_second.ord].pack('C*').force_encoding('utf-8')
+      if 194 <= c && c <= 244
+        if 194 <= c && c <= 223
+          # 2-byte character
+          byte_array = [c, @modes[mode].window.getch.ord]
+        elsif 224 <= c && c <= 239
+          # 3-byte character
+          byte_array = [
+            c,
+            @modes[mode].window.getch.ord,
+            @modes[mode].window.getch.ord,
+          ]
+        elsif 240 <= c && c <= 244
+          # 4-byte character
+          byte_array = [
+            c,
+            @modes[mode].window.getch.ord,
+            @modes[mode].window.getch.ord,
+            @modes[mode].window.getch.ord,
+          ]
+        end
+
+        char = byte_array.pack('C*').force_encoding('utf-8')
         type_character char, mode
         return
       end
@@ -281,9 +300,28 @@ module Diakonos
 
             c = ch.ord
             # UTF-8
-            if 193 < c && c < 241
-              ch_second = @modes[mode].window.getch
-              char = [c, ch_second.ord].pack('C*').force_encoding('utf-8')
+            if 194 <= c && c <= 244
+              if 194 <= c && c <= 223
+                # 2-byte character
+                byte_array = [c, @modes[mode].window.getch.ord]
+              elsif 224 <= c && c <= 239
+                # 3-byte character
+                byte_array = [
+                  c,
+                  @modes[mode].window.getch.ord,
+                  @modes[mode].window.getch.ord,
+                ]
+              elsif 240 <= c && c <= 244
+                # 4-byte character
+                byte_array = [
+                  c,
+                  @modes[mode].window.getch.ord,
+                  @modes[mode].window.getch.ord,
+                  @modes[mode].window.getch.ord,
+                ]
+              end
+
+              char = byte_array.pack('C*').force_encoding('utf-8')
               s << char
             elsif typeable?( c )
               s << c
