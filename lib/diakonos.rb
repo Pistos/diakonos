@@ -362,6 +362,7 @@ module Diakonos
         run_hook_procs :after_open, b
         b.cursor_to( b.last_row, b.last_col, Buffer::DONT_DISPLAY )
       end
+      buffer_current.cursor_to( buffer_current.last_row, buffer_current.last_col, Buffer::DONT_DISPLAY )
 
       if @config_problems.any?
         File.open( @error_filename, "w" ) do |f|
