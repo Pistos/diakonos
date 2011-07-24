@@ -3,7 +3,7 @@ Diakonos Changelog
 
 0.8.16
 
-- Added experimental UTF-8 support.
+- Added partial UTF-8 support (only characters the same width as US-ASCII).
 
 0.8.15
 
