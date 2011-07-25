@@ -507,7 +507,8 @@ module Diakonos
     end
 
     def wrap_paragraph
-      start_row = end_row = @last_row
+      start_row = end_row = cursor_row = @last_row
+      cursor_col = @last_col
       until start_row == 0 || @lines[ start_row - 1 ].strip == ''
         start_row -= 1
       end
@@ -529,13 +530,14 @@ module Diakonos
         line << " #{word}"
       end
       line.strip!
-      if not line.empty?
+      if ! line.empty?
         lines << line
       end
       if @lines[ start_row...end_row ] != lines
         take_snapshot
         @lines[ start_row...end_row ] = lines
         set_modified
+        cursor_to start_row + lines.length, lines[-1].length
       end
     end
 
