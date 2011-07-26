@@ -40,7 +40,7 @@ module Diakonos
         set_iline
       end
       if char
-        removed_text = buffer_current.delete_from char
+        removed_text = buffer_current.delete_from(char)
         if removed_text
           @clipboard.add_clip removed_text
         else

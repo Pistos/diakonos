@@ -109,8 +109,9 @@ module Diakonos
       end
 
       if index
-        delete_from_to( row, index+1, first_row, @last_col )
+        deleted_text = delete_from_to( row, index+1, first_row, @last_col )
         cursor_to( row, index+1 )
+        deleted_text
       end
     end
 
