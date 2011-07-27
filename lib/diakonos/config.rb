@@ -110,42 +110,38 @@ module Diakonos
 
       @colour_pairs = Array.new
 
-      begin
-        @configs = []
-        @config_problems = []
-        parse_configuration_file @global_diakonos_conf
-        parse_configuration_file @diakonos_conf
+      @configs = []
+      @config_problems = []
+      parse_configuration_file @global_diakonos_conf
+      parse_configuration_file @diakonos_conf
 
-        languages = @surround_pairs.keys | @token_regexps.keys | @close_token_regexps.keys | @token_formats.keys
+      languages = @surround_pairs.keys | @token_regexps.keys | @close_token_regexps.keys | @token_formats.keys
 
-        languages.each do |language|
-          @surround_pairs[ language ] = @surround_pairs[ 'all' ].merge( @surround_pairs[ language ] )
-          @token_regexps[ language ] = @token_regexps[ 'all' ].merge( @token_regexps[ language ] )
-          @close_token_regexps[ language ] = @close_token_regexps[ 'all' ].merge( @close_token_regexps[ language ] )
-          @token_formats[ language ] = @token_formats[ 'all' ].merge( @token_formats[ language ] )
+      languages.each do |language|
+        @surround_pairs[ language ] = @surround_pairs[ 'all' ].merge( @surround_pairs[ language ] )
+        @token_regexps[ language ] = @token_regexps[ 'all' ].merge( @token_regexps[ language ] )
+        @close_token_regexps[ language ] = @close_token_regexps[ 'all' ].merge( @close_token_regexps[ language ] )
+        @token_formats[ language ] = @token_formats[ 'all' ].merge( @token_formats[ language ] )
+      end
+
+      merge_session_settings
+
+      case @settings[ 'clipboard.external' ]
+      when 'klipper', 'klipper-dcop'
+        @clipboard = ClipboardKlipper.new
+      when 'klipper-dbus'
+        @clipboard = ClipboardKlipperDBus.new
+      when 'xclip'
+        @clipboard = ClipboardXClip.new
+      else
+        @clipboard = Clipboard.new( @settings[ "max_clips" ] )
+      end
+      @log = File.open( @logfilename, "a" )
+
+      if @buffers
+        @buffers.each do |buffer|
+          buffer.configure
         end
-
-        merge_session_settings
-
-        case @settings[ 'clipboard.external' ]
-        when 'klipper', 'klipper-dcop'
-          @clipboard = ClipboardKlipper.new
-        when 'klipper-dbus'
-          @clipboard = ClipboardKlipperDBus.new
-        when 'xclip'
-          @clipboard = ClipboardXClip.new
-        else
-          @clipboard = Clipboard.new( @settings[ "max_clips" ] )
-        end
-        @log = File.open( @logfilename, "a" )
-
-        if @buffers
-          @buffers.each do |buffer|
-            buffer.configure
-          end
-        end
-      rescue Errno::ENOENT
-        # No config file found or readable
       end
     end
 
@@ -196,10 +192,18 @@ module Diakonos
     # @return an Array of problem descriptions (Strings)
     def parse_configuration_file( filename_, including_filename = nil )
       return  if filename_.nil?
-      filename = File.realpath( filename_ )
+      begin
+        filename = File.realpath( filename_ )
+      rescue Errno::ENOENT
+        s = "Configuration file #{filename_.inspect} was not found"
+        if including_filename
+          s << " (referenced from #{including_filename.inspect}"
+        end
+        @config_problems << s
+        return
+      end
       return  if @configs.any? { |c| c[:filename] == filename }
       @configs << { filename: filename, source: including_filename }
-      return  if ! FileTest.exists? filename
 
       IO.readlines( filename ).each_with_index do |line,line_number|
         line.chomp!
@@ -215,7 +219,7 @@ module Diakonos
           command, arg = line.split( /\s+/, 2 )
           next  if command.nil?
           if arg.nil?
-            @config_problems << "Configuration file '#{filename}' has an error on line #{line_number+1}"
+            @config_problems << "Configuration file #{filename.inspect} has an error on line #{line_number+1}"
             next
           end
         end
