@@ -12,6 +12,19 @@ describe 'A Diakonos user can' do
     @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
   end
 
+  it 'can close a buffer' do
+    name = @d.buffer_current.name
+    n = @d.buffers.size
+    n.should > 0
+    @d.buffers.map(&:name).should.include name
+
+    @d.close_buffer
+
+    @d.buffers.size.should.equal n-1
+    @d.buffer_current.name.should.not.equal name
+    @d.buffers.map(&:name).should.not.include name
+  end
+
   it 'open a file at a specific line number' do
     @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:45" )
     cursor_should_be_at 44, 0
