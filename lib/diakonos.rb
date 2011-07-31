@@ -344,7 +344,7 @@ module Diakonos
 
       if session_buffers
         session_buffers.each do |buffer|
-          close_file buffer
+          close_buffer buffer
         end
       end
 

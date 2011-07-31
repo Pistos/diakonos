@@ -170,7 +170,7 @@ module Diakonos
             # TODO: let them choose "never" and "always"
           end
 
-          close_file error_file
+          close_buffer error_file
         else
           help selected
         end
@@ -248,7 +248,7 @@ module Diakonos
       @buffers.each do |buffer|
         next  if ! buffer.modified?
         switch_to buffer
-        closure_choice = close_file( buffer, to_all )
+        closure_choice = close_buffer( buffer, to_all )
         case closure_choice
         when CHOICE_CANCEL
           @quitting = false
@@ -283,7 +283,7 @@ module Diakonos
     # Undoes the latest change made to the current buffer,
     # or reopens the file that was just closed.
     def undo( buffer = buffer_current )
-      if @functions_last[-1] == 'close_file'
+      if @functions_last[-1] == 'close_buffer'
         open_file(
           @buffer_closed.name,
           'cursor' => {

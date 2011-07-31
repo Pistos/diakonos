@@ -9,7 +9,7 @@ module Diakonos
       @help_buffer = open_file( @help_filename )
     end
     def close_help_buffer
-      close_file @help_buffer
+      close_buffer @help_buffer
       @help_buffer = nil
     end
 
