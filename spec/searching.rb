@@ -9,7 +9,7 @@ describe 'A Diakonos user' do
   end
 
   after do
-    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'can grep the open buffers' do
@@ -46,7 +46,7 @@ describe 'A Diakonos Buffer' do
   end
 
   after do
-    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'can find next closest characters' do

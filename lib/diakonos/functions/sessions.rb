@@ -51,7 +51,7 @@ module Diakonos
         end
         @session = nil
         @buffers.each do |buffer|
-          close_file buffer
+          close_buffer buffer
         end
         new_session( path )
         @session[ 'files' ].each do |file|

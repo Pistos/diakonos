@@ -10,7 +10,7 @@ module Diakonos
     # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
     # @see Diakonos::CHOICE_YES
     # @see Diakonos::CHOICE_NO
-    def close_file( buffer = buffer_current, to_all = nil )
+    def close_buffer( buffer = buffer_current, to_all = nil )
       return nil  if buffer.nil?
 
       choice = nil

@@ -9,7 +9,7 @@ describe 'A Diakonos user can' do
   end
 
   after do
-    @d.close_file @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'delete the current character' do

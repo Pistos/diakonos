@@ -10,7 +10,8 @@ module Diakonos
     alias_method :carriageReturn,         :carriage_return
     alias_method :changeSessionSetting,   :change_session_setting
     alias_method :clearMatches,           :clear_matches
-    alias_method :closeFile,              :close_file
+    alias_method :closeFile,              :close_buffer
+    alias_method :close_file,             :close_buffer
     alias_method :collapseWhitespace,     :collapse_whitespace
     alias_method :copySelection,          :copy_selection
     alias_method :cursorDown,             :cursor_down
