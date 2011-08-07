@@ -68,7 +68,10 @@ module Diakonos
       level
     end
 
-    def parsed_indent( row = @last_row, do_display = DO_DISPLAY )
+    def parsed_indent( opts = {} )
+      row        = opts[:row]        || @last_row
+      do_display = opts[:do_display] || true
+
       if row == 0 || @lines[ row ] =~ @settings[ "lang.#{@language}.indent.not_indented" ]
         level = 0
       else

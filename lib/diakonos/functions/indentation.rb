@@ -37,7 +37,7 @@ module Diakonos
         @do_display = false
         mark = buffer_current.selection_mark
         (mark.start_row..mark.end_row).each do |row|
-          buffer_current.parsed_indent row, Buffer::DONT_DISPLAY
+          buffer_current.parsed_indent  row: row, do_display: false
         end
         @do_display = true
         display_buffer buffer_current

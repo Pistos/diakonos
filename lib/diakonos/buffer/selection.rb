@@ -313,7 +313,7 @@ module Diakonos
       if text.length == 1
         @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col..-1 ]
         if do_parsed_indent
-          parsed_indent row, DONT_DISPLAY
+          parsed_indent  row: row, do_display: false
         end
         cursor_to( @last_row, @last_col + text[ 0 ].length, DONT_DISPLAY, ! typing )
       elsif text.length > 1
@@ -337,7 +337,7 @@ module Diakonos
         new_row = @last_row + text.length - 1
         if do_parsed_indent
           ( row..new_row ).each do |r|
-            parsed_indent r, DONT_DISPLAY
+            parsed_indent  row: r, do_display: false
           end
         end
         cursor_to( new_row, new_col )

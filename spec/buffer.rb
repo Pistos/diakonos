@@ -110,7 +110,7 @@ describe 'A Diakonos::Buffer' do
 
   def indent_rows( from_row = 0, to_row = 20 )
     (from_row..to_row).each do |row|
-      @b.parsed_indent row, ::Diakonos::Buffer::DONT_DISPLAY
+      @b.parsed_indent  row: row, do_display: false
     end
   end
 
