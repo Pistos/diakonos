@@ -9,7 +9,7 @@ describe 'A Diakonos user can' do
   end
 
   after do
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'can close a buffer' do
@@ -29,23 +29,23 @@ describe 'A Diakonos user can' do
     @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:45" )
     cursor_should_be_at 44, 0
 
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
     @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:50:" )
     cursor_should_be_at 49, 0
 
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
     @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:54: in `block in methodname'" )
     cursor_should_be_at 53, 0
 
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
     @b = @d.open_file( "        from #{SAMPLE_FILE_LONGER}:57: in `block in methodname'" )
     cursor_should_be_at 56, 0
 
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
     @b = @d.open_file( %{  File "#{SAMPLE_FILE_LONGER}", line 55, in decoration} )
     cursor_should_be_at 54, 0
 
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
     @b = @d.open_file( " at #{SAMPLE_FILE_LONGER} line 61" )
     cursor_should_be_at 60, 0
 

@@ -5,13 +5,18 @@ module Diakonos
     #
     # @param [Diakonos::Buffer] buffer
     #   The buffer to close.  If no buffer is provided, defaults to the current buffer.
-    # @param [Fixnum] to_all
+    # @option opts [Fixnum] :to_all
     #   The CHOICE to assume for the prompt.
+    # @option opts [Boolean] :do_display
+    #   Whether or not to update the display after closure
     # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
     # @see Diakonos::CHOICE_YES
     # @see Diakonos::CHOICE_NO
-    def close_buffer( buffer = buffer_current, to_all = nil )
+    def close_buffer( buffer = buffer_current, opts = {} )
       return nil  if buffer.nil?
+
+      to_all = opts[:to_all]
+      do_display = opts.fetch( :do_display, true )
 
       choice = nil
       if ! @buffers.include?( buffer )
@@ -83,9 +88,9 @@ module Diakonos
         end
 
         if to_switch_to
-          switch_to to_switch_to
+          switch_to  to_switch_to, do_display: do_display
         elsif previous_buffer
-          switch_to previous_buffer
+          switch_to  previous_buffer, do_display: do_display
         else
           # No buffers left.  Open a new blank one.
           open_file
@@ -175,7 +180,7 @@ module Diakonos
 
         if existing_buffer
           do_open = force_revert || ( filename =~ /\.diakonos/ )
-          switch_to existing_buffer
+          switch_to  existing_buffer, do_display: false
 
           if ! do_open && existing_buffer.file_different?
             show_buffer_file_diff( existing_buffer ) do
@@ -249,16 +254,16 @@ module Diakonos
           end
           run_hook_procs( :after_open, buffer )
           save_session
-          if switch_to( buffer )
+          if switch_to( buffer, do_display: false )
             if last_row
-              buffer.cursor_to last_row, last_col || 0
+              buffer.cursor_to last_row, last_col || 0, Buffer::DO_DISPLAY
             else
               display_buffer buffer
             end
           end
         end
       elsif existing_buffer && last_row
-        existing_buffer.cursor_to last_row, last_col || 0
+        existing_buffer.cursor_to last_row, last_col || 0, Buffer::DO_DISPLAY
       end
 
       buffer || existing_buffer

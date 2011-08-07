@@ -248,7 +248,7 @@ module Diakonos
       @buffers.each do |buffer|
         next  if ! buffer.modified?
         switch_to buffer
-        closure_choice = close_buffer( buffer, to_all )
+        closure_choice = close_buffer( buffer, to_all: to_all )
         case closure_choice
         when CHOICE_CANCEL
           @quitting = false

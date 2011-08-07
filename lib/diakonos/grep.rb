@@ -35,7 +35,7 @@ module Diakonos
     def actually_grep( regexp_source, *buffers )
       begin
         regexp = Regexp.new( regexp_source, Regexp::IGNORECASE )
-        grep_results = buffers.map { |buffer| buffer.grep( regexp ) }.flatten
+        grep_results = buffers.map { |buffer| buffer.grep(regexp) }.flatten
         if settings[ 'grep.context' ] == 0
           join_str = "\n"
         else
@@ -62,16 +62,19 @@ module Diakonos
       selected = get_user_input(
         "Grep regexp: ",
         history: @rlh_search,
-        initial_text: regexp_source || selected_text || ""
+        initial_text: regexp_source || selected_text || "",
+        will_display_after_select: true
       ) { |input|
-        next if input.length < 2
+        next  if input.length < 2
         actually_grep input, *buffers
       }
 
       if selected
         spl = selected.split( "| " )
         if spl.size > 1
-          open_file spl[ -1 ]
+          open_file spl[-1]
+        else
+          original_buffer.cursor_to starting_row, starting_col
         end
       else
         original_buffer.cursor_to starting_row, starting_col

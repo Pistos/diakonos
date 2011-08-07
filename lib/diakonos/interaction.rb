@@ -45,6 +45,8 @@ module Diakonos
       options[ :initial_text ] ||= ""
       options[ :do_complete ] ||= DONT_COMPLETE
       options[ :on_dirs ] ||= :go_into_dirs
+      will_display_after_select = options.fetch( :will_display_after_select, false )
+
       if @playing_macro
         retval = @macro_input_history.shift
       else
@@ -54,8 +56,12 @@ module Diakonos
         while ! @readline.done?
           process_keystroke Array.new, 'input'
         end
-        close_list_buffer
         retval = @readline.input
+        if will_display_after_select
+          close_list_buffer  do_display: ! retval
+        else
+          close_list_buffer
+        end
         options[ :history ][ -1 ] = @readline.input
         @readline = nil
 

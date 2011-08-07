@@ -7,8 +7,8 @@ module Diakonos
       @list_buffer = open_file( @list_filename )
     end
 
-    def close_list_buffer
-      close_buffer @list_buffer
+    def close_list_buffer( opts = {} )
+      close_buffer  @list_buffer, opts
       @list_buffer = nil
     end
 

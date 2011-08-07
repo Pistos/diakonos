@@ -8,7 +8,7 @@ describe 'A Diakonos user can' do
   end
 
   after do
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'move the cursor in the four basic directions' do

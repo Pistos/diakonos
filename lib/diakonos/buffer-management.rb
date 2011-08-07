@@ -3,9 +3,12 @@ module Diakonos
     attr_reader :buffer_current
 
     # @param [Buffer] the Buffer to switch to
+    # @option opts [Boolean] :do_display
+    #   Whether or not to update the display after closure
     # @return [Boolean] true iff the buffer was successfully switched to
-    def switch_to( buffer )
+    def switch_to( buffer, opts = {} )
       return false  if buffer.nil?
+      do_display = opts.fetch( :do_display, true )
 
       @buffer_stack -= [ @buffer_current ]
       if @buffer_current
@@ -16,7 +19,9 @@ module Diakonos
       run_hook_procs( :after_buffer_switch, buffer )
       update_status_line
       update_context_line
-      display_buffer buffer
+      if do_display
+        display_buffer buffer
+      end
 
       true
     end

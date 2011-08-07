@@ -13,7 +13,7 @@ describe 'A Diakonos user can' do
   end
 
   after do
-    @d.close_buffer @b, Diakonos::CHOICE_NO_TO_ALL
+    @d.close_buffer  @b, to_all: Diakonos::CHOICE_NO_TO_ALL
   end
 
   it 'type one character and undo that typing' do
