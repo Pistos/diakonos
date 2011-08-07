@@ -20,7 +20,7 @@ module Diakonos
           do_it = true
         end
       end
-      if not @typing
+      if ! @typing
         do_it = true
       end
 
@@ -29,15 +29,17 @@ module Diakonos
         @buffer_states[ 1..-1 ].each do |state|
           undo_size += state.length
         end
-        while ( ( undo_size + @lines.length ) >= @settings[ "max_undo_lines" ] ) and @buffer_states.length > 1
+        while ( ( undo_size + @lines.length ) >= @settings[ "max_undo_lines" ] ) && @buffer_states.length > 1
           @cursor_states.pop
           popped_state = @buffer_states.pop
           undo_size = undo_size - popped_state.length
         end
+
         if @current_buffer_state > 0
           @buffer_states.unshift @lines.deep_clone
           @cursor_states.unshift [ @last_row, @last_col ]
         end
+
         @buffer_states.unshift @lines.deep_clone
         @cursor_states.unshift [ @last_row, @last_col ]
         @current_buffer_state = 0
