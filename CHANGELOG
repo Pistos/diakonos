@@ -1,7 +1,7 @@
 Diakonos Changelog
 ------------------
 
-0.8.16
+0.9.0
 
 - Added partial UTF-8 support (only characters the same width as US-ASCII).
 
