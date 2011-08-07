@@ -52,4 +52,10 @@ if $diakonos.nil?
   $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
   $diakonos.start
   $diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )
+
+  # The $keystrokes Array is used to buffer keystrokes to be typed during tests.
+  # Multiple keystrokes are typed in rapid succession, and trigger the X windows
+  # paste handling of Diakonos.
+  # @see Diakonos::Diakonos#process_keystroke .
+  $keystrokes = []
 end

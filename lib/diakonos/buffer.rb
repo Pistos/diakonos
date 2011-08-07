@@ -381,7 +381,9 @@ module Diakonos
         [ @lines[ row ][ col..-1 ] ] +
         @lines[ (row+1)..-1 ]
       cursor_to( row + 1, 0 )
-      parsed_indent  if @auto_indent
+      if @auto_indent
+        parsed_indent  undoable: false
+      end
       set_modified
     end
 

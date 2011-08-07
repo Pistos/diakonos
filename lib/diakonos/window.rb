@@ -33,6 +33,10 @@ module Diakonos
       def attrset( *args )
         # noop
       end
+
+      def getch
+        $keystrokes.shift
+      end
     end
 
   end

@@ -14,7 +14,8 @@ module Diakonos
     end
 
     def set_indent( row, level, opts = {} )
-      do_display = opts[:do_display] || true
+      do_display = opts.fetch( :do_display, true )
+      undoable   = opts.fetch( :undoable,   true )
 
       @lines[ row ] =~ /^([\s#{@indent_ignore_charset}]*)(.*)$/
       current_indent_text = ( $1 or "" )
@@ -35,9 +36,9 @@ module Diakonos
         indentation -= num_tabs * ( @tab_size - 1 )
       end
 
-      take_snapshot( TYPING ) if do_display
+      take_snapshot( TYPING )  if do_display && undoable
       @lines[ row ] = indent_text + rest
-      cursor_to( row, indentation ) if do_display
+      cursor_to( row, indentation )  if do_display
       set_modified
     end
 
@@ -71,8 +72,9 @@ module Diakonos
     end
 
     def parsed_indent( opts = {} )
-      row        = opts[:row]        || @last_row
-      do_display = opts[:do_display] || true
+      row        = opts.fetch( :row,        @last_row )
+      do_display = opts.fetch( :do_display, true )
+      undoable   = opts.fetch( :undoable,   true )
 
       if row == 0 || @lines[ row ] =~ @settings[ "lang.#{@language}.indent.not_indented" ]
         level = 0
@@ -121,7 +123,7 @@ module Diakonos
         end
       end
 
-      set_indent  row, level, do_display: do_display
+      set_indent  row, level, do_display: do_display, undoable: undoable
     end
 
     def indent( row = @last_row, do_display = DO_DISPLAY )
