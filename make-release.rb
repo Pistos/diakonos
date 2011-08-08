@@ -49,6 +49,7 @@ end
 
 version = nil
 work_dir = '/misc/pistos/unpack'
+scp_port = 22
 $step = false
 
 args = ARGV.dup
@@ -58,6 +59,8 @@ while args.length > 0
         when '-h', '--help'
             printUsage
             exit 1
+        when '-p', '-P', '--port'
+          scp_port = args.shift
         when '--step'
             $step = true
         when '--work-dir'
@@ -77,7 +80,7 @@ doCommand( "md5sum diakonos-#{version}.tar.gz" )
 doCommand( "md5sum diakonos-#{version}.tar.bz2" )
 
 puts "Copying files to website..."
-doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz CHANGELOG README.rdoc pistos@diakonos.pist0s.ca:/var/www/diakonos.pist0s.ca/archives" )
+doCommand( "scp -P #{scp_port} diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz CHANGELOG README.rdoc pistos@diakonos.pist0s.ca:/var/www/diakonos.pist0s.ca/archives" )
 
 puts "Release complete."
 puts
