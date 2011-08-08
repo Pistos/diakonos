@@ -68,7 +68,7 @@ while args.length > 0
 end
 
 puts "git tag and export..."
-doCommand "git tag -a v#{version} -m 'Tagged Diakonos version #{version}.'"
+doCommand "git co v#{version} || git tag -a v#{version} -m 'Tagged Diakonos version #{version}.'"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | bzip2 > diakonos-#{version}.tar.bz2"
 doCommand "git archive --format=tar --prefix=diakonos-#{version}/ refs/tags/v#{version} | gzip > diakonos-#{version}.tar.gz"
 
@@ -81,9 +81,8 @@ doCommand( "scp diakonos-#{version}.tar.bz2 diakonos-#{version}.tar.gz CHANGELOG
 
 puts "Release complete."
 puts
-puts "Announcement sites:"
+puts "Release/announce on sites:"
 puts "1) rubyforge.org"
-puts "4) diakonos.pist0s.ca"
-puts "5) blog.purepistos.net"
-puts "6) RAA"
-puts "7) http://en.wikipedia.org/wiki/Diakonos"
+puts "2) diakonos.pist0s.ca"
+puts "3) RAA"
+puts "4) http://en.wikipedia.org/wiki/Diakonos"
