@@ -3,11 +3,13 @@ Diakonos Changelog
 
 0.9.1
 
-- Several bug fixes.
+- Fixed -m switch (open matching files).
+- Fixed several display bugs.
 
 0.9.0
 
 - Added partial UTF-8 support (only characters the same width as US-ASCII).
+- Some bug fixes.
 
 0.8.15
 
