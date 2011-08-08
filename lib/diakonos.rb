@@ -347,14 +347,21 @@ module Diakonos
         end
       end
 
-      if @post_load_script
-        eval @post_load_script
-      end
-
-      run_hook_procs :after_startup
       if ! switch_to_buffer_number( session_buffer_number )
         debug_log "Failed to switch to buffer #{session_buffer_number.inspect}"
         switch_to_buffer_number 1
+      end
+
+      run_hook_procs :after_startup
+      if @post_load_script
+        begin
+          eval @post_load_script
+        rescue Exception => e
+          show_exception(
+            e,
+            [ "There is an error in the post-load script:\n#{@post_load_script}" ]
+          )
+        end
       end
 
       @buffers.each do |b|
