@@ -56,6 +56,7 @@ Then ensure that ~/bin is in your PATH.
 Run with any of these:
 
   diakonos [filename...]
+  diakonos -s <session-name>
   diakonos -m <regexp>
 
 or, for other options and arguments,
