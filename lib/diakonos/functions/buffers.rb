@@ -256,14 +256,14 @@ module Diakonos
           save_session
           if switch_to( buffer, do_display: false )
             if last_row
-              buffer.cursor_to last_row, last_col || 0, Buffer::DO_DISPLAY
-            else
-              display_buffer buffer
+              buffer.cursor_to last_row, last_col || 0, Buffer::DONT_DISPLAY
             end
+            display_buffer buffer
           end
         end
       elsif existing_buffer && last_row
-        existing_buffer.cursor_to last_row, last_col || 0, Buffer::DO_DISPLAY
+        existing_buffer.cursor_to last_row, last_col || 0, Buffer::DONT_DISPLAY
+        display_buffer existing_buffer
       end
 
       buffer || existing_buffer
