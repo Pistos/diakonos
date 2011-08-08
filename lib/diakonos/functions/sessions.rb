@@ -2,7 +2,7 @@ module Diakonos
   module Functions
 
     def merge_session_settings
-      @settings.merge! @session[ 'settings' ]
+      @settings.merge! @session['settings']
     end
 
     def change_session_setting( key_ = nil, value = nil, do_redraw = DONT_REDRAW )
@@ -40,10 +40,10 @@ module Diakonos
           do_complete: DO_COMPLETE
         )
       end
-      return if session_id.nil? or session_id.empty?
+      return  if session_id.nil? || session_id.empty?
 
       path = session_filepath_for( session_id )
-      if not File.exist?( path )
+      if ! File.exist?( path )
         set_iline "No such session: #{session_id}"
       else
         if pid_session?( @session[ 'filename' ] )

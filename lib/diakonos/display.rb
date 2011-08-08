@@ -53,8 +53,8 @@ module Diakonos
       @win_status.attrset @settings[ 'status.format' ]
       @win_interaction = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
 
-      if @settings[ 'context.visible' ]
-        if @settings[ 'context.combined' ]
+      if @settings['context.visible']
+        if @settings['context.combined']
           pos = 1
         else
           pos = 3
@@ -105,7 +105,7 @@ module Diakonos
       # One line for the input line
       # One line for the context line
       retval = Curses::lines - 2
-      if @settings[ "context.visible" ] and not @settings[ "context.combined" ]
+      if @settings['context.visible'] && ! @settings['context.combined']
         retval = retval - 1
       end
       retval
