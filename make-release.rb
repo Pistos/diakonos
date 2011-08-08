@@ -85,7 +85,7 @@ doCommand( "scp -P #{scp_port} diakonos-#{version}.tar.bz2 diakonos-#{version}.t
 puts "Release complete."
 puts
 puts "Release/announce on sites:"
-puts "1) rubyforge.org"
-puts "2) diakonos.pist0s.ca"
+puts "1) diakonos.pist0s.ca"
+puts "2) rubyforge.org"
 puts "3) RAA"
 puts "4) http://en.wikipedia.org/wiki/Diakonos"
