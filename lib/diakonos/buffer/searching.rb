@@ -469,12 +469,20 @@ module Diakonos
     # Returns an Array of results, where each result is a String usually
     # containing \n's due to context
     def grep( regexp_source )
+      if @name
+        filename = File.basename( @name )
+        filepath = @name
+      else
+        filename = "(unnamed buffer)"
+        filepath = "(unnamed buffer #{object_id})"
+      end
+
       ::Diakonos.grep_array(
         Regexp.new( regexp_source ),
         @lines,
         $diakonos.settings[ 'grep.context' ],
-        "#{File.basename( @name )}:",
-        @name
+        "#{filename}:",
+        filepath
       )
     end
 

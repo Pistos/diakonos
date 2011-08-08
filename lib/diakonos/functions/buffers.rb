@@ -176,31 +176,39 @@ module Diakonos
       if filename
         filename, last_row_ = parse_filename_and_line_number( filename )
         last_row = last_row_ || last_row
-        existing_buffer = @buffers.find { |b| b.name == filename }
+        if filename =~ /\(unnamed buffer (\d+)\)/
+          existing_buffer = @buffers.find { |b| b.object_id == $1.to_i }
+          filename = nil
+          do_open = false
+        else
+          existing_buffer = @buffers.find { |b| b.name == filename }
+        end
 
-        if existing_buffer
-          do_open = force_revert || ( filename =~ /\.diakonos/ )
-          switch_to  existing_buffer, do_display: false
+        if filename
+          if existing_buffer
+            do_open = force_revert || ( filename =~ /\.diakonos/ )
+            switch_to  existing_buffer, do_display: false
 
-          if ! do_open && existing_buffer.file_different?
-            show_buffer_file_diff( existing_buffer ) do
-              choice = get_choice(
-                "Load on-disk version of #{existing_buffer.nice_name}?",
-                [ CHOICE_YES, CHOICE_NO ]
-              )
-              case choice
-              when CHOICE_YES
-                do_open = true
-              when CHOICE_NO
-                do_open = false
+            if ! do_open && existing_buffer.file_different?
+              show_buffer_file_diff( existing_buffer ) do
+                choice = get_choice(
+                  "Load on-disk version of #{existing_buffer.nice_name}?",
+                  [ CHOICE_YES, CHOICE_NO ]
+                )
+                case choice
+                when CHOICE_YES
+                  do_open = true
+                when CHOICE_NO
+                  do_open = false
+                end
               end
             end
           end
-        end
 
-        if FileTest.exist?( filename )
-          # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
-          do_open &&= FileTest.file?( filename )
+          if FileTest.exist?( filename )
+            # Don't try to open non-files (i.e. directories, pipes, sockets, etc.)
+            do_open &&= FileTest.file?( filename )
+          end
         end
       end
 
@@ -262,8 +270,10 @@ module Diakonos
           end
         end
       elsif existing_buffer && last_row
-        existing_buffer.cursor_to last_row, last_col || 0, Buffer::DONT_DISPLAY
-        display_buffer existing_buffer
+        if switch_to( existing_buffer, do_display: false )
+          existing_buffer.cursor_to last_row, last_col || 0, Buffer::DONT_DISPLAY
+          display_buffer existing_buffer
+        end
       end
 
       buffer || existing_buffer

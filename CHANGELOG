@@ -4,6 +4,7 @@ Diakonos Changelog
 0.9.1
 
 - Fixed -m switch (open matching files).
+- Fixed breakage of grepping through all buffers when some buffers are unnamed.
 - Fixed several display bugs.
 
 0.9.0
