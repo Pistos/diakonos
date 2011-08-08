@@ -81,6 +81,7 @@ module Diakonos
           @rlh_help     = rlh['help'] || @rlh_help
           @rlh_sessions = rlh['sessions'] || @rlh_sessions
         end
+        merge_session_settings
       end
     end
 

@@ -292,8 +292,6 @@ module Diakonos
     def start
       require 'diakonos/window'
 
-      initialize_display
-
       @files.each do |file|
         @buffers << Buffer.new( file )
       end
@@ -312,6 +310,7 @@ module Diakonos
         @buffers << Buffer.new
       end
 
+      initialize_display
       @buffers.each do |buffer|
         buffer.reset_display
       end
