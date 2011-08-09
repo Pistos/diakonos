@@ -269,9 +269,11 @@ module Diakonos
             display_buffer buffer
           end
         end
-      elsif existing_buffer && last_row
+      elsif existing_buffer
         if switch_to( existing_buffer, do_display: false )
-          existing_buffer.cursor_to last_row, last_col || 0, Buffer::DONT_DISPLAY
+          if last_row
+            existing_buffer.cursor_to last_row, last_col || 0, Buffer::DONT_DISPLAY
+          end
           display_buffer existing_buffer
         end
       end
