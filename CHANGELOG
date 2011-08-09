@@ -3,6 +3,7 @@ Diakonos Changelog
 
 0.9.1
 
+- Added PKGBUILD to bash filemask.
 - Fixed -m switch (open matching files).
 - Fixed breakage of grepping through all buffers when some buffers are unnamed.
 - Fixed several display bugs.
