@@ -29,7 +29,7 @@ module Diakonos
     end
 
     def insert_tab
-      type_character TAB
+      type_character "\t"
     end
 
     def parsed_indent
