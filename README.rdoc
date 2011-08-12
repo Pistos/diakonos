@@ -66,6 +66,8 @@ or, for other options and arguments,
 For help using Diakonos, simply press F1 or Shift-F1 from within the editor to
 use the interactive help system.
 
+To dig deeper into Diakonos' rich feature set, see https://github.com/Pistos/diakonos/wiki/Beyond-the-Basics .
+
 
 ----------------------------------------------------------------
 
