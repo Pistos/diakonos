@@ -402,7 +402,7 @@ module Diakonos
 
     def type_character( c, mode = 'edit' )
       if @macro_history
-        @macro_history.push "type_character #{c}, #{mode.inspect}"
+        @macro_history.push "type_character #{c.inspect}, #{mode.inspect}"
       end
       @there_was_non_movement = true
 
