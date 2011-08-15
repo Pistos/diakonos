@@ -36,7 +36,9 @@ module Diakonos
       @icurx = @window.curx
       @icury = @window.cury
       @view_y = 0
-      @window.addstr @initial_text
+      if ! @diakonos.testing
+        @window.addstr @initial_text
+      end
       @input_cursor = @initial_text.length
       @opened_list_file = false
 

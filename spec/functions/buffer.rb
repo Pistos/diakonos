@@ -25,6 +25,13 @@ describe 'A Diakonos user can' do
     @d.buffers.map(&:name).should.not.include name
   end
 
+  it 'see nothing untoward happen after attempting to open ""' do
+    $keystrokes = [ Diakonos::ENTER ]
+    lambda {
+      @d.open_file_ask
+    }.should.not.raise Exception
+  end
+
   it 'open a file at a specific line number' do
     @b = @d.open_file( "#{SAMPLE_FILE_LONGER}:45" )
     cursor_should_be_at 44, 0

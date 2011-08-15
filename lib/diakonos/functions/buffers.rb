@@ -310,6 +310,7 @@ module Diakonos
           open_list_buffer
         }
       end
+
       file = get_user_input(
         "Filename: ",
         history: @rlh_files,
@@ -317,7 +318,7 @@ module Diakonos
         &finder_block
       )
 
-      if file
+      if file && ! file.empty?
         open_file file
         update_status_line
         update_context_line
