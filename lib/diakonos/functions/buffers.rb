@@ -301,7 +301,8 @@ module Diakonos
           finder = FuzzyFileFinder.new(
             directories: @session[ 'dir' ],
             ceiling: @settings['fuzzy_file_find.max_dir_size'] || 8192,
-            ignores: @fuzzy_ignores
+            ignores: @fuzzy_ignores,
+            recursive: @settings['fuzzy_file_find.recursive']
           )
           matches = finder.find( input ).sort_by { |m| [ -m[:score], m[:path] ] }
           with_list_file do |list|

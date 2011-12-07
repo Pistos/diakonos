@@ -118,6 +118,7 @@ class FuzzyFileFinder
     else
       directories = ['.']
     end
+    @recursive = params[:recursive].nil? ? true : params[:recursive]
 
     # expand any paths with ~
     root_dirnames = directories.map { |d| File.expand_path(d) }.select { |d| File.directory?(d) }.uniq
@@ -225,7 +226,9 @@ class FuzzyFileFinder
         full = File.join(directory.name, entry)
 
         if File.directory?(full)
-          follow_tree(Directory.new(full))
+          if @recursive
+            follow_tree(Directory.new(full))
+          end
         elsif !ignore?(full.sub(@shared_prefix_re, ""))
           files.push(FileSystemEntry.new(directory, entry))
         end

@@ -9,6 +9,7 @@ Diakonos Changelog
 - Fixed bug that prevented type_character from working in macros.
 - Fixed open_file bug caused by empty input.
 - Fixed several display bugs.
+- Added fuzzy_file_find.recursive option (default true).
 
 0.9.0
 
