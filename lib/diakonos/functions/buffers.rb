@@ -300,7 +300,7 @@ module Diakonos
         finder_block = lambda { |input|
           finder = FuzzyFileFinder.new(
             directories: @session[ 'dir' ],
-            ceiling: @settings['fuzzy_file_find.max_dir_size'] || 8192,
+            ceiling: @settings['fuzzy_file_find.max_files'] || 8192,
             ignores: @fuzzy_ignores,
             recursive: @settings['fuzzy_file_find.recursive']
           )
