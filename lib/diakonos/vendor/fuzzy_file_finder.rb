@@ -109,9 +109,15 @@ class FuzzyFileFinder
   # given +directories+, using +ceiling+ as the maximum number
   # of entries to scan. If there are more than +ceiling+ entries
   # a TooManyEntries exception will be raised.
-  def initialize(directories=['.'], ceiling=10_000, ignores=nil)
-    directories = Array(directories)
-    directories << "." if directories.empty?
+  def initialize( params = {} )
+    @ceiling = params[:ceiling] || 10_000
+    @ignores = Array(params[:ignores])
+    if params[:directories]
+      directories = Array(directories)
+      directories << "." if directories.empty?
+    else
+      directories = ['.']
+    end
 
     # expand any paths with ~
     root_dirnames = directories.map { |d| File.expand_path(d) }.select { |d| File.directory?(d) }.uniq
@@ -121,9 +127,6 @@ class FuzzyFileFinder
     @shared_prefix_re = Regexp.new("^#{Regexp.escape(shared_prefix)}" + (shared_prefix.empty? ? "" : "/"))
 
     @files = []
-    @ceiling = ceiling
-
-    @ignores = Array(ignores)
 
     rescan!
   end
