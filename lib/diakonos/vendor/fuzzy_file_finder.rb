@@ -113,7 +113,7 @@ class FuzzyFileFinder
     @ceiling = params[:ceiling] || 10_000
     @ignores = Array(params[:ignores])
     if params[:directories]
-      directories = Array(directories)
+      directories = Array(params[:directories])
       directories << "." if directories.empty?
     else
       directories = ['.']
