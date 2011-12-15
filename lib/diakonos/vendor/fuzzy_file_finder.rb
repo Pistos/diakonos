@@ -220,16 +220,17 @@ class FuzzyFileFinder
     # beneath it, depth-first.
     def follow_tree(directory)
       Dir.entries(directory.name).each do |entry|
-        next if entry[0,1] == "."
+        next  if entry[0,1] == "."
         raise TooManyEntries if files.length > ceiling
 
         full = File.join(directory.name, entry)
+        next  if ignore?(full)
 
         if File.directory?(full)
           if @recursive
             follow_tree(Directory.new(full))
           end
-        elsif !ignore?(full.sub(@shared_prefix_re, ""))
+        else
           files.push(FileSystemEntry.new(directory, entry))
         end
       end
@@ -238,7 +239,8 @@ class FuzzyFileFinder
     # Returns +true+ if the given name matches any of the ignore
     # patterns.
     def ignore?(name)
-      ignores.any? { |pattern| File.fnmatch(pattern, name) }
+      n = name.sub(@shared_prefix_re, "")
+      ignores.any? { |pattern| File.fnmatch(pattern, n) }
     end
 
     # Takes the given pattern string "foo" and converts it to a new
