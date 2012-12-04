@@ -11,6 +11,8 @@ Diakonos Changelog
 - Fixed several display bugs.
 - Added fuzzy_file_find.recursive option (default true).
 - Fixed fuzzy_file_find.max_files.
+- Improved efficiency of fuzzy file finder.
+- Various updates to default syntax highlighting.
 
 0.9.0
 
