@@ -3,7 +3,7 @@ module Diakonos
 
     def new_session( filepath )
       basename = File.basename( filepath )
-      if ! pid_session?( filepath )
+      if ! self.pid_session?( filepath )
         name = basename
       end
       @session = {
@@ -87,7 +87,7 @@ module Diakonos
 
     def save_session( session_file = @session[ 'filename' ] )
       return  if session_file.nil?
-      return  if @testing && pid_session?( session_file )
+      return  if @testing && self.pid_session?( session_file )
 
       @session[ 'buffers' ] = @buffers.reject { |buffer|
         buffer.name.nil?
@@ -155,7 +155,7 @@ module Diakonos
           # Check if the process is still alive
           begin
             Process.kill 0, pid
-            session_files.reject! { |sf| pid_session? sf }
+            session_files.reject! { |sf| self.pid_session? sf }
           rescue Errno::ESRCH, Errno::EPERM
             # Process is no longer alive, so we consider the session stale
           end
@@ -194,7 +194,7 @@ module Diakonos
     end
 
     def cleanup_session
-      if pid_session? && File.exists?( @session[ 'filename' ] )
+      if self.pid_session? && File.exists?( @session[ 'filename' ] )
         File.delete @session[ 'filename' ]
       end
     end
