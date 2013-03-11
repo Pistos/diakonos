@@ -152,6 +152,7 @@ module Diakonos
         session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
         pids = session_files.map { |sf| sf[ %r{/(\d+)$}, 1 ].to_i }
         pids.each do |pid|
+          # Check if the process is still alive
           begin
             Process.kill 0, pid
             session_files.reject! { |sf| pid_session? sf }
