@@ -17,9 +17,9 @@ module Diakonos
       @buffer_current = buffer
       @session[ 'buffer_current' ] = buffer_to_number( buffer )
       run_hook_procs( :after_buffer_switch, buffer )
-      update_status_line
-      update_context_line
       if do_display
+        update_status_line
+        update_context_line
         display_buffer buffer
       end
 
