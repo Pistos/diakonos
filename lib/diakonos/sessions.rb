@@ -147,25 +147,27 @@ module Diakonos
           new_session session_path
         end
       else
-        session_buffers = []
-
+        stale_session_files = []
         session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
-        pids = session_files.map { |sf| sf[ %r{/(\d+)$}, 1 ].to_i }
-        pids.each do |pid|
+        session_files.each do |sf|
+          pid = sf[ %r{/(\d+)$}, 1 ].to_i
+
           # Check if the process is still alive
           begin
             Process.kill 0, pid
-            session_files.reject! { |sf| self.pid_session? sf }
           rescue Errno::ESRCH, Errno::EPERM
-            # Process is no longer alive, so we consider the session stale
+            if self.pid_session?(sf)
+              stale_session_files << sf
+            end
           end
         end
 
-        session_files.each_with_index do |session_file,index|
+        session_buffers = []
+        stale_session_files.each_with_index do |session_file,index|
           session_buffers << open_file( session_file )
 
           choice = get_choice(
-            "#{session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{session_files.size})",
+            "#{stale_session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{stale_session_files.size})",
             [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ],
             index > 0 ?  CHOICE_NO : nil
           )
