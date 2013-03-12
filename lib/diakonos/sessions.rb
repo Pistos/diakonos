@@ -174,6 +174,7 @@ module Diakonos
 
           case choice
           when CHOICE_YES
+            cleanup_session
             load_session session_file
             if @session
               File.delete session_file

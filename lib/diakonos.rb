@@ -299,10 +299,6 @@ module Diakonos
       @read_only_files.each do |file|
         @buffers << Buffer.new( file )
       end
-      if ! @testing
-        session_buffers = session_startup
-      end
-      session_buffer_number = @session[ 'buffer_current' ] || 1
       @files.each do |file_info|
         @buffers << Buffer.new( file_info )
       end
@@ -311,9 +307,15 @@ module Diakonos
       end
 
       initialize_display
+
       @buffers.each do |buffer|
         buffer.reset_display
       end
+
+      if ! @testing
+        session_buffers = session_startup
+      end
+      session_buffer_number = @session[ 'buffer_current' ] || 1
 
       if ENV[ 'COLORTERM' ] == 'gnome-terminal'
         help_key = 'Shift-F1'
