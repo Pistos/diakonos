@@ -108,10 +108,13 @@ module Diakonos
         show_message msg
       end
 
-      c = nil
       while retval.nil?
         ch = @win_interaction.getch
-        c = ch.ord  if ch
+        if ch
+          c = ch.ord
+        else
+          next
+        end
 
         case c
         when Curses::KEY_NPAGE
