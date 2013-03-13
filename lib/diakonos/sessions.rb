@@ -170,6 +170,7 @@ module Diakonos
     # because we have to wait for the display to get initialized in order to
     # prompt the user for input, etc.
     def handle_stale_session_files
+      return  if @testing
       return  if @stale_session_files.empty?
 
       session_buffers = []
