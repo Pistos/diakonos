@@ -300,12 +300,12 @@ module Diakonos
         @buffers << Buffer.new( file )
       end
       if ! @testing
-        session_buffers = session_startup
+        session_startup
       end
-      session_buffer_number = @session[ 'buffer_current' ] || 1
       @files.each do |file_info|
         @buffers << Buffer.new( file_info )
       end
+      @files = []
       if @buffers.empty?
         @buffers << Buffer.new
       end
@@ -341,12 +341,13 @@ module Diakonos
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
 
-      if session_buffers
-        session_buffers.each do |buffer|
-          close_buffer buffer
-        end
+      handle_stale_session_files
+
+      @files.each do |file_info|
+        @buffers << Buffer.new( file_info )
       end
 
+      session_buffer_number = @session[ 'buffer_current' ] || 1
       if ! switch_to_buffer_number( session_buffer_number )
         debug_log "Failed to switch to buffer #{session_buffer_number.inspect}"
         switch_to_buffer_number 1

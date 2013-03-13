@@ -139,6 +139,8 @@ module Diakonos
     end
 
     def session_startup
+      @stale_session_files = []
+
       if @session_to_load
         pid_session = @session
         @session = nil
@@ -148,7 +150,6 @@ module Diakonos
           new_session session_path
         end
       else
-        stale_session_files = []
         session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
         session_files.each do |sf|
           pid = sf[ %r{/(\d+)$}, 1 ].to_i
@@ -158,46 +159,55 @@ module Diakonos
             Process.kill 0, pid
           rescue Errno::ESRCH, Errno::EPERM
             if self.pid_session?(sf)
-              stale_session_files << sf
+              @stale_session_files << sf
             end
-          end
-        end
-
-        session_buffers = []
-        stale_session_files.each_with_index do |session_file,index|
-          session_buffers << open_file( session_file )
-
-          choice = get_choice(
-            "#{stale_session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{stale_session_files.size})",
-            [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ],
-            index > 0 ?  CHOICE_NO : nil
-          )
-
-          case choice
-          when CHOICE_YES
-            load_session session_file
-            if @session
-              File.delete session_file
-              break
-            end
-          when CHOICE_DELETE
-            File.delete session_file
-          end
-        end
-
-        if session_buffers.empty? && @files.empty? && @settings[ 'session.default_session' ]
-          session_file = session_filepath_for( @settings[ 'session.default_session' ] )
-          if File.exist? session_file
-            load_session session_file
           end
         end
       end
+    end
 
-      session_buffers
+    # We have to do this separately and later (as opposed to inside #session_startup)
+    # because we have to wait for the display to get initialized in order to
+    # prompt the user for input, etc.
+    def handle_stale_session_files
+      return  if @stale_session_files.empty?
+
+      session_buffers = []
+      @stale_session_files.each_with_index do |session_file,index|
+        session_buffers << open_file( session_file )
+
+        choice = get_choice(
+          "#{@stale_session_files.size} unclosed session(s) found.  Open the above files?  (session #{index+1} of #{@stale_session_files.size})",
+          [ CHOICE_YES, CHOICE_NO, CHOICE_DELETE ],
+          index > 0 ?  CHOICE_NO : nil
+        )
+
+        case choice
+        when CHOICE_YES
+          load_session session_file
+          if @session
+            File.delete session_file
+            break
+          end
+        when CHOICE_DELETE
+          File.delete session_file
+        end
+      end
+
+      if session_buffers.empty? && @files.empty? && @settings[ 'session.default_session' ]
+        session_file = session_filepath_for( @settings[ 'session.default_session' ] )
+        if File.exist? session_file
+          load_session session_file
+        end
+      end
+
+      session_buffers.each do |buffer|
+        close_buffer buffer
+      end
     end
 
     def cleanup_session
-      if self.pid_session? && File.exists?( @session[ 'filename' ] )
+      if @session && self.pid_session? && File.exists?( @session[ 'filename' ] )
         File.delete @session[ 'filename' ]
       end
     end
