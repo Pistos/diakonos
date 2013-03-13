@@ -69,6 +69,7 @@ module Diakonos
     end
 
     def load_session( session_file )
+      cleanup_session
       load_session_data session_file
       if @session
         @files.concat @session['buffers']
