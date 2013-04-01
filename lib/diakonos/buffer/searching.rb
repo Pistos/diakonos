@@ -324,6 +324,8 @@ module Diakonos
         row -= 1
         col = -1
       end
+      return  if row < 0
+
       col = @lines[ row ].rindex( regexp, col )
       while col.nil? && row > 0
         row -= 1
