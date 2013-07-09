@@ -43,7 +43,7 @@ matter what the current RVM Ruby is.  Example:
 
 Then ensure that ~/bin is in your PATH.
 
-[1]: http://rvm.beginrescueend.com/
+[1]: https://rvm.io
 
 
 == UNINSTALLATION
