@@ -11,7 +11,7 @@ module Diakonos
   def self.check_ruby_version
     ruby_version = parse_version( RUBY_VERSION )
     if ruby_version < [ 1, 9 ]
-      $stderr.puts "This version of Diakonos (#{Diakonos::VERSION}) requires Ruby 1.9."
+      $stderr.puts "This version of Diakonos (#{Diakonos::VERSION}) requires Ruby 1.9 or 2.0."
       if ruby_version >= [ 1, 8 ]
         $stderr.puts "Version 0.8.9 is the last version of Diakonos which can run under Ruby 1.8."
       end
