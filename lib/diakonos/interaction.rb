@@ -122,7 +122,7 @@ module Diakonos
         when Curses::KEY_PPAGE
           page_up
         else
-          if @message_expiry and Time.now < @message_expiry
+          if @message_expiry && Time.now < @message_expiry
             interaction_blink
             show_message msg
           else

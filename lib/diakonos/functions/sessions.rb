@@ -90,9 +90,9 @@ module Diakonos
       return  if key.nil?
 
       value = nil
-      if @session[ 'settings' ][ key ].class == TrueClass or @session[ 'settings' ][ key ].class == FalseClass
+      if @session[ 'settings' ][ key ].class == TrueClass || @session[ 'settings' ][ key ].class == FalseClass
         value = ! @session[ 'settings' ][ key ]
-      elsif @settings[ key ].class == TrueClass or @settings[ key ].class == FalseClass
+      elsif @settings[ key ].class == TrueClass || @settings[ key ].class == FalseClass
         value = ! @settings[ key ]
       end
       if value != nil   # explicitly true or false

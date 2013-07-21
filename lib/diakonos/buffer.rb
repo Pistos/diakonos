@@ -56,7 +56,7 @@ module Diakonos
         @name = File.expand_path( @name )
         if FileTest.exists? @name
           @lines = IO.readlines( @name )
-          if ( @lines.length == 0 ) or ( @lines[ -1 ][ -1..-1 ] == "\n" )
+          if ( @lines.length == 0 ) || ( @lines[ -1 ][ -1..-1 ] == "\n" )
             @lines.push ""
           end
           @lines = @lines.collect do |line|
@@ -98,11 +98,11 @@ module Diakonos
         tabs_subbed = false
         @lines.collect! do |line|
           new_line = line.expand_tabs( @tab_size )
-          tabs_subbed = ( tabs_subbed or new_line != line )
+          tabs_subbed = ( tabs_subbed || new_line != line )
           # Return value for collect:
           new_line
         end
-        @modified = ( @modified or tabs_subbed )
+        @modified = ( @modified || tabs_subbed )
         if tabs_subbed
           $diakonos.set_iline "(spaces substituted for tab characters)"
         end
@@ -114,8 +114,8 @@ module Diakonos
 
     def configure(
       language = (
-        $diakonos.get_language_from_shabang( @lines[ 0 ] ) or
-        $diakonos.get_language_from_name( @name ) or
+        $diakonos.get_language_from_shabang( @lines[ 0 ] ) ||
+        $diakonos.get_language_from_name( @name ) ||
         LANG_TEXT
       )
     )
@@ -419,7 +419,7 @@ module Diakonos
     def row_to_y( row )
       return nil if row.nil?
       y = row - @top_line
-      y = nil if ( y < 0 ) or ( y > @top_line + $diakonos.main_window_height - 1 )
+      y = nil if ( y < 0 ) || ( y > @top_line + $diakonos.main_window_height - 1 )
       y
     end
 
@@ -427,7 +427,7 @@ module Diakonos
     def column_to_x( col )
       return nil if col.nil?
       x = col - @left_column
-      x = nil if ( x < 0 ) or ( x > @left_column + Curses::cols - 1 )
+      x = nil if ( x < 0 ) || ( x > @left_column + Curses::cols - 1 )
       x
     end
 
@@ -557,7 +557,7 @@ module Diakonos
         line = @lines[ row ]
         if ! line.strip.empty? && ( line !~ @settings[ "lang.#{@language}.context.ignore" ] )
           level = indentation_level( row )
-          if level < clevel and level > -1
+          if level < clevel && level > -1
             retval.unshift line
             clevel = level
             break  if clevel == 0

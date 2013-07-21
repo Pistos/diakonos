@@ -16,10 +16,10 @@ class CTag
 
     def == ( other )
         (
-            other and
-            @file == other.file and
-            @command == other.command and
-            @kind == other.kind and
+            other &&
+            @file == other.file &&
+            @command == other.command &&
+            @kind == other.kind &&
             @rest == other.rest
         )
     end

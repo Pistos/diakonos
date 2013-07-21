@@ -21,7 +21,7 @@ module Diakonos
       begin
         open( "http://github.com/Pistos/diakonos/tree/#{location}/diakonos.conf?raw=true" ) do |http|
           text = http.read
-          if text =~ /key/ and text =~ /colour/ and text =~ /lang/
+          if text =~ /key/ && text =~ /colour/ && text =~ /lang/
             found = true
             File.open( @diakonos_conf, 'w' ) do |f|
               f.puts text
@@ -68,13 +68,13 @@ module Diakonos
 
               case answer
               when /^y/i
-                if not fetch_conf
+                if ! fetch_conf
                   fetch_conf 'master'
                 end
               end
             end
 
-            if not FileTest.exists?( @diakonos_conf )
+            if ! FileTest.exists?( @diakonos_conf )
               puts "Terminating due to lack of configuration file."
               exit 1
             end
@@ -150,7 +150,7 @@ module Diakonos
       language = match[ 1 ]
       token_class = match[ 2 ]
       case_insensitive = ( match[ 3 ] != nil )
-      hash[ language ] = ( hash[ language ] or Hash.new )
+      hash[ language ] = ( hash[ language ] || Hash.new )
       if case_insensitive
         hash[ language ][ token_class ] = Regexp.new( arg, Regexp::IGNORECASE )
       else

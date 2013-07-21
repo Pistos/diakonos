@@ -242,7 +242,7 @@ module Diakonos
           truncation = [ @settings[ "context.max_levels" ], context.length ].min
           max_length = [
             ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
-            ( @settings[ "context.max_segment_width" ] or Curses::cols )
+            ( @settings[ "context.max_segment_width" ] || Curses::cols )
           ].min
           line = nil
           context_subset = context[ 0...truncation ]
@@ -330,7 +330,7 @@ module Diakonos
     end
 
     def terminate_message
-      if @message_thread and @message_thread.alive?
+      if @message_thread && @message_thread.alive?
         @message_thread.terminate
         @message_thread = nil
       end

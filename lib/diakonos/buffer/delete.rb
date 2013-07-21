@@ -9,7 +9,7 @@ module Diakonos
       else
         row = @last_row
         col = @last_col
-        if ( row >= 0 ) and ( col >= 0 )
+        if ( row >= 0 ) && ( col >= 0 )
           line = @lines[ row ]
           if col == line.length
             if row < @lines.length - 1
@@ -52,7 +52,7 @@ module Diakonos
       col = @last_col
 
       take_snapshot
-      if @settings[ 'delete_newline_on_delete_to_eol' ] and col == @lines[ row ].size
+      if @settings[ 'delete_newline_on_delete_to_eol' ] && col == @lines[ row ].size
         next_line = @lines.delete_at( row + 1 )
         @lines[ row ] << next_line
         retval = [ "\n" ]

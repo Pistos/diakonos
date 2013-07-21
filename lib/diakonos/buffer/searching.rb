@@ -275,7 +275,7 @@ module Diakonos
 
     # @return [Fixnum] the number of replacements made
     def replace_all( regexp, replacement )
-      return  if( regexp.nil? or replacement.nil? )
+      return  if( regexp.nil? || replacement.nil? )
 
       num_replacements = 0
 

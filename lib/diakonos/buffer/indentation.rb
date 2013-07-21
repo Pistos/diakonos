@@ -18,8 +18,8 @@ module Diakonos
       undoable   = opts.fetch( :undoable,   true )
 
       @lines[ row ] =~ /^([\s#{@indent_ignore_charset}]*)(.*)$/
-      current_indent_text = ( $1 or "" )
-      rest = ( $2 or "" )
+      current_indent_text = ( $1 || "" )
+      rest = ( $2 || "" )
       current_indent_text.gsub!( /\t/, ' ' * @tab_size )
       indentation = @indent_size * [ level, 0 ].max
       if current_indent_text.length >= indentation
@@ -46,7 +46,7 @@ module Diakonos
       line = @lines[ row ]
 
       if use_indent_ignore
-        if line =~ /^[\s#{@indent_ignore_charset}]*$/ or line == ""
+        if line =~ /^[\s#{@indent_ignore_charset}]*$/ || line == ""
           level = 0
         elsif line =~ /^([\s#{@indent_ignore_charset}]+)[^\s#{@indent_ignore_charset}]/
           whitespace = $1.expand_tabs( @tab_size )
@@ -112,7 +112,7 @@ module Diakonos
           elsif indenter_index
             level += 1
             unindenter_index = (prev_line =~ @unindenters)
-            if unindenter_index and unindenter_index != indenter_index
+            if unindenter_index && unindenter_index != indenter_index
               level += -1
             end
           end

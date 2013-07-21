@@ -32,13 +32,13 @@ module Diakonos
           beginning = Regexp.new input
         end
       end
-      if beginning and ending.nil?
+      if beginning && ending.nil?
         input = get_user_input( "End before regexp: " )
         if input
           ending = Regexp.new input
         end
       end
-      if beginning and ending
+      if beginning && ending
         buffer_current.select( beginning, ending, including_ending )
       end
     end

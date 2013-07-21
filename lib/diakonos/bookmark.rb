@@ -13,7 +13,7 @@ module Diakonos
 
     def == (other)
       return false if other.nil?
-      ( @buffer == other.buffer and @row == other.row and @col == other.col )
+      ( @buffer == other.buffer && @row == other.row && @col == other.col )
     end
 
     def <=> (other)

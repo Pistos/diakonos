@@ -91,7 +91,7 @@ module Diakonos
     )
       if ruby_code
         str = buffer_current.selected_string
-        if str and not str.empty?
+        if str && ! str.empty?
           buffer_current.paste eval( ruby_code )
         end
       end
@@ -106,7 +106,7 @@ module Diakonos
     )
       if ruby_code
         lines = buffer_current.selected_text
-        if lines and not lines.empty?
+        if lines && ! lines.empty?
           if lines[ -1 ].empty?
             lines.pop
             popped = true
@@ -129,7 +129,7 @@ module Diakonos
     )
       if ruby_code
         lines = buffer_current.selected_text
-        if lines and not lines.empty?
+        if lines && ! lines.empty?
           if lines[ -1 ].empty?
             lines.pop
             popped = true

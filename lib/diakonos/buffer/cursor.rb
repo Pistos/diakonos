@@ -57,7 +57,7 @@ module Diakonos
       record_mark_start_and_end
 
       removed = false
-      if not @changing_selection and selecting?
+      if ! @changing_selection && selecting?
         remove_selection( DONT_DISPLAY )
         removed = true
       end
@@ -93,7 +93,7 @@ module Diakonos
       when BOL_ZERO
         col = 0
       when BOL_FIRST_CHAR
-        col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
+        col = ( ( @lines[ row ] =~ /\S/ ) || 0 )
       when BOL_ALT_ZERO
         if @last_col == 0
           col = ( @lines[ row ] =~ /\S/ )
@@ -102,7 +102,7 @@ module Diakonos
         end
         #when BOL_ALT_FIRST_CHAR
       else
-        first_char_col = ( ( @lines[ row ] =~ /\S/ ) or 0 )
+        first_char_col = ( ( @lines[ row ] =~ /\S/ ) || 0 )
         if @last_col == first_char_col
           col = 0
         else
@@ -170,7 +170,7 @@ module Diakonos
         break if( pan_view( amount, DONT_DISPLAY ) != amount )
       end
 
-      @top_line != old_top_line or @left_column != old_left_column
+      @top_line != old_top_line || @left_column != old_left_column
     end
 
     def go_to_line( line = nil, column = nil, do_display = DO_DISPLAY )

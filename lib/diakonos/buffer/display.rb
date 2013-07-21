@@ -20,9 +20,9 @@ module Diakonos
             whole_match_index = index = match.begin( 0 )
             match_text = match[ 0 ]
           end
-          if ( not regexp.uses_bos ) or ( bos_allowed and ( whole_match_index == 0 ) )
+          if ( ! regexp.uses_bos ) || ( bos_allowed && ( whole_match_index == 0 ) )
             if index < open_index
-              if ( ( not match_close ) or @close_token_regexps[ token_class ] )
+              if ( ( ! match_close ) || @close_token_regexps[ token_class ] )
                 open_index = index
                 open_token_class = token_class
                 open_match_text = match_text
@@ -52,7 +52,7 @@ module Diakonos
           index = match.begin 0
           match_text = match[ 0 ]
         end
-        if ( not regexp.uses_bos ) or ( bos_allowed and ( index == 0 ) )
+        if ( ! regexp.uses_bos ) || ( bos_allowed && ( index == 0 ) )
           close_index = index
           close_match_text = match_text
           break
@@ -104,7 +104,7 @@ module Diakonos
 
     def paint_marks( row )
       string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
-      return  if string.nil? or string == ""
+      return  if string.nil? || string == ""
       string = string.expand_tabs( @tab_size )
       cury = @win_main.cury
       curx = @win_main.curx
@@ -119,7 +119,7 @@ module Diakonos
           if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
             @win_main.setpos( cury, curx )
             @win_main.addstr string
-          elsif row == text_mark.start_row and row == text_mark.end_row
+          elsif row == text_mark.start_row && row == text_mark.end_row
             paint_single_row_mark( row, text_mark, string, curx, cury )
           elsif row == text_mark.start_row
             expanded_col = tab_expanded_column( text_mark.start_col, row )
@@ -161,8 +161,8 @@ module Diakonos
       end
     end
 
-    def print_string( string, formatting = ( @token_formats[ @continued_format_class ] or @default_formatting ) )
-      return  if not @pen_down
+    def print_string( string, formatting = ( @token_formats[ @continued_format_class ] || @default_formatting ) )
+      return  if ! @pen_down
       return  if string.nil?
 
       @win_main.attrset formatting
@@ -198,7 +198,7 @@ module Diakonos
           if @lang_stack.length > 0
             prev_lang, close_token_class = @lang_stack[ -1 ]
             close_index, close_match_text = find_closing_match( substr, $diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
-            if close_match_text and close_index <= first_index
+            if close_match_text && close_index <= first_index
               if close_index > 0
                 # Print any remaining text in the embedded language
                 print_string truncate_off_screen( substr[ 0...close_index ], i )
@@ -247,7 +247,7 @@ module Diakonos
     end
 
     def print_padding_from( col )
-      return  if not @pen_down
+      return  if ! @pen_down
 
       if col < @left_column
         remainder = Curses::cols
@@ -322,7 +322,7 @@ module Diakonos
         @win_main.attrset @default_formatting
         linestr = " " * Curses::cols
         if @settings[ "view.nonfilelines.visible" ]
-          linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] or "~" )
+          linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] || "~" )
         end
 
         @win_main.addstr linestr

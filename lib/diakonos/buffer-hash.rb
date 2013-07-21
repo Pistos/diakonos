@@ -11,7 +11,7 @@ class BufferHash < Hash
 
   def []= ( key, value )
     key = File.expand_path( key.to_s )
-    if not @keys_.include?( key )
+    if ! @keys_.include?( key )
       @keys_ << key
     end
     super key, value

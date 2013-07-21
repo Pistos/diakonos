@@ -22,7 +22,7 @@ class Hash
   def set_key_path( path, leaf )
     if path.length > 1
       node = self[ path[ 0 ] ]
-      if not node.respond_to?( :set_key_path )
+      if ! node.respond_to?( :set_key_path )
         node = self[ path[ 0 ] ] = Hash.new
       end
       node.set_key_path( path[ 1..-1 ], leaf )
@@ -36,7 +36,7 @@ class Hash
   def get_node( path )
     node = self[ path[ 0 ] ]
     if path.length > 1
-      if node and node.respond_to?( :get_node )
+      if node && node.respond_to?( :get_node )
         return node.get_node( path[ 1..-1 ] )
       end
     elsif path.length == 1

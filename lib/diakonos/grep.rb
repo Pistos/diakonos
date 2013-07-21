@@ -23,7 +23,7 @@ module Diakonos
       one_result << ( "#{prefix}#{i+1}: " << ( "%-300s | #{filepath}:#{i+1}" % array[ i ] ) )
       last_i = i
     end
-    if not one_result.empty?
+    if ! one_result.empty?
       results << one_result.join( "\n" )
     end
 

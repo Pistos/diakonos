@@ -121,7 +121,7 @@ module Diakonos
         initial_text: prefill,
         completion_array: @help_tags
       ) { |input|
-        next if input.length < 3 and input[ 0..0 ] != '/'
+        next if input.length < 3 && input[ 0..0 ] != '/'
 
         matching_docs = matching_help_documents( input )
         with_list_file do |list|
@@ -140,7 +140,7 @@ module Diakonos
         # Help search aborted; do nothing
       else
         # Not a selected help document
-        if matching_docs.nil? or matching_docs.empty?
+        if matching_docs.nil? || matching_docs.empty?
           matching_docs = matching_help_documents( selected )
         end
 
@@ -260,7 +260,7 @@ module Diakonos
     end
 
     def repeat_last
-      eval @functions_last[ -1 ] if not @functions_last.empty?
+      eval @functions_last[ -1 ] if ! @functions_last.empty?
     end
 
     # Send the Diakonos job to background, as if with Ctrl-Z

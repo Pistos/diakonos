@@ -179,7 +179,7 @@ module Diakonos
     end
 
     def anchor_selection( row = @last_row, col = @last_col, do_display = DO_DISPLAY )
-      @mark_anchor = ( @mark_anchor or Hash.new )
+      @mark_anchor = ( @mark_anchor || Hash.new )
       @mark_anchor[ "row" ] = row
       @mark_anchor[ "col" ] = col
       record_mark_start_and_end
@@ -221,7 +221,7 @@ module Diakonos
           }
         else
           [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
-            ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] or [] ) +
+            ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] || [] ) +
             [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
         end
       end
@@ -293,7 +293,7 @@ module Diakonos
     def paste( text, typing = ! TYPING, do_parsed_indent = false )
       return  if text.nil?
 
-      if not text.kind_of? Array
+      if ! text.kind_of?(Array)
         s = text.to_s
         if s.include?( "\n" )
           text = s.split( "\n", -1 )

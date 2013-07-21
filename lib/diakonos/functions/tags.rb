@@ -21,9 +21,9 @@ module Diakonos
       end
 
       tag_array = @tags[ tag_name ]
-      if tag_array and tag_array.length > 0
+      if tag_array && tag_array.length > 0
         if i = tag_array.index( @last_tag )
-          tag = ( tag_array[ i + 1 ] or tag_array[ 0 ] )
+          tag = ( tag_array[ i + 1 ] || tag_array[ 0 ] )
         else
           tag = tag_array[ 0 ]
         end
@@ -52,7 +52,7 @@ module Diakonos
     def pop_tag
       tag = @tag_stack.pop
       if tag
-        if not switch_to( @buffers.find { |b| b.name == tag[ 0 ] } )
+        if ! switch_to( @buffers.find { |b| b.name == tag[ 0 ] } )
           open_file tag[ 0 ]
         end
         buffer_current.cursor_to( tag[ 1 ], tag[ 2 ], Buffer::DO_DISPLAY )

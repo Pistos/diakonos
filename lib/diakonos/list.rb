@@ -17,7 +17,7 @@ module Diakonos
     end
 
     def list_item_selected?
-      @list_buffer and @list_buffer.selecting?
+      @list_buffer && @list_buffer.selecting?
     end
 
     def current_list_item
