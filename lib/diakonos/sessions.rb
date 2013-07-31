@@ -1,5 +1,6 @@
 module Diakonos
   class Diakonos
+    attr_reader :session
 
     def new_session( filepath )
       basename = File.basename( filepath )
