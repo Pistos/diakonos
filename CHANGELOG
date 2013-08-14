@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - Fixed stale session bugs.
 - Ruby 2.0.0 compatibility.
+- colour.background setting.
 
 0.9.1
 

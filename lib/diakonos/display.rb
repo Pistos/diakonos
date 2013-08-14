@@ -28,14 +28,15 @@ module Diakonos
 
         if Curses::has_colors?
           Curses::start_color
-          Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, Curses::COLOR_BLACK )
-          Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_BLACK )
-          Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, Curses::COLOR_BLACK )
-          Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, Curses::COLOR_BLACK )
-          Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_BLACK )
-          Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, Curses::COLOR_BLACK )
-          Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, Curses::COLOR_BLACK )
-          Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, Curses::COLOR_BLACK )
+          background_colour = settings['colour.background'] || Curses::COLOR_BLACK
+          Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, background_colour )
+          Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, background_colour )
+          Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, background_colour )
+          Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, background_colour )
+          Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, background_colour )
+          Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, background_colour )
+          Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, background_colour )
+          Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, background_colour )
           @colour_pairs.each do |cp|
             Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
           end
