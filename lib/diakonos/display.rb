@@ -28,7 +28,10 @@ module Diakonos
 
         if Curses::has_colors?
           Curses::start_color
-          background_colour = settings['colour.background'] || Curses::COLOR_BLACK
+          Curses::use_default_colors
+
+          # -1 means use the terminal's current/default background, which may even have some transparency
+          background_colour = settings['colour.background'] || -1
           Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, background_colour )
           Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, background_colour )
           Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, background_colour )
