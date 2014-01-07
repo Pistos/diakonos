@@ -56,10 +56,10 @@ module Diakonos
 
       record_mark_start_and_end
 
-      removed = false
+      selection_removed = false
       if ! @changing_selection && selecting?
         remove_selection( DONT_DISPLAY )
-        removed = true
+        selection_removed = true
       end
 
       old_pair = @text_marks[ :pair ]
@@ -70,7 +70,7 @@ module Diakonos
       end
       highlight_changed = old_pair != @text_marks[ :pair ]
 
-      if removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
+      if selection_removed || ( do_display && ( selecting? || view_changed || highlight_changed ) )
         display
       else
         $diakonos.display_mutex.synchronize do
