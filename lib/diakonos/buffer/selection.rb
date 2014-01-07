@@ -184,7 +184,16 @@ module Diakonos
       @mark_anchor[ "col" ] = col
       record_mark_start_and_end
       @changing_selection = true
+      @auto_anchored = false
       display  if do_display
+    end
+
+    def anchor_unanchored_selection(*args)
+      if @mark_anchor.nil?
+        anchor_selection *args
+        @changing_selection = false
+      end
+      @auto_anchored = true
     end
 
     def remove_selection( do_display = DO_DISPLAY )

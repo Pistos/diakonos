@@ -7,6 +7,12 @@ module Diakonos
       update_status_line
     end
 
+    # Used for "shift+arrow" style selection.
+    def anchor_unanchored_selection
+      buffer_current.anchor_unanchored_selection
+      update_status_line
+    end
+
     # Removes the highlighting from any text that matches the most recent
     # search.
     def clear_matches

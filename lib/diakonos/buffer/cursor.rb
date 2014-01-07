@@ -57,10 +57,11 @@ module Diakonos
       record_mark_start_and_end
 
       selection_removed = false
-      if ! @changing_selection && selecting?
+      if ! @auto_anchored && ! @changing_selection && selecting?
         remove_selection( DONT_DISPLAY )
         selection_removed = true
       end
+      @auto_anchored = false
 
       old_pair = @text_marks[ :pair ]
       if @settings[ 'view.pairs.highlight' ]
