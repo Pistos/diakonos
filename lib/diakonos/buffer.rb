@@ -488,7 +488,7 @@ module Diakonos
       record_mark_start_and_end
 
       if changed != 0
-        if ! @changing_selection && selecting?
+        if ! @auto_anchored && ! @changing_selection && selecting?
           remove_selection DONT_DISPLAY
         end
 
