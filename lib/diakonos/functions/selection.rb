@@ -8,8 +8,11 @@ module Diakonos
     end
 
     # Used for "shift+arrow" style selection.
-    def anchor_unanchored_selection
+    def anchor_unanchored_selection( *method_and_args )
       buffer_current.anchor_unanchored_selection
+      if method_and_args[0]
+        self.send method_and_args[0], *method_and_args[1..-1]
+      end
       update_status_line
     end
 
