@@ -10,7 +10,7 @@ module Diakonos
     end
 
     def grep_session_dir( regexp_source = nil )
-      grep_dir regexp_source, @session[ 'dir' ]
+      grep_dir regexp_source, @session.dir
     end
 
     def grep_dir( regexp_source = nil, dir = nil )
@@ -18,7 +18,7 @@ module Diakonos
         dir = get_user_input(
           "Grep directory: ",
           history: @rlh_files,
-          initial_text: @session[ 'dir' ],
+          initial_text: @session.dir,
           do_complete: DONT_COMPLETE,
           on_dirs: :accept_dirs
         )

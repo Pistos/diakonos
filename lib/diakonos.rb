@@ -121,6 +121,24 @@ module Diakonos
 
   LANG_TEXT = 'text'
 
+  # @return [Array] the filename and line number parsed
+  def self.parse_filename_and_line_number( s )
+    if(
+      # Ruby
+      s =~ /from (.+):(\d+)/ ||
+      # Python
+      s =~ /File "(.+)", line (\d+)/ ||
+      # Perl
+      s =~ /at (.+) line (\d+)/ ||
+      # generic
+      s =~ /^(.+):(\d+)/
+    )
+      [ $1, ( $2.to_i - 1 ) ]
+    else
+      [ s, nil ]
+    end
+  end
+
   class Diakonos
 
     attr_reader :diakonos_home, :script_dir, :clipboard,
@@ -240,7 +258,7 @@ module Diakonos
           regexp = argv.shift
           files = `egrep -rl '#{regexp}' *`.split( /\n/ )
           if files.any?
-            @files.concat( files.map { |f| session_file_hash_for f } )
+            @files.concat( files.map { |f| Session.file_hash_for f } )
             script = "\nfind '#{regexp}', case_sensitive: true"
             @post_load_script << script
           end
@@ -250,7 +268,7 @@ module Diakonos
             print_usage
             exit 1
           else
-            h = session_file_hash_for( filename )
+            h = Session.file_hash_for( filename )
             h[ 'read_only' ] = true
             @read_only_files.push h
           end
@@ -267,7 +285,7 @@ module Diakonos
           exit 0
         else
           # a name of a file to open
-          @files.push session_file_hash_for( arg )
+          @files.push Session.file_hash_for( arg )
         end
       end
     end
@@ -347,7 +365,7 @@ module Diakonos
         @buffers << Buffer.new( file_info )
       end
 
-      session_buffer_number = @session[ 'buffer_current' ] || 1
+      session_buffer_number = @session.buffer_current || 1
       if ! switch_to_buffer_number( session_buffer_number )
         debug_log "Failed to switch to buffer #{session_buffer_number.inspect}"
         switch_to_buffer_number 1
@@ -539,24 +557,6 @@ module Diakonos
         temp << b
       end
       temp
-    end
-
-    # @return [Array] the filename and line number parsed
-    def parse_filename_and_line_number( s )
-      if(
-        # Ruby
-        s =~ /from (.+):(\d+)/ ||
-        # Python
-        s =~ /File "(.+)", line (\d+)/ ||
-        # Perl
-        s =~ /at (.+) line (\d+)/ ||
-        # generic
-        s =~ /^(.+):(\d+)/
-      )
-        [ $1, ( $2.to_i - 1 ) ]
-      else
-        [ s, nil ]
-      end
     end
 
   end

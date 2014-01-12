@@ -186,7 +186,7 @@ module Diakonos
             var_array.push ''
           end
         when 'session_name'
-          var_array.push @session[ 'name' ]
+          var_array.push @session.name
         when "type"
           var_array.push buffer_current.original_language
         when /^@/

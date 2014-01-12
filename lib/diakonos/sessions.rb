@@ -1,97 +1,45 @@
 module Diakonos
-  class Diakonos
-    attr_reader :session
+  class Session
+    attr_reader :filename, :settings, :name, :dir, :buffers, :readline_histories
+    attr_accessor :buffer_current
 
-    def new_session( filepath )
-      basename = File.basename( filepath )
-      if ! self.pid_session?( filepath )
-        name = basename
+    def initialize(filepath, data = nil)
+      if data.nil?
+        @filename = File.expand_path(filepath)
+        @settings = Hash.new
+
+        basename = File.basename(filepath)
+        if ! Session.pid_session?(filepath)
+          @name = basename
+        end
+
+        @buffers = []
+        @buffer_current = 1
+        @dir = Dir.getwd
+      else
+        @filename = data['filename']
+        @settings = data['settings']
+        @name = data['name']
+        @buffers = data['buffers']
+        @buffer_current = data['buffer_current'] || 1
+        @dir = data['dir']
       end
-      @session = {
-        'filename' => File.expand_path( filepath ),
-        'settings' => Hash.new,
-        'name' => name,
-        'buffers' => [],
-        'buffer_current' => 1,
-        'dir' => Dir.getwd,
-      }
     end
 
-    def initialize_session
-      @session_dir = "#{@diakonos_home}/sessions"
-      mkdir @session_dir
-      new_session "#{@session_dir}/#{Process.pid}"
-    end
-
-    def session_file_hash_for( filepath )
-      filepath, line_number = parse_filename_and_line_number( filepath )
+    def to_yaml
       {
-        'filepath'  => filepath,
-        'read_only' => false,
-        'cursor'    => {
-          'row' => line_number || 0,
-          'col' => 0,
-        },
-        'display'   => {
-          'top_line'    => 0,
-          'left_column' => 0
-        },
-      }
+        'filename' => @filename,
+        'settings' => @settings,
+        'name' => @name,
+        'buffer_current' => @buffer_current,
+        'dir' => @dir,
+        'buffers' => @buffers,
+        'readline_histories' => @readline_histories
+      }.to_yaml
     end
 
-    def load_session_data( filename )
-      return  if ! File.exist? filename
-
-      File.open( filename ) do |f|
-        loaded = YAML::load( f ) or break
-
-        if(
-          loaded[ 'filename' ] &&
-          loaded[ 'settings' ] &&
-          loaded[ 'settings' ].respond_to?( :values ) &&
-          loaded.has_key?( 'name' ) &&
-          (
-            loaded[ 'files' ] &&
-            loaded[ 'files' ].respond_to?( :each ) ||
-            loaded[ 'buffers' ] &&
-            loaded[ 'buffers' ].respond_to?( :each )
-          )
-        )
-          # Convert old sessions
-          if loaded[ 'files' ]
-            loaded[ 'buffers' ] = loaded[ 'files' ].map { |f|
-              session_file_hash_for f
-            }
-            loaded.delete 'files'
-          end
-          @session = loaded
-        end
-      end
-    end
-
-    def load_session( session_file )
-      cleanup_session
-      load_session_data session_file
-      if @session
-        @files.concat @session['buffers']
-        rlh = @session['readline_histories']
-        if rlh
-          @rlh_general  = rlh['general'] || @rlh_general
-          @rlh_files    = rlh['files'] || @rlh_files
-          @rlh_search   = rlh['search'] || @rlh_search
-          @rlh_shell    = rlh['shell'] || @rlh_shell
-          @rlh_help     = rlh['help'] || @rlh_help
-          @rlh_sessions = rlh['sessions'] || @rlh_sessions
-        end
-        merge_session_settings
-      end
-    end
-
-    def save_session( session_file = @session[ 'filename' ] )
-      return  if session_file.nil?
-      return  if @testing && self.pid_session?( session_file )
-
-      @session[ 'buffers' ] = @buffers.reject { |buffer|
+    def set_buffers(buffers)
+      @buffers = buffers.reject { |buffer|
         buffer.name.nil?
       }.collect { |buffer|
         {
@@ -108,15 +56,110 @@ module Diakonos
           'last_search_regexps' => buffer.last_search_regexps.map { |r| r.to_s },
         }
       }.compact
+    end
 
-      @session['readline_histories'] = {
-        'general'  => @rlh_general,
-        'files'    => @rlh_files,
-        'search'   => @rlh_search,
-        'shell'    => @rlh_shell,
-        'help'     => @rlh_help,
-        'sessions' => @rlh_sessions,
+    def set_readline_histories(rlh_general, rlh_files, rlh_search, rlh_shell, rlh_help, rlh_sessions)
+      @readline_histories = {
+        'general'  => rlh_general,
+        'files'    => rlh_files,
+        'search'   => rlh_search,
+        'shell'    => rlh_shell,
+        'help'     => rlh_help,
+        'sessions' => rlh_sessions,
       }
+    end
+
+    # @return [Session] The Session created from the YAML data in the specified file
+    #   or nil on failure to load
+    def self.from_yaml_file(yaml_filename)
+      return nil  if ! File.exist?(yaml_filename)
+      session = nil
+
+      File.open(yaml_filename) do |f|
+        loaded = YAML::load(f) or break
+
+        if(
+          loaded[ 'filename' ] &&
+          loaded[ 'settings' ] &&
+          loaded[ 'settings' ].respond_to?( :values ) &&
+          loaded.has_key?( 'name' ) &&
+          (
+            loaded[ 'files' ] &&
+            loaded[ 'files' ].respond_to?( :each ) ||
+            loaded[ 'buffers' ] &&
+            loaded[ 'buffers' ].respond_to?( :each )
+          )
+        )
+          # Convert old sessions
+          if loaded[ 'files' ]
+            loaded[ 'buffers' ] = loaded[ 'files' ].map { |f|
+              Session.file_hash_for f
+            }
+            loaded.delete 'files'
+          end
+
+          session = Session.new(loaded['filename'], loaded)
+        end
+      end
+
+      session
+    end
+
+    def self.pid_session?(path)
+      %r{/\d+$} === path
+    end
+
+    def self.file_hash_for(filepath)
+      filepath, line_number = ::Diakonos.parse_filename_and_line_number(filepath)
+      {
+        'filepath'  => filepath,
+        'read_only' => false,
+        'cursor'    => {
+          'row' => line_number || 0,
+          'col' => 0,
+        },
+        'display'   => {
+          'top_line'    => 0,
+          'left_column' => 0
+        },
+      }
+    end
+
+  end
+
+  class Diakonos
+    attr_reader :session
+
+    def initialize_session
+      @session_dir = "#{@diakonos_home}/sessions"
+      mkdir @session_dir
+      @session = Session.new("#{@session_dir}/#{Process.pid}")
+    end
+
+    def load_session( session_file )
+      cleanup_session
+      @session = Session.from_yaml_file(session_file)
+      if @session
+        @files.concat @session.buffers
+        rlh = @session.readline_histories
+        if rlh
+          @rlh_general  = rlh['general'] || @rlh_general
+          @rlh_files    = rlh['files'] || @rlh_files
+          @rlh_search   = rlh['search'] || @rlh_search
+          @rlh_shell    = rlh['shell'] || @rlh_shell
+          @rlh_help     = rlh['help'] || @rlh_help
+          @rlh_sessions = rlh['sessions'] || @rlh_sessions
+        end
+        merge_session_settings
+      end
+    end
+
+    def save_session( session_file = @session.filename )
+      return  if session_file.nil?
+      return  if @testing && Session.pid_session?(session_file)
+
+      @session.set_buffers(@buffers)
+      @session.set_readline_histories(@rlh_general, @rlh_files, @rlh_search, @rlh_shell, @rlh_help, @rlh_sessions)
 
       File.open( session_file, 'w' ) do |f|
         f.puts @session.to_yaml
@@ -131,14 +174,6 @@ module Diakonos
       end
     end
 
-    def pid_session?( path = @session[ 'filename' ] )
-      %r{/\d+$} === path
-    end
-
-    def session_filepaths
-      @session[ 'buffers' ].map { |b| b[ 'filepath' ] }
-    end
-
     def session_startup
       @stale_session_files = []
 
@@ -148,7 +183,7 @@ module Diakonos
         session_path = session_filepath_for( @session_to_load )
         load_session session_path
         if ! @session
-          new_session session_path
+          @session = Session.new(session_path)
         end
       else
         session_files = Dir[ "#{@session_dir}/*" ].grep( %r{/\d+$} )
@@ -159,7 +194,7 @@ module Diakonos
           begin
             Process.kill 0, pid
           rescue Errno::ESRCH, Errno::EPERM
-            if self.pid_session?(sf)
+            if Session.pid_session?(sf)
               @stale_session_files << sf
             end
           end
@@ -209,8 +244,8 @@ module Diakonos
     end
 
     def cleanup_session
-      if @session && self.pid_session? && File.exists?( @session[ 'filename' ] )
-        File.delete @session[ 'filename' ]
+      if @session && Session.pid_session?(@session.filename) && File.exists?(@session.filename)
+        File.delete @session.filename
       end
     end
   end

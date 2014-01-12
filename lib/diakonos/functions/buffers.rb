@@ -174,7 +174,7 @@ module Diakonos
       do_open = true
       buffer = nil
       if filename
-        filename, last_row_ = parse_filename_and_line_number( filename )
+        filename, last_row_ = ::Diakonos.parse_filename_and_line_number( filename )
         last_row = last_row_ || last_row
         if filename =~ /\(unnamed buffer (\d+)\)/
           existing_buffer = @buffers.find { |b| b.object_id == $1.to_i }
@@ -299,7 +299,7 @@ module Diakonos
         prefill = ''
         finder_block = lambda { |input|
           finder = FuzzyFileFinder.new(
-            directories: @session[ 'dir' ],
+            directories: @session.dir,
             ceiling: @settings['fuzzy_file_find.max_files'] || 8192,
             ignores: @fuzzy_ignores,
             recursive: @settings['fuzzy_file_find.recursive']
