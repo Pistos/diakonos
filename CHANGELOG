@@ -6,6 +6,9 @@ Diakonos Changelog
 - Fixed stale session bugs.
 - Ruby 2.0.0 compatibility.
 - colour.background setting.
+- Fuzzy file find: Listing now sorted alphabetically.
+- Now use by default the terminal's current/default background colour, including possible transparency.
+- Support selection by Shift key with cursor movement.
 
 0.9.1
 
