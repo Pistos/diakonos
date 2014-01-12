@@ -15,14 +15,14 @@ module Diakonos
 
         @buffers = []
         @buffer_current = 1
-        @dir = Dir.getwd
+        self.dir = Dir.getwd
       else
         @filename = data['filename']
         @settings = data['settings']
         @name = data['name']
         @buffers = data['buffers']
         @buffer_current = data['buffer_current'] || 1
-        @dir = data['dir']
+        self.dir = data['dir']
       end
     end
 
@@ -67,6 +67,11 @@ module Diakonos
         'help'     => rlh_help,
         'sessions' => rlh_sessions,
       }
+    end
+
+    def dir=(new_dir)
+      @dir = new_dir
+      Dir.chdir new_dir
     end
 
     # @return [Session] The Session created from the YAML data in the specified file
