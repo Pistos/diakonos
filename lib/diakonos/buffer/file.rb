@@ -65,6 +65,14 @@ module Diakonos
 
       name = File.expand_path( filename )
 
+      if @settings['save_backup_files']
+        begin
+          FileUtils.cp name, name+'~', preserve: true
+        rescue Errno::ENOENT
+          # Do nothing if file didn't exist yet
+        end
+      end
+
       File.open( name, "w" ) do |f|
         @lines[ 0..-2 ].each do |line|
           if @settings[ 'strip_trailing_whitespace_on_save' ]

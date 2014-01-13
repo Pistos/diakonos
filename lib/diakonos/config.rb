@@ -50,7 +50,6 @@ module Diakonos
             $stdout.print "as a basis for your personal configuration (recommended)? (y/n)"; $stdout.flush
             answer = $stdin.gets
             if answer =~ /^y/i
-              require 'fileutils'
               FileUtils.cp @global_diakonos_conf, @diakonos_conf
             end
           else
@@ -338,7 +337,7 @@ module Diakonos
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
             /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
             "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
-            'suppress_welcome', 'strip_trailing_whitespace_on_save',
+            'suppress_welcome', 'strip_trailing_whitespace_on_save', 'save_backup_files',
             'find.return_on_abort', 'fuzzy_file_find', 'fuzzy_file_find.recursive', 'view.line_numbers',
             'find.show_context_after', 'view.pairs.highlight', 'open_as_first_buffer'
           @settings[ command ] = arg.to_b

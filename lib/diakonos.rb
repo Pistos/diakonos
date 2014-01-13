@@ -21,6 +21,7 @@ require 'set'
 require 'yaml'
 require 'digest/md5'
 require 'timeout'
+require 'fileutils'
 
 require 'diakonos/core-ext/object'
 require 'diakonos/core-ext/enumerable'
@@ -443,7 +444,6 @@ module Diakonos
         end
       end
 
-      require 'fileutils'
       inst[ :files ].each do |f|
         FileUtils.rm f
       end
