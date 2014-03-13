@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - Tab completion of paths now uses session dir.
 - save_backup_files setting (default false).
+- Slightly improve render speed of some highlighted languages.
 
 0.9.2
 
