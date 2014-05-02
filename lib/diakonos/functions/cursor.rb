@@ -161,9 +161,14 @@ module Diakonos
       char ||= get_char( "Type character to go to..." )
 
       if char
-        moved = buffer_current.go_to_char( char, after == :after ? AFTER_CHAR : ON_CHAR )
-        if ! moved
-          set_iline "'#{char}' not found."
+        begin
+          moved = buffer_current.go_to_char( char, after == :after ? AFTER_CHAR : ON_CHAR )
+          if ! moved
+            set_iline "'#{char}' not found."
+          end
+        rescue TypeError
+          # User pressed Esc, or Ctrl-C, or similar.
+          # Quietly continue.
         end
       end
     end
@@ -174,10 +179,14 @@ module Diakonos
       char ||= get_char( "Type character to go to..." )
 
       if char
-
-        moved = buffer_current.go_to_char_previous( char, after == :after ? AFTER_CHAR : ON_CHAR )
-        if ! moved
-          set_iline "'#{char}' not found."
+        begin
+          moved = buffer_current.go_to_char_previous( char, after == :after ? AFTER_CHAR : ON_CHAR )
+          if ! moved
+            set_iline "'#{char}' not found."
+          end
+        rescue TypeError
+          # User pressed Esc, or Ctrl-C, or similar.
+          # Quietly continue.
         end
       end
     end
