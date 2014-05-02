@@ -37,7 +37,7 @@ def doCommand( command )
 end
 
 def printUsage
-    puts "#{$0} <version number> [--work-dir <dir>] [--step]"
+    puts "#{$0} <version number> [--work-dir <dir>] [--step] [-p <scp port number>]"
 end
 
 # ---------------
