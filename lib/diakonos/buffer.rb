@@ -305,7 +305,7 @@ module Diakonos
     def columnize( delimiter = /=>?|:|,/, num_spaces_padding = 1 )
       take_snapshot
 
-      lines = selected_lines
+      lines = self.selected_lines
       column_width = 0
       lines.each do |line|
         pos = ( line =~ delimiter )
@@ -344,7 +344,7 @@ module Diakonos
     def comment_out
       take_snapshot
       one_modified = false
-      selected_lines.each do |line|
+      self.selected_lines.each do |line|
         next  if line.strip.empty?
         old_line = line.dup
         line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
@@ -361,7 +361,7 @@ module Diakonos
       comment_string = Regexp.escape( @settings[ "lang.#{@language}.comment_string" ].to_s )
       comment_close_string = Regexp.escape( @settings[ "lang.#{@language}.comment_close_string" ].to_s )
       one_modified = false
-      selected_lines.each do |line|
+      self.selected_lines.each do |line|
         old_line = line.dup
         line.gsub!( /^(\s*)#{comment_string}/, "\\1" )
         line.gsub!( /#{comment_close_string}$/, '' )

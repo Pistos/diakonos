@@ -16,7 +16,7 @@ module Diakonos
     }
 
     def search_area?
-      !! @search_area
+      @search_area
     end
 
     def search_area=( mark )
@@ -248,7 +248,7 @@ module Diakonos
           }
 
           choice = auto_choice || $diakonos.get_choice(
-            "#{num_matches_found} match#{ num_matches_found != 1 ? 'es' : '' } - Replace this one?",
+            "#{@num_matches_found} match#{ @num_matches_found != 1 ? 'es' : '' } - Replace this one?",
             [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
             CHOICE_YES
           )
@@ -293,10 +293,31 @@ module Diakonos
     def highlight_matches( regexp = @highlight_regexp )
       @highlight_regexp = regexp
       return  if @highlight_regexp.nil?
-      found_marks = @lines.grep_indices( @highlight_regexp ).collect do |line_index, start_col, end_col|
-        TextMark.new( line_index, start_col, line_index, end_col, @settings[ "lang.#{@language}.format.found" ] )
+
+      if @search_area
+        lines = @lines[@search_area.start_row..@search_area.end_row]
+        lines[0] = lines[0][@search_area.start_col..-1]
+        lines[-1] = lines[-1][0..@search_area.end_col]
+        line_index_offset = @search_area.start_row
+        col_offset = @search_area.start_col
+      else
+        lines = @lines
+        line_index_offset = 0
+        col_offset = 0
       end
-      @text_marks[ :found ] = found_marks
+
+      grepped_lines = lines.grep_indices( @highlight_regexp )
+      n = grepped_lines.count
+      found_marks = grepped_lines.collect do |line_index, start_col, end_col|
+        TextMark.new(
+          line_index + line_index_offset,
+          start_col + ( line_index == 0 ? col_offset : 0 ),
+          line_index + line_index_offset,
+          end_col,
+          @settings["lang.#{@language}.format.found"]
+        )
+      end
+      @text_marks[:found] = found_marks
       @num_matches_found ||= found_marks.size
     end
 

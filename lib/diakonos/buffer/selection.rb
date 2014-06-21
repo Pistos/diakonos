@@ -52,10 +52,11 @@ module Diakonos
     end
 
     def selection_mark
-      @text_marks[ :selection ]
+      @text_marks[:selection]
     end
+
     def selecting?
-      !!selection_mark
+      !! selection_mark
     end
 
     def select_current_line
@@ -217,6 +218,7 @@ module Diakonos
       selected_text
     end
 
+    # @return [Array<String>, nil]
     def selected_text
       selection = selection_mark
       if selection.nil?

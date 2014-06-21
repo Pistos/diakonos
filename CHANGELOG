@@ -3,10 +3,12 @@ Diakonos Changelog
 
 0.9.3
 
+- Ruby 2.0 or higher now required.
 - Tab completion of paths now uses session dir.
 - save_backup_files setting (default false).
 - Slightly improve render speed of some highlighted languages.
 - Fuzzy file find no longer active when current input line is an absolute path (performance improvement).
+- Searching within a selection now highlights only within selection, and reports only the number of matches in the selection.
 
 0.9.2
 
