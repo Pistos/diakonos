@@ -23,17 +23,29 @@ module Diakonos
   CHOICE_NO_TO_ALL    = 5
   CHOICE_YES_AND_STOP = 6
   CHOICE_DELETE       = 7
+  CHOICE_WITHIN_SELECTION = 8
   CHOICE_KEYS = [
-    [ "n".ord, "N".ord ],
-    [ "y".ord, "Y".ord ],
-    [ "a".ord, "A".ord ],
-    [ "c".ord, "C".ord, ESCAPE, CTRL_C, CTRL_D, CTRL_Q ],
-    [ "e".ord ],
-    [ "o".ord ],
-    [ "s".ord ],
-    [ "d".ord ],
+    ["n".ord, "N".ord],
+    ["y".ord, "Y".ord],
+    ["a".ord, "A".ord],
+    ["c".ord, "C".ord, ESCAPE, CTRL_C, CTRL_D, CTRL_Q],
+    ["e".ord],
+    ["o".ord],
+    ["s".ord],
+    ["d".ord],
+    ["w".ord],
   ]
-  CHOICE_STRINGS = [ '(n)o', '(y)es', '(a)ll', '(c)ancel', 'y(e)s to all', 'n(o) to all', 'yes and (s)top', '(d)elete' ]
+  CHOICE_STRINGS = [
+    '(n)o',
+    '(y)es',
+    '(a)ll',
+    '(c)ancel',
+    'y(e)s to all',
+    'n(o) to all',
+    'yes and (s)top',
+    '(d)elete',
+    'all (w)ithin selection',
+  ]
 
   class Diakonos
     attr_reader :readline

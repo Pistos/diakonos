@@ -55,6 +55,17 @@ module Diakonos
       end
     end
 
+    # @return [Array<String>]
+    def search_area_lines
+      return []  if @search_area.nil?
+
+      lines = @lines[@search_area.start_row..@search_area.end_row]
+      lines[0] = lines[0][@search_area.start_col..-1]
+      lines[-1] = lines[-1][0..@search_area.end_col]
+
+      lines
+    end
+
     # Takes an array of Regexps, which represents a user-provided regexp,
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
@@ -247,9 +258,13 @@ module Diakonos
             end
           }
 
+          choices = [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP, ]
+          if @search_area
+            choices << CHOICE_WITHIN_SELECTION
+          end
           choice = auto_choice || $diakonos.get_choice(
             "#{@num_matches_found} match#{ @num_matches_found != 1 ? 'es' : '' } - Replace this one?",
-            [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ],
+            choices,
             CHOICE_YES
           )
           case choice
@@ -257,7 +272,9 @@ module Diakonos
             paste [ actual_replacement ]
             num_replacements += 1 + find( regexps, direction: direction, replacement: replacement )
           when CHOICE_ALL
-            num_replacements += replace_all( regexp, replacement )
+            num_replacements += replace_all(regexp, replacement)
+          when CHOICE_WITHIN_SELECTION
+            num_replacements += replace_all(regexp, replacement, :within_search_area)
           when CHOICE_NO
             num_replacements += find( regexps, direction: direction, replacement: replacement )
           when CHOICE_CANCEL
@@ -274,16 +291,34 @@ module Diakonos
     end
 
     # @return [Fixnum] the number of replacements made
-    def replace_all( regexp, replacement )
+    def replace_all( regexp, replacement, within_search_area = false )
       return  if( regexp.nil? || replacement.nil? )
 
       num_replacements = 0
 
       take_snapshot
-      @lines = @lines.collect { |line|
+
+      if within_search_area && @search_area
+        lines = self.search_area_lines
+      else
+        lines = @lines
+      end
+
+      lines_modified = lines.collect { |line|
         num_replacements += line.scan(regexp).size
         line.gsub( regexp, replacement )
       }
+
+      if within_search_area && @search_area
+        @lines[@search_area.start_row][@search_area.start_col..-1] = lines_modified[0]
+        if @search_area.end_row - @search_area.start_row > 1
+          @lines[@search_area.start_row+1..@search_area.end_row-1] = lines_modified[1..-2]
+        end
+        @lines[@search_area.end_row][0..@search_area.end_col] = lines_modified[-1]
+      else
+        @lines = lines_modified
+      end
+
       set_modified
       clear_matches
       display
@@ -295,9 +330,7 @@ module Diakonos
       return  if @highlight_regexp.nil?
 
       if @search_area
-        lines = @lines[@search_area.start_row..@search_area.end_row]
-        lines[0] = lines[0][@search_area.start_col..-1]
-        lines[-1] = lines[-1][0..@search_area.end_col]
+        lines = self.search_area_lines
         line_index_offset = @search_area.start_row
         col_offset = @search_area.start_col
       else
