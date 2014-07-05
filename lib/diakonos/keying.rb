@@ -247,6 +247,12 @@ module Diakonos
     def process_keystroke( context = [], mode = 'edit', ch = nil )
       ch ||= @modes[ mode ].window.getch
       return  if ch.nil?
+
+      if ch == Curses::KEY_MOUSE
+        handle_mouse_event
+        return
+      end
+
       c = ch.ord
 
       # UTF-8
@@ -347,6 +353,7 @@ module Diakonos
 
           return
         end
+
         keychain_pressed = context.concat [ c ]
 
         function_and_args = (

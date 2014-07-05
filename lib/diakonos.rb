@@ -65,6 +65,7 @@ require 'diakonos/interaction'
 require 'diakonos/keying'
 require 'diakonos/logging'
 require 'diakonos/list'
+require 'diakonos/mouse'
 require 'diakonos/search'
 require 'diakonos/sessions'
 

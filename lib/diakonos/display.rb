@@ -25,6 +25,7 @@ module Diakonos
         Curses::nonl
         Curses::raw
         Curses::noecho
+        Curses::mousemask(Curses::ALL_MOUSE_EVENTS)
 
         if Curses::has_colors?
           Curses::start_color

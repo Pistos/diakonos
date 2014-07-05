@@ -1,6 +1,11 @@
 Diakonos Changelog
 ------------------
 
+0.9.4
+- Searching within a selection now highlights only within selection, and reports only the number of matches in the selection.
+- Can now replace all within selection.
+- Basic mouse support added.
+
 0.9.3
 
 - Ruby 2.0 or higher now required.
@@ -8,8 +13,6 @@ Diakonos Changelog
 - save_backup_files setting (default false).
 - Slightly improve render speed of some highlighted languages.
 - Fuzzy file find no longer active when current input line is an absolute path (performance improvement).
-- Searching within a selection now highlights only within selection, and reports only the number of matches in the selection.
-- Can now replace all within selection.
 
 0.9.2
 
