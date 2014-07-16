@@ -5,6 +5,7 @@ Diakonos Changelog
 - Searching within a selection now highlights only within selection, and reports only the number of matches in the selection.
 - Can now replace all within selection.
 - Basic mouse support added.
+- Indentation performance vastly improved.
 
 0.9.3
 
