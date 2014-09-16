@@ -71,6 +71,30 @@ module Diakonos
       level
     end
 
+    def nearest_row_having_indentation_from(starting_row)
+      row = starting_row-1
+      loop do
+        return nil  if row.nil? || row < 0
+
+        while (
+          @lines[row] =~ /^[\s#{@indent_ignore_charset}]*$/ ||
+          @lines[row] =~ @settings[ "lang.#{@language}.indent.ignore" ] ||
+          @lines[row] =~ @settings[ "lang.#{@language}.indent.not_indented" ]
+        )
+          row = nearest_row_having_indentation_from(row) or return nil
+        end
+
+        row_before = nearest_row_having_indentation_from(row)
+        if row_before && @lines[row_before] =~ @indenters_next_line
+          row = row_before
+        else
+          break
+        end
+      end
+
+      row
+    end
+
     def parsed_indent( opts = {} )
       row        = opts.fetch( :row,        @last_row )
       do_display = opts.fetch( :do_display, true )
@@ -80,34 +104,26 @@ module Diakonos
         level = 0
       else
         # Look upwards for the nearest line on which to base this line's indentation.
-        i = 1
-        while (
-          @lines[ row - i ] =~ /^[\s#{@indent_ignore_charset}]*$/ ||
-          @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.ignore" ] ||
-          @lines[ row - i ] =~ @settings[ "lang.#{@language}.indent.not_indented" ]
-        )
-          i += 1
-        end
+        basis_row = nearest_row_having_indentation_from(row)
 
-        if row - i < 0
+        if basis_row.nil?
           level = 0
         else
-          prev_line = @lines[ row - i ]
-          second_prev_line = ''
-          if ! ( ( row - i - i ) < 0 )
-            second_prev_line = @lines[ row - i - 1 ]
-          end
-          level = indentation_level( row - i )
+          # $diakonos.debug_log @lines[basis_row]
+          level = indentation_level(basis_row)
 
-          line = @lines[ row ]
+          prev_line = @lines[basis_row]
+          line = @lines[row]
+
           if @preventers
             prev_line = prev_line.gsub( @preventers, "" )
             line = line.gsub( @preventers, "" )
           end
 
-          indenter_index = ( prev_line =~ @indenters )
+          indenter_index = (prev_line =~ @indenters)
+          nl_indenter_index = (prev_line =~ @indenters_next_line)
 
-          if prev_line =~ @indenters_next_line
+          if nl_indenter_index && basis_row == row-1
             level += 1
           elsif indenter_index
             level += 1
@@ -117,7 +133,7 @@ module Diakonos
             end
           end
 
-          if line =~ @unindenters || second_prev_line =~ @indenters_next_line
+          if line =~ @unindenters
             level += -1
           end
         end

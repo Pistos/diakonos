@@ -10,7 +10,14 @@ int main() {
     if( condition )
         g();
 
-    h();
+    if( ql < xm ) {
+        if( l_node != NULL )
+            ret += l()->get( ql, xl , xm ) ;
+        } else
+            if(  r_node != NULL )
+                ret += r()->get( ql , xm , xr ) ;
 
-    return 0;
-}
+        h();
+
+        return 0;
+    }
