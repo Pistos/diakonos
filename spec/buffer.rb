@@ -142,7 +142,7 @@ describe 'A Diakonos::Buffer' do
 
     @b = Diakonos::Buffer.new( 'filepath' => SAMPLE_FILE_C )
 
-    indent_rows 0, 14
+    indent_rows 0, @b.length-1
     @b.save_copy TEMP_FILE_C
     File.read( TEMP_FILE_C ).should.equal File.read( SAMPLE_FILE_C )
 
