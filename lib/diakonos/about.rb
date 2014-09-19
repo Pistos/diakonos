@@ -34,6 +34,7 @@ Copyright:      Copyright (c) 2004-#{ Time.now.year } Pistos
 Version:        #{ ::Diakonos::VERSION }
 Code Date:      #{ ::Diakonos::LAST_MODIFIED }
 Install Time:   #{ File.mtime( File.join( inst[ :lib_dir ], 'diakonos', 'installation.rb' ) ) }
+Ruby Version:   #{ ::RUBY_VERSION }
 
 ## Paths
 
