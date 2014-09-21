@@ -419,7 +419,7 @@ module Diakonos
         buffer_current.insert_string c
         cursor_right Buffer::STILL_TYPING
         if c =~ @indent_triggers[buffer_current.language]
-          buffer_current.parsed_indent
+          buffer_current.parsed_indent cursor_eol: true
         end
       when 'input'
         if ! @readline.numbered_list?
