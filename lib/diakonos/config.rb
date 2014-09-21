@@ -93,6 +93,7 @@ module Diakonos
       @indenters           = Hash.new
       @indenters_next_line = Hash.new
       @unindenters         = Hash.new
+      @indent_triggers     = Hash.new
       @filemasks           = Hash.new
       @bangmasks           = Hash.new
       @closers             = Hash.new
@@ -309,6 +310,13 @@ module Diakonos
             @settings[ command ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
             @settings[ command ] = Regexp.new arg
+          end
+        when /^lang\.(.+?)\.indent\.triggers(\.case_insensitive)?$/
+          case_insensitive = ( $2 != nil )
+          if case_insensitive
+            @indent_triggers[$1] = Regexp.new( arg, Regexp::IGNORECASE )
+          else
+            @indent_triggers[$1] = Regexp.new arg
           end
         when /^lang\.(.+?)\.filemask$/
           @filemasks[ $1 ] = Regexp.new arg

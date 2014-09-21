@@ -418,6 +418,9 @@ module Diakonos
         buffer_current.delete_selection Buffer::DONT_DISPLAY
         buffer_current.insert_string c
         cursor_right Buffer::STILL_TYPING
+        if c =~ @indent_triggers[buffer_current.language]
+          buffer_current.parsed_indent
+        end
       when 'input'
         if ! @readline.numbered_list?
           @readline.paste c

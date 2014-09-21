@@ -1,7 +1,7 @@
 module Diakonos
 
   class Buffer
-    attr_reader :name, :original_language, :changing_selection, :read_only,
+    attr_reader :name, :original_language, :language, :changing_selection, :read_only,
       :tab_size, :selection_mode
     attr_writer :desired_column, :read_only
 

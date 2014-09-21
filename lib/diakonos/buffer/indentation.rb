@@ -38,7 +38,7 @@ module Diakonos
 
       take_snapshot( TYPING )  if do_display && undoable
       @lines[ row ] = indent_text + rest
-      cursor_to( row, indentation )  if do_display
+      cursor_to( row, @lines[row].length )  if do_display
       set_modified do_display
     end
 

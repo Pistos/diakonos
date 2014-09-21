@@ -6,6 +6,8 @@ Diakonos Changelog
 - Can now replace all within selection.
 - Basic mouse support added.
 - Indentation performance vastly improved.
+- Some indentation bugs fixed.
+- lang.languagename.indent.triggers added.
 
 0.9.3
 
