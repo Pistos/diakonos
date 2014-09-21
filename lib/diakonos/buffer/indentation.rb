@@ -103,12 +103,11 @@ module Diakonos
           row_before = nearest_basis_row_from(row, false)
           if row_before && @lines[row_before] =~ @indenters_next_line
             row = row_before
-          else
-            break
+            next
           end
-        else
-          break
         end
+
+        break
       end
 
       row
