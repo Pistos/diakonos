@@ -124,6 +124,19 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 8,0
   end
 
+  it "doesn't duplicate comment closers" do
+    b = @d.open_file(SAMPLE_FILE_JS)
+
+    @d.comment_out
+    b.to_a[0].should.equal '/* function() { */'
+    @d.comment_out
+    b.to_a[0].should.equal '/* /* function() { */'
+    @d.uncomment
+    b.to_a[0].should.equal '/* function() { */'
+    @d.uncomment
+    b.to_a[0].should.equal 'function() {'
+  end
+
   it 'delete until a character' do
     @b.cursor_to 5,2
     @b.to_a[ 5 ].should.equal '  attr_reader :x, :y'

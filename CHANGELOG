@@ -8,6 +8,7 @@ Diakonos Changelog
 - Indentation performance vastly improved.
 - Some indentation bugs fixed.
 - lang.languagename.indent.triggers added.
+- For languages with comment closers, don't duplicate closers.
 
 0.9.3
 

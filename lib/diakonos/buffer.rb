@@ -343,14 +343,20 @@ module Diakonos
 
     def comment_out
       take_snapshot
+
       one_modified = false
+      closer = @settings[ "lang.#{@language}.comment_close_string" ].to_s
+
       self.selected_lines.each do |line|
         next  if line.strip.empty?
         old_line = line.dup
         line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
-        line << @settings[ "lang.#{@language}.comment_close_string" ].to_s
+        if ! closer.empty? && line !~ /#{Regexp.escape(closer)}$/
+          line << closer
+        end
         one_modified ||= ( line != old_line )
       end
+
       if one_modified
         set_modified
       end
@@ -363,8 +369,11 @@ module Diakonos
       one_modified = false
       self.selected_lines.each do |line|
         old_line = line.dup
-        line.gsub!( /^(\s*)#{comment_string}/, "\\1" )
-        line.gsub!( /#{comment_close_string}$/, '' )
+        comment_regexp = /^(\s*)#{comment_string}/
+        line.gsub!( comment_regexp, "\\1" )
+        if line !~ comment_regexp
+          line.gsub!( /#{comment_close_string}$/, '' )
+        end
         one_modified ||= ( line != old_line )
       end
       if one_modified

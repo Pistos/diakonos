@@ -19,6 +19,9 @@ end
 if ! Object.const_defined? 'SAMPLE_FILE_C'
   SAMPLE_FILE_C = File.join( TEST_DIR, '/sample-file.c' )
 end
+if ! Object.const_defined? 'SAMPLE_FILE_JS'
+  SAMPLE_FILE_JS = File.join( TEST_DIR, '/sample-file.js' )
+end
 if ! Object.const_defined? 'BRACKET_FILE'
   BRACKET_FILE = File.join( TEST_DIR, '/bracket-file.rb' )
 end
