@@ -171,6 +171,13 @@ module Diakonos
       end
       retval
     end
+
+    UTF_8_2_BYTE_BEGIN = 0xc2
+    UTF_8_2_BYTE_END = 0xdf
+    UTF_8_3_BYTE_BEGIN = 0xe0
+    UTF_8_3_BYTE_END = 0xef
+    UTF_8_4_BYTE_BEGIN = 0xf0
+    UTF_8_4_BYTE_END = 0xf4
   end
 
   class Diakonos
@@ -246,19 +253,19 @@ module Diakonos
     # @param [String] mode
     # @return [Boolean] true iff c began a UTF-8 byte sequence
     def handle_utf_8(c, mode)
-      return false  if c < 194 || c > 244
+      return false  if c < Keying::UTF_8_2_BYTE_BEGIN || c > Keying::UTF_8_4_BYTE_END
 
-      if 194 <= c && c <= 223
+      if Keying::UTF_8_2_BYTE_BEGIN <= c && c <= Keying::UTF_8_2_BYTE_END
         # 2-byte character
         byte_array = [c, @modes[mode].window.getch.ord]
-      elsif 224 <= c && c <= 239
+      elsif Keying::UTF_8_3_BYTE_BEGIN <= c && c <= Keying::UTF_8_3_BYTE_END
         # 3-byte character
         byte_array = [
           c,
           @modes[mode].window.getch.ord,
           @modes[mode].window.getch.ord,
         ]
-      elsif 240 <= c && c <= 244
+      elsif Keying::UTF_8_4_BYTE_BEGIN <= c && c <= Keying::UTF_8_4_BYTE_END
         # 4-byte character
         byte_array = [
           c,
@@ -313,18 +320,18 @@ module Diakonos
 
             c = ch.ord
             # UTF-8
-            if 194 <= c && c <= 244
-              if 194 <= c && c <= 223
+            if Keying::UTF_8_2_BYTE_BEGIN <= c && c <= Keying::UTF_8_4_BYTE_END
+              if Keying::UTF_8_2_BYTE_BEGIN <= c && c <= Keying::UTF_8_2_BYTE_END
                 # 2-byte character
                 byte_array = [c, @modes[mode].window.getch.ord]
-              elsif 224 <= c && c <= 239
+              elsif Keying::UTF_8_3_BYTE_BEGIN <= c && c <= Keying::UTF_8_3_BYTE_END
                 # 3-byte character
                 byte_array = [
                   c,
                   @modes[mode].window.getch.ord,
                   @modes[mode].window.getch.ord,
                 ]
-              elsif 240 <= c && c <= 244
+              elsif Keying::UTF_8_4_BYTE_BEGIN <= c && c <= Keying::UTF_8_4_BYTE_END
                 # 4-byte character
                 byte_array = [
                   c,
