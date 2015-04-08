@@ -66,6 +66,17 @@ module Diakonos
       lines
     end
 
+    # @param [Symbol]
+    # @return [Symbol]
+    def opposite_direction(direction)
+      case direction
+      when :up
+        :down
+      else
+        :up
+      end
+    end
+
     # Takes an array of Regexps, which represents a user-provided regexp,
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
@@ -95,12 +106,7 @@ module Diakonos
       end
 
       if direction == :opposite
-        case @last_search_direction
-        when :up
-          direction = :down
-        else
-          direction = :up
-        end
+        direction = opposite_direction(@last_search_direction)
       end
       @last_search_regexps = regexps
       @last_search_direction = direction
