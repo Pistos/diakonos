@@ -281,9 +281,9 @@ module Diakonos
     # @param [String] mode
     # @return [Boolean] true iff c began a UTF-8 byte sequence
     def handle_utf_8(c, mode)
-      char = utf_8_bytes_to_char(c, mode)
-      if char
-        self.type_character char, mode
+      utf_8_char = utf_8_bytes_to_char(c, mode)
+      if utf_8_char
+        self.type_character utf_8_char, mode
         true
       end
     end
@@ -326,30 +326,9 @@ module Diakonos
             break  if ch.nil?
 
             c = ch.ord
-            # UTF-8
-            if Keying::UTF_8_2_BYTE_BEGIN <= c && c <= Keying::UTF_8_4_BYTE_END
-              if Keying::UTF_8_2_BYTE_BEGIN <= c && c <= Keying::UTF_8_2_BYTE_END
-                # 2-byte character
-                byte_array = [c, @modes[mode].window.getch.ord]
-              elsif Keying::UTF_8_3_BYTE_BEGIN <= c && c <= Keying::UTF_8_3_BYTE_END
-                # 3-byte character
-                byte_array = [
-                  c,
-                  @modes[mode].window.getch.ord,
-                  @modes[mode].window.getch.ord,
-                ]
-              elsif Keying::UTF_8_4_BYTE_BEGIN <= c && c <= Keying::UTF_8_4_BYTE_END
-                # 4-byte character
-                byte_array = [
-                  c,
-                  @modes[mode].window.getch.ord,
-                  @modes[mode].window.getch.ord,
-                  @modes[mode].window.getch.ord,
-                ]
-              end
-
-              char = byte_array.pack('C*').force_encoding('utf-8')
-              s << char
+            utf_8_char = utf_8_bytes_to_char(c, mode)
+            if utf_8_char
+              s << utf_8_char
             elsif typeable?( c )
               s << c
             elsif c == ENTER && mode == 'edit'
