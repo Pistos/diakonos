@@ -242,6 +242,38 @@ module Diakonos
       char > 31 && char < 255 && char != BACKSPACE
     end
 
+    # @param [Fixnum] c The ordinal (number) of a character
+    # @param [String] mode
+    # @return [Boolean] true iff c began a UTF-8 byte sequence
+    def handle_utf_8(c, mode)
+      return false  if c < 194 || c > 244
+
+      if 194 <= c && c <= 223
+        # 2-byte character
+        byte_array = [c, @modes[mode].window.getch.ord]
+      elsif 224 <= c && c <= 239
+        # 3-byte character
+        byte_array = [
+          c,
+          @modes[mode].window.getch.ord,
+          @modes[mode].window.getch.ord,
+        ]
+      elsif 240 <= c && c <= 244
+        # 4-byte character
+        byte_array = [
+          c,
+          @modes[mode].window.getch.ord,
+          @modes[mode].window.getch.ord,
+          @modes[mode].window.getch.ord,
+        ]
+      end
+
+      char = byte_array.pack('C*').force_encoding('utf-8')
+      self.type_character char, mode
+
+      true
+    end
+
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def process_keystroke( context = [], mode = 'edit', ch = nil )
@@ -255,32 +287,7 @@ module Diakonos
 
       c = ch.ord
 
-      # UTF-8
-      if 194 <= c && c <= 244
-        if 194 <= c && c <= 223
-          # 2-byte character
-          byte_array = [c, @modes[mode].window.getch.ord]
-        elsif 224 <= c && c <= 239
-          # 3-byte character
-          byte_array = [
-            c,
-            @modes[mode].window.getch.ord,
-            @modes[mode].window.getch.ord,
-          ]
-        elsif 240 <= c && c <= 244
-          # 4-byte character
-          byte_array = [
-            c,
-            @modes[mode].window.getch.ord,
-            @modes[mode].window.getch.ord,
-            @modes[mode].window.getch.ord,
-          ]
-        end
-
-        char = byte_array.pack('C*').force_encoding('utf-8')
-        type_character char, mode
-        return
-      end
+      self.handle_utf_8(c, mode) and return
 
       if @capturing_keychain
         capture_keychain c, context
@@ -289,7 +296,7 @@ module Diakonos
       else
 
         if context.empty? && typeable?( c )
-          type_character ch, mode
+          self.type_character ch, mode
 
           # Handle X windows paste
           s = ""
