@@ -249,12 +249,9 @@ module Diakonos
       char > 31 && char < 255 && char != BACKSPACE
     end
 
-    # @param [Fixnum] c The ordinal (number) of a character
-    # @param [String] mode
-    # @return [Boolean] true iff c began a UTF-8 byte sequence
-    def handle_utf_8(c, mode)
-      return false  if c < Keying::UTF_8_2_BYTE_BEGIN || c > Keying::UTF_8_4_BYTE_END
-
+    # @param [Fixnum] c The first byte of a UTF-8 byte sequence
+    # @return [String] nil if c is not the beginning of a multi-byte sequence
+    def utf_8_bytes_to_char(c, mode)
       if Keying::UTF_8_2_BYTE_BEGIN <= c && c <= Keying::UTF_8_2_BYTE_END
         # 2-byte character
         byte_array = [c, @modes[mode].window.getch.ord]
@@ -273,12 +270,22 @@ module Diakonos
           @modes[mode].window.getch.ord,
           @modes[mode].window.getch.ord,
         ]
+      else
+        return nil
       end
 
-      char = byte_array.pack('C*').force_encoding('utf-8')
-      self.type_character char, mode
+      byte_array.pack('C*').force_encoding('utf-8')
+    end
 
-      true
+    # @param [Fixnum] c The ordinal (number) of a character
+    # @param [String] mode
+    # @return [Boolean] true iff c began a UTF-8 byte sequence
+    def handle_utf_8(c, mode)
+      char = utf_8_bytes_to_char(c, mode)
+      if char
+        self.type_character char, mode
+        true
+      end
     end
 
     # context is an array of characters (bytes) which are keystrokes previously
