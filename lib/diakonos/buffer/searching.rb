@@ -45,13 +45,8 @@ module Diakonos
     def establish_finding( regexps, search_area, from_row, from_col, match )
       found_text = match[ 0 ]
       finding = Finding.new( from_row, from_col, from_row, from_col + found_text.length )
-      if finding.match( regexps, @lines )
-        if(
-          search_area.contains?( finding.start_row, finding.start_col ) &&
-          search_area.contains?( finding.end_row, finding.end_col - 1 )
-        )
-          throw :found, [ finding, match ]
-        end
+      if finding.match( regexps, @lines, search_area )
+        throw :found, [ finding, match ]
       end
     end
 

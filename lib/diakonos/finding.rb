@@ -11,13 +11,13 @@ module Diakonos
       @end_col = end_col
     end
 
-    def match( regexps, lines )
-      retval = true
+    def match( regexps, lines, search_area )
+      matches = true
 
       i = @start_row + 1
       regexps[ 1..-1 ].each do |re|
         if lines[ i ] !~ re
-          retval = false
+          matches = false
           break
         end
         @end_row = i
@@ -25,7 +25,9 @@ module Diakonos
         i += 1
       end
 
-      retval
+      matches &&
+      search_area.contains?( self.start_row, self.start_col ) &&
+      search_area.contains?( self.end_row, self.end_col - 1 )
     end
   end
 
