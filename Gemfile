@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'curses'
+gem 'curses', platforms: [:ruby_21, :ruby_22]
 
 group :test do
   gem 'bacon'
