@@ -1,12 +1,12 @@
 require 'rake'
 require 'rake/testtask'
 
-task :default => [ :test ]
-task :spec => [ :test ]
+begin
+  require 'rspec/core/rake_task'
 
-desc "Run Diakonos tests"
-task :test do
-  system 'bacon -Ilib spec/*.rb spec/*/*.rb'
+  RSpec::Core::RakeTask.new(:spec)
+
+  task :default => :spec
 end
 
 begin
