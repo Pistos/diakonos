@@ -15,6 +15,11 @@ module Diakonos
       ']' => { partner: '[', direction: :backward },
     }
 
+    OPPOSITE_DIRECTION = {
+      up: :down,
+      down: :up,
+    }
+
     def search_area?
       @search_area
     end
@@ -59,17 +64,6 @@ module Diakonos
       lines[-1] = lines[-1][0..@search_area.end_col]
 
       lines
-    end
-
-    # @param [Symbol]
-    # @return [Symbol]
-    def opposite_direction(direction)
-      case direction
-      when :up
-        :down
-      else
-        :up
-      end
     end
 
     def _find_down(regexps, regexp, from_row, from_col, search_area)
@@ -195,7 +189,7 @@ module Diakonos
       end
 
       if direction == :opposite
-        direction = opposite_direction(@last_search_direction)
+        direction = OPPOSITE_DIRECTION[@last_search_direction]
       end
       @last_search_regexps = regexps
       @last_search_direction = direction
