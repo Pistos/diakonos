@@ -1,6 +1,6 @@
-require_relative '../preparation'
+require 'spec_helper'
 
-describe 'A Diakonos user can' do
+RSpec.describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
@@ -15,21 +15,21 @@ describe 'A Diakonos user can' do
   it 'can close a buffer' do
     name = @d.buffer_current.name
     n = @d.buffers.size
-    n.should > 0
-    @d.buffers.map(&:name).should.include name
+    expect(n).to be > 0
+    expect(@d.buffers.map(&:name)).to include name
 
     @d.close_buffer
 
-    @d.buffers.size.should.equal n-1
-    @d.buffer_current.name.should.not.equal name
-    @d.buffers.map(&:name).should.not.include name
+    expect(@d.buffers.size).to eq n-1
+    expect(@d.buffer_current.name).not_to eq name
+    expect(@d.buffers.map(&:name)).not_to include name
   end
 
   it 'see nothing untoward happen after attempting to open ""' do
     $keystrokes = [ Diakonos::ENTER ]
-    lambda {
+    expect {
       @d.open_file_ask
-    }.should.not.raise Exception
+    }.not_to raise_exception
   end
 
   it 'open a file at a specific line number' do
@@ -75,22 +75,22 @@ describe 'A Diakonos user can' do
 
     @d.switch_to_buffer_number 2
     name = File.basename( @d.buffer_current.name )
-    name.should.equal 'sample-file.rb'
+    expect(name).to eq 'sample-file.rb'
 
     @d.renumber_buffer 4
     name = File.basename( @d.buffer_current.name )
-    name.should.equal 'sample-file.rb'
+    expect(name).to eq 'sample-file.rb'
     numbered_buffer_should_be_named 2, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 3, 'sample-file.c'
     numbered_buffer_should_be_named 4, 'sample-file.rb'
 
     @d.switch_to_buffer_number 3
     name = File.basename( @d.buffer_current.name )
-    name.should.equal 'sample-file.c'
+    expect(name).to eq 'sample-file.c'
 
     @d.renumber_buffer 2
     name = File.basename( @d.buffer_current.name )
-    name.should.equal 'sample-file.c'
+    expect(name).to eq 'sample-file.c'
     numbered_buffer_should_be_named 2, 'sample-file.c'
     numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 4, 'sample-file.rb'
@@ -100,7 +100,7 @@ describe 'A Diakonos user can' do
     # buffer when trying to switching to the current buffer.
     @d.switch_to_buffer_number 2
     name = File.basename( @d.buffer_current.name )
-    name.should.equal 'sample-file.c'
+    expect(name).to eq 'sample-file.c'
 
     @d.renumber_buffer 2
     numbered_buffer_should_be_named 2, 'sample-file.c'
@@ -108,7 +108,7 @@ describe 'A Diakonos user can' do
     numbered_buffer_should_be_named 4, 'sample-file.rb'
 
     name = File.basename( @d.buffer_current.name )
-    name.should.equal 'sample-file.c'
+    expect(name).to eq 'sample-file.c'
     @d.renumber_buffer 5
     numbered_buffer_should_be_named 2, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 3, 'sample-file.rb'
@@ -124,16 +124,16 @@ describe 'A Diakonos user can' do
     numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 4, 'sample-file.rb'
 
-    should.raise do
+    expect {
       @d.renumber_buffer 0
-    end
+    }.to raise_exception
     numbered_buffer_should_be_named 1, 'sample-file.c'
     numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 4, 'sample-file.rb'
 
-    should.raise do
+    expect {
       @d.renumber_buffer -1
-    end
+    }.to raise_exception
     numbered_buffer_should_be_named 1, 'sample-file.c'
     numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 4, 'sample-file.rb'
