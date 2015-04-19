@@ -55,7 +55,8 @@ module Diakonos
 
     def establish_finding( regexps, search_area, from_row, from_col, match )
       found_text = match[ 0 ]
-      finding = Finding.new( from_row, from_col, from_row, from_col + found_text.length )
+      range = ::Diakonos::Range.new(from_row, from_col, from_row, from_col + found_text.length)
+      finding = Finding.new(range)
       if finding.match( regexps, @lines, search_area )
         throw :found, [ finding, match ]
       end
@@ -166,7 +167,7 @@ module Diakonos
       end
     end
 
-    # Takes an array of Regexps, which represents a user-provided regexp,
+    # @param regexps [Array] Regexps which represent a user-provided regexp,
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
     # element.

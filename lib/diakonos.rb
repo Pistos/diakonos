@@ -91,6 +91,7 @@ require 'diakonos/extension'
 require 'diakonos/extension-set'
 require 'diakonos/key-map'
 require 'diakonos/mode'
+require 'diakonos/range'
 require 'diakonos/readline'
 require 'diakonos/readline/functions'
 
