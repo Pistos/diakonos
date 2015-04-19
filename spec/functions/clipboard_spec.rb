@@ -1,6 +1,6 @@
-require_relative '../preparation'
+require 'spec_helper'
 
-describe 'A Diakonos user can' do
+RSpec.describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
@@ -18,7 +18,7 @@ describe 'A Diakonos user can' do
     @d.cursor_down
     @d.cursor_down
     @d.copy_selection
-    @d.clipboard.clip.should.equal [
+    expect(@d.clipboard.clip).to eq [
       '#!/usr/bin/env ruby',
       '',
       '# This is only a sample file used in the tests.',
@@ -32,7 +32,7 @@ describe 'A Diakonos user can' do
     @d.cursor_down
     @d.cursor_down
     @d.cut_selection
-    @d.clipboard.clip.should.equal [
+    expect(@d.clipboard.clip).to eq [
       '#!/usr/bin/env ruby',
       '',
       '# This is only a sample file used in the tests.',
@@ -40,8 +40,8 @@ describe 'A Diakonos user can' do
     ]
 
     lines = @b.to_a
-    lines.size.should.equal 24
-    lines[ 0..2 ].should.equal [
+    expect(lines.size).to eq 24
+    expect(lines[ 0..2 ]).to eq [
       '',
       'class Sample',
       '  attr_reader :x, :y',
@@ -55,8 +55,8 @@ describe 'A Diakonos user can' do
     @d.paste
 
     lines = @b.to_a
-    lines.size.should.equal 30
-    lines[ 0..8 ].should.equal [
+    expect(lines.size).to eq 30
+    expect(lines[ 0..8 ]).to eq [
       '#!/usr/bin/env ruby',
       '',
       '# This is only a sample file used in the tests.',
@@ -75,29 +75,29 @@ describe 'A Diakonos user can' do
     @d.cursor_bof
     @d.delete_and_store_line
     @d.functions_last << 'delete_and_store_line'
-    @d.clipboard.clip.should.equal( [
+    expect(@d.clipboard.clip).to eq( [
       '#!/usr/bin/env ruby',
       '',
     ] )
     @d.delete_and_store_line
     @d.functions_last << 'delete_and_store_line'
-    @d.clipboard.clip.should.equal( [
+    expect(@d.clipboard.clip).to eq( [
       '#!/usr/bin/env ruby',
       '',
       '',
     ] )
     @d.delete_and_store_line
     @d.functions_last << 'delete_and_store_line'
-    @d.clipboard.clip.should.equal( [
+    expect(@d.clipboard.clip).to eq( [
       '#!/usr/bin/env ruby',
       '',
       '# This is only a sample file used in the tests.',
       '',
     ] )
-    @b.to_a.should.not.equal original_lines
+    expect(@b.to_a).not_to eq original_lines
 
     @d.paste
-    @b.to_a.should.equal original_lines
+    expect(@b.to_a).to eq original_lines
   end
 
 end
