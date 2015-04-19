@@ -26,11 +26,11 @@ module Diakonos
       if regexp_source_
         regexp_source = regexp_source_
       else
-        buffer_current.search_area = nil
+        buffer_current.clear_search_area
         m = buffer_current.selection_mark
         if m
           if m.start_row != m.end_row
-            buffer_current.search_area = buffer_current.selection_mark
+            buffer_current.set_search_area buffer_current.selection_mark
             buffer_current.remove_selection
           else
             selected_text = buffer_current.copy_selection[ 0 ]
@@ -116,7 +116,7 @@ module Diakonos
     # @see #find
     # @see #find_again
     def find_exact( direction = :down, search_term_ = nil )
-      buffer_current.search_area = nil
+      buffer_current.clear_search_area
       if search_term_.nil?
         if buffer_current.changing_selection
           selected_text = buffer_current.copy_selection[ 0 ]

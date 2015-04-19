@@ -24,27 +24,33 @@ module Diakonos
       @search_area
     end
 
-    def search_area=( mark )
-      @search_area = mark
+    def clear_search_area
+      @search_area = nil
+      @text_marks.delete :search_area_pre
+      @text_marks.delete :search_area_post
+    end
+
+    def set_search_area(mark)
       if mark.nil?
-        @text_marks.delete :search_area_pre
-        @text_marks.delete :search_area_post
-      else
-        @text_marks[ :search_area_pre ] = TextMark.new(
-          0,
-          0,
-          mark.start_row,
-          mark.start_col,
-          @settings[ 'view.non_search_area.format' ]
-        )
-        @text_marks[ :search_area_post ] = TextMark.new(
-          mark.end_row,
-          mark.end_col,
-          @lines.length - 1,
-          @lines[ -1 ].length,
-          @settings[ 'view.non_search_area.format' ]
-        )
+        raise 'Call Diakonos::Buffer#clear_search_area instead'
+        return
       end
+
+      @search_area = mark
+      @text_marks[ :search_area_pre ] = TextMark.new(
+        0,
+        0,
+        mark.start_row,
+        mark.start_col,
+        @settings[ 'view.non_search_area.format' ]
+      )
+      @text_marks[ :search_area_post ] = TextMark.new(
+        mark.end_row,
+        mark.end_col,
+        @lines.length - 1,
+        @lines[ -1 ].length,
+        @settings[ 'view.non_search_area.format' ]
+      )
     end
 
     def establish_finding( regexps, search_area, from_row, from_col, match )
