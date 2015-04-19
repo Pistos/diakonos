@@ -38,17 +38,11 @@ module Diakonos
 
       @search_area = mark
       @text_marks[ :search_area_pre ] = TextMark.new(
-        0,
-        0,
-        mark.start_row,
-        mark.start_col,
+        ::Diakonos::Range.new(0, 0, mark.start_row, mark.start_col),
         @settings[ 'view.non_search_area.format' ]
       )
       @text_marks[ :search_area_post ] = TextMark.new(
-        mark.end_row,
-        mark.end_col,
-        @lines.length - 1,
-        @lines[ -1 ].length,
+        ::Diakonos::Range.new(mark.end_row, mark.end_col, @lines.length - 1, @lines[ -1 ].length),
         @settings[ 'view.non_search_area.format' ]
       )
     end
@@ -190,7 +184,8 @@ module Diakonos
 
       num_replacements = 0
 
-      search_area = @search_area || TextMark.new( 0, 0, @lines.size - 1, @lines[ -1 ].size, nil )
+      # TODO: Just use Range here instead of TextMark?
+      search_area = @search_area || TextMark.new( ::Diakonos::Range.new(0, 0, @lines.size - 1, @lines[ -1 ].size), nil )
       if ! search_area.contains?( from_row, from_col )
         from_row, from_col = search_area.start_row, search_area.start_col
       end
@@ -350,10 +345,12 @@ module Diakonos
       n = grepped_lines.count
       found_marks = grepped_lines.collect do |line_index, start_col, end_col|
         TextMark.new(
-          line_index + line_index_offset,
-          start_col + ( line_index == 0 ? col_offset : 0 ),
-          line_index + line_index_offset,
-          end_col,
+          ::Diakonos::Range.new(
+            line_index + line_index_offset,
+            start_col + ( line_index == 0 ? col_offset : 0 ),
+            line_index + line_index_offset,
+            end_col,
+          ),
           @settings["lang.#{@language}.format.found"]
         )
       end
@@ -441,10 +438,7 @@ module Diakonos
         @text_marks[ :pair ] = nil
       else
         @text_marks[ :pair ] = TextMark.new(
-          match_row,
-          match_col,
-          match_row,
-          match_col + 1,
+          ::Diakonos::Range.new(match_row, match_col, match_row, match_col + 1),
           @settings[ "lang.#{@language}.format.pair" ] || @settings[ "lang.shared.format.pair" ]
         )
       end

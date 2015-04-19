@@ -1,14 +1,11 @@
 module Diakonos
 
   class Finding
+    include RangeDelegator
+
     def initialize(range)
       @range = range
     end
-
-    def start_row; @range.start_row; end
-    def end_row; @range.end_row; end
-    def start_col; @range.start_col; end
-    def end_col; @range.end_col; end
 
     def match( regexps, lines, search_area )
       matches = true
