@@ -1,10 +1,10 @@
-require_relative '../preparation'
+require 'spec_helper'
 
 def type( ch = $keystrokes.shift )
   @d.process_keystroke [], 'edit', ch
 end
 
-describe 'A Diakonos user can' do
+RSpec.describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
@@ -17,48 +17,48 @@ describe 'A Diakonos user can' do
   end
 
   it 'type one character and undo that typing' do
-    @b.to_a[0].should.equal ''
+    expect(@b.to_a[0]).to eq ''
     type 'a'
-    @b.to_a[0].should.equal 'a'
+    expect(@b.to_a[0]).to eq 'a'
     cursor_should_be_at 0,1
 
     @d.undo
 
-    @b.to_a[0].should.equal ''
+    expect(@b.to_a[0]).to eq ''
     cursor_should_be_at 0,0
   end
 
   it 'type several characters and undo all that typing with one undo' do
-    @b.to_a[0].should.equal ''
+    expect(@b.to_a[0]).to eq ''
     $keystrokes = [ 'a' ] * 8
     type
-    @b.to_a[0].should.equal 'aaaaaaaa'
+    expect(@b.to_a[0]).to eq 'aaaaaaaa'
     cursor_should_be_at 0,8
 
     @d.undo
 
-    @b.to_a[0].should.equal ''
+    expect(@b.to_a[0]).to eq ''
     cursor_should_be_at 0,0
   end
 
   it 'type a carriage return and undo that carriage return' do
     lines = @b.to_a
-    lines[0].should.equal ''
-    lines.size.should.equal 1
+    expect(lines[0]).to eq ''
+    expect(lines.size).to eq 1
 
     type 'a'
     sleep 1
     type Diakonos::ENTER
     lines = @b.to_a
-    lines[0].should.equal 'a'
-    lines[1].should.equal ''
-    lines.size.should.equal 2
+    expect(lines[0]).to eq 'a'
+    expect(lines[1]).to eq ''
+    expect(lines.size).to eq 2
     cursor_should_be_at 1,0
 
     @d.undo
     lines = @b.to_a
-    lines[0].should.equal 'a'
-    lines.size.should.equal 1
+    expect(lines[0]).to eq 'a'
+    expect(lines.size).to eq 1
     cursor_should_be_at 0,1
   end
 
