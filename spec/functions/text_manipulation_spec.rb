@@ -1,6 +1,6 @@
-require_relative '../preparation'
+require 'spec_helper'
 
-describe 'A Diakonos user can' do
+RSpec.describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
@@ -13,20 +13,20 @@ describe 'A Diakonos user can' do
   end
 
   it 'collapse whitespace' do
-    @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
+    expect(@b.to_a[ 2 ]).to eq '# This is only a sample file used in the tests.'
     @b.cursor_to 2,9
     5.times { @d.type_character ' ' }
     cursor_should_be_at 2,14
-    @b.to_a[ 2 ].should.equal '# This is      only a sample file used in the tests.'
+    expect(@b.to_a[ 2 ]).to eq '# This is      only a sample file used in the tests.'
     @d.collapse_whitespace
     cursor_should_be_at 2,9
-    @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
+    expect(@b.to_a[ 2 ]).to eq '# This is only a sample file used in the tests.'
   end
 
   it 'columnize source code' do
     @b.cursor_to 8,7
     3.times { @d.type_character ' ' }
-    @b.to_a[ 8..10 ].should.equal [
+    expect(@b.to_a[ 8..10 ]).to eq [
       '    @x    = 1',
       '    @y = 2',
       '  end',
@@ -35,7 +35,7 @@ describe 'A Diakonos user can' do
     @d.anchor_selection
     2.times { @d.cursor_down }
     @d.columnize '='
-    @b.to_a[ 8..10 ].should.equal [
+    expect(@b.to_a[ 8..10 ]).to eq [
       '    @x    = 1',
       '    @y    = 2',
       '  end',
@@ -45,18 +45,18 @@ describe 'A Diakonos user can' do
 
   it 'comment out and uncomment a single line' do
     @b.cursor_to 4,0
-    @b.selection_mark.should.be.nil
-    @b.to_a[ 4 ].should.equal 'class Sample'
+    expect(@b.selection_mark).to be_nil
+    expect(@b.to_a[ 4 ]).to eq 'class Sample'
     @d.comment_out
-    @b.to_a[ 4 ].should.equal '# class Sample'
+    expect(@b.to_a[ 4 ]).to eq '# class Sample'
     @d.comment_out
-    @b.to_a[ 4 ].should.equal '# # class Sample'
+    expect(@b.to_a[ 4 ]).to eq '# # class Sample'
     @d.uncomment
-    @b.to_a[ 4 ].should.equal '# class Sample'
+    expect(@b.to_a[ 4 ]).to eq '# class Sample'
     @d.uncomment
-    @b.to_a[ 4 ].should.equal 'class Sample'
+    expect(@b.to_a[ 4 ]).to eq 'class Sample'
     @d.uncomment
-    @b.to_a[ 4 ].should.equal 'class Sample'
+    expect(@b.to_a[ 4 ]).to eq 'class Sample'
   end
 
   it 'comment out and uncomment selected lines' do
@@ -64,63 +64,63 @@ describe 'A Diakonos user can' do
     @d.anchor_selection
     4.times { @d.cursor_down }
     @d.comment_out
-    @b.to_a[ 7..11 ].should.equal [
+    expect(@b.to_a[ 7..11 ]).to eq [
       '  # def initialize',
       '    # @x = 1',
       '    # @y = 2',
       '  # end',
       '',
     ]
-    @b.selection_mark.should.not.be.nil
+    expect(@b.selection_mark).not_to be_nil
     cursor_should_be_at 11,0
 
     @d.uncomment
-    @b.to_a[ 7..11 ].should.equal [
+    expect(@b.to_a[ 7..11 ]).to eq [
       '  def initialize',
       '    @x = 1',
       '    @y = 2',
       '  end',
       '',
     ]
-    @b.selection_mark.should.not.be.nil
+    expect(@b.selection_mark).not_to be_nil
     cursor_should_be_at 11,0
 
     # Uncommenting lines that are not commented should do nothing
     @d.uncomment
-    @b.to_a[ 7..11 ].should.equal [
+    expect(@b.to_a[ 7..11 ]).to eq [
       '  def initialize',
       '    @x = 1',
       '    @y = 2',
       '  end',
       '',
     ]
-    @b.selection_mark.should.not.be.nil
+    expect(@b.selection_mark).not_to be_nil
     cursor_should_be_at 11,0
   end
 
   it 'not comment out blank lines' do
     @b.cursor_to 3,0
-    @b.selection_mark.should.be.nil
-    @b.to_a[ 3 ].should.equal ''
+    expect(@b.selection_mark).to be_nil
+    expect(@b.to_a[ 3 ]).to eq ''
     @d.comment_out
-    @b.to_a[ 3 ].should.equal ''
+    expect(@b.to_a[ 3 ]).to eq ''
 
     @b.cursor_to 6,0
-    @b.selection_mark.should.be.nil
-    @b.to_a[ 6 ].should.equal ''
+    expect(@b.selection_mark).to be_nil
+    expect(@b.to_a[ 6 ]).to eq ''
     @d.comment_out
-    @b.to_a[ 6 ].should.equal ''
+    expect(@b.to_a[ 6 ]).to eq ''
 
     @b.cursor_to 5,0
     @d.anchor_selection
     3.times { @d.cursor_down }
     @d.comment_out
-    @b.to_a[ 5..7 ].should.equal [
+    expect(@b.to_a[ 5..7 ]).to eq [
       '  # attr_reader :x, :y',
       '',
       '  # def initialize',
     ]
-    @b.selection_mark.should.not.be.nil
+    expect(@b.selection_mark).not_to be_nil
     cursor_should_be_at 8,0
   end
 
@@ -128,59 +128,59 @@ describe 'A Diakonos user can' do
     b = @d.open_file(SAMPLE_FILE_JS)
 
     @d.comment_out
-    b.to_a[0].should.equal '/* function() { */'
+    expect(b.to_a[0]).to eq '/* function() { */'
     @d.comment_out
-    b.to_a[0].should.equal '/* /* function() { */'
+    expect(b.to_a[0]).to eq '/* /* function() { */'
     @d.uncomment
-    b.to_a[0].should.equal '/* function() { */'
+    expect(b.to_a[0]).to eq '/* function() { */'
     @d.uncomment
-    b.to_a[0].should.equal 'function() {'
+    expect(b.to_a[0]).to eq 'function() {'
   end
 
   it 'delete until a character' do
     @b.cursor_to 5,2
-    @b.to_a[ 5 ].should.equal '  attr_reader :x, :y'
+    expect(@b.to_a[ 5 ]).to eq '  attr_reader :x, :y'
     @d.delete_to ':'
     cursor_should_be_at 5,2
-    @b.to_a[ 5 ].should.equal '  :x, :y'
+    expect(@b.to_a[ 5 ]).to eq '  :x, :y'
   end
 
   it 'delete from a character' do
     @b.cursor_to 12,11
     @d.delete_from ' '
     cursor_should_be_at 12,6
-    @b.to_a[12].should.equal '  def ction'
+    expect(@b.to_a[12]).to eq '  def ction'
 
     @b.cursor_to 7,6
     @d.delete_from ' '
     cursor_should_be_at 7,6
-    @b.to_a[7].should.equal '  def initialize'
+    expect(@b.to_a[7]).to eq '  def initialize'
 
     @b.cursor_to 7,5
     @d.delete_from ' '
     cursor_should_be_at 7,2
-    @b.to_a[7].should.equal '   initialize'
+    expect(@b.to_a[7]).to eq '   initialize'
   end
 
   it 'not delete from a non-existent character' do
     @b.cursor_to 7,6
     @d.delete_from '@'
-    @b.should.not.be.modified
-    @b.to_a[7].should.equal '  def initialize'
+    expect(@b).not_to be_modified
+    expect(@b.to_a[7]).to eq '  def initialize'
   end
 
   it 'delete between matching characters' do
     @b.cursor_to 2,15
-    @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
+    expect(@b.to_a[ 2 ]).to eq '# This is only a sample file used in the tests.'
     @d.delete_to_and_from :not_inclusive, 'h'
-    @b.to_a[ 2 ].should.equal '# Thhe tests.'
+    expect(@b.to_a[ 2 ]).to eq '# Thhe tests.'
     cursor_should_be_at 2,4
 
     @b.cursor_to 22,2
     @d.delete_to_and_from :not_inclusive, '{'
     lines = @b.to_a
-    lines.size.should.equal 24
-    lines[ 21..22 ].should.equal [
+    expect(lines.size).to eq 24
+    expect(lines[ 21..22 ]).to eq [
       '{}',
       '',
     ]
@@ -188,16 +188,16 @@ describe 'A Diakonos user can' do
 
   it 'delete between matching characters, inclusive' do
     @b.cursor_to 2,15
-    @b.to_a[ 2 ].should.equal '# This is only a sample file used in the tests.'
+    expect(@b.to_a[ 2 ]).to eq '# This is only a sample file used in the tests.'
     @d.delete_to_and_from :inclusive, 'h'
-    @b.to_a[ 2 ].should.equal '# Te tests.'
+    expect(@b.to_a[ 2 ]).to eq '# Te tests.'
     cursor_should_be_at 2,3
 
     @b.cursor_to 22,2
     @d.delete_to_and_from :inclusive, '{'
     lines = @b.to_a
-    lines.size.should.equal 24
-    lines[ 21..22 ].should.equal [
+    expect(lines.size).to eq 24
+    expect(lines[ 21..22 ]).to eq [
       '',
       '',
     ]
@@ -207,9 +207,9 @@ describe 'A Diakonos user can' do
     @d.set_buffer_type 'text'
     @d.anchor_selection
     @d.cursor_eof
-    @b.selection_mark.should.not.be.nil
+    expect(@b.selection_mark).not_to be_nil
     @d.parsed_indent
-    @b.to_a.should.equal [
+    expect(@b.to_a).to eq [
       '#!/usr/bin/env ruby',
       '',
       '# This is only a sample file used in the tests.',
@@ -240,9 +240,9 @@ describe 'A Diakonos user can' do
     ]
 
     @d.set_buffer_type 'ruby'
-    @b.selection_mark.should.not.be.nil
+    expect(@b.selection_mark).not_to be_nil
     @d.parsed_indent
-    @b.to_a.should.equal [
+    expect(@b.to_a).to eq [
       '#!/usr/bin/env ruby',
       '',
       '# This is only a sample file used in the tests.',
@@ -275,13 +275,13 @@ describe 'A Diakonos user can' do
 
   it 'join lines' do
     @d.join_lines
-    @b.to_a[ 0..2 ].should.equal [
+    expect(@b.to_a[ 0..2 ]).to eq [
       '#!/usr/bin/env ruby ',
       '# This is only a sample file used in the tests.',
       '',
     ]
     @d.join_lines
-    @b.to_a[ 0..2 ].should.equal [
+    expect(@b.to_a[ 0..2 ]).to eq [
       '#!/usr/bin/env ruby  # This is only a sample file used in the tests.',
       '',
       'class Sample',
@@ -291,17 +291,17 @@ describe 'A Diakonos user can' do
   it 'surround selections with parentheses' do
     @b.set_selection 4, 6, 4, 12
     @d.surround_selection '('
-    @b[ 4 ].should.equal 'class ( Sample )'
+    expect(@b[ 4 ]).to eq 'class ( Sample )'
     @d.undo
 
     @b.set_selection 4, 0, 4, 12
     @d.surround_selection '('
-    @b[ 4 ].should.equal '( class Sample )'
+    expect(@b[ 4 ]).to eq '( class Sample )'
     @d.undo
 
     @b.set_selection 4, 0, 5, 20
     @d.surround_selection '('
-    @b[ 4..5 ].should.equal [
+    expect(@b[ 4..5 ]).to eq [
       '( class Sample',
       '  attr_reader :x, :y )'
     ]
@@ -311,22 +311,22 @@ describe 'A Diakonos user can' do
 
     @b.set_selection 7, 2, 7, 5
     @d.surround_selection '<!--'
-    @b[ 7 ].should.equal '  <!-- def --> initialize'
+    expect(@b[ 7 ]).to eq '  <!-- def --> initialize'
     @d.undo
 
     @b.set_selection 7, 2, 7, 5
     @d.surround_selection '<span>'
-    @b[ 7 ].should.equal '  <span>def</span> initialize'
+    expect(@b[ 7 ]).to eq '  <span>def</span> initialize'
     @d.undo
   end
 
   it 'word wrap paragraphs of text' do
     @b = @d.open_file( File.join(TEST_DIR, '/lorem-ipsum.txt') )
-    @b.length.should == 2
+    expect(@b.length).to eq 2
     cursor_should_be_at 0,0
 
     @b.wrap_paragraph
-    @b.to_a.should == [
+    expect(@b.to_a).to eq [
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Donec a diam lectus.',
       'Sed sit amet ipsum mauris.  Maecenas congue ligula ac quam viverra nec',
       'consectetur ante hendrerit.  Donec et mollis dolor.  Praesent et diam eget',
