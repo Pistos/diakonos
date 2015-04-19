@@ -1,6 +1,6 @@
-require_relative '../preparation'
+require 'spec_helper'
 
-describe 'A Diakonos user can' do
+RSpec.describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
