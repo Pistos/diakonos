@@ -1,6 +1,6 @@
-require_relative '../preparation'
+require 'spec_helper'
 
-describe 'A Diakonos user can' do
+RSpec.describe 'A Diakonos user can' do
 
   before do
     @d = $diakonos
@@ -20,37 +20,37 @@ describe 'A Diakonos user can' do
     cursor_should_be_at 3,0
 
     selection = @b.selection_mark
-    selection.start_row.should.equal 0
-    selection.start_col.should.equal 0
-    selection.end_row.should.equal 3
-    selection.end_col.should.equal 0
+    expect(selection.start_row).to eq 0
+    expect(selection.start_col).to eq 0
+    expect(selection.end_row).to eq 3
+    expect(selection.end_col).to eq 0
   end
 
   it 'stop selecting text' do
-    @b.selection_mark.should.be.nil
+    expect(@b.selection_mark).to be_nil
     @d.anchor_selection
     @d.cursor_down
     @d.cursor_down
-    @b.selection_mark.should.not.be.nil
+    expect(@b.selection_mark).not_to be_nil
     @d.remove_selection
-    @b.selection_mark.should.be.nil
+    expect(@b.selection_mark).to be_nil
   end
 
   it 'select the whole file at once' do
-    @b.selection_mark.should.be.nil
+    expect(@b.selection_mark).to be_nil
     @d.select_all
     s = @b.selection_mark
-    s.start_row.should.equal 0
-    s.start_col.should.equal 0
-    s.end_row.should.equal 26
-    s.end_col.should.equal 40
+    expect(s.start_row).to eq 0
+    expect(s.start_col).to eq 0
+    expect(s.end_row).to eq 26
+    expect(s.end_col).to eq 40
   end
 
   it 'delete the selection' do
     @d.anchor_selection
     3.times { @d.cursor_down }
     @d.delete
-    @b.to_a[ 0..2 ].should.equal [
+    expect(@b.to_a[ 0..2 ]).to eq [
       '',
       'class Sample',
       '  attr_reader :x, :y',
@@ -86,7 +86,7 @@ describe 'A Diakonos user can' do
     @b.cursor_to 26,40
     @d.select_word
     s = @b.selection_mark
-    s.should.be.nil
+    expect(s).to be_nil
     cursor_should_be_at 26,40
   end
 
