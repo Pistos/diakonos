@@ -37,7 +37,7 @@ RSpec.describe 'A Diakonos user' do
 
 end
 
-describe 'A Diakonos Buffer' do
+RSpec.describe 'A Diakonos Buffer' do
 
   before do
     @d = $diakonos

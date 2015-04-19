@@ -239,7 +239,7 @@ RSpec.describe 'A Diakonos::Buffer' do
 
 end
 
-describe 'A Diakonos user' do
+RSpec.describe 'A Diakonos user' do
 
   before do
     @b = Diakonos::Buffer.new( 'filepath' => SAMPLE_FILE )

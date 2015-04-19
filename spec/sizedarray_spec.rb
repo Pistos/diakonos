@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'A SizedArray' do
+RSpec.describe 'A SizedArray' do
   it 'can be instantiated with a size parameter' do
     a = SizedArray.new( 2 )
     expect(a.capacity).to eq 2

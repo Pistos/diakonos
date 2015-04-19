@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'A KeyMap' do
+RSpec.describe 'A KeyMap' do
   it 'can delete a key path' do
     g = {}.extend( Diakonos::KeyMap )
     h = g.deep_clone
