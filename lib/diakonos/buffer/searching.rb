@@ -48,12 +48,9 @@ module Diakonos
     end
 
     def establish_finding( regexps, search_area, from_row, from_col, match )
-      found_text = match[ 0 ]
+      found_text = match[0]
       range = ::Diakonos::Range.new(from_row, from_col, from_row, from_col + found_text.length)
-      finding = Finding.new(range)
-      if finding.match( regexps, @lines, search_area )
-        throw :found, [ finding, match ]
-      end
+      Finding.confirm(range, regexps, @lines, search_area, match)
     end
 
     # @return [Array<String>]
@@ -75,7 +72,8 @@ module Diakonos
         ( @last_finding ? @last_finding.start_col : from_col ) + 1
       )
       if index
-        establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+        finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+        return finding  if finding
       end
 
       # Check below the cursor.
@@ -87,12 +85,14 @@ module Diakonos
         end
         index = line.index( regexp )
         if index
-          establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          return finding  if finding
         end
       end
 
       if index
-        establish_finding( regexps, search_area, search_area.end_row, index, Regexp.last_match )
+        finding = establish_finding( regexps, search_area, search_area.end_row, index, Regexp.last_match )
+        return finding  if finding
       end
 
       # Wrap around.
@@ -101,13 +101,15 @@ module Diakonos
 
       index = @lines[ search_area.start_row ].index( regexp, search_area.start_col )
       if index
-        establish_finding( regexps, search_area, search_area.start_row, index, Regexp.last_match )
+        finding = establish_finding( regexps, search_area, search_area.start_row, index, Regexp.last_match )
+        return finding  if finding
       end
 
       ( search_area.start_row+1...from_row ).each do |i|
         index = @lines[ i ].index( regexp )
         if index
-          establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          return finding  if finding
         end
       end
 
@@ -120,7 +122,8 @@ module Diakonos
       end
       if index = @lines[ from_row ].index( regexp, index_col )
         if index <= ( @last_finding ? @last_finding.start_col : from_col )
-          establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+          finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+          return finding  if finding
         end
       end
     end
@@ -130,14 +133,16 @@ module Diakonos
 
       col_to_check = ( @last_finding ? @last_finding.end_col : from_col ) - 1
       if ( col_to_check >= 0 ) && ( index = @lines[ from_row ][ 0...col_to_check ].rindex( regexp ) )
-        establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+        finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+        return finding  if finding
       end
 
       # Check above the cursor.
 
       (from_row - 1).downto( 0 ) do |i|
         if index = @lines[ i ].rindex( regexp )
-          establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          return finding  if finding
         end
       end
 
@@ -147,7 +152,8 @@ module Diakonos
 
       (@lines.length - 1).downto(from_row + 1) do |i|
         if index = @lines[ i ].rindex( regexp )
-          establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          return finding  if finding
         end
       end
 
@@ -156,7 +162,8 @@ module Diakonos
       search_col = ( @last_finding ? @last_finding.start_col : from_col ) + 1
       if index = @lines[ from_row ].rindex( regexp )
         if index > search_col
-          establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+          finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+          return finding  if finding
         end
       end
     end
@@ -198,13 +205,10 @@ module Diakonos
 
       @wrapped = false
 
-      finding, match = catch :found do
-
-        if direction == :down
-          _find_down(regexps, regexp, from_row, from_col, search_area)
-        elsif direction == :up
-          _find_up(regexps, regexp, search_area, from_row, from_col)
-        end
+      if direction == :down
+        finding = _find_down(regexps, regexp, from_row, from_col, search_area)
+      elsif direction == :up
+        finding = _find_up(regexps, regexp, search_area, from_row, from_col)
       end
 
       if ! finding
@@ -256,7 +260,7 @@ module Diakonos
             if ref == "\\"
               "\\"
             else
-              match[ ref.to_i ]
+              finding.captured_group(ref.to_i)
             end
           }
 
