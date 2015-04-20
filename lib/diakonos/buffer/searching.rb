@@ -47,7 +47,7 @@ module Diakonos
       )
     end
 
-    def establish_finding( regexps, search_area, from_row, from_col, match )
+    def confirm_finding( regexps, search_area, from_row, from_col, match )
       found_text = match[0]
       range = ::Diakonos::Range.new(from_row, from_col, from_row, from_col + found_text.length)
       Finding.confirm(range, regexps, @lines, search_area, match)
@@ -72,7 +72,7 @@ module Diakonos
         ( @last_finding ? @last_finding.start_col : from_col ) + 1
       )
       if index
-        finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+        finding = confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
         return finding  if finding
       end
 
@@ -85,13 +85,13 @@ module Diakonos
         end
         index = line.index( regexp )
         if index
-          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = confirm_finding( regexps, search_area, i, index, Regexp.last_match )
           return finding  if finding
         end
       end
 
       if index
-        finding = establish_finding( regexps, search_area, search_area.end_row, index, Regexp.last_match )
+        finding = confirm_finding( regexps, search_area, search_area.end_row, index, Regexp.last_match )
         return finding  if finding
       end
 
@@ -101,14 +101,14 @@ module Diakonos
 
       index = @lines[ search_area.start_row ].index( regexp, search_area.start_col )
       if index
-        finding = establish_finding( regexps, search_area, search_area.start_row, index, Regexp.last_match )
+        finding = confirm_finding( regexps, search_area, search_area.start_row, index, Regexp.last_match )
         return finding  if finding
       end
 
       ( search_area.start_row+1...from_row ).each do |i|
         index = @lines[ i ].index( regexp )
         if index
-          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = confirm_finding( regexps, search_area, i, index, Regexp.last_match )
           return finding  if finding
         end
       end
@@ -122,7 +122,7 @@ module Diakonos
       end
       if index = @lines[ from_row ].index( regexp, index_col )
         if index <= ( @last_finding ? @last_finding.start_col : from_col )
-          finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+          finding = confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
           return finding  if finding
         end
       end
@@ -133,7 +133,7 @@ module Diakonos
 
       col_to_check = ( @last_finding ? @last_finding.end_col : from_col ) - 1
       if ( col_to_check >= 0 ) && ( index = @lines[ from_row ][ 0...col_to_check ].rindex( regexp ) )
-        finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+        finding = confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
         return finding  if finding
       end
 
@@ -141,7 +141,7 @@ module Diakonos
 
       (from_row - 1).downto( 0 ) do |i|
         if index = @lines[ i ].rindex( regexp )
-          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = confirm_finding( regexps, search_area, i, index, Regexp.last_match )
           return finding  if finding
         end
       end
@@ -152,7 +152,7 @@ module Diakonos
 
       (@lines.length - 1).downto(from_row + 1) do |i|
         if index = @lines[ i ].rindex( regexp )
-          finding = establish_finding( regexps, search_area, i, index, Regexp.last_match )
+          finding = confirm_finding( regexps, search_area, i, index, Regexp.last_match )
           return finding  if finding
         end
       end
@@ -162,7 +162,7 @@ module Diakonos
       search_col = ( @last_finding ? @last_finding.start_col : from_col ) + 1
       if index = @lines[ from_row ].rindex( regexp )
         if index > search_col
-          finding = establish_finding( regexps, search_area, from_row, index, Regexp.last_match )
+          finding = confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
           return finding  if finding
         end
       end
