@@ -114,7 +114,7 @@ module Diakonos
       @configs = []
       @config_problems = []
       parse_configuration_file @global_diakonos_conf
-      parse_configuration_file @diakonos_conf
+      parse_configuration_file @diakonos_conf  if @diakonos_conf
 
       languages = @surround_pairs.keys | @token_regexps.keys | @close_token_regexps.keys | @token_formats.keys
 
@@ -192,7 +192,6 @@ module Diakonos
     # @param [String] including_filename the config file which calls include on this one
     # @return an Array of problem descriptions (Strings)
     def parse_configuration_file( filename_, including_filename = nil )
-      return  if filename_.nil?
       begin
         filename = File.realpath( filename_ )
       rescue Errno::ENOENT
