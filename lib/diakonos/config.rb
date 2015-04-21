@@ -188,21 +188,39 @@ module Diakonos
       end
     end
 
+    # @return [String] nil if the prospective_filename is illegitimate in any way
+    def legitimize_config_filename!(prospective_filename)
+      return  if ! File.exists?(prospective_filename)
+
+      begin
+        filename = File.realpath(prospective_filename)
+        return  if @configs.any? { |c| c[:filename] == filename }
+        filename
+      rescue Errno::ENOENT
+        # We're rescuing here instead of just checking File.exists? because
+        s = "Configuration file #{prospective_filename.inspect} was not found"
+        if including_filename
+          s << " (referenced from #{including_filename.inspect}"
+        end
+        # TODO: These @config_problems should probably not be floating around
+        # on their own like this.  They should be on the ConfigFile class (see
+        # TODO comments below).
+        @config_problems << s
+
+        nil
+      end
+    end
+
     # @param [String] filename_ the config file to parse
     # @param [String] including_filename the config file which calls include on this one
     # @return an Array of problem descriptions (Strings)
     def parse_configuration_file( filename_, including_filename = nil )
-      begin
-        filename = File.realpath( filename_ )
-      rescue Errno::ENOENT
-        s = "Configuration file #{filename_.inspect} was not found"
-        if including_filename
-          s << " (referenced from #{including_filename.inspect}"
-        end
-        @config_problems << s
-        return
-      end
-      return  if @configs.any? { |c| c[:filename] == filename }
+      filename = legitimize_config_filename!(filename_)
+      # TODO: Rewrite this nil check using Null Object pattern
+      return  if filename.nil?
+
+      # TODO: Turn this hash into its own class (ConfigFile?)
+      #   and make changes accordingly below where filename is used.
       @configs << { filename: filename, source: including_filename }
 
       IO.readlines( filename ).each_with_index do |line,line_number|
