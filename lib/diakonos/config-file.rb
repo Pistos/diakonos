@@ -31,7 +31,12 @@ module Diakonos
     end
 
     def each_line_with_index
+      # TODO: Refactor line_number into index, then +1 before yielding
       IO.readlines(@filename).each_with_index do |line, line_number|
+        line.chomp!
+        # Skip comments
+        next  if line[0] == ?#
+
         yield line, line_number
       end
     end

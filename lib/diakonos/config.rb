@@ -207,10 +207,6 @@ module Diakonos
       @configs << config_file
 
       config_file.each_line_with_index do |line, line_number|
-        line.chomp!
-        # Skip comments
-        next  if line[ 0 ] == ?#
-
         if line =~ /^\s*(\S+)\s*=\s*(\S+)\s*$/
           # Inheritance
           command, arg = $1, @setting_strings[ $2 ]
