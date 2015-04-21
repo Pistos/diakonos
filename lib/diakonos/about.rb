@@ -5,10 +5,7 @@ module Diakonos
       File.open( @about_filename, "w" ) do |f|
         inst = ::Diakonos::INSTALL_SETTINGS
 
-        configs = @configs.map { |h|
-          source = h.including_filename ? "(included by #{h.including_filename})" : ''
-          "#{h.filename}\t#{source}"
-        }.join("\n")
+        configs = @configs.map(&:to_s).join("\n")
 
         ext_loaded = @extensions.loaded_extensions.sort_by { |e|
           e.name.downcase

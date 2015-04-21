@@ -393,11 +393,15 @@ module Diakonos
       end
       buffer_current.cursor_to( buffer_current.last_row, buffer_current.last_col, Buffer::DONT_DISPLAY )
 
-      if @config_problems.any?
+      if @configs.any? { |c| c.problems.any? }
         File.open( @error_filename, "w" ) do |f|
-          f.puts "There are #{@config_problems.size} problems with the configuration file(s):"
-          @config_problems.each do |p|
-            f.puts p
+          f.puts "There are problems with the configuration file(s):"
+          @configs.each do |c|
+            next  if c.problems.empty?
+
+            f.puts
+            f.print "#{c}:\n\t"
+            f.puts c.problems.join("\n\t")
           end
         end
         open_file @error_filename

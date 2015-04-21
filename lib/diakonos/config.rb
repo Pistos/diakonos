@@ -111,8 +111,7 @@ module Diakonos
 
       @colour_pairs = Array.new
 
-      @configs = []
-      @config_problems = []
+      @configs = Set.new
       parse_configuration_file @global_diakonos_conf
       parse_configuration_file @diakonos_conf  if @diakonos_conf
 
@@ -188,42 +187,26 @@ module Diakonos
       end
     end
 
-    # @return [String] nil if the prospective_filename is illegitimate in any way
-    def legitimize_config_filename!(prospective_filename)
-      return  if ! File.exists?(prospective_filename)
-
-      begin
-        filename = File.realpath(prospective_filename)
-        return  if @configs.any? { |c| c.filename == filename }
-        filename
-      rescue Errno::ENOENT
-        # We're rescuing here instead of just checking File.exists? because
-        s = "Configuration file #{prospective_filename.inspect} was not found"
-        if including_filename
-          s << " (referenced from #{including_filename.inspect}"
-        end
-        # TODO: These @config_problems should probably not be floating around
-        # on their own like this.  They should be on the ConfigFile class (see
-        # TODO comments below).
-        @config_problems << s
-
-        nil
+    # @return [ConfigFile, ConfigFileUnreadable]
+    def legitimize_config_filename!(prospective_filename, including_config_file)
+      if File.exists?(prospective_filename)
+        ConfigFile.new(
+          File.realpath(prospective_filename),
+          including_config_file
+        )
+      else
+        ConfigFileUnreadable.new(prospective_filename, including_config_file)
       end
     end
 
-    # @param [String] filename_ the config file to parse
-    # @param [String] including_filename the config file which calls include on this one
-    # @return an Array of problem descriptions (Strings)
-    def parse_configuration_file( filename_, including_filename = nil )
-      filename = legitimize_config_filename!(filename_)
-      # TODO: Rewrite this nil check using Null Object pattern
-      return  if filename.nil?
+    # @param [String] filename the config file to parse
+    # @param [ConfigFile] including_config_file the config file which calls include on this one
+    def parse_configuration_file( filename, including_config_file = ConfigFileNull.new )
+      config_file = self.legitimize_config_filename!(filename, including_config_file)
 
-      # TODO: Turn this hash into its own class (ConfigFile?)
-      #   and make changes accordingly below where filename is used.
-      @configs << ConfigFile.new(filename, including_filename)
+      @configs << config_file
 
-      IO.readlines( filename ).each_with_index do |line,line_number|
+      config_file.each_line_with_index do |line, line_number|
         line.chomp!
         # Skip comments
         next  if line[ 0 ] == ?#
@@ -237,7 +220,7 @@ module Diakonos
           command, arg = line.split( /\s+/, 2 )
           next  if command.nil?
           if arg.nil?
-            @config_problems << "Configuration file #{filename.inspect} has an error on line #{line_number+1}"
+            config_file.problems << "error on line #{line_number+1}"
             next
           end
         end
@@ -248,7 +231,7 @@ module Diakonos
 
         case command
         when "include"
-          parse_configuration_file( File.expand_path( arg ), filename )
+          self.parse_configuration_file( File.expand_path( arg ), config_file )
         when 'load_extension'
           @extensions.load( arg ).each do |conf_file|
             parse_configuration_file conf_file
