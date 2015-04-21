@@ -6,8 +6,8 @@ module Diakonos
         inst = ::Diakonos::INSTALL_SETTINGS
 
         configs = @configs.map { |h|
-          source = h[:source] ? "(included by #{h[:source]})" : ''
-          "#{h[:filename]}\t#{source}"
+          source = h.including_filename ? "(included by #{h.including_filename})" : ''
+          "#{h.filename}\t#{source}"
         }.join("\n")
 
         ext_loaded = @extensions.loaded_extensions.sort_by { |e|

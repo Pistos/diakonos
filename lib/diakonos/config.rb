@@ -194,7 +194,7 @@ module Diakonos
 
       begin
         filename = File.realpath(prospective_filename)
-        return  if @configs.any? { |c| c[:filename] == filename }
+        return  if @configs.any? { |c| c.filename == filename }
         filename
       rescue Errno::ENOENT
         # We're rescuing here instead of just checking File.exists? because
@@ -221,7 +221,7 @@ module Diakonos
 
       # TODO: Turn this hash into its own class (ConfigFile?)
       #   and make changes accordingly below where filename is used.
-      @configs << { filename: filename, source: including_filename }
+      @configs << ConfigFile.new(filename, including_filename)
 
       IO.readlines( filename ).each_with_index do |line,line_number|
         line.chomp!
