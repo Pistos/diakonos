@@ -288,6 +288,50 @@ module Diakonos
       end
     end
 
+    # Handle paste from a GUI (like x.org).  i.e. Shift-Insert
+    def handle_gui_paste(mode)
+      s = ""
+      ch = nil
+
+      loop do
+        ch = nil
+        begin
+          Timeout::timeout(0.02) do
+            ch = @modes[mode].window.getch
+          end
+        rescue Timeout::Error => e
+          break
+        end
+        break  if ch.nil?
+
+        c = ch.ord
+        utf_8_char = self.utf_8_bytes_to_char(c, mode)
+
+        if utf_8_char
+          s << utf_8_char
+        elsif self.typeable?(c)
+          s << c
+        elsif c == ENTER && mode == 'edit'
+          s << "\n"
+        else
+          break
+        end
+      end
+
+      if ! s.empty?
+        case mode
+        when 'edit'
+          buffer_current.paste s, Buffer::TYPING
+        when 'input'
+          @readline.paste s
+        end
+      end
+
+      if ch
+        process_keystroke( [], mode, ch )
+      end
+    end
+
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
     def process_keystroke( context = [], mode = 'edit', ch = nil )
@@ -311,46 +355,7 @@ module Diakonos
 
         if context.empty? && typeable?( c )
           self.type_character ch, mode
-
-          # Handle X windows paste
-          s = ""
-          loop do
-            ch = nil
-            begin
-              Timeout::timeout( 0.02 ) do
-                ch = @modes[ mode ].window.getch
-              end
-            rescue Timeout::Error => e
-              break
-            end
-            break  if ch.nil?
-
-            c = ch.ord
-            utf_8_char = utf_8_bytes_to_char(c, mode)
-            if utf_8_char
-              s << utf_8_char
-            elsif typeable?( c )
-              s << c
-            elsif c == ENTER && mode == 'edit'
-              s << "\n"
-            else
-              break
-            end
-          end
-
-          if ! s.empty?
-            case mode
-            when 'edit'
-              buffer_current.paste s, Buffer::TYPING
-            when 'input'
-              @readline.paste s
-            end
-          end
-
-          if ch
-            process_keystroke( [], mode, ch )
-          end
-
+          self.handle_gui_paste(mode)
           return
         end
 
