@@ -339,20 +339,7 @@ module Diakonos
 
       set_initial_iline
 
-      scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
-      scripts.each do |script|
-        begin
-          require script
-        rescue Exception => e
-          show_exception(
-            e,
-            [
-              "There is a syntax error in the script.",
-              "An invalid hook name was used."
-            ]
-          )
-        end
-      end
+      run_scripts
 
       @hooks.each do |hook_name, hook|
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
@@ -434,6 +421,23 @@ module Diakonos
         help_key = 'F1'
       end
       set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
+    end
+
+    def run_scripts
+      scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
+      scripts.each do |script|
+        begin
+          require script
+        rescue Exception => e
+          show_exception(
+            e,
+            [
+              "There is a syntax error in the script.",
+              "An invalid hook name was used."
+            ]
+          )
+        end
+      end
     end
 
     def uninstall( confirm = true )
