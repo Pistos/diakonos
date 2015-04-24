@@ -311,12 +311,16 @@ module Diakonos
 
     # -----------------------------------------------------------------------
 
+    def create_buffers_from_files
+      @files.each do |file_info|
+        @buffers << Buffer.new(file_info)
+      end
+    end
+
     def start
       require 'diakonos/window'
 
-      @files.each do |file|
-        @buffers << Buffer.new( file )
-      end
+      create_buffers_from_files
       @files = []
       @read_only_files.each do |file|
         @buffers << Buffer.new( file )
@@ -324,9 +328,7 @@ module Diakonos
       if ! @testing
         session_startup
       end
-      @files.each do |file_info|
-        @buffers << Buffer.new( file_info )
-      end
+      create_buffers_from_files
       @files = []
       if @buffers.empty?
         @buffers << Buffer.new
@@ -347,9 +349,7 @@ module Diakonos
 
       handle_stale_session_files
 
-      @files.each do |file_info|
-        @buffers << Buffer.new( file_info )
-      end
+      create_buffers_from_files
 
       session_buffer_number = @session.buffer_current || 1
       if ! switch_to_buffer_number( session_buffer_number )
