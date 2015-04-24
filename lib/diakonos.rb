@@ -337,12 +337,7 @@ module Diakonos
         buffer.reset_display
       end
 
-      if ENV[ 'COLORTERM' ] == 'gnome-terminal'
-        help_key = 'Shift-F1'
-      else
-        help_key = 'F1'
-      end
-      set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
+      set_initial_iline
 
       scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
       scripts.each do |script|
@@ -430,6 +425,15 @@ module Diakonos
       cleanup_session
 
       @debug.close
+    end
+
+    def set_initial_iline
+      if ENV['COLORTERM'] == 'gnome-terminal'
+        help_key = 'Shift-F1'
+      else
+        help_key = 'F1'
+      end
+      set_iline "Diakonos #{VERSION} (#{LAST_MODIFIED})   #{help_key} for help  F12 to configure  Ctrl-Q to quit"
     end
 
     def uninstall( confirm = true )
