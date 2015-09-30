@@ -133,6 +133,8 @@ module Diakonos
         @clipboard = ClipboardKlipperDBus.new
       when 'xclip'
         @clipboard = ClipboardXClip.new
+      when 'osx'
+        @clipboard = ClipboardOSX.new
       else
         @clipboard = Clipboard.new( @settings[ "max_clips" ] )
       end

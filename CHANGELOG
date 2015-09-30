@@ -1,6 +1,9 @@
 Diakonos Changelog
 ------------------
 
+0.9.5
+- Added support for OSX clipboard.
+
 0.9.4
 - Searching within a selection now highlights only within selection, and reports only the number of matches in the selection.
 - Can now replace all within selection.

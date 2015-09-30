@@ -54,6 +54,8 @@ module Diakonos
           f.puts 'Access Klipper directly (tray icon) to get at all clips.'
         when 'xclip'
           f.puts 'xclip does not keep a history of clips.'
+        when 'osx'
+          f.puts 'The OSX clipboard does not keep a history of clips.'
         else
           @clipboard.each do |clip|
             f.puts clip
