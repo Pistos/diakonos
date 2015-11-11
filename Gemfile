@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'curses', platforms: [:ruby_21, :ruby_22]
+gem 'curses'  if RUBY_VERSION >= '2.1'
 
 group :test do
   gem 'rake'
