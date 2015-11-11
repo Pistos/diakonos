@@ -174,8 +174,7 @@ class FuzzyFileFinder
   #   the file matches the given pattern. A score of 1 means the
   #   pattern matches the file exactly.
   def search(pattern, &block)
-    pattern.strip!
-    path_parts = pattern.split("/")
+    path_parts = pattern.strip.split("/")
     path_parts.push "" if pattern[-1,1] == "/"
 
     file_name_part = path_parts.pop || ""
