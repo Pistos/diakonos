@@ -123,9 +123,11 @@ module Diakonos
     end
 
     # Display text on the interaction line.
+    # @return [Fixnum] the length of the provided String
+    # @return 0 if testing or if @readline
     def set_iline( string = "" )
-      return  if @testing
-      return  if @readline
+      return 0  if @testing
+      return 0  if @readline
 
       @iline = string
       Curses::curs_set 0
