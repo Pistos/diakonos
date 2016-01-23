@@ -182,5 +182,28 @@ module Diakonos
       char
     end
 
+    def terminate_message
+      if @message_thread && @message_thread.alive?
+        @message_thread.terminate
+        @message_thread = nil
+      end
+    end
+
+    def show_message( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
+      terminate_message
+
+      @message_expiry = Time.now + non_interaction_duration
+      @message_thread = Thread.new do
+        time_left = @message_expiry - Time.now
+        while time_left > 0
+          set_iline "(#{time_left.round}) #{message}"
+          @win_main.setpos( @saved_main_y, @saved_main_x )
+          sleep 1
+          time_left = @message_expiry - Time.now
+        end
+        set_iline message
+        @win_main.setpos( @saved_main_y, @saved_main_x )
+      end
+    end
   end
 end

@@ -1,6 +1,9 @@
 Diakonos Changelog
 ------------------
 
+0.9.6
+-
+
 0.9.5
 - Added support for OSX clipboard.
 - Fixed inability to use space when fuzzy file finding.
