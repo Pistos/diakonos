@@ -10,7 +10,7 @@ module Diakonos
     end
 
     # Display text on the interaction line.
-    def set_iline( string = "" )
+    def set_iline(string = "")
       return 0  if @testing
       return 0  if $diakonos.readline
 
@@ -23,10 +23,17 @@ module Diakonos
       string.length
     end
 
-    def set_iline_if_empty( string )
+    def set_iline_if_empty(string)
       if @iline.nil? || @iline.empty?
         set_iline string
       end
+    end
+
+    def get_char(prompt)
+      set_iline prompt
+      char = @win_main.getch
+      set_iline
+      char
     end
   end
 end

@@ -158,7 +158,7 @@ module Diakonos
     # Moves the cursor to the next occurrence of the given character.
     # @param [String] char  The character to go to
     def go_to_char( after = nil, char = nil )
-      char ||= get_char( "Type character to go to..." )
+      char ||= @interaction_handler.get_char( "Type character to go to..." )
 
       if char
         begin
@@ -176,7 +176,7 @@ module Diakonos
     # Moves the cursor to the closest previous occurrence of the given character.
     # @param [String] char  The character to go to
     def go_to_char_previous( after = nil, char = nil )
-      char ||= get_char( "Type character to go to..." )
+      char ||= @interaction_handler.get_char( "Type character to go to..." )
 
       if char
         begin

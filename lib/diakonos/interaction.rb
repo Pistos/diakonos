@@ -175,13 +175,6 @@ module Diakonos
       retval
     end
 
-    def get_char( prompt )
-      set_iline prompt
-      char = @win_main.getch
-      set_iline
-      char
-    end
-
     def terminate_message
       if @message_thread && @message_thread.alive?
         @message_thread.terminate
