@@ -7,14 +7,22 @@ module Diakonos
     # completion_array is the array of strings that tab completion can use
     # The block returns true if a refresh is needed?
     # @param options :initial_text, :completion_array, :history, :do_complete, :on_dirs
-    def initialize( diakonos, window, start_pos, options = {}, &block )
-      @diakonos = diakonos
+    def initialize(
+      list_manager:,
+      testing: false,
+      window:,
+      start_pos:,
+      options: {},
+      &block
+    )
+      @list_manager = list_manager
+      @testing = testing
       @window = window
       @start_pos = start_pos
       @window.setpos( 0, start_pos )
       @initial_text = options[ :initial_text ] || ''
       @completion_array = options[ :completion_array ]
-      @list_filename = @diakonos.list_filename
+      @list_filename = @list_manager.list_filename
 
       @history = options[ :history ] || []
       @history << @initial_text
@@ -36,7 +44,7 @@ module Diakonos
       @icurx = @window.curx
       @icury = @window.cury
       @view_y = 0
-      if ! @diakonos.testing
+      if ! @testing
         @window.addstr @initial_text
       end
       @input_cursor = @initial_text.length
@@ -196,7 +204,7 @@ module Diakonos
           f.puts "(no matches)"
         end
       end
-      @diakonos.open_list_buffer
+      @list_manager.open_list_buffer
       @window.setpos( @window.cury, @window.curx )
     end
 

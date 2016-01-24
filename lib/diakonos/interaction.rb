@@ -18,7 +18,14 @@ module Diakonos
       will_display_after_select = options.fetch( :will_display_after_select, false )
 
       cursor_pos = set_iline( prompt )
-      @readline = Readline.new( self, @win_interaction, cursor_pos, options, &block )
+      @readline = Readline.new(
+        list_manager: self,
+        testing: @testing,
+        window: @win_interaction,
+        start_pos: cursor_pos,
+        options: options,
+        &block
+      )
 
       while ! @readline.done?
         process_keystroke Array.new, 'input'
