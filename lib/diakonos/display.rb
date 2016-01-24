@@ -60,6 +60,12 @@ module Diakonos
       @win_status.attrset @settings[ 'status.format' ]
       @win_interaction = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
 
+      @interaction_handler = InteractionHandler.new(
+        win_main: @win_main,
+        win_interaction: @win_interaction,
+        testing: @testing
+      )
+
       if @settings['context.visible']
         if @settings['context.combined']
           pos = 1
@@ -122,26 +128,12 @@ module Diakonos
       Curses::cols
     end
 
-    # Display text on the interaction line.
-    # @return [Fixnum] the length of the provided String
-    # @return 0 if testing or if @readline
-    def set_iline( string = "" )
-      return 0  if @testing
-      return 0  if @readline
-
-      @iline = string
-      Curses::curs_set 0
-      @win_interaction.setpos( 0, 0 )
-      @win_interaction.addstr( "%-#{Curses::cols}s" % @iline )
-      @win_interaction.refresh
-      Curses::curs_set 1
-      string.length
+    def set_iline(s = "")
+      @interaction_handler.set_iline s
     end
 
-    def set_iline_if_empty( string )
-      if @iline.nil? || @iline.empty?
-        set_iline string
-      end
+    def set_iline_if_empty(s)
+      @interaction_handler.set_iline_if_empty s
     end
 
     def set_status_variable( identifier, value )
