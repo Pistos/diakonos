@@ -9,6 +9,7 @@ module Diakonos
     # @param options :initial_text, :completion_array, :history, :do_complete, :on_dirs
     def initialize(
       list_manager:,
+      keystroke_processor:,
       testing: false,
       window:,
       start_pos:,
@@ -16,6 +17,7 @@ module Diakonos
       &block
     )
       @list_manager = list_manager
+      @keystroke_processor = keystroke_processor
       @testing = testing
       @window = window
       @start_pos = start_pos
@@ -53,6 +55,13 @@ module Diakonos
       if @do_complete
         complete_input
       end
+    end
+
+    def get_input
+      while ! done?
+        @keystroke_processor.process_keystroke(Array.new, 'input')
+      end
+      input
     end
 
     def call_block

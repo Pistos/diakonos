@@ -20,6 +20,7 @@ module Diakonos
       cursor_pos = set_iline( prompt )
       @readline = Readline.new(
         list_manager: self,
+        keystroke_processor: self,
         testing: @testing,
         window: @win_interaction,
         start_pos: cursor_pos,
@@ -27,10 +28,7 @@ module Diakonos
         &block
       )
 
-      while ! @readline.done?
-        process_keystroke Array.new, 'input'
-      end
-      retval = @readline.input
+      retval = @readline.get_input
       if will_display_after_select
         close_list_buffer  do_display: ! retval
       else
