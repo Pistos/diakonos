@@ -206,7 +206,7 @@ module Diakonos
       @display_queue_mutex    = Mutex.new
       @display_queue          = nil
       @do_display             = true
-      @iline_mutex            = Mutex.new
+      @context_line_mutex     = Mutex.new
 
       @tag_stack              = Array.new
       @last_search_regexps    = nil

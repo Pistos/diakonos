@@ -269,7 +269,7 @@ module Diakonos
           end
         end
 
-        @iline_mutex.synchronize do
+        @context_line_mutex.synchronize do
           @win_context.attrset @settings[ "context.format" ]
           @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
           @win_context.refresh
