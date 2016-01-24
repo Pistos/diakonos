@@ -151,6 +151,11 @@ module Diakonos
       :list_filename, :hooks, :indenters, :indenters_next_line, :unindenters, :closers,
       :functions_last, :there_was_non_movement, :do_display, :testing, :buffers
 
+    # Temporarily a writer, so that collaborating classes can get at it
+    # TODO: Rewrite things so that this doesn't need to be a writer.
+    # e.g. pass do_display to methods as needed.
+    attr_writer :do_display
+
     include ::Diakonos::Functions
 
     def initialize( argv = [] )
@@ -211,8 +216,6 @@ module Diakonos
 
       @tag_stack              = Array.new
       @last_search_regexps    = nil
-      @iterated_choice        = nil
-      @choice_iterations      = 0
       @there_was_non_movement = false
       @status_vars            = Hash.new
 

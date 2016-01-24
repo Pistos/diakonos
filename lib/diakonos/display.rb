@@ -63,6 +63,7 @@ module Diakonos
       @interaction_handler = InteractionHandler.new(
         win_main: @win_main,
         win_interaction: @win_interaction,
+        cursor_manager: self,
         testing: @testing
       )
 
