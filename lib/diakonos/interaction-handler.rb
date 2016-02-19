@@ -54,7 +54,10 @@ module Diakonos
       win_main:,
       win_interaction:,
       cursor_manager:,
-      testing: false
+      testing: false,
+      choice_delay: 3,
+      blink_string: "*" * 60,
+      blink_duration: 0.05
     )
       @win_main = win_main
       @win_interaction = win_interaction
@@ -62,6 +65,9 @@ module Diakonos
       @testing = testing
 
       @choice_iterations = 0
+      @choice_delay = choice_delay
+      @blink_string = blink_string
+      @blink_duration = blink_duration
     end
 
     # Display text on the interaction line.
@@ -176,7 +182,7 @@ module Diakonos
 
     private
 
-    def show_message( message, non_interaction_duration = @settings[ 'interaction.choice_delay' ] )
+    def show_message( message, non_interaction_duration = @choice_delay )
       terminate_message
 
       @message_expiry = Time.now + non_interaction_duration
@@ -202,8 +208,8 @@ module Diakonos
 
     def interaction_blink( message = nil )
       terminate_message
-      set_iline @settings[ 'interaction.blink_string' ]
-      sleep @settings[ 'interaction.blink_duration' ]
+      set_iline @blink_string
+      sleep @blink_duration
       set_iline message if message
     end
   end

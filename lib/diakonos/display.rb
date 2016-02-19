@@ -64,7 +64,10 @@ module Diakonos
         win_main: @win_main,
         win_interaction: @win_interaction,
         cursor_manager: self,
-        testing: @testing
+        testing: @testing,
+        choice_delay: @settings['interaction.choice_delay'],
+        blink_string: @settings['interaction.blink_string'],
+        blink_duration: @settings['interaction.blink_duration']
       )
 
       if @settings['context.visible']
