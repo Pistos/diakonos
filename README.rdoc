@@ -2,12 +2,12 @@
 
 == REQUIREMENTS
 
-- Ruby 2.0+
+- Ruby 2.1+
+- curses gem
 
 Diakonos is built to run on Linux, but may run under other flavours of UNIX.
-It is known NOT to work under Windows (unless using Cygwin).
-
-If running under Ruby 2.1+, the curses gem is required.
+It is known NOT to work under Windows (unless using Cygwin).  It works
+reasonably well under iTerm on OSX.
 
 == DOWNLOAD
 
