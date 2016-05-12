@@ -3,6 +3,7 @@ Diakonos Changelog
 
 0.9.6
 - Added Vue.js webpack syntax highlighting.
+- Uninstallation no longer requires curses library.
 
 0.9.5
 - Added support for OSX clipboard.

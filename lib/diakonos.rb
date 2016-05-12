@@ -7,13 +7,12 @@
 #
 # Author:: Pistos (irc.freenode.net)
 # http://diakonos.pist0s.ca/
-# Copyright (c) 2004-2015 Pistos
+# Copyright (c) 2004-2016 Pistos
 #
 # This software is released under the MIT licence.
 # See the LICENCE file included with this program, or
 # http://www.opensource.org/licenses/mit-license.php
 #
-require 'curses'
 require 'open3'
 require 'thread'
 require 'English'
@@ -59,8 +58,6 @@ require 'diakonos/functions/text-manipulation'
 require 'diakonos/functions-deprecated'
 require 'diakonos/help'
 require 'diakonos/interaction-handler'
-require 'diakonos/display'
-require 'diakonos/display/format'
 require 'diakonos/grep'
 require 'diakonos/hooks'
 require 'diakonos/interaction'
@@ -170,6 +167,12 @@ module Diakonos
       @read_only_files = Array.new
       @config_filename = nil
       parse_options argv
+
+      # These requires are down here instead of up with the others so that
+      # uninstall can be done without needing the curses lib (which may not
+      # be installed).
+      require 'diakonos/display'
+      require 'diakonos/display/format'
 
       init_help
 

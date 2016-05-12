@@ -1,3 +1,5 @@
+require 'curses'
+
 module Diakonos
   DO_REDRAW             = true
   DONT_REDRAW           = false
