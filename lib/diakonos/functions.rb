@@ -151,26 +151,9 @@ module Diakonos
           File.open( @error_filename, 'w' ) do |f|
             f.puts "There were no help documents matching your search."
             f.puts "(#{selected.strip})"
+            f.puts "Close this message with Ctrl-W (default keychord)."
           end
           error_file = open_file( @error_filename )
-
-          choice = get_choice(
-            "Would you like to send your search terms over the Internet to help improve Diakonos?",
-            [ CHOICE_YES, CHOICE_NO ]
-          )
-          case choice
-          when CHOICE_YES
-            require 'net/http'
-            require 'uri'
-
-            res = Net::HTTP.post_form(
-              URI.parse( 'http://dh.pist0s.ca/' ),
-              { 'q' => selected }
-            )
-            # TODO: let them choose "never" and "always"
-          end
-
-          close_buffer error_file
         else
           help selected
         end
