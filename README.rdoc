@@ -9,6 +9,11 @@ Diakonos is built to run on Linux, but may run under other flavours of UNIX.
 It is known NOT to work under Windows (unless using Cygwin).  It works
 reasonably well under iTerm on OSX.
 
+Under Debian and Ubuntu derivatives, you'll need the following dependencies:
+
+  sudo apt-get install libncurses5-dev ruby-dev
+  sudo gem install curses
+
 == DOWNLOAD
 
 The latest stable tarballs can be acquired from
