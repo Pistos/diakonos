@@ -7,7 +7,7 @@
 #
 # Author:: Pistos (irc.freenode.net)
 # http://diakonos.pist0s.ca/
-# Copyright (c) 2004-2016 Pistos
+# Copyright (c) 2004-2017 Pistos
 #
 # This software is released under the MIT licence.
 # See the LICENCE file included with this program, or
