@@ -19,7 +19,7 @@ module Diakonos
         case @settings[ key ]
         when String
           value = value.to_s
-        when Fixnum
+        when Integer
           value = value.to_i
         when TrueClass, FalseClass
           value = value.to_b

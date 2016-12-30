@@ -1,7 +1,7 @@
 module Diakonos
   class Diakonos
 
-    # @return [Fixnum] the number of replacements made
+    # @return [Integer] the number of replacements made
     def find_( options = {} )
       regexp_source, replacement = options.values_at( :regexp_source, :replacement )
       return  if regexp_source.nil? || regexp_source.empty?

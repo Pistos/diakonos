@@ -9,7 +9,11 @@ module Diakonos
       old_last_row = @last_row
       old_last_col = @last_col
 
-      row = row.fit( 0, @lines.length - 1 )
+      row = NumberFitter.fit(
+        number: row,
+        min: 0,
+        max: @lines.length - 1,
+      )
 
       if col < 0
         if adjust_row

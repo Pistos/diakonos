@@ -157,7 +157,7 @@ module Diakonos
           "resize2"
         end
       end
-      if retval.nil? && num.class == Fixnum
+      if retval.nil? && num.class == Integer
         retval = "keycode#{num}"
       end
       retval
@@ -240,7 +240,7 @@ module Diakonos
       char > 31 && char < 255 && char != BACKSPACE
     end
 
-    # @param [Fixnum] c The first byte of a UTF-8 byte sequence
+    # @param [Integer] c The first byte of a UTF-8 byte sequence
     # @return [String] nil if c is not the beginning of a multi-byte sequence
     def utf_8_bytes_to_char(c, mode)
       if Keying::UTF_8_2_BYTE_BEGIN <= c && c <= Keying::UTF_8_2_BYTE_END
@@ -268,7 +268,7 @@ module Diakonos
       byte_array.pack('C*').force_encoding('utf-8')
     end
 
-    # @param [Fixnum] c The ordinal (number) of a character
+    # @param [Integer] c The ordinal (number) of a character
     # @param [String] mode
     # @return [Boolean] true iff c began a UTF-8 byte sequence
     def handle_utf_8(c, mode)

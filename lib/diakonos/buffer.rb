@@ -482,15 +482,35 @@ module Diakonos
 
       height = [ $diakonos.main_window_height, @lines.length ].min
 
-      @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
-      if @last_row - @top_line < @settings[ "view.margin.y" ]
-        @last_row = @top_line + @settings[ "view.margin.y" ]
-        @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
+      @last_row = NumberFitter.fit(
+        number: @last_row,
+        min: @top_line,
+        max: @top_line + height - 1,
+      )
+
+      if @last_row - @top_line < @settings["view.margin.y"]
+        @last_row = NumberFitter.fit(
+          number: @top_line + @settings["view.margin.y"],
+          min: @top_line,
+          max: @top_line + height - 1,
+        )
       elsif @top_line + height - 1 - @last_row < @settings[ "view.margin.y" ]
-        @last_row = @top_line + height - 1 - @settings[ "view.margin.y" ]
-        @last_row = @last_row.fit( @top_line, @top_line + height - 1 )
+        @last_row = NumberFitter.fit(
+          number: @top_line + height - 1 - @settings[ "view.margin.y" ],
+          min: @top_line,
+          max: @top_line + height - 1,
+        )
       end
-      @last_col = @last_col.fit( @left_column, [ @left_column + Curses::cols - 1, @lines[ @last_row ].length ].min )
+
+      @last_col = NumberFitter.fit(
+        number: @last_col,
+        min: @left_column,
+        max: [
+          @left_column + Curses::cols - 1,
+          @lines[@last_row].length
+        ].min
+      )
+
       @last_screen_y = @last_row - @top_line
       @last_screen_x = tab_expanded_column( @last_col, @last_row ) - @left_column
 

@@ -77,9 +77,9 @@ module Diakonos
       level
     end
 
-    # @param starting_row [Fixnum]
+    # @param starting_row [Integer]
     # @param next_line_check [Boolean]
-    # @return [Fixnum]
+    # @return [Integer]
     def nearest_basis_row_from(starting_row, next_line_check = true)
       row = starting_row-1
 

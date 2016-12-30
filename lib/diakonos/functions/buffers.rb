@@ -5,11 +5,11 @@ module Diakonos
     #
     # @param [Diakonos::Buffer] buffer
     #   The buffer to close.  If no buffer is provided, defaults to the current buffer.
-    # @option opts [Fixnum] :to_all
+    # @option opts [Integer] :to_all
     #   The CHOICE to assume for the prompt.
     # @option opts [Boolean] :do_display
     #   Whether or not to update the display after closure
-    # @return [Fixnum] the choice the user made, or nil if the user was not prompted to choose.
+    # @return [Integer] the choice the user made, or nil if the user was not prompted to choose.
     # @see Diakonos::CHOICE_YES
     # @see Diakonos::CHOICE_NO
     def close_buffer( buffer = buffer_current, opts = {} )
@@ -363,8 +363,8 @@ module Diakonos
 
     # Places a buffer at a new position in the array of Buffers
     # after shifting down (index+1) all existing Buffers from that position onwards.
-    # @param to [Fixnum] The new 1-based position of the buffer to move
-    # @param from [Fixnum] The original 1-based position of the buffer to move.  Default: current buffer
+    # @param to [Integer] The new 1-based position of the buffer to move
+    # @param from [Integer] The original 1-based position of the buffer to move.  Default: current buffer
     def renumber_buffer( to, from = nil )
       if to < 1
         raise "Invalid buffer index: #{to.inspect}"

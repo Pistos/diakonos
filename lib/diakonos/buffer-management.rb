@@ -26,7 +26,7 @@ module Diakonos
       true
     end
 
-    # @param [Fixnum] buffer_number should be 1-based, not zero-based.
+    # @param [Integer] buffer_number should be 1-based, not zero-based.
     # @return nil if no such buffer exists.
     def buffer_number_to_name( buffer_number )
       return nil  if buffer_number < 1
@@ -37,7 +37,7 @@ module Diakonos
       end
     end
 
-    # @return [Fixnum] 1-based, not zero-based.
+    # @return [Integer] 1-based, not zero-based.
     # @return nil if no such buffer exists.
     def buffer_to_number( buffer )
       i = @buffers.index( buffer )

@@ -172,7 +172,7 @@ module Diakonos
     # split across newline characters.  Once the first element is found,
     # each successive element must match against lines following the first
     # element.
-    # @return [Fixnum] the number of replacements made
+    # @return [Integer] the number of replacements made
     def find( regexps, options = {} )
       return  if regexps.nil?
       regexp = regexps[ 0 ]
@@ -296,7 +296,7 @@ module Diakonos
       num_replacements
     end
 
-    # @return [Fixnum] the number of replacements made
+    # @return [Integer] the number of replacements made
     def replace_all( regexp, replacement, within_search_area = false )
       return  if( regexp.nil? || replacement.nil? )
 

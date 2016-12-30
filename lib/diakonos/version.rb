@@ -1,6 +1,6 @@
 module Diakonos
-  VERSION       = '0.9.6'
-  LAST_MODIFIED = 'July 16, 2016'
+  VERSION       = '0.9.7'
+  LAST_MODIFIED = 'December 30, 2016'
 
   def self.parse_version( s )
     if s
@@ -11,7 +11,7 @@ module Diakonos
   def self.check_ruby_version
     ruby_version = parse_version( RUBY_VERSION )
     if ruby_version < [ 2, 1 ]
-      $stderr.puts "This version of Diakonos (#{Diakonos::VERSION}) requires Ruby 2.1, 2.2 or 2.3."
+      $stderr.puts "This version of Diakonos (#{Diakonos::VERSION}) requires Ruby 2.1, 2.2, 2.3 or 2.4."
       if ruby_version >= [ 2, 0 ]
         $stderr.puts "Version 0.9.5 is the last version of Diakonos which can run under Ruby 2.0."
       elsif ruby_version >= [ 1, 9 ]
