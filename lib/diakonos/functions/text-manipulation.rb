@@ -1,3 +1,5 @@
+require 'diakonos/line-mover'
+
 module Diakonos
   module Functions
 
@@ -80,6 +82,11 @@ module Diakonos
 
     def join_lines
       buffer_current.join_lines( buffer_current.current_row, Buffer::STRIP_LINE )
+    end
+
+    def move_lines(direction:)
+      mover = LineMover.new(buffer: buffer_current)
+      mover.move_selected_lines(direction: direction)
     end
 
     def operate_on_string(

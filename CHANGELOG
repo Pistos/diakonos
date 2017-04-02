@@ -1,12 +1,11 @@
 Diakonos Changelog
 ------------------
 
-0.9.7
-- Made compatible with Ruby 2.4.0.
-
 0.9.6
 - Added Vue.js webpack syntax highlighting.
 - Uninstallation no longer requires curses library.
+- Added ability to move lines up or down.
+- Made compatible with Ruby 2.4.0.
 
 0.9.5
 - Added support for OSX clipboard.

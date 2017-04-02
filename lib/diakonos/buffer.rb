@@ -4,6 +4,7 @@ module Diakonos
     attr_reader :name, :original_language, :language, :changing_selection, :read_only,
       :tab_size, :selection_mode
     attr_writer :desired_column, :read_only
+    attr_accessor :lines
 
     TYPING                 = true
     STOPPED_TYPING         = true
