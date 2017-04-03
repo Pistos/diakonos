@@ -91,14 +91,17 @@ module Diakonos
           switch_to  to_switch_to, do_display: do_display
         elsif previous_buffer
           switch_to  previous_buffer, do_display: do_display
-        else
-          # No buffers left.  Open a new blank one.
-          open_file
         end
 
         @buffer_closed = del_buffer
         @buffers.delete del_buffer
         cursor_stack_remove_buffer del_buffer
+
+        if @buffer_stack.empty?
+          # No buffers left.  Open a new blank one.
+          open_file
+        end
+
         save_session
 
         update_status_line

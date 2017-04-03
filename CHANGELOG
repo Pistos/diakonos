@@ -6,6 +6,7 @@ Diakonos Changelog
 - Uninstallation no longer requires curses library.
 - Added ability to move lines up or down.
 - Made compatible with Ruby 2.4.0.
+- Handle closure of last buffer.
 
 0.9.5
 - Added support for OSX clipboard.
