@@ -29,7 +29,7 @@ RSpec.describe 'A Diakonos user can' do
     $keystrokes = [ Diakonos::ENTER ]
     expect {
       @d.open_file_ask
-    }.not_to raise_exception
+    }.not_to raise_error
   end
 
   it 'open a file at a specific line number' do
@@ -126,14 +126,14 @@ RSpec.describe 'A Diakonos user can' do
 
     expect {
       @d.renumber_buffer 0
-    }.to raise_exception
+    }.to raise_error(RuntimeError, /Invalid buffer index/)
     numbered_buffer_should_be_named 1, 'sample-file.c'
     numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 4, 'sample-file.rb'
 
     expect {
       @d.renumber_buffer -1
-    }.to raise_exception
+    }.to raise_error(RuntimeError, /Invalid buffer index/)
     numbered_buffer_should_be_named 1, 'sample-file.c'
     numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
     numbered_buffer_should_be_named 4, 'sample-file.rb'
