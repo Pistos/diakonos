@@ -1,6 +1,9 @@
 Diakonos Changelog
 ------------------
 
+0.9.7
+- Improve efficiency of fuzzy file find.
+
 0.9.6
 - Added Vue.js webpack syntax highlighting.
 - Uninstallation no longer requires curses library.
