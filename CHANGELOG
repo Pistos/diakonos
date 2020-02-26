@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.9.8
+
+- Handle symlink cycles when fuzzy file finding (file open)
+
 0.9.7
 - Added ability to move lines up or down.
 - Made compatible with Ruby 2.4.0.

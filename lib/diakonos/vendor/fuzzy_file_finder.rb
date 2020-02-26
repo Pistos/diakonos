@@ -34,13 +34,6 @@
 #
 # And so forth.
 class FuzzyFileFinder
-  module Version
-    MAJOR = 1
-    MINOR = 0
-    TINY  = 4
-    STRING = [MAJOR, MINOR, TINY].join(".")
-  end
-
   # This is the exception that is raised if you try to scan a
   # directory tree with too many entries. By default, a ceiling of
   # 10,000 entries is enforced, but you can change that number via
@@ -112,22 +105,29 @@ class FuzzyFileFinder
   def initialize( params = {} )
     @ceiling = params[:ceiling] || 10_000
     @ignores = Array(params[:ignores])
+
     if params[:directories]
       directories = Array(params[:directories])
       directories << "." if directories.empty?
     else
       directories = ['.']
     end
+
     @recursive = params[:recursive].nil? ? true : params[:recursive]
 
     # expand any paths with ~
-    root_dirnames = directories.map { |d| File.expand_path(d) }.select { |d| File.directory?(d) }.uniq
+    root_dirnames = directories.map { |d|
+      File.realpath(d)
+    }.select { |d|
+      File.directory?(d)
+    }.uniq
 
     @roots = root_dirnames.map { |d| Directory.new(d, true) }
     @shared_prefix = determine_shared_prefix
     @shared_prefix_re = Regexp.new("^#{Regexp.escape(shared_prefix)}" + (shared_prefix.empty? ? "" : "/"))
 
     @files = []
+    @directories = {}  # To detect link cycles
 
     rescan!
   end
@@ -218,19 +218,24 @@ class FuzzyFileFinder
     # Recursively scans +directory+ and all files and subdirectories
     # beneath it, depth-first.
     def follow_tree(directory)
-      Dir.entries(directory.name).each do |entry|
-        next  if entry[0,1] == "."
-        raise TooManyEntries if files.length > ceiling
+      real_dir = File.realpath(directory.name)
+      if ! @directories[real_dir]
+        @directories[real_dir] = true
 
-        full = File.join(directory.name, entry)
-        next  if ignore?(full)
+        Dir.entries(directory.name).each do |entry|
+          next  if entry[0,1] == "."
+          raise TooManyEntries if files.length > ceiling
 
-        if File.directory?(full)
-          if @recursive
-            follow_tree(Directory.new(full))
+          full = File.join(directory.name, entry)
+          next  if ignore?(full)
+
+          if File.directory?(full)
+            if @recursive
+              follow_tree(Directory.new(full))
+            end
+          else
+            files.push(FileSystemEntry.new(directory, entry))
           end
-        else
-          files.push(FileSystemEntry.new(directory, entry))
         end
       end
     end
