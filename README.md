@@ -1,0 +1,92 @@
+# Diakonos
+
+## REQUIREMENTS
+
+- Ruby 2.3+
+- curses gem
+
+Diakonos is built to run on Linux, but may run under other flavours of UNIX.
+It is known NOT to work under Windows (unless using Cygwin).  It works
+reasonably well under iTerm on OSX.
+
+Under Debian and Ubuntu derivatives, you'll need the following dependencies:
+
+    sudo apt-get install libncurses5-dev ruby-dev
+    sudo gem install curses
+
+## DOWNLOAD
+
+The latest stable tarballs can be acquired from
+
+  http://diakonos.pist0s.ca/
+
+The latest development code can be obtained from github:
+
+    git clone git://github.com/Pistos/diakonos.git
+
+
+## INSTALLATION
+
+    ruby install.rb --help
+    ruby install.rb [installation parameters]
+
+You may need root privileges on the system in order to install to system-wide
+places like /usr .  However, Diakonos runs perfectly well in userspace, such
+as under ~/usr .
+
+### RVM
+
+If you use RVM[1], note that Diakonos installs very easily into an RVM-based
+Ruby.
+
+After installing Diakonos under RVM, you can symlink to the installed binary,
+and that will allow you to use Diakonos with that specific Ruby version no
+matter what the current RVM Ruby is.  Example:
+
+    mkdir -p ~/bin
+    cd ~/bin
+    ln -s /home/pistos/.rvm/rubies/ruby-1.9.2-p180/bin/diakonos
+
+Then ensure that ~/bin is in your PATH.
+
+[1]: https://rvm.io
+
+
+## UNINSTALLATION
+
+    diakonos --uninstall
+
+
+## USAGE
+
+Run with any of these:
+
+    diakonos [filename...]
+    diakonos -s <session-name>
+    diakonos -m <regexp>
+
+or, for other options and arguments,
+
+    diakonos --help
+
+For help using Diakonos, simply press F1 or Shift-F1 from within the editor to
+use the interactive help system.
+
+To dig deeper into Diakonos' rich feature set, see https://github.com/Pistos/diakonos/wiki/Beyond-the-Basics .
+
+
+----------------------------------------------------------------
+
+The source code repository is at http://github.com/Pistos/diakonos .
+
+{<img src="https://travis-ci.org/Pistos/diakonos.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/Pistos/diakonos]
+
+Send comments, feedback and tech support requests to the #mathetes channel on
+the FreeNode IRC network ( http://webchat.freenode.net/?channels=mathetes ), or
+the mailing list diakonos@librelist.com .  Reproducible issues may be reported
+at https://github.com/Pistos/diakonos/issues .
+
+
+Pistos
+
+http://diakonos.pist0s.ca/
