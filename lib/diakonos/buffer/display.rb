@@ -35,22 +35,18 @@ module Diakonos
       [ open_index, open_token_class, open_match_text ]
     end
 
-    def find_closing_match( line_, regexp, bos_allowed = true, start_at = 0 )
+    private def find_closing_match(line_segment, regexp, bos_allowed = true)
       close_match_text = nil
       close_index = nil
-      if start_at > 0
-        line = line_[ start_at..-1 ]
-      else
-        line = line_
-      end
-      line.scan( regexp ) do |m|
+
+      line_segment.scan(regexp) do |m|
         match = Regexp.last_match
         if match.length > 1
           index = match.begin 1
-          match_text = match[ 1 ]
+          match_text = match[1]
         else
           index = match.begin 0
-          match_text = match[ 0 ]
+          match_text = match[0]
         end
         if ( ! regexp.uses_bos ) || ( bos_allowed && ( index == 0 ) )
           close_index = index
@@ -59,7 +55,7 @@ module Diakonos
         end
       end
 
-      [ close_index, close_match_text ]
+      [close_index, close_match_text]
     end
 
     # Prints text to the screen, truncating where necessary.
@@ -169,7 +165,7 @@ module Diakonos
       @win_main.addstr string
     end
 
-    # This method assumes that the cursor has been setup already at
+    # This method assumes that the cursor has been set up already at
     # the left-most column of the correct on-screen row.
     # It merely unintelligently prints the characters on the current curses line,
     # refusing to print characters of the in-buffer line which are offscreen.
@@ -180,7 +176,11 @@ module Diakonos
       while i < line.length
         substr = line[ i..-1 ]
         if @continued_format_class
-          close_index, close_match_text = find_closing_match( substr, @close_token_regexps[ @continued_format_class ], i == 0 )
+          close_index, close_match_text = find_closing_match(
+            substr,
+            @close_token_regexps[@continued_format_class],
+            i == 0
+          )
 
           if close_match_text.nil?
             print_string truncate_off_screen( substr, i )
@@ -196,21 +196,30 @@ module Diakonos
           first_index, first_token_class, first_word = find_opening_match( substr, MATCH_ANY, i == 0 )
 
           if @lang_stack.length > 0
-            prev_lang, close_token_class = @lang_stack[ -1 ]
-            close_index, close_match_text = find_closing_match( substr, $diakonos.close_token_regexps[ prev_lang ][ close_token_class ], i == 0 )
+            prev_lang, close_token_class = @lang_stack[-1]
+            close_index, close_match_text = find_closing_match(
+              substr,
+              $diakonos.close_token_regexps[prev_lang][close_token_class],
+              i == 0
+            )
+
             if close_match_text && close_index <= first_index
-              if close_index > 0
-                # Print any remaining text in the embedded language
-                print_string truncate_off_screen( substr[ 0...close_index ], i )
-                i += substr[ 0...close_index ].length
-              end
+              # Print any remaining text in the embedded language
+              s = substr[0...close_index]
+              print_string( truncate_off_screen(s, i) )
+              i += s.length
 
               @lang_stack.pop
               set_language prev_lang
 
               print_string(
-                truncate_off_screen( substr[ close_index...(close_index + close_match_text.length) ], i ),
-                @token_formats[ close_token_class ]
+                truncate_off_screen(
+                  substr[
+                    close_index...(close_index + close_match_text.length)
+                  ],
+                  i
+                ),
+                @token_formats[close_token_class]
               )
               i += close_match_text.length
 
@@ -263,6 +272,7 @@ module Diakonos
     def display
       @continued_format_class = nil
       @pen_down = true
+      @lang_stack = []
 
       # First, we have to "draw" off-screen, in order to check for opening of
       # multi-line highlights.
@@ -339,7 +349,6 @@ module Diakonos
       if @language != @original_language
         set_language( @original_language )
       end
-
     end
 
   end
