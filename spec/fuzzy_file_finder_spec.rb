@@ -27,7 +27,7 @@ RSpec.describe FuzzyFileFinder do
       let(:input) { 'lo' }
 
       it "finds the matching files" do
-        expect(matches).to eq [
+        expect(matches.sort).to eq [
           '/test-files/longer-sample-file.rb',
           '/test-files/lorem-ipsum.txt',
         ]
