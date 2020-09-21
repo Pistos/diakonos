@@ -4,6 +4,7 @@ Diakonos Changelog
 0.9.8
 
 - Handle symlink cycles when fuzzy file finding (file open)
+- Fix language switch display bug
 
 0.9.7
 - Added ability to move lines up or down.
