@@ -117,9 +117,11 @@ RSpec.describe 'A Diakonos::Buffer' do
   end
 
   it 'can indent smartly' do
+    expected_file_contents = File.read(SAMPLE_FILE) + "\n"
+
     indent_rows
     @b.save_copy TEMP_FILE
-    expect(File.read( TEMP_FILE )).to eq File.read( SAMPLE_FILE )
+    expect(File.read(TEMP_FILE)).to eq expected_file_contents
 
     @b.insert_string "   "
     @b.cursor_to( 5, 0 )
@@ -134,11 +136,11 @@ RSpec.describe 'A Diakonos::Buffer' do
     @b.insert_string "   "
 
     @b.save_copy TEMP_FILE
-    expect(File.read( TEMP_FILE )).not_to eq File.read( SAMPLE_FILE )
+    expect(File.read(TEMP_FILE)).not_to eq expected_file_contents
 
     indent_rows
     @b.save_copy TEMP_FILE
-    expect(File.read( TEMP_FILE )).to eq File.read( SAMPLE_FILE )
+    expect(File.read(TEMP_FILE)).to eq expected_file_contents
 
     # -------
 
