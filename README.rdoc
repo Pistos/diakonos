@@ -16,10 +16,6 @@ Under Debian and Ubuntu derivatives, you'll need the following dependencies:
 
 == DOWNLOAD
 
-The latest stable tarballs can be acquired from
-
-  http://diakonos.pist0s.ca/
-
 The latest development code can be obtained from github:
 
   git clone git://github.com/Pistos/diakonos.git
@@ -88,4 +84,4 @@ at https://github.com/Pistos/diakonos/issues .
 
 
 Pistos
-http://diakonos.pist0s.ca/
+
