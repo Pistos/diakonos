@@ -78,9 +78,8 @@ The source code repository is at http://github.com/Pistos/diakonos .
 {<img src="https://travis-ci.org/Pistos/diakonos.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/Pistos/diakonos]
 
 Send comments, feedback and tech support requests to the #mathetes channel on
-the FreeNode IRC network ( http://webchat.freenode.net/?channels=mathetes ), or
-the mailing list diakonos@librelist.com .  Reproducible issues may be reported
-at https://github.com/Pistos/diakonos/issues .
+the FreeNode IRC network ( http://webchat.freenode.net/?channels=mathetes ).
+Reproducible issues may be reported at https://github.com/Pistos/diakonos/issues .
 
 
 Pistos
