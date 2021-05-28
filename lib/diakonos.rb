@@ -5,7 +5,7 @@
 # A Linux console text editor for the masses.
 # :title: Diakonos
 #
-# Author:: Pistos (irc.freenode.net)
+# Author:: Pistos
 # Copyright (c) 2004-2021 Pistos
 #
 # This software is released under the MIT licence.

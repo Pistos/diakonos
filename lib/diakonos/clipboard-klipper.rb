@@ -13,7 +13,6 @@ module Diakonos
       clip_filename = write_to_clip_file( text.join( "\n" ) )
 
       # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
-      # Thank you to pgas from irc.freenode.net#bash for help with this.
       `clipping=$(cat #{clip_filename};printf "_"); dcop klipper klipper setClipboardContents "${clipping%_}"`
       true
     end

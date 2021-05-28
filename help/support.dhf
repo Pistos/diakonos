@@ -1,10 +1,7 @@
 # Support
 
-You can chat about Diakonos in the #mathetes channel of the FreeNode IRC
-network.  If you don't have an IRC client, or don't know what IRC is, you can
-direct your web browser to
-
-  http://webchat.freenode.net/?channels=mathetes
+You can chat about Diakonos in the ##pistos channel of the Libera IRC
+network.
 
 Go to the IRC channel for technical support, or to give feedback and commentary
 about Diakonos.  It's the place go for bug reports, feature requests and tech
@@ -13,6 +10,6 @@ have to say.
 
 If IRC is not your thing, you can file bug reports at the issue tracker:
 
-  http://linis.purepistos.net/ticket/list/Diakonos
+  https://github.com/Pistos/diakonos/issues
 
 Tags: help support technical tech contact email e-mail info information chat irc channel pistos author creator
