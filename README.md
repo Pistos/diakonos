@@ -75,8 +75,6 @@ To dig deeper into Diakonos' rich feature set, see https://github.com/Pistos/dia
 
 The source code repository is at http://github.com/Pistos/diakonos .
 
-{<img src="https://travis-ci.org/Pistos/diakonos.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/Pistos/diakonos]
-
 Send comments, feedback and tech support requests to the ##pistos channel on
 the Libera IRC network.
 Reproducible issues may be reported at https://github.com/Pistos/diakonos/issues .
