@@ -13,28 +13,6 @@ module Diakonos
   class Diakonos
     attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers, :surround_pairs, :settings
 
-    def fetch_conf( location = "v#{VERSION}" )
-      require 'open-uri'
-      found = false
-      puts "Fetching configuration from #{location}..."
-
-      begin
-        open( "https://git.sr.ht/~pistos/diakonos/blob/master/diakonos.conf" ) do |http|
-          text = http.read
-          if text =~ /key/ && text =~ /colour/ && text =~ /lang/
-            found = true
-            File.open( @diakonos_conf, 'w' ) do |f|
-              f.puts text
-            end
-          end
-        end
-      rescue SocketError, OpenURI::HTTPError => e
-        $stderr.puts "Failed to fetch from #{location}."
-      end
-
-      found
-    end
-
     def load_configuration
       # Set defaults first
 
@@ -62,15 +40,7 @@ module Diakonos
               puts "  #{conf_dir}"
               puts "  #{@diakonos_home}"
               puts "At least one configuration file must exist."
-              $stdout.print "Would you like to download one right now from the Diakonos repository? (y/n)"; $stdout.flush
-              answer = $stdin.gets
-
-              case answer
-              when /^y/i
-                if ! fetch_conf
-                  fetch_conf 'master'
-                end
-              end
+              puts "You download one from https://git.sr.ht/~pistos/diakonos/blob/master/diakonos.conf"
             end
 
             if ! FileTest.exists?( @diakonos_conf )
