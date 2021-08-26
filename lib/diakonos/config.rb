@@ -19,7 +19,7 @@ module Diakonos
       puts "Fetching configuration from #{location}..."
 
       begin
-        open( "http://github.com/Pistos/diakonos/tree/#{location}/diakonos.conf?raw=true" ) do |http|
+        open( "https://git.sr.ht/~pistos/diakonos/blob/master/diakonos.conf" ) do |http|
           text = http.read
           if text =~ /key/ && text =~ /colour/ && text =~ /lang/
             found = true

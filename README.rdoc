@@ -16,9 +16,9 @@ Under Debian and Ubuntu derivatives, you'll need the following dependencies:
 
 == DOWNLOAD
 
-The latest development code can be obtained from github:
+The latest development code can be obtained from sourcehut:
 
-  git clone git://github.com/Pistos/diakonos.git
+  git clone https://git.sr.ht/~pistos/diakonos
 
 
 == INSTALLATION
@@ -73,7 +73,7 @@ To dig deeper into Diakonos' rich feature set, see https://github.com/Pistos/dia
 
 ----------------------------------------------------------------
 
-The source code repository is at http://github.com/Pistos/diakonos .
+The source code repository is at https://git.sr.ht/~pistos/diakonos .
 
 Send comments, feedback and tech support requests to the ##pistos channel on
 the Libera IRC network.
