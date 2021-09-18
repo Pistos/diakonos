@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - Handle symlink cycles when fuzzy file finding (file open)
 - Fix language switch display bug
+- Made Diakonos installable via gem
 
 0.9.7
 - Added ability to move lines up or down.

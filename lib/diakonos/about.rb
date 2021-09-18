@@ -20,6 +20,13 @@ module Diakonos
           "### #{e} (NOT LOADED)"
         }.join( "\n" )
 
+        installation_artifact = File.join(inst[:lib_dir], 'diakonos', 'installation.rb')
+        if File.exist?(installation_artifact)
+          install_time = File.mtime(installation_artifact)
+        else
+          install_time = "--"
+        end
+
         f.puts %{
 # About Diakonos
 
@@ -30,7 +37,7 @@ Copyright:      Copyright (c) 2004-#{ Time.now.year } Pistos
 
 Version:        #{ ::Diakonos::VERSION }
 Code Date:      #{ ::Diakonos::LAST_MODIFIED }
-Install Time:   #{ File.mtime( File.join( inst[ :lib_dir ], 'diakonos', 'installation.rb' ) ) }
+Install Time:   #{ install_time }
 Ruby Version:   #{ ::RUBY_VERSION }
 
 ## Paths
