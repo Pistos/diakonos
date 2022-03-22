@@ -75,11 +75,12 @@ To dig deeper into Diakonos' rich feature set, see https://github.com/Pistos/dia
 
 ----------------------------------------------------------------
 
-The source code repository is at git clone https://git.sr.ht/~pistos/diakonos .
-
 Send comments, feedback and tech support requests to the ##pistos channel on
 the Libera IRC network.
-Reproducible issues may be reported at https://github.com/Pistos/diakonos/issues .
+
+Reproducible issues may be reported at https://todo.sr.ht/~pistos/diakonos or
+https://github.com/Pistos/diakonos/issues .
+
 
 
 Pistos
