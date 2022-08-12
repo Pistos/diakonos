@@ -30,7 +30,7 @@ module Diakonos
         f.puts %{
 # About Diakonos
 
-Licence:        MIT Licence
+Licence:        GNU GPL v3
 Copyright:      Copyright (c) 2004-#{ Time.now.year } Pistos
 
 ## Version

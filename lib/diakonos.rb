@@ -8,7 +8,7 @@
 # Author:: Pistos
 # Copyright (c) 2004-2021 Pistos
 #
-# This software is released under the MIT licence.
+# This software is released under the GNU GPL licence v3.
 # See the LICENCE file included with this program, or
 # http://www.opensource.org/licenses/mit-license.php
 #
