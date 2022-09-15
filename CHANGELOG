@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.9.9
+
+- List main culprits (directories) when fuzzy file finder encounters too many files
+
 0.9.8
 
 - Handle symlink cycles when fuzzy file finding (file open)
