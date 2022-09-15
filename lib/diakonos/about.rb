@@ -43,6 +43,7 @@ Ruby Version:   #{ ::RUBY_VERSION }
 ## Paths
 
 Home dir:       #{ @diakonos_home }
+Session dir:    #{ @session.dir }
 
 ### Installation
 
