@@ -128,6 +128,7 @@ class FuzzyFileFinder
 
     @files = []
     @directories = {}  # To detect link cycles
+    @dirs_with_many = []
 
     rescan!
   end
@@ -222,9 +223,22 @@ class FuzzyFileFinder
       if ! @directories[real_dir]
         @directories[real_dir] = true
 
-        Dir.entries(directory.name).each do |entry|
+        Dir.entries(directory.name)
+        .tap { |_entries|
+          if _entries.length > ceiling/10
+            @dirs_with_many << [_entries.length, directory.name]
+            $diakonos.log "[#{self.class}] Many dir entries: #{_entries.length} in #{directory.name}"
+          end
+        }.each do |entry|
           next  if entry[0,1] == "."
-          raise TooManyEntries if files.length > ceiling
+          if files.length > ceiling
+            raise TooManyEntries.new(%{
+              Directories with many entries:
+
+              #{@dirs_with_many.map { |d| d.join("\t") }.join("\n")}
+
+            })
+          end
 
           full = File.join(directory.name, entry)
           next  if ignore?(full)
