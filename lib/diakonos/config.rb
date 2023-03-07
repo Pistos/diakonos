@@ -200,7 +200,7 @@ module Diakonos
         case command
         when "include"
           self.parse_configuration_file( File.expand_path( arg ), config_file )
-        when 'load_extension'
+        when "load_extension"
           @extensions.load( arg ).each do |conf_file|
             parse_configuration_file conf_file
           end
@@ -327,6 +327,7 @@ module Diakonos
         when "context.separator", /^lang\..+?\.indent\.ignore\.charset$/,
             /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
             /^lang\.(.+?)\.column_delimiters$/,
+            /^extension\.(.+?)\.(.+?)/,
             "view.nonfilelines.character",
             'diff_command', 'session.default_session',
             'clipboard.external'
