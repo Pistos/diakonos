@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'curses', '~> 1.4.1'
+gem 'curses', '~> 1.4.4'
 
 group :test do
-  gem 'rake', '~> 13.0.3'
-  gem 'rspec', '~> 3.10.0'
+  gem 'rake', '~> 13.0.6'
+  gem 'rspec', '~> 3.12.0'
 end
