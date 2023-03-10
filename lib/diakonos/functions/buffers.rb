@@ -304,13 +304,14 @@ module Diakonos
           directories: @session.dir,
           ceiling: @settings['fuzzy_file_find.max_files'] || 8192,
           ignores: @fuzzy_ignores,
-          recursive: @settings['fuzzy_file_find.recursive']
+          recursive: @settings['fuzzy_file_find.recursive'],
+          sorted: true
         )
 
         finder_block = lambda { |input|
           break  if input =~ %r{^/}
 
-          matches = finder.find(input).sort_by { |m| m[:path] }
+          matches = finder.find(input)
           with_list_file do |list|
             list.puts matches.map { |m| m[:path] }
           end

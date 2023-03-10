@@ -125,6 +125,7 @@ class FuzzyFileFinder
     @roots = root_dirnames.map { |d| Directory.new(d, true) }
     @shared_prefix = determine_shared_prefix
     @shared_prefix_re = Regexp.new("^#{Regexp.escape(shared_prefix)}" + (shared_prefix.empty? ? "" : "/"))
+    @sorted = params[:sorted]
 
     @files = []
     @directories = {}  # To detect link cycles
@@ -202,11 +203,17 @@ class FuzzyFileFinder
   # Array. If +max+ is nil, all matches will be returned.
   def find(pattern, max=nil)
     results = []
+
     search(pattern) do |match|
       results << match
       break if max && results.length >= max
     end
-    return results
+
+    if @sorted
+      results.sort_by { |m| m[:path] }
+    else
+      results
+    end
   end
 
   # Displays the finder object in a sane, non-explosive manner.
