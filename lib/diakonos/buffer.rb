@@ -55,7 +55,7 @@ module Diakonos
         @lines[ 0 ] = ""
       else
         @name = File.expand_path( @name )
-        if FileTest.exists? @name
+        if FileTest.exist? @name
           @lines = IO.readlines( @name )
           if ( @lines.length == 0 ) || ( @lines[ -1 ][ -1..-1 ] == "\n" )
             @lines.push ""

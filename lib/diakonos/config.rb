@@ -21,8 +21,8 @@ module Diakonos
       if ! @testing
         @diakonos_conf = @config_filename || "#{@diakonos_home}/diakonos.conf"
 
-        if ! FileTest.exists?( @diakonos_conf )
-          if FileTest.exists?( @global_diakonos_conf )
+        if ! FileTest.exist?( @diakonos_conf )
+          if FileTest.exist?( @global_diakonos_conf )
             puts "No personal configuration file found."
             puts "Would you like to copy the system-wide configuration file (#{@global_diakonos_conf}) to use"
             $stdout.print "as a basis for your personal configuration (recommended)? (y/n)"; $stdout.flush
@@ -43,7 +43,7 @@ module Diakonos
               puts "You download one from https://git.sr.ht/~pistos/diakonos/blob/master/diakonos.conf"
             end
 
-            if ! FileTest.exists?( @diakonos_conf )
+            if ! FileTest.exist?( @diakonos_conf )
               puts "Terminating due to lack of configuration file."
               exit 1
             end
@@ -161,7 +161,7 @@ module Diakonos
 
     # @return [ConfigFile, ConfigFileUnreadable]
     def legitimize_config_filename!(prospective_filename, including_config_file)
-      if File.exists?(prospective_filename)
+      if File.exist?(prospective_filename)
         ConfigFile.new(
           File.realpath(prospective_filename),
           including_config_file

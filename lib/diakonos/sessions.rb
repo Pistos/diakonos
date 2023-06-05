@@ -249,7 +249,7 @@ module Diakonos
     end
 
     def cleanup_session
-      if @session && Session.pid_session?(@session.filename) && File.exists?(@session.filename)
+      if @session && Session.pid_session?(@session.filename) && File.exist?(@session.filename)
         File.delete @session.filename
       end
     end

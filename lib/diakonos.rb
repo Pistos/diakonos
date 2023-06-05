@@ -6,7 +6,7 @@
 # :title: Diakonos
 #
 # Author:: Pistos
-# Copyright (c) 2004-2021 Pistos
+# Copyright (c) 2004-2023 Pistos
 #
 # This software is released under the GNU GPL licence v3.
 # See the LICENCE file included with this program, or
@@ -237,7 +237,7 @@ module Diakonos
     end
 
     def mkdir( dir )
-      if ! FileTest.exists?( dir )
+      if ! FileTest.exist?( dir )
         Dir.mkdir dir
       end
     end
@@ -473,7 +473,7 @@ module Diakonos
           FileUtils.rmdir d
         rescue Errno::ENOTEMPTY
         end
-        if File.exists? d
+        if File.exist? d
           $stderr.puts "(#{d} not removed)"
         end
       end
@@ -550,7 +550,7 @@ module Diakonos
         tagfile = "./tags"
       end
 
-      if ! FileTest.exists? tagfile
+      if ! FileTest.exist? tagfile
         set_iline "(tags file not found)"
       else
         IO.foreach( tagfile ) do |line_|

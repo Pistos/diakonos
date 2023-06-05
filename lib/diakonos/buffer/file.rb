@@ -9,7 +9,7 @@ module Diakonos
         name = @name
       end
 
-      if @read_only && FileTest.exists?( @name ) && FileTest.exists?( name ) && ( File.stat( @name ).ino == File.stat( name ).ino )
+      if @read_only && FileTest.exist?( @name ) && FileTest.exist?( name ) && ( File.stat( @name ).ino == File.stat( name ).ino )
         $diakonos.set_iline "#{name} cannot be saved since it is read-only."
       else
         @read_only = false
@@ -18,7 +18,7 @@ module Diakonos
         else
           proceed = true
 
-          if prompt_overwrite && FileTest.exists?( name )
+          if prompt_overwrite && FileTest.exist?( name )
             proceed = false
             choice = $diakonos.get_choice(
               "Overwrite existing '#{name}'?",
