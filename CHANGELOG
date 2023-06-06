@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - List main culprits (directories) when fuzzy file finder encounters too many files
 - Add support for extension configuration settings
+- Make compatible with Ruby 3.2 (re: File.exists?)
 
 0.9.8
 
