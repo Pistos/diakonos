@@ -10,8 +10,7 @@ It works reasonably well under iTerm on OSX. It may or may not work on Windows.
 
 Under Debian and Ubuntu derivatives, you'll need the following dependencies:
 
-    sudo apt-get install libncurses5-dev ruby-dev
-    sudo gem install curses
+    sudo apt-get install libncurses5-dev ruby-dev ruby-curses
 
 
 ## INSTALLATION
