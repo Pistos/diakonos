@@ -1,6 +1,15 @@
 Diakonos Changelog
 ------------------
 
+0.9.11
+
+- Fix installation on OSX (re: curses 1.4.5)
+- Add GraphQL and Go syntax highlighting
+
+0.9.10
+
+- (neglected to document)
+
 0.9.9
 
 - List main culprits (directories) when fuzzy file finder encounters too many files

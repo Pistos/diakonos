@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.add_runtime_dependency "curses", "1.4.4"
+  s.add_runtime_dependency "curses", "1.4.5"
   s.authors     = ["Pistos"]
   s.bindir      = "bin"
   s.description = "Diakonos is a console text editor for the masses."
@@ -26,5 +26,5 @@ Gem::Specification.new do |s|
   s.name        = "diakonos"
   s.required_ruby_version = ">= 2.6", "< 4"
   s.summary     = "Console text editor for the masses"
-  s.version     = "0.9.9"
+  s.version     = "0.9.11"
 end
