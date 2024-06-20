@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.9.12
+
+- Fix opening of already-open file
+
 0.9.11
 
 - Fix installation on OSX (re: curses 1.4.5)

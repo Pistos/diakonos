@@ -184,7 +184,10 @@ module Diakonos
           filename = nil
           do_open = false
         else
-          existing_buffer = @buffers.find { |b| b.name == filename }
+          existing_buffer = @buffers.find { |b|
+            b.name == filename ||
+            b.name == File.expand_path(filename, @session.dir)
+          }
         end
 
         if filename
