@@ -93,6 +93,7 @@ require 'diakonos/range'
 require 'diakonos/readline'
 require 'diakonos/readline/functions'
 
+require 'diakonos/lsp/transport'
 require 'diakonos/vendor/fuzzy_file_finder'
 
 
