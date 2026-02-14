@@ -139,7 +139,9 @@ module Diakonos
       end
     end
 
-    def set_modified( do_display = DO_DISPLAY, use_md5 = DONT_USE_MD5 )
+    def set_modified( do_display = DO_DISPLAY, use_md5 = DONT_USE_MD5, modified_from_line: 0 )
+      invalidate_highlight_cache_from( line: modified_from_line )
+
       if @read_only
         $diakonos.set_iline "Warning: Modifying a read-only file."
       end

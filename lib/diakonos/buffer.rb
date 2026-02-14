@@ -91,6 +91,8 @@ module Diakonos
       @last_screen_col = @last_screen_x
       @read_only = options[ 'read_only' ] || READ_WRITE
       @bookmarks = Array.new
+      @highlight_cache = []
+      @highlight_cache_valid_to = -1
       @lang_stack = Array.new
 
       configure
@@ -123,6 +125,7 @@ module Diakonos
       reset_display
       set_language language
       @original_language = @language
+      build_highlight_cache
     end
 
     def reset_display
@@ -182,7 +185,7 @@ module Diakonos
       col = @last_col
       take_snapshot TYPING
       @lines[ row ][ col ] = c
-      set_modified
+      set_modified modified_from_line: row
     end
 
     def insert_char( c )
@@ -191,7 +194,7 @@ module Diakonos
       take_snapshot( TYPING )
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
-      set_modified
+      set_modified modified_from_line: row
     end
 
     def insert_string( str )
@@ -200,7 +203,7 @@ module Diakonos
       take_snapshot( TYPING )
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
-      set_modified
+      set_modified modified_from_line: row
     end
 
     def surround( text, parenthesis )
@@ -241,7 +244,7 @@ module Diakonos
 
       cursor_to( row-1, new_x_pos )
 
-      set_modified
+      set_modified modified_from_line: row - 1
     end
 
     def join_lines( row = @last_row, strip = DONT_STRIP_LINE )
@@ -253,7 +256,7 @@ module Diakonos
         next_line = ' ' + next_line.strip
       end
       @lines[ row ] << next_line
-      set_modified
+      set_modified modified_from_line: row
     end
 
     def close_code
@@ -299,7 +302,7 @@ module Diakonos
         take_snapshot( TYPING )
         @lines[ @last_row ] = new_line
         cursor_to( @last_row, @last_col - ( head.length - new_head.length ) )
-        set_modified
+        set_modified modified_from_line: @last_row
       end
     end
 
@@ -338,7 +341,7 @@ module Diakonos
       end
 
       if one_modified
-        set_modified
+        set_modified modified_from_line: (@text_marks[:selection]&.start_row || @last_row)
       end
     end
 
@@ -359,7 +362,7 @@ module Diakonos
       end
 
       if one_modified
-        set_modified
+        set_modified modified_from_line: (@text_marks[:selection]&.start_row || @last_row)
       end
     end
 
@@ -378,7 +381,7 @@ module Diakonos
         one_modified ||= ( line != old_line )
       end
       if one_modified
-        set_modified
+        set_modified modified_from_line: (@text_marks[:selection]&.start_row || @last_row)
       end
     end
 
@@ -394,7 +397,7 @@ module Diakonos
       if @auto_indent
         parsed_indent  undoable: false
       end
-      set_modified
+      set_modified modified_from_line: row
     end
 
     def line_at( y )
@@ -568,7 +571,7 @@ module Diakonos
       if @lines[ start_row...end_row ] != lines
         take_snapshot
         @lines[ start_row...end_row ] = lines
-        set_modified
+        set_modified modified_from_line: start_row
         cursor_to start_row + lines.length, lines[-1].length
       end
     end
@@ -691,6 +694,51 @@ module Diakonos
     def words( filter_regexp = nil )
       w = @lines.join( ' ' ).scan( WORD_REGEXP )
       filter_regexp ? w.grep( filter_regexp ) : w
+    end
+
+    private def snapshot_highlight_state
+      {
+        format_class: @continued_format_class,
+        lang_stack: @lang_stack.map(&:dup),
+        language: @language,
+      }
+    end
+
+    private def restore_highlight_state( state )
+      if state.nil?
+        @continued_format_class = nil
+        @lang_stack = []
+        set_language @original_language
+      else
+        @continued_format_class = state[:format_class]
+        @lang_stack = state[:lang_stack].map(&:dup)
+        if state[:language] != @language
+          set_language state[:language]
+        end
+      end
+    end
+
+    private def invalidate_highlight_cache_from( line: )
+      @highlight_cache_valid_to = (
+        [line - 1, @highlight_cache_valid_to].min
+      )
+    end
+
+    private def build_highlight_cache
+      @continued_format_class = nil
+      @lang_stack = []
+      set_language @original_language
+      @pen_down = false
+      @highlight_cache = []
+
+      @lines.each do |line|
+        print_line line.expand_tabs( @tab_size )
+        @highlight_cache << snapshot_highlight_state
+      end
+
+      @highlight_cache_valid_to = @lines.length - 1
+      @pen_down = true
+      set_language @original_language
     end
 
   end

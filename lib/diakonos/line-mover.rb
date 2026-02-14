@@ -28,7 +28,7 @@ module Diakonos
         @buffer.anchor_selection to_row+selection_delta
       end
       @buffer.go_to_line from_row+selection_delta
-      @buffer.set_modified
+      @buffer.set_modified modified_from_line: [to_row, from_row].min
     end
 
     private def start_row

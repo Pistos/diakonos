@@ -294,7 +294,7 @@ module Diakonos
 
       cursor_to start_row, start_col
       remove_selection DONT_DISPLAY
-      set_modified do_display
+      set_modified do_display, modified_from_line: start_row
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
@@ -352,7 +352,7 @@ module Diakonos
 
       end
 
-      set_modified
+      set_modified modified_from_line: row
     end
 
   end

@@ -270,35 +270,28 @@ module Diakonos
     end
 
     def display
-      @continued_format_class = nil
-      @pen_down = true
-      @lang_stack = []
+      @pen_down = false
 
-      # First, we have to "draw" off-screen, in order to check for opening of
-      # multi-line highlights.
-
-      # So, first look backwards from the @top_line to find the first opening
-      # regexp match, if any.
-      index = @top_line - 1
-      @lines[ [ 0, @top_line - @settings[ "view.lookback" ] ].max...@top_line ].reverse_each do |line|
-        open_index = -1
-        open_token_class = nil
-        open_match_text = nil
-
-        open_index, open_token_class, open_match_text = find_opening_match( line )
-
-        if open_token_class
-          @pen_down = false
-          @lines[ index...@top_line ].each do |line|
-            print_line line
+      # Ensure highlight cache is valid up to @top_line - 1
+      if @top_line > 0
+        if @highlight_cache_valid_to < @top_line - 1
+          rebuild_start = @highlight_cache_valid_to + 1
+          restore_highlight_state(
+            @highlight_cache_valid_to >= 0 ? @highlight_cache[@highlight_cache_valid_to] : nil
+          )
+          (rebuild_start..(@top_line - 1)).each do |i|
+            print_line @lines[i].expand_tabs( @tab_size )
+            @highlight_cache[i] = snapshot_highlight_state
           end
-          @pen_down = true
-
-          break
+          @highlight_cache_valid_to = @top_line - 1
         end
 
-        index = index - 1
+        restore_highlight_state @highlight_cache[@top_line - 1]
+      else
+        restore_highlight_state nil
       end
+
+      @pen_down = true
 
       # Draw each on-screen line.
       y = 0
@@ -315,8 +308,13 @@ module Diakonos
         end
         @win_main.setpos( y, 0 )
         print_line line.expand_tabs( @tab_size )
+        line_index = @top_line + row
+        @highlight_cache[line_index] = snapshot_highlight_state
+        if line_index > @highlight_cache_valid_to
+          @highlight_cache_valid_to = line_index
+        end
         @win_main.setpos( y, 0 )
-        paint_marks @top_line + row
+        paint_marks line_index
         y += 1
       end
 

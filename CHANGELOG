@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.9.13
+
+- Fix syntax highlighting of multi-line things (e.g. strings, comments)
+
 0.9.12
 
 - Fix opening of already-open file

@@ -45,7 +45,7 @@ module Diakonos
           cursor_eol ? @lines[row].length : indentation
         )
       end
-      set_modified do_display
+      set_modified do_display, modified_from_line: row
     end
 
     def indentation_level( row, use_indent_ignore = USE_INDENT_IGNORE )

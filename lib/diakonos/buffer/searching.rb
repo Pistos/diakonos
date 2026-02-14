@@ -325,7 +325,7 @@ module Diakonos
         @lines = lines_modified
       end
 
-      set_modified
+      set_modified modified_from_line: 0
       clear_matches
       display
       num_replacements
