@@ -212,7 +212,8 @@ module Diakonos
       @functions_last         = SizedArray.new(2)
       @playing_macro          = false
 
-      @lsp_sessions            = Hash.new
+      @lsp_servers              = Hash.new
+      @lsp_sessions             = Hash.new
 
       @display_mutex          = Mutex.new
       @display_queue_mutex    = Mutex.new
@@ -303,6 +304,31 @@ module Diakonos
           @files.push Session.file_hash_for( arg )
         end
       end
+    end
+
+    private def ensure_language_lsp(language:)
+      existing_session = @lsp_sessions[language]
+      if existing_session
+        existing_session
+      else
+        lsp_command = @settings["lang.#{language}.lsp.command"]
+        if lsp_command
+          server = Lsp::Server.new(
+            command: lsp_command,
+            working_directory: @session.dir,
+          )
+          session = Lsp::Session.new(server:)
+          @lsp_servers[language] = server
+          @lsp_sessions[language] = session
+          log("LSP: started server for #{language}: #{lsp_command}")
+
+          session
+        end
+      end
+    rescue => e
+      log("LSP: failed to start server for #{language}: #{e.class}: #{e.message}")
+
+      nil
     end
 
     def process_async
@@ -424,7 +450,7 @@ module Diakonos
         debug_log "Terminated by signal (#{e.message})"
       end
 
-      @lsp_sessions.each_value(&:stop)
+      @lsp_servers.each_value(&:stop)
 
       cleanup_display
       cleanup_session

@@ -75,7 +75,7 @@ module Diakonos
         )
       end
 
-      private def next_request_id
+      def next_request_id
         @request_id += 1
       end
 

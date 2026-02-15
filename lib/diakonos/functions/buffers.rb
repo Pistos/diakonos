@@ -267,6 +267,7 @@ module Diakonos
             end
           end
           run_hook_procs( :after_open, buffer )
+          ensure_language_lsp(language: buffer.original_language)
           save_session
           if switch_to( buffer, do_display: false )
             if last_row
@@ -454,6 +455,7 @@ module Diakonos
 
       if type
         if buffer_current.set_type( type )
+          ensure_language_lsp(language: type)
           update_status_line
           update_context_line
         end
