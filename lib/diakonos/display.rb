@@ -95,6 +95,10 @@ module Diakonos
         end
       end
 
+      if ! @testing
+        @win_main.timeout = @settings['async_update_interval'] || 100
+      end
+
       @modes[ 'edit' ].window = @win_main
       @modes[ 'input' ].window = @win_interaction
 

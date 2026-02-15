@@ -93,9 +93,9 @@ require 'diakonos/range'
 require 'diakonos/readline'
 require 'diakonos/readline/functions'
 
-require 'diakonos/lsp/transport'
-
 require 'diakonos/lsp/server'
+require 'diakonos/lsp/session'
+
 require 'diakonos/vendor/fuzzy_file_finder'
 
 
@@ -212,6 +212,8 @@ module Diakonos
       @functions_last         = SizedArray.new(2)
       @playing_macro          = false
 
+      @lsp_sessions            = Hash.new
+
       @display_mutex          = Mutex.new
       @display_queue_mutex    = Mutex.new
       @display_queue          = nil
@@ -301,6 +303,10 @@ module Diakonos
           @files.push Session.file_hash_for( arg )
         end
       end
+    end
+
+    def process_async
+      @lsp_sessions.each_value(&:process_queue)
     end
 
     def print_usage
@@ -408,14 +414,17 @@ module Diakonos
       end
 
       begin
-        # Main keyboard loop.
+        # Main keyboard loop
         while ! @quitting
           process_keystroke
+          process_async
           @win_main.refresh
         end
       rescue SignalException => e
         debug_log "Terminated by signal (#{e.message})"
       end
+
+      @lsp_sessions.each_value(&:stop)
 
       cleanup_display
       cleanup_session

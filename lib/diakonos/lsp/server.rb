@@ -1,12 +1,18 @@
+require 'thread'
+
+require 'diakonos/lsp/transport'
+
 module Diakonos
   module Lsp
     class Server
-      attr_reader :capabilities
+      attr_reader :capabilities, :queue
 
       def initialize(command:, working_directory:)
         @capabilities = nil
         @command = command
         @pid = nil
+        @queue = Thread::Queue.new
+        @reader_thread = nil
         @request_id = 0
         @stderr_io = nil
         @transport = nil
@@ -14,12 +20,20 @@ module Diakonos
 
         spawn_process
         handshake
+        start_reader_thread
       end
 
       def stop
         if alive?
           shut_down
         end
+        if @reader_thread
+          @reader_thread.join
+        end
+      end
+
+      def write(message:)
+        @transport.write(message:)
       end
 
       private def alive?
@@ -107,6 +121,20 @@ module Diakonos
           reader_io: child_stdout_read,
           writer_io: child_stdin_write,
         )
+      end
+
+      private def start_reader_thread
+        @reader_thread = Thread.new do
+          loop do
+            message = @transport.read_one
+            if message.nil?
+              break
+            end
+            @queue.push(message)
+          end
+        rescue => e
+          $diakonos.log("LSP reader thread error: #{e.class}: #{e.message}")
+        end
       end
     end
   end

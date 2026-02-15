@@ -340,6 +340,7 @@ module Diakonos
         when "status.vars"
           @settings[ command ] = arg.split( /\s+/ )
         when /^lang\.(.+?)\.indent\.size$/, /^lang\.(.+?)\.(?:tabsize|wrap_margin)$/,
+            "async_update_interval",
             "context.max_levels", "context.max_segment_width", "max_clips", "max_undo_lines",
             "view.margin.x", "view.margin.y", "view.scroll_amount", "view.lookback", 'grep.context',
             'view.line_numbers.width', 'fuzzy_file_find.max_files', 'colour.background'
