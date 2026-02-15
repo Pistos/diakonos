@@ -306,9 +306,14 @@ module Diakonos
       end
     end
 
-    private def ensure_language_lsp(language:)
+    private def ensure_language_lsp(buffer: nil, language:)
       existing_session = @lsp_sessions[language]
       if existing_session
+        if buffer
+          buffer.lsp_session = existing_session
+          existing_session.notify_did_open(buffer:)
+        end
+
         existing_session
       else
         lsp_command = @settings["lang.#{language}.lsp.command"]
@@ -321,6 +326,10 @@ module Diakonos
           @lsp_servers[language] = server
           @lsp_sessions[language] = session
           log("LSP: started server for #{language}: #{lsp_command}")
+          if buffer
+            buffer.lsp_session = session
+            session.notify_did_open(buffer:)
+          end
 
           session
         end
@@ -412,7 +421,7 @@ module Diakonos
 
       @buffers.each do |b|
         run_hook_procs :after_open, b
-        ensure_language_lsp(language: b.original_language)
+        ensure_language_lsp(buffer: b, language: b.original_language)
         b.cursor_to( b.last_row, b.last_col, Buffer::DONT_DISPLAY )
       end
       buffer_current.cursor_to( buffer_current.last_row, buffer_current.last_col, Buffer::DONT_DISPLAY )

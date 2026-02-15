@@ -1,9 +1,62 @@
 module Diakonos
   module Lsp
     class Session
+      INITIAL_VERSION = 1
+
       def initialize(server:)
+        @document_versions = {}
         @pending_requests = {}
         @server = server
+      end
+
+      def notify_did_change(buffer:)
+        uri = uri_for(buffer:)
+        if @document_versions.key?(uri)
+          @document_versions[uri] += 1
+          send_notification(
+            method: 'textDocument/didChange',
+            params: {
+              textDocument: {
+                uri:,
+                version: @document_versions[uri],
+              },
+              contentChanges: [
+                { text: buffer.lines.join("\n") },
+              ],
+            },
+          )
+        end
+      end
+
+      def notify_did_close(buffer:)
+        uri = uri_for(buffer:)
+        if @document_versions.key?(uri)
+          @document_versions.delete(uri)
+          send_notification(
+            method: 'textDocument/didClose',
+            params: {
+              textDocument: { uri: },
+            },
+          )
+        end
+      end
+
+      def notify_did_open(buffer:)
+        uri = uri_for(buffer:)
+        if uri
+          @document_versions[uri] = INITIAL_VERSION
+          send_notification(
+            method: 'textDocument/didOpen',
+            params: {
+              textDocument: {
+                languageId: buffer.original_language,
+                text: buffer.lines.join("\n"),
+                uri:,
+                version: INITIAL_VERSION,
+              },
+            },
+          )
+        end
       end
 
       def process_queue
@@ -75,6 +128,12 @@ module Diakonos
         $diakonos.log(
           "LSP server request: #{message[:method]} (id=#{message[:id]}) #{message[:params]}"
         )
+      end
+
+      private def uri_for(buffer:)
+        if buffer.name
+          "file://#{buffer.name}"
+        end
       end
     end
   end

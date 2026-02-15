@@ -95,6 +95,8 @@ module Diakonos
 
         @buffer_closed = del_buffer
         @buffers.delete del_buffer
+        @lsp_sessions[del_buffer.original_language]
+        &.notify_did_close(buffer: del_buffer)
         cursor_stack_remove_buffer del_buffer
 
         if @buffer_stack.empty?
@@ -267,7 +269,7 @@ module Diakonos
             end
           end
           run_hook_procs( :after_open, buffer )
-          ensure_language_lsp(language: buffer.original_language)
+          ensure_language_lsp(buffer:, language: buffer.original_language)
           save_session
           if switch_to( buffer, do_display: false )
             if last_row
@@ -455,7 +457,7 @@ module Diakonos
 
       if type
         if buffer_current.set_type( type )
-          ensure_language_lsp(language: type)
+          ensure_language_lsp(buffer: buffer_current, language: type)
           update_status_line
           update_context_line
         end

@@ -148,6 +148,7 @@ module Diakonos
 
       @modified = use_md5 ? file_different? : true
       clear_matches
+      @lsp_session&.notify_did_change(buffer: self)
       if do_display
         $diakonos.update_status_line
         display

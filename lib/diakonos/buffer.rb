@@ -3,7 +3,7 @@ module Diakonos
   class Buffer
     attr_reader :name, :original_language, :language, :changing_selection, :read_only,
       :tab_size, :selection_mode
-    attr_writer :desired_column, :read_only
+    attr_writer :desired_column, :lsp_session, :read_only
     attr_accessor :lines
 
     TYPING                 = true
@@ -81,6 +81,7 @@ module Diakonos
       @last_search_regexps = Array( options['last_search_regexps'] ).map { |r| Regexp.new(r) }
       @highlight_regexp = nil
       @last_search = nil
+      @lsp_session = nil
       @changing_selection = false
       @typing = false
       options[ 'cursor' ] ||= Hash.new
