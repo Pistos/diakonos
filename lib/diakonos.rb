@@ -94,6 +94,8 @@ require 'diakonos/readline'
 require 'diakonos/readline/functions'
 
 require 'diakonos/lsp/transport'
+
+require 'diakonos/lsp/server'
 require 'diakonos/vendor/fuzzy_file_finder'
 
 

@@ -93,6 +93,69 @@ RSpec.describe Diakonos::Lsp::Transport do
     end
   end
 
+  describe '#read_one' do
+    context 'with a single message available' do
+      let(:message_body) {
+        JSON.generate(
+          jsonrpc: '2.0',
+          id: 1,
+          result: { capabilities: { hoverProvider: true } },
+        )
+      }
+
+      before do
+        server_write.print "Content-Length: #{message_body.bytesize}\r\n\r\n#{message_body}"
+        server_write.close
+      end
+
+      it 'returns the parsed message' do
+        result = transport.read_one
+
+        expect(result[:id]).to eq 1
+        expect(result[:result][:capabilities][:hoverProvider]).to eq true
+      end
+    end
+
+    context 'with multiple messages available' do
+      before do
+        messages = [
+          { jsonrpc: '2.0', id: 1, result: { capabilities: {} } },
+          { jsonrpc: '2.0', id: 2, result: nil },
+        ]
+        messages.each do |msg|
+          body = JSON.generate(msg)
+          server_write.print "Content-Length: #{body.bytesize}\r\n\r\n#{body}"
+        end
+        server_write.close
+      end
+
+      it 'returns only the first message' do
+        result = transport.read_one
+
+        expect(result[:id]).to eq 1
+      end
+
+      it 'returns the next message on subsequent call' do
+        transport.read_one
+        result = transport.read_one
+
+        expect(result[:id]).to eq 2
+      end
+    end
+
+    context 'with no messages (EOF)' do
+      before do
+        server_write.close
+      end
+
+      it 'returns nil' do
+        result = transport.read_one
+
+        expect(result).to be_nil
+      end
+    end
+  end
+
   describe '#close' do
     it 'closes both reader and writer IOs' do
       transport.send(:close)
