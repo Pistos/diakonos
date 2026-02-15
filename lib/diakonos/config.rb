@@ -327,6 +327,7 @@ module Diakonos
         when "context.separator", /^lang\..+?\.indent\.ignore\.charset$/,
             /^lang\.(.+?)\.tokens\.([^.]+)\.change_to$/,
             /^lang\.(.+?)\.column_delimiters$/,
+            /^lang\..+?\.lsp\.command$/,
             /^extension\.(.+?)\.(.+?)/,
             "view.nonfilelines.character",
             'diff_command', 'session.default_session',
