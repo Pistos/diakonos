@@ -3,7 +3,8 @@ module Diakonos
   class Buffer
     attr_reader :name, :original_language, :language, :changing_selection, :read_only,
       :tab_size, :selection_mode
-    attr_writer :desired_column, :lsp_session, :read_only
+    attr_accessor :lsp_session
+    attr_writer :desired_column, :read_only
     attr_accessor :lines
 
     TYPING                 = true
@@ -447,6 +448,16 @@ module Diakonos
 
     def current_row
       @last_row
+    end
+
+    def diagnostics_for_current_line
+      if @lsp_session && name
+        uri = "file://#{name}"
+
+        @lsp_session.diagnostics_for_line(uri:, line: @last_row)
+      else
+        []
+      end
     end
 
     def current_column

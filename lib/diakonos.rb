@@ -93,6 +93,7 @@ require 'diakonos/range'
 require 'diakonos/readline'
 require 'diakonos/readline/functions'
 
+require 'diakonos/lsp/diagnostic'
 require 'diakonos/lsp/server'
 require 'diakonos/lsp/session'
 
@@ -342,6 +343,14 @@ module Diakonos
 
     def process_async
       @lsp_sessions.each_value(&:process_queue)
+      show_lsp_diagnostic_for_current_line
+    end
+
+    private def show_lsp_diagnostic_for_current_line
+      first_diagnostic = buffer_current&.diagnostics_for_current_line&.first
+      if first_diagnostic
+        set_iline_if_empty first_diagnostic.to_s
+      end
     end
 
     def print_usage

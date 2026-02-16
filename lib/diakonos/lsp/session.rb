@@ -4,9 +4,18 @@ module Diakonos
       INITIAL_VERSION = 1
 
       def initialize(server:)
+        @diagnostics = {}
         @document_versions = {}
         @pending_requests = {}
         @server = server
+      end
+
+      def diagnostics_for_line(uri:, line:)
+        Array(
+          @diagnostics[uri]&.select { |d|
+            d.start_line <= line && line <= d.end_line
+          }
+        )
       end
 
       def notify_did_change(buffer:)
@@ -108,7 +117,21 @@ module Diakonos
       end
 
       private def handle_notification(message:)
-        $diakonos.log("LSP notification: #{message[:method]} #{message[:params]}")
+        method = message[:method]
+        params = message[:params]
+        $diakonos.log("LSP notification: #{method} #{params}")
+        case method
+        when 'textDocument/publishDiagnostics'
+          store_diagnostics(params:)
+        end
+      end
+
+      private def store_diagnostics(params:)
+        uri = params[:uri]
+        if uri
+          raw_diagnostics = params[:diagnostics] || []
+          @diagnostics[uri] = raw_diagnostics.map { |data| Diagnostic.new(data:) }
+        end
       end
 
       private def handle_response(message:)
