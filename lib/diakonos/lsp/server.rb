@@ -45,9 +45,10 @@ module Diakonos
       end
 
       private def handshake
+        request_id = next_request_id
         @transport.write(
           message: {
-            id: next_request_id,
+            id: request_id,
             method: 'initialize',
             params: {
               capabilities: {},
@@ -57,13 +58,21 @@ module Diakonos
           },
         )
 
-        response = @transport.read_one
-        if response.nil?
-          Process.waitpid(@pid)
-          stderr_output = @stderr_io.read.strip
-          @pid = nil
+        response = nil
+        loop do
+          message = @transport.read_one
+          if message.nil?
+            Process.waitpid(@pid)
+            stderr_output = @stderr_io.read.strip
+            @pid = nil
 
-          raise "LSP server failed to start: #{stderr_output}"
+            raise "LSP server failed to start: #{stderr_output}"
+          end
+          if message[:id] == request_id
+            response = message
+            break
+          end
+          @queue.push(message)
         end
         @capabilities = response[:result][:capabilities]
 

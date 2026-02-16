@@ -335,7 +335,7 @@ module Diakonos
         end
       end
     rescue => e
-      log("LSP: failed to start server for #{language}: #{e.class}: #{e.message}")
+      log("LSP: failed to start server for #{language}: #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}")
 
       nil
     end
