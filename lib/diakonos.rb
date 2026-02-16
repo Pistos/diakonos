@@ -3,7 +3,6 @@
 # == Diakonos
 #
 # A Linux console text editor for the masses.
-# :title: Diakonos
 #
 # Author:: Pistos
 # Copyright (c) 2004-2023 Pistos

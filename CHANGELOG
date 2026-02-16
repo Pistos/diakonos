@@ -1,9 +1,10 @@
 Diakonos Changelog
 ------------------
 
-0.9.13
+0.10.0
 
 - Fix syntax highlighting of multi-line things (e.g. strings, comments)
+- Add preliminary Language Server Protocol support
 
 0.9.12
 
