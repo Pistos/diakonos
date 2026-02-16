@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'curses', '1.4.6'
+gem 'curses', '1.5.3'
 gem 'language_server-protocol', '3.17.0.5'
 
 group :test do
