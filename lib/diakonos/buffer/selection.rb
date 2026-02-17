@@ -222,12 +222,12 @@ module Diakonos
       elsif selection.start_row == selection.end_row
         [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
       elsif @selection_mode == :block
-        @lines[ selection.start_row .. selection.end_row ].collect { |line|
-            line[ selection.start_col ... selection.end_col ]
+        @lines[ selection.start_row..selection.end_row ].collect { |line|
+            line[ selection.start_col...selection.end_col ]
           }
         else
           [ @lines[ selection.start_row ][ selection.start_col.. ] ] +
-            ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] || [] ) +
+            ( @lines[ (selection.start_row + 1)..(selection.end_row - 1) ] || [] ) +
             [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
       end
     end

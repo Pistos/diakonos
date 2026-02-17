@@ -99,7 +99,7 @@ module Diakonos
     end
 
     def paint_marks( row )
-      string = @lines[ row ][ @left_column ... @left_column + Curses.cols ]
+      string = @lines[ row ][ @left_column...@left_column + Curses.cols ]
       return  if string.nil? || string == ""
 
       string = string.expand_tabs( @tab_size )
@@ -113,7 +113,7 @@ module Diakonos
 
         case @selection_mode
         when :normal
-          if ( (text_mark.start_row + 1) .. (text_mark.end_row - 1) ) === row
+          if ( (text_mark.start_row + 1)..(text_mark.end_row - 1) ) === row
             @win_main.setpos( cury, curx )
             @win_main.addstr string
           elsif row == text_mark.start_row && row == text_mark.end_row
