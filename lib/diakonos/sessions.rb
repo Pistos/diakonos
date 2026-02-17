@@ -84,7 +84,7 @@ module Diakonos
       File.open(yaml_filename) do |f|
         loaded = YAML.load(f) or break
 
-        if(
+        if (
           loaded[ 'filename' ] &&
           loaded[ 'settings' ] &&
           loaded[ 'settings' ].respond_to?( :values ) &&

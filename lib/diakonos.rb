@@ -126,7 +126,7 @@ module Diakonos
 
   # @return [Array] the filename and line number parsed
   def self.parse_filename_and_line_number( s )
-    if(
+    if (
       # Ruby
       s =~ /from (.+):(\d+)/ ||
       # Python

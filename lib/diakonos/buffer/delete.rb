@@ -121,21 +121,21 @@ module Diakonos
       start_char = end_char = char
       case char
       when '('
-          end_char = ')'
+        end_char = ')'
       when '{'
-          end_char = '}'
+        end_char = '}'
       when '['
-          end_char = ']'
+        end_char = ']'
       when '<'
-          end_char = '>'
+        end_char = '>'
       when ')'
-          end_char = '('
+        end_char = '('
       when '}'
-          end_char = '{'
+        end_char = '{'
       when ']'
-          end_char = '['
+        end_char = '['
       when '>'
-          end_char = '<'
+        end_char = '<'
       end
 
       row = @last_row

@@ -76,7 +76,7 @@ module Diakonos
         end
 
         buf = nil
-        while(
+        while (
           @buffer_stack.any? &&
           ! @buffers.include?( buf ) ||
           buf == del_buffer
@@ -224,7 +224,7 @@ module Diakonos
         # Is file readable?
 
         # Does the "file" utility exist?
-        if(
+        if (
           filename &&
           @settings[ 'use_magic_file' ] &&
           FileTest.exist?( "/usr/bin/file" ) &&

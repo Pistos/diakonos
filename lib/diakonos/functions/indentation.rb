@@ -33,7 +33,7 @@ module Diakonos
     end
 
     def parsed_indent
-      if( buffer_current.changing_selection )
+      if buffer_current.changing_selection
         @do_display = false
         mark = buffer_current.selection_mark
         (mark.start_row..mark.end_row).each do |row|
@@ -49,7 +49,7 @@ module Diakonos
     end
 
     def unindent
-      if( buffer_current.changing_selection )
+      if buffer_current.changing_selection
         @do_display = false
         mark = buffer_current.selection_mark
         if mark.end_col > 0

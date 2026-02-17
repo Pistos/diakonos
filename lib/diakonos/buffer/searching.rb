@@ -299,7 +299,7 @@ module Diakonos
 
     # @return [Integer] the number of replacements made
     def replace_all( regexp, replacement, within_search_area = false )
-      return  if( regexp.nil? || replacement.nil? )
+      return  if ( regexp.nil? || replacement.nil? )
 
       num_replacements = 0
 

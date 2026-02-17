@@ -160,20 +160,20 @@ module Diakonos
 
       while row < @top_line + @settings[ "view.margin.y" ]
         amount = (-1) * @settings[ "view.jump.y" ]
-        break if( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
+        break if ( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
       end
       while row > @top_line + $diakonos.main_window_height - 1 - @settings[ "view.margin.y" ]
         amount = @settings[ "view.jump.y" ]
-        break if( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
+        break if ( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
       end
 
       while col < @left_column + @settings[ "view.margin.x" ]
         amount = (-1) * @settings[ "view.jump.x" ]
-        break if( pan_view( amount, DONT_DISPLAY ) != amount )
+        break if ( pan_view( amount, DONT_DISPLAY ) != amount )
       end
       while col > @left_column + $diakonos.main_window_width - @settings[ "view.margin.x" ] - 2
         amount = @settings[ "view.jump.x" ]
-        break if( pan_view( amount, DONT_DISPLAY ) != amount )
+        break if ( pan_view( amount, DONT_DISPLAY ) != amount )
       end
 
       @top_line != old_top_line || @left_column != old_left_column
@@ -260,17 +260,17 @@ module Diakonos
           end
         elsif ! passed2
           if level >= initial_level
-              new_row = row
-              passed2 = true
-            elsif level <= initial_level - 2
-              # No previous block
-              break
-            end
-          elsif level < initial_level
-            new_row = ( row+1..@last_row ).find { |r|
-                ! @lines[ r ].strip.empty?
-              }
-              break
+            new_row = row
+            passed2 = true
+          elsif level <= initial_level - 2
+            # No previous block
+            break
+          end
+        elsif level < initial_level
+          new_row = (row+1..@last_row).find { |r|
+            ! @lines[ r ].strip.empty?
+          }
+          break
         end
       end
       go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
