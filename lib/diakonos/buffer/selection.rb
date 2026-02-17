@@ -28,21 +28,33 @@ module Diakonos
         end
 
         if anchor_first
-          @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, acol, crow, ccol), @selection_formatting )
+          @text_marks[ :selection ] = TextMark.new(
+            ::Diakonos::Range.new(arow, acol, crow, ccol), @selection_formatting
+          )
         else
-          @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(crow, ccol, arow, acol), @selection_formatting )
+          @text_marks[ :selection ] = TextMark.new(
+            ::Diakonos::Range.new(crow, ccol, arow, acol), @selection_formatting
+          )
         end
       when :block
         if crow < arow
           if ccol < acol # Northwest
-            @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(crow, ccol, arow, acol), @selection_formatting )
+            @text_marks[ :selection ] = TextMark.new(
+              ::Diakonos::Range.new(crow, ccol, arow, acol), @selection_formatting
+            )
           else           # Northeast
-            @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(crow, acol, arow, ccol), @selection_formatting )
+            @text_marks[ :selection ] = TextMark.new(
+              ::Diakonos::Range.new(crow, acol, arow, ccol), @selection_formatting
+            )
           end
-        elsif ccol < acol
-          @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, ccol, crow, acol), @selection_formatting )  # Southwest
+        elsif ccol < acol  # Southwest
+          @text_marks[ :selection ] = TextMark.new(
+            ::Diakonos::Range.new(arow, ccol, crow, acol), @selection_formatting
+          )
         else            # Southeast
-          @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, acol, crow, ccol), @selection_formatting )
+          @text_marks[ :selection ] = TextMark.new(
+            ::Diakonos::Range.new(arow, acol, crow, ccol), @selection_formatting
+          )
         end
       end
     end
@@ -170,7 +182,10 @@ module Diakonos
     end
 
     def set_selection( start_row, start_col, end_row, end_col )
-      @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(start_row, start_col, end_row, end_col), @selection_formatting )
+      @text_marks[ :selection ] = TextMark.new(
+        ::Diakonos::Range.new(start_row, start_col, end_row, end_col),
+        @selection_formatting
+      )
       @changing_selection = false
     end
 
@@ -332,12 +347,18 @@ module Diakonos
           new_col = column_of( text[ -1 ].length )
         when :block
           @lines += [ '' ] * [ 0, ( row + text.length - @lines.length ) ].max
-          @lines[ row...( row + text.length ) ] = @lines[ row...( row + text.length ) ].collect.with_index { |line,index|
-            pre = line[ 0...col ].ljust( col )
-            post = line[ col.. ]
-            "#{pre}#{text[ index ]}#{post}"
-          }
-          new_col = col + text[ -1 ].length
+          range = row...( row + text.length )
+          @lines[range] = (
+            @lines[range]
+            .collect
+            .with_index { |line,index|
+              pre = line[0...col].ljust(col)
+              post = line[col..]
+
+              "#{pre}#{text[ index ]}#{post}"
+            }
+          )
+          new_col = col + text[-1].length
         end
 
         new_row = @last_row + text.length - 1

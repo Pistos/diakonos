@@ -11,7 +11,15 @@ module Diakonos
   EOL_ALT_LAST_CHAR = 3
 
   class Diakonos
-    attr_reader :token_regexps, :close_token_regexps, :token_formats, :diakonos_conf, :column_markers, :surround_pairs, :settings
+    attr_reader(
+      :close_token_regexps,
+      :column_markers,
+      :diakonos_conf,
+      :settings,
+      :surround_pairs,
+      :token_formats,
+      :token_regexps,
+    )
 
     def load_configuration
       # Set defaults first
@@ -229,7 +237,8 @@ module Diakonos
         when 'key.after'
           function, args = arg.split( /\s+/, 2 )
           map_key args, @modes['edit'].keymap_after[function]
-        when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/, /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
+        when /^lang\.(.+?)\.tokens\.([^.]+)(\.case_insensitive)?$/,
+            /^lang\.(.+?)\.tokens\.([^.]+)\.open(\.case_insensitive)?$/
           get_token_regexp( @token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/
           get_token_regexp( @close_token_regexps, arg, Regexp.last_match )

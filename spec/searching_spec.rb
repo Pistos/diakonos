@@ -17,11 +17,21 @@ RSpec.describe 'A Diakonos user' do
 
     @d.actually_grep( 'inspect', @d.buffer_current )
     lines = File.readlines( @d.list_filename )
-    expect(lines[ 0 ]).to match %r(^sample-file\.rb:13:   def inspection {100,} \| #{dir}/test-files/sample-file\.rb:13\n$)
-    expect(lines[ 1 ]).to match %r(^sample-file\.rb:14:     x\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:14\n$)
-    expect(lines[ 2 ]).to match %r(^sample-file\.rb:15:     y\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:15\n$)
-    expect(lines[ 3 ]).to match %r(^sample-file\.rb:20: s\.inspection {100,} \| #{dir}/test-files/sample-file\.rb:20\n$)
+
+    expect(lines[ 0 ])
+    .to match %r(^sample-file\.rb:13:   def inspection {100,} \| #{dir}/test-files/sample-file\.rb:13\n$)
+
+    expect(lines[ 1 ])
+    .to match %r(^sample-file\.rb:14:     x\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:14\n$)
+
+    expect(lines[ 2 ])
+    .to match %r(^sample-file\.rb:15:     y\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:15\n$)
+
+    expect(lines[ 3 ])
+    .to match %r(^sample-file\.rb:20: s\.inspection {100,} \| #{dir}/test-files/sample-file\.rb:20\n$)
+
     expect(lines.size).to eq 4
+
     @d.close_list_buffer
   end
 

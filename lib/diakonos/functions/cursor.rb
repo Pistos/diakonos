@@ -51,12 +51,20 @@ module Diakonos
       case direction
       when :backward
         @cursor_stack_pointer = ( @cursor_stack_pointer || @cursor_stack.length ) - 1 - delta
-        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == buffer_current
+        while(
+          different_file &&
+          @cursor_stack[ @cursor_stack_pointer ] &&
+          @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == buffer_current
+        )
           @cursor_stack_pointer -= 1
         end
       when :forward
         @cursor_stack_pointer = ( @cursor_stack_pointer || 0 ) + 1
-        while different_file && @cursor_stack[ @cursor_stack_pointer ] && @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == buffer_current
+        while(
+          different_file &&
+          @cursor_stack[ @cursor_stack_pointer ] &&
+          @cursor_stack[ @cursor_stack_pointer ][ :buffer ] == buffer_current
+        )
           @cursor_stack_pointer += 1
         end
       end

@@ -39,11 +39,26 @@ RSpec.describe 'A Diakonos::Buffer' do
     expect(@b[ 8 ]).to eq "    @x_ = 1"
     @b.find( [ /@(y)\b/ ], direction: :down, replacement: "@\\1_", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
     expect(@b[ 9 ]).to eq "    @y_ = 2"
-    @b.find( [ /(\w+)\.inspect/ ], direction: :down, replacement: "print \\1", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
+    @b.find(
+      [ /(\w+)\.inspect/ ],
+      auto_choice: Diakonos::CHOICE_YES_AND_STOP,
+      direction: :down,
+      replacement: "print \\1",
+    )
     expect(@b[ 13 ]).to eq "    print x"
-    @b.find( [ /(\w+)\.inspect/ ], direction: :down, replacement: "puts \\1, \\1, \\1", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
+    @b.find(
+      [ /(\w+)\.inspect/ ],
+      auto_choice: Diakonos::CHOICE_YES_AND_STOP,
+      direction: :down,
+      replacement: "puts \\1, \\1, \\1",
+    )
     expect(@b[ 14 ]).to eq "    puts y, y, y"
-    @b.find( [ /Sample\.(\w+)/ ], direction: :down, replacement: "\\1\\\\\\1", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
+    @b.find(
+      [ /Sample\.(\w+)/ ],
+      auto_choice: Diakonos::CHOICE_YES_AND_STOP,
+      direction: :down,
+      replacement: "\\1\\\\\\1",
+    )
     expect(@b[ 18 ]).to eq "s = new\\new"
   end
 
