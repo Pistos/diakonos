@@ -293,9 +293,9 @@ module Diakonos
           @closers[ ::Regexp.last_match(1) ] ||= Hash.new
           @closers[ ::Regexp.last_match(1) ][ ::Regexp.last_match(2) ] ||= Hash.new
           @closers[ ::Regexp.last_match(1) ][ ::Regexp.last_match(2) ][ ::Regexp.last_match(3).to_sym ] = case ::Regexp.last_match(3)
-          when 'regexp'
+                                                                                                          when 'regexp'
             Regexp.new arg
-          when 'closer'
+                                                                                                          when 'closer'
             begin
               if arg =~ /^\{.+\}$/
                 eval( "Proc.new " + arg )
