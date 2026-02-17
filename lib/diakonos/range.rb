@@ -19,10 +19,10 @@ module Diakonos
   end
 
   module RangeDelegator
-    def start_row; @range.start_row; end
-    def end_row; @range.end_row; end
-    def start_col; @range.start_col; end
-    def end_col; @range.end_col; end
+    def start_row = @range.start_row
+    def end_row = @range.end_row
+    def start_col = @range.start_col
+    def end_col = @range.end_col
 
     def contains?(row, col)
       @range.contains?(row, col)
