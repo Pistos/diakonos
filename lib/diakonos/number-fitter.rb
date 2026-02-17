@@ -5,7 +5,7 @@ module Diakonos
       return min  if number < min
       return max  if number > max
 
-      return number
+      number
     end
   end
 end

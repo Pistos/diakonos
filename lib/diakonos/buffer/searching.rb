@@ -120,10 +120,10 @@ module Diakonos
       else
         index_col = 0
       end
+
       if index = @lines[ from_row ].index( regexp, index_col )
         if index <= ( @last_finding ? @last_finding.start_col : from_col )
-          finding = confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
-          return finding  if finding
+          confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
         end
       end
     end
@@ -160,11 +160,9 @@ module Diakonos
       # And finally, the other side of the current row.
 
       search_col = ( @last_finding ? @last_finding.start_col : from_col ) + 1
-      if index = @lines[ from_row ].rindex( regexp )
-        if index > search_col
-          finding = confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
-          return finding  if finding
-        end
+      index = @lines[ from_row ].rindex( regexp )
+      if index && index > search_col
+        confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
       end
     end
 
