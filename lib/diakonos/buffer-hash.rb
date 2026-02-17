@@ -57,4 +57,3 @@ class BufferHash < Hash
     @keys_.length
   end
 end
-

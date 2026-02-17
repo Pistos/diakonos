@@ -12,4 +12,3 @@ module Enumerable
     array
   end
 end
-

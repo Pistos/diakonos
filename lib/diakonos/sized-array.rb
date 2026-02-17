@@ -45,4 +45,3 @@ class SizedArray < Array
     retval
   end
 end
-

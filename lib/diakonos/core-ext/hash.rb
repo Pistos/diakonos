@@ -57,4 +57,3 @@ class Hash
   end
 
 end
-

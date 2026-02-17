@@ -8,4 +8,3 @@ module Diakonos
     end
   end
 end
-

@@ -3,4 +3,3 @@ class Regexp
     source[ 0 ] == ?^
   end
 end
-

@@ -119,4 +119,3 @@ class String
   end
 
 end
-
