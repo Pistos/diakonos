@@ -146,7 +146,7 @@ module Diakonos
     def search_and_replace( case_sensitive = CASE_INSENSITIVE )
       find nil, case_sensitive:, replacement: ASK_REPLACEMENT
     end
-    alias_method :find_and_replace, :search_and_replace
+    alias find_and_replace search_and_replace
 
     # Immediately moves the cursor to the next match of a regular expression.
     # The user is not prompted for any value.

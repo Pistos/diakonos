@@ -287,7 +287,7 @@ module Diakonos
 
       buffer || existing_buffer
     end
-    alias_method :new_file, :open_file
+    alias new_file open_file
 
     # Prompts the user for a file to open, then opens it with #open_file .
     # @see #open_file
