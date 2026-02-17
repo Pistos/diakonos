@@ -319,7 +319,7 @@ class FuzzyFileFinder
 
       score = run_ratio * char_ratio
 
-      return { :score => score, :result => runs.join }
+      return { score: score, result: runs.join }
     end
 
     # Match the given path against the regex, caching the result in +path_matches+.
@@ -337,9 +337,9 @@ class FuzzyFileFinder
 
         path_matches[path] =
           match && build_match_result(match, path_segments) ||
-          { :score => 1, :result => matchable_name, :missed => true }
+          { score: 1, result: matchable_name, missed: true }
       else
-        path_matches[path] = { :score => 1, :result => matchable_name }
+        path_matches[path] = { score: 1, result: matchable_name }
       end
     end
 
@@ -352,14 +352,14 @@ class FuzzyFileFinder
         shortened_path = path_match[:result].gsub(/[^\/]+/) { |m| m.index("(") ? m : m[0,1] }
         abbr = shortened_path.empty? ? match_result[:result] : File.join(shortened_path, match_result[:result])
 
-        result = { :path => file.path,
-                   :abbr => abbr,
-                   :directory => file.parent.name,
-                   :name => file.name,
-                   :highlighted_directory => path_match[:result],
-                   :highlighted_name => match_result[:result],
-                   :highlighted_path => full_match_result,
-                   :score => path_match[:score] * match_result[:score] }
+        result = { path: file.path,
+                   abbr: abbr,
+                   directory: file.parent.name,
+                   name: file.name,
+                   highlighted_directory: path_match[:result],
+                   highlighted_name: match_result[:result],
+                   highlighted_path: full_match_result,
+                   score: path_match[:score] * match_result[:score] }
         yield result
       end
     end

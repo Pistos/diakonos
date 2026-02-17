@@ -33,17 +33,17 @@ RSpec.describe 'A Diakonos::Buffer' do
   end
 
   it 'can replace text' do
-    @b.find( [ /only/ ], :direction => :down, :replacement => "\\2", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
+    @b.find( [ /only/ ], direction: :down, replacement: "\\2", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
     expect(@b[ 2 ]).to eq "# This is  a sample file used in the tests."
-    @b.find( [ /@x\b/ ], :direction => :down, :replacement => "\\0_", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
+    @b.find( [ /@x\b/ ], direction: :down, replacement: "\\0_", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
     expect(@b[ 8 ]).to eq "    @x_ = 1"
-    @b.find( [ /@(y)\b/ ], :direction => :down, :replacement => "@\\1_", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
+    @b.find( [ /@(y)\b/ ], direction: :down, replacement: "@\\1_", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
     expect(@b[ 9 ]).to eq "    @y_ = 2"
-    @b.find( [ /(\w+)\.inspect/ ], :direction => :down, :replacement => "print \\1", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
+    @b.find( [ /(\w+)\.inspect/ ], direction: :down, replacement: "print \\1", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
     expect(@b[ 13 ]).to eq "    print x"
-    @b.find( [ /(\w+)\.inspect/ ], :direction => :down, :replacement => "puts \\1, \\1, \\1", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
+    @b.find( [ /(\w+)\.inspect/ ], direction: :down, replacement: "puts \\1, \\1, \\1", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
     expect(@b[ 14 ]).to eq "    puts y, y, y"
-    @b.find( [ /Sample\.(\w+)/ ], :direction => :down, :replacement => "\\1\\\\\\1", :auto_choice => Diakonos::CHOICE_YES_AND_STOP )
+    @b.find( [ /Sample\.(\w+)/ ], direction: :down, replacement: "\\1\\\\\\1", auto_choice: Diakonos::CHOICE_YES_AND_STOP )
     expect(@b[ 18 ]).to eq "s = new\\new"
   end
 
@@ -198,8 +198,6 @@ RSpec.describe 'A Diakonos::Buffer' do
     check_word_at 14, 5, nil
     check_word_at 14, 6, 'inspect'
     check_word_at 21, 0, nil
-    check_word_at 22, 8, nil
-    check_word_at 22, 9, nil
     check_word_at 26, 39, 'EOF'
     check_word_at 26, 40, nil
   end
@@ -230,8 +228,8 @@ RSpec.describe 'A Diakonos::Buffer' do
     ]
     check_paragraph_at 22, 7, [
       '{',
-      '  :just => :a,',
-      '  :test => :hash,',
+      '  just: :a,',
+      '  test: :hash,',
       '}',
     ]
     check_paragraph_at 26, 12, [

@@ -1,7 +1,7 @@
 module Diakonos
   class Diakonos
     def register_proc( the_proc, hook_name, priority = 0 )
-      @hooks[ hook_name ] << { :proc => the_proc, :priority => priority }
+      @hooks[ hook_name ] << { proc: the_proc, priority: priority }
     end
 
     def run_hook_procs( hook_id, *args )

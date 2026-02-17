@@ -41,13 +41,13 @@ module Diakonos
       # The execution order of the #find and the @last_search_regexps assignment is likely deliberate
       num_replacements = buffer_current.find(
         regexps,
-        :direction          => options[:direction],
-        :replacement        => replacement,
-        :starting_row       => options[:starting_row],
-        :starting_col       => options[:starting_col],
-        :quiet              => options[:quiet],
-        :show_context_after => @settings[ 'find.show_context_after' ],
-        :starting           => true
+        direction: options[:direction],
+        replacement: replacement,
+        starting_row: options[:starting_row],
+        starting_col: options[:starting_col],
+        quiet: options[:quiet],
+        show_context_after: @settings[ 'find.show_context_after' ],
+        starting: true
       )
       @last_search_regexps = regexps
 

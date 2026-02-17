@@ -131,7 +131,7 @@ module Diakonos
       end
       if search_term
         regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
-        buffer_current.find( regexp, :direction => direction )
+        buffer_current.find( regexp, direction: direction )
         @last_search_regexps = regexp
       end
     end

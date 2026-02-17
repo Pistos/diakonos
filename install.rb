@@ -152,7 +152,7 @@ end
 
     def mkdir_( dir )
       begin
-        mkdir_p File.join( @dest_dir, dir ), :mode => 0755
+        mkdir_p File.join( @dest_dir, dir ), mode: 0755
         @installed_dirs << dir
       rescue Errno::EEXIST
         # Don't panic if the directory already exists
@@ -163,7 +163,7 @@ end
       dest_file = File.join( dest, File.basename( source ) )
       dest_dir_file = File.join( @dest_dir, dest_file )
 
-      install source, dest_dir_file, :mode => 0755
+      install source, dest_dir_file, mode: 0755
 
       # Rewrite shebang line
       command = "sed -i_ '1s|.*|#{@shebang}|' #{dest_dir_file}"

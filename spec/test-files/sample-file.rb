@@ -20,8 +20,8 @@ s = Sample.new
 s.inspection
 
 {
-  :just => :a,
-  :test => :hash,
+  just: :a,
+  test: :hash,
 }
 
 # Comment at end, with no newline at EOF
