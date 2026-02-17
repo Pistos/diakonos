@@ -23,10 +23,11 @@ module Diakonos
       end
 
       def stop
+        @reader_thread&.kill
+        @reader_thread&.join
         if alive?
           shut_down
         end
-        @reader_thread&.join
       end
 
       def write(message:)
