@@ -11,22 +11,20 @@ module Diakonos
       exception_thrown = nil
 
       rs_array.each do |source|
-        begin
-          warning_verbosity = $VERBOSE
-          $VERBOSE = nil
-          regexps << Regexp.new(
-            source,
-            options[:case_sensitive] ? nil : Regexp::IGNORECASE
-          )
-          $VERBOSE = warning_verbosity
-        rescue RegexpError => e
-          if ! exception_thrown
-            exception_thrown = e
-            source = Regexp.escape( source )
-            retry
-          else
-            raise e
-          end
+        warning_verbosity = $VERBOSE
+        $VERBOSE = nil
+        regexps << Regexp.new(
+          source,
+          options[:case_sensitive] ? nil : Regexp::IGNORECASE
+        )
+        $VERBOSE = warning_verbosity
+      rescue RegexpError => e
+        if ! exception_thrown
+          exception_thrown = e
+          source = Regexp.escape( source )
+          retry
+        else
+          raise e
         end
       end
 

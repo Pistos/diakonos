@@ -13,12 +13,10 @@ module Diakonos
     end
 
     def log_backtrace
-      begin
-        raise Exception
-      rescue Exception => e
-        e.backtrace[ 1.. ].each do |x|
-          debug_log x
-        end
+      raise StandardError
+    rescue StandardError => e
+      e.backtrace[ 1.. ].each do |x|
+        debug_log x
       end
     end
 

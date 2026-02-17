@@ -117,26 +117,24 @@ module Diakonos
 
         catch :stop do
           loop do
-            begin
-              Timeout.timeout( 5 ) do
-                t1.join
-                t2.join
-                Curses.init_screen
-                refresh_all
-                completed = true
-                throw :stop
-              end
-            rescue Timeout::Error
-              choice = get_choice(
-                "Keep waiting for shell results?",
-                [ CHOICE_YES, CHOICE_NO ],
-                CHOICE_YES
-              )
-              if choice != CHOICE_YES
-                t1.terminate
-                t2.terminate
-                throw :stop
-              end
+            Timeout.timeout( 5 ) do
+              t1.join
+              t2.join
+              Curses.init_screen
+              refresh_all
+              completed = true
+              throw :stop
+            end
+          rescue Timeout::Error
+            choice = get_choice(
+              "Keep waiting for shell results?",
+              [ CHOICE_YES, CHOICE_NO ],
+              CHOICE_YES
+            )
+            if choice != CHOICE_YES
+              t1.terminate
+              t2.terminate
+              throw :stop
             end
           end
         end

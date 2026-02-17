@@ -485,17 +485,15 @@ module Diakonos
     def run_scripts
       scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
       scripts.each do |script|
-        begin
-          require script
-        rescue Exception => e
-          show_exception(
-            e,
-            [
-              "There is a syntax error in the script.",
-              "An invalid hook name was used.",
-            ]
-          )
-        end
+        require script
+      rescue Exception => e
+        show_exception(
+          e,
+          [
+            "There is a syntax error in the script.",
+            "An invalid hook name was used.",
+          ]
+        )
       end
     end
 
@@ -553,29 +551,27 @@ module Diakonos
     end
 
     def show_exception(exception, probable_causes = ["Unknown"])
-      begin
-        File.open( @error_filename, "w" ) do |f|
-          f.puts "Diakonos Error:"
-          f.puts
-          f.puts "#{exception.class}: #{exception.message}"
-          f.puts
-          f.puts "Probable Causes:"
-          f.puts
-          probable_causes.each do |pc|
-            f.puts "- #{pc}"
-          end
-          f.puts
-          f.puts "----------------------------------------------------"
-          f.puts "If you can reproduce this error, please report it at"
-          f.puts "https://github.com/Pistos/diakonos/issues !"
-          f.puts "----------------------------------------------------"
-          f.puts exception.backtrace
+      File.open( @error_filename, "w" ) do |f|
+        f.puts "Diakonos Error:"
+        f.puts
+        f.puts "#{exception.class}: #{exception.message}"
+        f.puts
+        f.puts "Probable Causes:"
+        f.puts
+        probable_causes.each do |pc|
+          f.puts "- #{pc}"
         end
-        open_file @error_filename
-      rescue Exception => e2
-        debug_log "EXCEPTION: #{e2.message}"
-        debug_log "\t#{e2.backtrace}"
+        f.puts
+        f.puts "----------------------------------------------------"
+        f.puts "If you can reproduce this error, please report it at"
+        f.puts "https://github.com/Pistos/diakonos/issues !"
+        f.puts "----------------------------------------------------"
+        f.puts exception.backtrace
       end
+      open_file @error_filename
+    rescue Exception => e2
+      debug_log "EXCEPTION: #{e2.message}"
+      debug_log "\t#{e2.backtrace}"
     end
 
     def start_recording_macro( name = nil )

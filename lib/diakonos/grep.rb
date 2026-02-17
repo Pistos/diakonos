@@ -34,23 +34,21 @@ module Diakonos
   class Diakonos
 
     def actually_grep( regexp_source, *buffers )
-      begin
-        regexp = Regexp.new( regexp_source, Regexp::IGNORECASE )
-        grep_results = buffers.map { |buffer| buffer.grep(regexp) }.flatten
-        if settings[ 'grep.context' ] == 0
-          join_str = "\n"
-        else
-          join_str = "\n---\n"
-        end
-        with_list_file do |list|
-          list.puts grep_results.join( join_str )
-        end
-        list_buffer = open_list_buffer
-        list_buffer.highlight_matches regexp
-        display_buffer list_buffer
-      rescue RegexpError
-        # Do nothing
+      regexp = Regexp.new( regexp_source, Regexp::IGNORECASE )
+      grep_results = buffers.map { |buffer| buffer.grep(regexp) }.flatten
+      if settings[ 'grep.context' ] == 0
+        join_str = "\n"
+      else
+        join_str = "\n---\n"
       end
+      with_list_file do |list|
+        list.puts grep_results.join( join_str )
+      end
+      list_buffer = open_list_buffer
+      list_buffer.highlight_matches regexp
+      display_buffer list_buffer
+    rescue RegexpError
+      # Do nothing
     end
 
     def grep_( regexp_source, *buffers )
