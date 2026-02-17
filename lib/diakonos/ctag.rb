@@ -13,7 +13,7 @@ module Diakonos
       "#{@file}:#{@command} (#{@kind}) #{@rest}"
     end
 
-    def == ( other )
+    def ==( other )
       other &&
       @file == other.file &&
       @command == other.command &&

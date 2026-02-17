@@ -6,7 +6,7 @@ module Diakonos
       @max_clips = max_clips
     end
 
-    def [] ( arg )
+    def []( arg )
       @clips[ arg ]
     end
 

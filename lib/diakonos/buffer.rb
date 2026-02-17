@@ -157,11 +157,11 @@ module Diakonos
       @tab_size = ( @settings[ "lang.#{@language}.tabsize" ] || DEFAULT_TAB_SIZE )
     end
 
-    def [] ( arg )
+    def []( arg )
       @lines[ arg ]
     end
 
-    def == (other)
+    def ==(other)
       return false  if other.nil?
 
       @name == other.name

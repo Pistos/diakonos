@@ -11,13 +11,13 @@ module Diakonos
       @name = name
     end
 
-    def == (other)
+    def ==(other)
       return false if other.nil?
 
       ( @buffer == other.buffer && @row == other.row && @col == other.col )
     end
 
-    def <=> (other)
+    def <=>(other)
       return nil if other.nil?
 
       comparison = ( $diakonos.buffer_to_number( @buffer ) <=> $diakonos.buffer_to_number( other.buffer ) )
@@ -29,11 +29,11 @@ module Diakonos
       @col <=> other.col
     end
 
-    def < (other)
+    def <(other)
       ( ( self <=> other ) < 0 )
     end
 
-    def > (other)
+    def >(other)
       ( ( self <=> other ) > 0 )
     end
 

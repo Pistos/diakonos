@@ -4,6 +4,7 @@ module Diakonos
 
   class TextMark
     attr_reader :formatting
+
     include RangeDelegator
 
     def initialize( range, formatting )

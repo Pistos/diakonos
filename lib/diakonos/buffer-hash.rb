@@ -5,11 +5,11 @@ class BufferHash < Hash
     @keys_ = []
   end
 
-  def [] ( key )
+  def []( key )
     super File.expand_path( key.to_s )
   end
 
-  def []= ( key, value )
+  def []=( key, value )
     key = File.expand_path( key.to_s )
     if ! @keys_.include?( key )
       @keys_ << key

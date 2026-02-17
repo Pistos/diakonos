@@ -311,7 +311,6 @@ module Diakonos
         end
 
       end
-
     end
 
     def refresh_all
