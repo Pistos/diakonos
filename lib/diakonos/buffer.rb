@@ -469,10 +469,8 @@ module Diakonos
     end
 
     def diagnostics_for_line(line:)
-      if @lsp_session && name
-        uri = "file://#{name}"
-
-        @lsp_session.diagnostics_for_line(uri:, line:)
+      if @lsp_session && lsp_uri
+        @lsp_session.diagnostics_for_line(uri: lsp_uri, line:)
       else
         []
       end
@@ -480,6 +478,12 @@ module Diakonos
 
     def current_column
       @last_col
+    end
+
+    def lsp_uri
+      if name
+        "file://#{name}"
+      end
     end
 
     def pan_view_to( left_column, do_display = DO_DISPLAY )

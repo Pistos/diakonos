@@ -319,7 +319,10 @@ module Diakonos
             command: lsp_command,
             working_directory: @session.dir,
           )
-          session = Lsp::Session.new(server:)
+          session = Lsp::Session.new(
+            on_diagnostics: method(:redisplay_if_current_buffer),
+            server:,
+          )
           @lsp_servers[language] = server
           @lsp_sessions[language] = session
           log("LSP: started server for #{language}: #{lsp_command}")
@@ -340,6 +343,12 @@ module Diakonos
     def process_async
       @lsp_sessions.each_value(&:process_queue)
       show_lsp_diagnostic_for_current_line
+    end
+
+    private def redisplay_if_current_buffer(uri:)
+      if uri == buffer_current&.lsp_uri
+        display_buffer(buffer_current)
+      end
     end
 
     private def show_lsp_diagnostic_for_current_line

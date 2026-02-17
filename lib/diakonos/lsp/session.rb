@@ -3,9 +3,10 @@ module Diakonos
     class Session
       INITIAL_VERSION = 1
 
-      def initialize(server:)
+      def initialize(on_diagnostics: nil, server:)
         @diagnostics = {}
         @document_versions = {}
+        @on_diagnostics = on_diagnostics
         @pending_requests = {}
         @server = server
       end
@@ -19,7 +20,7 @@ module Diakonos
       end
 
       def notify_did_change(buffer:)
-        uri = uri_for(buffer:)
+        uri = buffer.lsp_uri
         if @document_versions.key?(uri)
           @document_versions[uri] += 1
           send_notification(
@@ -38,7 +39,7 @@ module Diakonos
       end
 
       def notify_did_close(buffer:)
-        uri = uri_for(buffer:)
+        uri = buffer.lsp_uri
         if @document_versions.key?(uri)
           @document_versions.delete(uri)
           send_notification(
@@ -51,7 +52,7 @@ module Diakonos
       end
 
       def notify_did_open(buffer:)
-        uri = uri_for(buffer:)
+        uri = buffer.lsp_uri
         if uri
           @document_versions[uri] = INITIAL_VERSION
           send_notification(
@@ -131,6 +132,7 @@ module Diakonos
         if uri
           raw_diagnostics = params[:diagnostics] || []
           @diagnostics[uri] = raw_diagnostics.map { |data| Diagnostic.new(data:) }
+          @on_diagnostics&.call(uri:)
         end
       end
 
@@ -153,11 +155,6 @@ module Diakonos
         )
       end
 
-      private def uri_for(buffer:)
-        if buffer.name
-          "file://#{buffer.name}"
-        end
-      end
     end
   end
 end
