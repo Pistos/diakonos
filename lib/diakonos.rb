@@ -137,7 +137,7 @@ module Diakonos
       # generic
       s =~ /^(.+):(\d+)/
     )
-      [ $1, ( $2.to_i - 1 ) ]
+      [ ::Regexp.last_match(1), ( ::Regexp.last_match(2).to_i - 1 ) ]
     else
       [ s, nil ]
     end

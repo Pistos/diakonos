@@ -326,9 +326,9 @@ module Diakonos
       lines.each do |line|
         old_line = line.dup
         if line =~ /^(.+?)(#{delimiter.source})(.*)$/
-          pre = $1
-          del = $2
-          post = $3
+          pre = ::Regexp.last_match(1)
+          del = ::Regexp.last_match(2)
+          post = ::Regexp.last_match(3)
           if pre !~ /\s$/
             del = " #{del}"
           end

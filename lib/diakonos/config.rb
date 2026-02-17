@@ -181,7 +181,7 @@ module Diakonos
       config_file.each_line_with_index do |line, line_number|
         if line =~ /^\s*(\S+)\s*=\s*(\S+)\s*$/
           # Inheritance
-          command, arg = $1, @setting_strings[ $2 ]
+          command, arg = ::Regexp.last_match(1), @setting_strings[ ::Regexp.last_match(2) ]
         end
 
         if arg.nil?
@@ -205,7 +205,7 @@ module Diakonos
             parse_configuration_file conf_file
           end
         when /^lang\.(.+?)\.surround\.pair$/
-          language = $1
+          language = ::Regexp.last_match(1)
 
           args = arg.split( /"\s+"/ )
           args.map! do |s|
@@ -235,8 +235,8 @@ module Diakonos
         when /^lang\.(.+?)\.tokens\.([^.]+)\.close(\.case_insensitive)?$/
           get_token_regexp( @close_token_regexps, arg, Regexp.last_match )
         when /^lang\.(.+?)\.tokens\.(.+?)\.format$/
-          language = $1
-          token_class = $2
+          language = ::Regexp.last_match(1)
+          token_class = ::Regexp.last_match(2)
           @token_formats[ language ][ token_class ] = Display.to_formatting( arg )
         when /^lang\.(.+?)\.format\..+$/
           @settings[ command ] = Display.to_formatting( arg )
@@ -251,49 +251,49 @@ module Diakonos
             bg:,
           }
         when /^lang\.(.+?)\.indent\.indenters(\.case_insensitive)?$/
-          case_insensitive = ( $2 != nil )
+          case_insensitive = ( ::Regexp.last_match(2) != nil )
           if case_insensitive
-            @indenters[ $1 ] = Regexp.new( arg, Regexp::IGNORECASE )
+            @indenters[ ::Regexp.last_match(1) ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
-            @indenters[ $1 ] = Regexp.new arg
+            @indenters[ ::Regexp.last_match(1) ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.indenters_next_line(\.case_insensitive)?$/
-          case_insensitive = ( $2 != nil )
+          case_insensitive = ( ::Regexp.last_match(2) != nil )
           if case_insensitive
-            @indenters_next_line[ $1 ] = Regexp.new( arg, Regexp::IGNORECASE )
+            @indenters_next_line[ ::Regexp.last_match(1) ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
-            @indenters_next_line[ $1 ] = Regexp.new arg
+            @indenters_next_line[ ::Regexp.last_match(1) ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.unindenters(\.case_insensitive)?$/
-          case_insensitive = ( $2 != nil )
+          case_insensitive = ( ::Regexp.last_match(2) != nil )
           if case_insensitive
-            @unindenters[ $1 ] = Regexp.new( arg, Regexp::IGNORECASE )
+            @unindenters[ ::Regexp.last_match(1) ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
-            @unindenters[ $1 ] = Regexp.new arg
+            @unindenters[ ::Regexp.last_match(1) ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.(?:preventers|ignore|not_indented)(\.case_insensitive)?$/,
             /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
-          case_insensitive = ( $2 != nil )
+          case_insensitive = ( ::Regexp.last_match(2) != nil )
           if case_insensitive
             @settings[ command ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
             @settings[ command ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.triggers(\.case_insensitive)?$/
-          case_insensitive = ( $2 != nil )
+          case_insensitive = ( ::Regexp.last_match(2) != nil )
           if case_insensitive
-            @indent_triggers[$1] = Regexp.new( arg, Regexp::IGNORECASE )
+            @indent_triggers[::Regexp.last_match(1)] = Regexp.new( arg, Regexp::IGNORECASE )
           else
-            @indent_triggers[$1] = Regexp.new arg
+            @indent_triggers[::Regexp.last_match(1)] = Regexp.new arg
           end
         when /^lang\.(.+?)\.filemask$/
-          @filemasks[ $1 ] = Regexp.new arg
+          @filemasks[ ::Regexp.last_match(1) ] = Regexp.new arg
         when /^lang\.(.+?)\.bangmask$/
-          @bangmasks[ $1 ] = Regexp.new arg
+          @bangmasks[ ::Regexp.last_match(1) ] = Regexp.new arg
         when /^lang\.(.+?)\.closers\.(.+?)\.(.+?)$/
-          @closers[ $1 ] ||= Hash.new
-          @closers[ $1 ][ $2 ] ||= Hash.new
-          @closers[ $1 ][ $2 ][ $3.to_sym ] = case $3
+          @closers[ ::Regexp.last_match(1) ] ||= Hash.new
+          @closers[ ::Regexp.last_match(1) ][ ::Regexp.last_match(2) ] ||= Hash.new
+          @closers[ ::Regexp.last_match(1) ][ ::Regexp.last_match(2) ][ ::Regexp.last_match(3).to_sym ] = case ::Regexp.last_match(3)
           when 'regexp'
             Regexp.new arg
           when 'closer'
@@ -321,7 +321,7 @@ module Diakonos
             'view.non_search_area.format'
           @settings[ command ] = Display.to_formatting( arg )
         when /view\.column_markers\.(.+?)\.format/
-          @column_markers[ $1 ][ :format ] = Display.to_formatting( arg )
+          @column_markers[ ::Regexp.last_match(1) ][ :format ] = Display.to_formatting( arg )
         when "logfile"
           @logfilename = File.expand_path( arg )
         when "context.separator", /^lang\..+?\.indent\.ignore\.charset$/,
@@ -349,7 +349,7 @@ module Diakonos
         when "view.jump.x", "view.jump.y"
           @settings[ command ] = [ arg.to_i, 1 ].max
         when /view\.column_markers\.(.+?)\.column/
-          @column_markers[ $1 ][ :column ] = [ arg.to_i, 1 ].max
+          @column_markers[ ::Regexp.last_match(1) ][ :column ] = [ arg.to_i, 1 ].max
         when "bol_behaviour", "bol_behavior"
           case arg.downcase
           when "zero"

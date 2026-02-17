@@ -256,7 +256,7 @@ module Diakonos
           # Substitute placeholders (e.g. \1) in str for the group matches of the last match.
           actual_replacement = replacement.dup
           actual_replacement.gsub!( /\\(\\|\d+)/ ) do |m|
-            ref = $1
+            ref = ::Regexp.last_match(1)
             if ref == "\\"
               "\\"
             else

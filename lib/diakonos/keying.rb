@@ -90,17 +90,17 @@ module Diakonos
       when "suspend"
         Curses::KEY_SUSPEND
       when /^f(\d\d?)$/
-        Curses::KEY_F0 + $1.to_i
+        Curses::KEY_F0 + ::Regexp.last_match(1).to_i
       when /^ctrl\+[a-gi-z]$/
         str.downcase[ -1 ].ord - 96
       when /^ctrl\+h$/
         ::Diakonos::CTRL_H
       when /^alt\+(.)$/
-        [ ::Diakonos::ESCAPE, $1[ 0 ].ord ]
+        [ ::Diakonos::ESCAPE, ::Regexp.last_match(1)[ 0 ].ord ]
       when /^ctrl\+alt\+(.)$/, /^alt\+ctrl\+(.)$/
         [ ::Diakonos::ESCAPE, str.downcase[ -1 ].ord - 96 ]
       when /^keycode(\d+)$/
-        $1.to_i
+        ::Regexp.last_match(1).to_i
       when /^.$/
         str[ 0 ].ord
       end

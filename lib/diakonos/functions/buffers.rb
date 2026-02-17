@@ -144,7 +144,7 @@ module Diakonos
       if buffer
         switch_to buffer
       elsif filename =~ /\(unnamed buffer( \d+)?/
-        switch_to( buffers_unnamed[ $1.to_i - 1 ] )
+        switch_to( buffers_unnamed[ ::Regexp.last_match(1).to_i - 1 ] )
       end
     end
 
@@ -182,7 +182,7 @@ module Diakonos
         filename, last_row_ = ::Diakonos.parse_filename_and_line_number( filename )
         last_row = last_row_ || last_row
         if filename =~ /\(unnamed buffer (\d+)\)/
-          existing_buffer = @buffers.find { |b| b.object_id == $1.to_i }
+          existing_buffer = @buffers.find { |b| b.object_id == ::Regexp.last_match(1).to_i }
           filename = nil
           do_open = false
         else
@@ -296,7 +296,7 @@ module Diakonos
 
       if buffer_current
         if buffer_current.current_line =~ %r#(/\w+)+/\w+\.\w+#
-          prefill = $&
+          prefill = ::Regexp.last_match(0)
         elsif buffer_current.name
           prefill = File.expand_path( File.dirname( buffer_current.name ) ) + "/"
         end
@@ -350,7 +350,7 @@ module Diakonos
       return  if regexp.nil?
 
       if buffer_current.current_line =~ %r{\w*/[/\w.]+}
-        prefill = $&
+        prefill = ::Regexp.last_match(0)
       else
         prefill = File.expand_path( File.dirname( buffer_current.name ) ) + "/"
       end

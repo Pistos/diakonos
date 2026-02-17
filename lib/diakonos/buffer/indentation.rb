@@ -19,8 +19,8 @@ module Diakonos
       cursor_eol = opts.fetch( :cursor_eol, false )
 
       @lines[ row ] =~ /^([\s#{@indent_ignore_charset}]*)(.*)$/
-      current_indent_text = ( $1 || "" )
-      rest = ( $2 || "" )
+      current_indent_text = ( ::Regexp.last_match(1) || "" )
+      rest = ( ::Regexp.last_match(2) || "" )
       current_indent_text.gsub!( /\t/, ' ' * @tab_size )
       indentation = @indent_size * [ level, 0 ].max
       if current_indent_text.length >= indentation
@@ -55,7 +55,7 @@ module Diakonos
         if line =~ /^[\s#{@indent_ignore_charset}]*$/ || line == ""
           level = 0
         elsif line =~ /^([\s#{@indent_ignore_charset}]+)[^\s#{@indent_ignore_charset}]/
-          whitespace = $1.expand_tabs( @tab_size )
+          whitespace = ::Regexp.last_match(1).expand_tabs( @tab_size )
           level = whitespace.length / @indent_size
           if @indent_roundup && ( whitespace.length % @indent_size > 0 )
             level += 1
@@ -66,7 +66,7 @@ module Diakonos
       else
         level = 0
         if line =~ /^([\s]+)/
-          whitespace = $1.expand_tabs( @tab_size )
+          whitespace = ::Regexp.last_match(1).expand_tabs( @tab_size )
           level = whitespace.length / @indent_size
           if @indent_roundup && ( whitespace.length % @indent_size > 0 )
             level += 1

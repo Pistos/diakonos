@@ -18,7 +18,7 @@ module Diakonos
       docs = []
 
       if str =~ %r{^/(.+)$}
-        regexp = $1
+        regexp = ::Regexp.last_match(1)
         files = Dir[ "#{@help_dir}/*" ].select{ |f|
           File.open( f ) { |io| io.grep( /#{regexp}/i ) }.any?
         }

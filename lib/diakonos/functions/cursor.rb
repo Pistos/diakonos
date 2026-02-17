@@ -203,7 +203,7 @@ module Diakonos
         col = 0
 
         if input =~ /([+-]\d+)/
-          row = buffer_current.last_row + $1.to_i
+          row = buffer_current.last_row + ::Regexp.last_match(1).to_i
           col = buffer_current.last_col
         else
           input = input.split( /\D+/ ).collect { |n| n.to_i }

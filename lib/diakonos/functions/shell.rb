@@ -27,16 +27,16 @@ module Diakonos
       retval = string.dup
 
       # Current buffer filename
-      retval.gsub!( /\$f/, ( $1 || "" ) + File.expand_path( buffer_current.name || "" ) )
+      retval.gsub!( /\$f/, ( ::Regexp.last_match(1) || "" ) + File.expand_path( buffer_current.name || "" ) )
       # Current buffer dir
-      retval.gsub!( /\$d/, ( $1 || "" ) + File.dirname( File.expand_path( buffer_current.name || '' ) ) )
+      retval.gsub!( /\$d/, ( ::Regexp.last_match(1) || "" ) + File.dirname( File.expand_path( buffer_current.name || '' ) ) )
 
       # space-separated list of all buffer filenames
       name_array = Array.new
       @buffers.each do |b|
         name_array.push b.name
       end
-      retval.gsub!( /\$F/, ( $1 || "" ) + ( name_array.join(' ') || "" ) )
+      retval.gsub!( /\$F/, ( ::Regexp.last_match(1) || "" ) + ( name_array.join(' ') || "" ) )
 
       # Get user input, sub it in
       if retval =~ /\$i/
