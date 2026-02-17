@@ -416,7 +416,7 @@ module Diakonos
       if @post_load_script
         begin
           eval @post_load_script  # rubocop:disable Security/Eval
-        rescue Exception => e
+        rescue StandardError => e
           show_exception(
             e,
             [ "There is an error in the post-load script:\n#{@post_load_script}" ]
@@ -486,7 +486,7 @@ module Diakonos
       scripts = @extensions.scripts + Dir[ "#{@script_dir}/*" ]
       scripts.each do |script|
         require script
-      rescue Exception => e
+      rescue StandardError => e
         show_exception(
           e,
           [
@@ -569,7 +569,7 @@ module Diakonos
         f.puts exception.backtrace
       end
       open_file @error_filename
-    rescue Exception => e2
+    rescue StandardError => e2
       debug_log "EXCEPTION: #{e2.message}"
       debug_log "\t#{e2.backtrace}"
     end

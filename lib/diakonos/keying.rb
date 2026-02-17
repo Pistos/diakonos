@@ -383,7 +383,7 @@ module Diakonos
             if ! @there_was_non_movement
               @there_was_non_movement = !( /^((cursor|page|scroll)_?(up|down|left|right)|find|seek)/i === to_eval )
             end
-          rescue Exception => e
+          rescue StandardError => e
             debug_log e.message
             debug_log e.backtrace.join( "\n\t" )
             show_exception e

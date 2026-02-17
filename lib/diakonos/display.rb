@@ -299,7 +299,7 @@ module Diakonos
             Curses.curs_set 0
             buffer.display
             Curses.curs_set 1
-          rescue Exception => e
+          rescue StandardError => e
             $diakonos.log( "Display Exception:" )
             $diakonos.log( e.message )
             $diakonos.log( e.backtrace.join( "\n" ) )

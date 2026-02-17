@@ -312,7 +312,7 @@ module Diakonos
                 else
                   arg
                 end
-              rescue Exception => e
+              rescue StandardError => e
                 show_exception(
                   e,
                   [ "Failed to process Proc for #{command}." ]

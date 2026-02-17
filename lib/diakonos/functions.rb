@@ -91,7 +91,7 @@ module Diakonos
       if code
         begin
           eval code  # rubocop:disable Security/Eval
-        rescue Exception => e
+        rescue StandardError => e
           show_exception(
             e,
             [
@@ -173,7 +173,7 @@ module Diakonos
         thread = Thread.new( name ) do |f|
           begin
             load( f )
-          rescue Exception => e
+          rescue StandardError => e
             show_exception(
               e,
               [

@@ -208,7 +208,7 @@ module Diakonos
 
       begin
         buffer_current.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
-      rescue Exception => e
+      rescue StandardError => e
         debug_log e.message
         debug_log e.backtrace.join( "\n\t" )
         show_exception e
