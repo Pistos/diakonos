@@ -280,7 +280,7 @@ module Diakonos
             end
           when Proc
             h[ :closer ].call( lm ).to_s
-          end
+                end
           r, c = @last_row, @last_col
           paste str, !TYPING, @indent_closers
           cursor_to r, c

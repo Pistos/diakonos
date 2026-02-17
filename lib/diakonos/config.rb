@@ -308,7 +308,7 @@ module Diakonos
                 [ "Failed to process Proc for #{command}." ]
               )
             end
-          end
+                                                                                                          end
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
             /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
             "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',

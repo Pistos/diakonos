@@ -103,7 +103,7 @@ module Diakonos
         ::Regexp.last_match(1).to_i
       when /^.$/
         str[ 0 ].ord
-      end
+               end
       Array( retval )
     end
 
@@ -155,7 +155,7 @@ module Diakonos
           "resize"
         when RESIZE2
           "resize2"
-        end
+                 end
       end
       if retval.nil? && num.class == Integer
         retval = "keycode#{num}"

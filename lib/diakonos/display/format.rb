@@ -64,7 +64,7 @@ module Diakonos
             Curses::A_BOLD
           else
             0
-          end
+                        end
         end
       end
 
