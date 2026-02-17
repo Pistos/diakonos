@@ -362,8 +362,8 @@ module Diakonos
       files = `egrep -rl '#{regexp.gsub( /'/, "'\\\\''" )}' #{search_root}/*`.split( /\n/ )
       if files.any?
         if files.size > 5
-            choice = get_choice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
-            return  if choice == CHOICE_NO
+          choice = get_choice( "Open #{files.size} files?", [ CHOICE_YES, CHOICE_NO ] )
+          return  if choice == CHOICE_NO
         end
         files.each do |f|
           open_file f
