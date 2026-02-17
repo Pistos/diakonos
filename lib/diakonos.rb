@@ -12,7 +12,6 @@
 # http://www.opensource.org/licenses/mit-license.php
 #
 require 'open3'
-require 'thread'
 require 'English'
 require 'set'
 require 'yaml'
@@ -553,12 +552,12 @@ module Diakonos
       nil
     end
 
-    def show_exception( e, probable_causes = [ "Unknown" ] )
+    def show_exception(exception, probable_causes = ["Unknown"])
       begin
         File.open( @error_filename, "w" ) do |f|
           f.puts "Diakonos Error:"
           f.puts
-          f.puts "#{e.class}: #{e.message}"
+          f.puts "#{exception.class}: #{exception.message}"
           f.puts
           f.puts "Probable Causes:"
           f.puts
@@ -570,7 +569,7 @@ module Diakonos
           f.puts "If you can reproduce this error, please report it at"
           f.puts "https://github.com/Pistos/diakonos/issues !"
           f.puts "----------------------------------------------------"
-          f.puts e.backtrace
+          f.puts exception.backtrace
         end
         open_file @error_filename
       rescue Exception => e2

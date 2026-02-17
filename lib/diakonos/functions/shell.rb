@@ -99,7 +99,7 @@ module Diakonos
 
       completed = false
       result_file = "#{@diakonos_home}/#{result_filename}"
-      File.open( result_file , "w" ) do |f|
+      File.open( result_file, "w" ) do |f|
         Curses.close_screen
 
         _, stdout, stderr = Open3.popen3( command )

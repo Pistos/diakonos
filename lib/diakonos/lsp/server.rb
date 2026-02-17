@@ -1,4 +1,3 @@
-require 'thread'
 
 require 'diakonos/lsp/transport'
 

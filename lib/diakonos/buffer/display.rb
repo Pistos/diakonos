@@ -340,7 +340,7 @@ module Diakonos
       paint_column_markers
 
       @win_line_numbers&.refresh
-      @win_main.setpos( @last_screen_y , @last_screen_x )
+      @win_main.setpos( @last_screen_y, @last_screen_x )
       @win_main.refresh
 
       if @language != @original_language

@@ -135,9 +135,9 @@ module Diakonos
       @win_line_numbers = $diakonos.win_line_numbers
     end
 
-    def set_language( language )
+    def set_language( _language )
       @settings = $diakonos.settings
-      @language = language
+      @language = _language
       @surround_pairs = $diakonos.surround_pairs[ @language ]
       @token_regexps = $diakonos.token_regexps[ @language ]
       @close_token_regexps = $diakonos.close_token_regexps[ @language ]
