@@ -34,37 +34,37 @@ module Diakonos
           formatting = Curses::A_NORMAL
         else
           formatting |= case format.downcase
-                        when "black", "0"
+          when "black", "0"
             Curses.color_pair( Curses::COLOR_BLACK )
-                        when "red", "1"
+          when "red", "1"
             Curses.color_pair( Curses::COLOR_RED )
-                        when "green", "2"
+          when "green", "2"
             Curses.color_pair( Curses::COLOR_GREEN )
-                        when "yellow", "brown", "3"
+          when "yellow", "brown", "3"
             Curses.color_pair( Curses::COLOR_YELLOW )
-                        when "blue", "4"
+          when "blue", "4"
             Curses.color_pair( Curses::COLOR_BLUE )
-                        when "magenta", "purple", "5"
+          when "magenta", "purple", "5"
             Curses.color_pair( Curses::COLOR_MAGENTA )
-                        when "cyan", "6"
+          when "cyan", "6"
             Curses.color_pair( Curses::COLOR_CYAN )
-                        when "white", "7"
+          when "white", "7"
             Curses.color_pair( Curses::COLOR_WHITE )
-                        when "standout", "s", "so"
+          when "standout", "s", "so"
             Curses::A_STANDOUT
-                        when "underline", "u", "un", "ul"
+          when "underline", "u", "un", "ul"
             Curses::A_UNDERLINE
-                        when "reverse", "r", "rev", "inverse", "i", "inv"
+          when "reverse", "r", "rev", "inverse", "i", "inv"
             Curses::A_REVERSE
-                        when "blink", "bl", "blinking"
+          when "blink", "bl", "blinking"
             Curses::A_BLINK
-                        when "dim", "d"
+          when "dim", "d"
             Curses::A_DIM
-                        when "bold", "b", "bo"
+          when "bold", "b", "bo"
             Curses::A_BOLD
           else
             0
-                        end
+          end
         end
       end
 

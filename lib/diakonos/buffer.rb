@@ -269,7 +269,7 @@ module Diakonos
         lm = Regexp.last_match
         if lm
           str = case h[ :closer ]
-                when String
+          when String
             if lm[ 1 ].nil?
               h[ :closer ]
             else
@@ -278,9 +278,9 @@ module Diakonos
                 h[ :closer ]
               )
             end
-                when Proc
+          when Proc
             h[ :closer ].call( lm ).to_s
-                end
+          end
           r, c = @last_row, @last_col
           paste str, !TYPING, @indent_closers
           cursor_to r, c

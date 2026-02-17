@@ -292,23 +292,25 @@ module Diakonos
         when /^lang\.(.+?)\.closers\.(.+?)\.(.+?)$/
           @closers[ ::Regexp.last_match(1) ] ||= Hash.new
           @closers[ ::Regexp.last_match(1) ][ ::Regexp.last_match(2) ] ||= Hash.new
-          @closers[ ::Regexp.last_match(1) ][ ::Regexp.last_match(2) ][ ::Regexp.last_match(3).to_sym ] = case ::Regexp.last_match(3)
-                                                                                                          when 'regexp'
-            Regexp.new arg
-                                                                                                          when 'closer'
-            begin
-              if arg =~ /^\{.+\}$/
-                eval( "Proc.new " + arg )
-              else
-                arg
+          @closers[ ::Regexp.last_match(1) ][ ::Regexp.last_match(2) ][ ::Regexp.last_match(3).to_sym ] = (
+            case ::Regexp.last_match(3)
+            when 'regexp'
+              Regexp.new arg
+            when 'closer'
+              begin
+                if arg =~ /^\{.+\}$/
+                  eval( "Proc.new " + arg )
+                else
+                  arg
+                end
+              rescue Exception => e
+                show_exception(
+                  e,
+                  [ "Failed to process Proc for #{command}." ]
+                )
               end
-            rescue Exception => e
-              show_exception(
-                e,
-                [ "Failed to process Proc for #{command}." ]
-              )
             end
-                                                                                                          end
+          )
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
             /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
             "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
