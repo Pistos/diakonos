@@ -569,9 +569,9 @@ module Diakonos
         f.puts exception.backtrace
       end
       open_file @error_filename
-    rescue StandardError => e2
-      debug_log "EXCEPTION: #{e2.message}"
-      debug_log "\t#{e2.backtrace}"
+    rescue StandardError => e
+      debug_log "EXCEPTION: #{e.message}"
+      debug_log "\t#{e.backtrace}"
     end
 
     def start_recording_macro( name = nil )
