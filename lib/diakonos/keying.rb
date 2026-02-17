@@ -413,17 +413,17 @@ module Diakonos
         if ! @readline.numbered_list?
           @readline.paste c
         elsif (
-            showing_list? &&
-            ( (48..57).include?( c.ord ) || (97..122).include?( c.ord ) )
-          )
+          showing_list? &&
+          ( (48..57).include?( c.ord ) || (97..122).include?( c.ord ) )
+        )
           line = list_buffer.to_a.select { |l|
-              l =~ /^#{c}  /
-            }[ 0 ]
+            l =~ /^#{c}  /
+          }[ 0 ]
 
-            if line
-              @readline.list_sync line
-              @readline.finish
-            end
+          if line
+            @readline.list_sync line
+            @readline.finish
+          end
         end
       end
     end
