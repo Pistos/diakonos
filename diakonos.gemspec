@@ -1,5 +1,7 @@
 Gem::Specification.new do |s|
   s.add_runtime_dependency "curses", "1.5.3"
+  s.add_runtime_dependency "language_server-protocol", "3.17.0.5"
+
   s.authors     = ["Pistos"]
   s.bindir      = "bin"
   s.description = "Diakonos is a console text editor for the masses."
@@ -24,7 +26,7 @@ Gem::Specification.new do |s|
     "source_code_uri" => "https://git.sr.ht/~pistos/diakonos",
   }
   s.name        = "diakonos"
-  s.required_ruby_version = ">= 2.6", "< 4"
+  s.required_ruby_version = ">= 3.1", "< 4"
   s.summary     = "Console text editor for the masses"
   s.version     = "0.10.0"
 end
