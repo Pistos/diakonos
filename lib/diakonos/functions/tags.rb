@@ -29,9 +29,9 @@ module Diakonos
         end
         @last_tag = tag
         @tag_stack.push [ buffer_current.name, buffer_current.last_row, buffer_current.last_col ]
-        if switch_to( @buffers.find { |b| b.name == tag.file } )
-          #buffer_current.go_to_line( 0 )
-        else
+        if ! switch_to(
+          @buffers.find { |b| b.name == tag.file }
+        )
           open_file tag.file
         end
         line_number = tag.command.to_i

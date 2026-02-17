@@ -67,7 +67,7 @@ module Diakonos
       @filemasks           = Hash.new
       @bangmasks           = Hash.new
       @closers             = Hash.new
-      @surround_pairs      = Hash.new { |h,k| h[ k ] = Hash.new}
+      @surround_pairs      = Hash.new { |h,k| h[ k ] = Hash.new }
       @fuzzy_ignores       = Array.new
 
       @settings = Hash.new

@@ -105,7 +105,7 @@ module Diakonos
         else
           col = 0
         end
-        #when BOL_ALT_FIRST_CHAR
+      # when BOL_ALT_FIRST_CHAR
       else
         first_char_col = ( ( @lines[ row ] =~ /\S/ ) || 0 )
         if @last_col == first_char_col

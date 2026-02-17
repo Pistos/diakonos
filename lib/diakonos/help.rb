@@ -19,7 +19,7 @@ module Diakonos
 
       if str =~ %r{^/(.+)$}
         regexp = ::Regexp.last_match(1)
-        files = Dir[ "#{@help_dir}/*" ].select{ |f|
+        files = Dir[ "#{@help_dir}/*" ].select { |f|
           File.open( f ) { |io| io.grep( /#{regexp}/i ) }.any?
         }
       else
