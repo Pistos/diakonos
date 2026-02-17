@@ -86,6 +86,7 @@ module Diakonos
       @session.settings['grep.context'] = current + 1
       merge_session_settings
     end
+
     def decrease_grep_context
       current = settings['grep.context']
       if current > 0

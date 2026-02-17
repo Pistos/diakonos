@@ -11,7 +11,6 @@ module Diakonos
       buffer_current.collapse_whitespace
     end
 
-
     def columnize( delimiter = nil, num_spaces_padding = 0 )
       delimiter ||= get_user_input(
         "Column delimiter (regexp): ",

@@ -146,6 +146,7 @@ module Diakonos
     def cursor_to_tov
       cursor_to( row_of( 0 ), @last_col, DO_DISPLAY )
     end
+
     # Bottom of view
     def cursor_to_bov
       cursor_to( row_of( 0 + $diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )

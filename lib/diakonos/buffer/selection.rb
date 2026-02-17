@@ -255,6 +255,7 @@ module Diakonos
     def selection_mode_block
       @selection_mode = :block
     end
+
     def selection_mode_normal
       @selection_mode = :normal
     end

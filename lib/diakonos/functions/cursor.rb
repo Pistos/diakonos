@@ -140,15 +140,18 @@ module Diakonos
     def go_block_outer
       buffer_current.go_block_outer
     end
+
     # Moves the cursor to the beginning of the first child code block.
     def go_block_inner
       buffer_current.go_block_inner
     end
+
     # Moves the cursor to the beginning of the next code block at the same
     # indentation level as the current one.
     def go_block_next
       buffer_current.go_block_next
     end
+
     # Moves the cursor to the beginning of the previous code block at the same
     # indentation level as the current one.
     def go_block_previous
