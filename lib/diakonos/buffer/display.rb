@@ -12,7 +12,8 @@ module Diakonos
       match = nil
       match_text = nil
       @token_regexps.each do |token_class,regexp|
-        if match = regexp.match( line )
+        match = regexp.match(line)
+        if match
           if match.length > 1
             index = match.begin 1
             match_text = match[ 1 ]
@@ -21,6 +22,7 @@ module Diakonos
             whole_match_index = index = match.begin( 0 )
             match_text = match[ 0 ]
           end
+
           if ( ! regexp.uses_bos ) || ( bos_allowed && ( whole_match_index == 0 ) )
             if index < open_index
               if ( ( ! match_close ) || @close_token_regexps[ token_class ] )
@@ -236,10 +238,13 @@ module Diakonos
               print_string truncate_off_screen( substr[ 0...first_index ], i )
               i += substr[ 0...first_index ].length
             end
+
             print_string( truncate_off_screen( first_word, i ), @token_formats[ first_token_class ] )
             i += first_word.length
-            if @close_token_regexps[ first_token_class ]
-              if change_to = @settings[ "lang.#{@language}.tokens.#{first_token_class}.change_to" ]
+
+            if @close_token_regexps[first_token_class]
+              change_to = @settings["lang.#{@language}.tokens.#{first_token_class}.change_to"]
+              if change_to
                 @lang_stack.push [ @language, first_token_class ]
                 set_language change_to
               else

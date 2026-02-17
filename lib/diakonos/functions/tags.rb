@@ -21,12 +21,14 @@ module Diakonos
       end
 
       tag_array = @tags[ tag_name ]
-      if tag_array && tag_array.length > 0
-        if i = tag_array.index( @last_tag )
+      if tag_array&.empty?
+        i = tag_array.index(@last_tag)
+        if i
           tag = ( tag_array[ i + 1 ] || tag_array[ 0 ] )
         else
           tag = tag_array[ 0 ]
         end
+
         @last_tag = tag
         @tag_stack.push [ buffer_current.name, buffer_current.last_row, buffer_current.last_col ]
         if ! switch_to(

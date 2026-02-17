@@ -121,10 +121,9 @@ module Diakonos
         index_col = 0
       end
 
-      if index = @lines[ from_row ].index( regexp, index_col )
-        if index <= ( @last_finding ? @last_finding.start_col : from_col )
-          confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
-        end
+      index = @lines[from_row].index(regexp, index_col)
+      if index && index <= (@last_finding ? @last_finding.start_col : from_col)
+        confirm_finding( regexps, search_area, from_row, index, Regexp.last_match )
       end
     end
 
@@ -140,8 +139,10 @@ module Diakonos
       # Check above the cursor.
 
       (from_row - 1).downto( 0 ) do |i|
-        if index = @lines[ i ].rindex( regexp )
+        index = @lines[i].rindex(regexp)
+        if index
           finding = confirm_finding( regexps, search_area, i, index, Regexp.last_match )
+
           return finding  if finding
         end
       end
@@ -151,8 +152,10 @@ module Diakonos
       @wrapped = true
 
       (@lines.length - 1).downto(from_row + 1) do |i|
-        if index = @lines[ i ].rindex( regexp )
+        index = @lines[i].rindex(regexp)
+        if index
           finding = confirm_finding( regexps, search_area, i, index, Regexp.last_match )
+
           return finding  if finding
         end
       end
