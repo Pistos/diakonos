@@ -103,7 +103,7 @@ module Diakonos
         @view_y = @input_cursor
       end
 
-      diff = ( @input_cursor - @view_y ) + 1 - ( Curses::cols - @start_pos )
+      diff = ( @input_cursor - @view_y ) + 1 - ( Curses.cols - @start_pos )
       if diff > 0
         @view_y += diff
       end
@@ -120,14 +120,14 @@ module Diakonos
     end
 
     def redraw_input
-      input = @input[ @view_y...(@view_y + Curses::cols) ]
+      input = @input[ @view_y...(@view_y + Curses.cols) ]
 
       curx = @window.curx
       cury = @window.cury
       @window.setpos( @icury, @icurx )
-      @window.addstr "%-#{ Curses::cols - curx }s%s" % [
+      @window.addstr "%-#{ Curses.cols - curx }s%s" % [
         input,
-        " " * [ ( Curses::cols - input.length ), 0 ].max
+        " " * [ ( Curses.cols - input.length ), 0 ].max
       ]
       @window.setpos( cury, curx )
       @window.refresh

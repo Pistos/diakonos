@@ -76,11 +76,11 @@ module Diakonos
       return 0  if $diakonos.readline
 
       @iline = string
-      Curses::curs_set 0
+      Curses.curs_set 0
       @win_interaction.setpos( 0, 0 )
-      @win_interaction.addstr( "%-#{Curses::cols}s" % @iline )
+      @win_interaction.addstr( "%-#{Curses.cols}s" % @iline )
       @win_interaction.refresh
-      Curses::curs_set 1
+      Curses.curs_set 1
       string.length
     end
 

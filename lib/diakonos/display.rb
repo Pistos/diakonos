@@ -16,51 +16,51 @@ module Diakonos
       @win_context.close       if @win_context
       @win_line_numbers.close  if @win_line_numbers
 
-      Curses::close_screen
+      Curses.close_screen
     end
 
     def initialize_display
       if ! @testing
         cleanup_display
 
-        Curses::init_screen
-        Curses::nonl
-        Curses::raw
-        Curses::noecho
+        Curses.init_screen
+        Curses.nonl
+        Curses.raw
+        Curses.noecho
         if @settings['mouse']
-          Curses::mousemask(Curses::ALL_MOUSE_EVENTS)
+          Curses.mousemask(Curses::ALL_MOUSE_EVENTS)
         end
 
-        if Curses::has_colors?
-          Curses::start_color
-          Curses::use_default_colors
+        if Curses.has_colors?
+          Curses.start_color
+          Curses.use_default_colors
 
           # -1 means use the terminal's current/default background, which may even have some transparency
           background_colour = settings['colour.background'] || -1
-          Curses::init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, background_colour )
-          Curses::init_pair( Curses::COLOR_RED, Curses::COLOR_RED, background_colour )
-          Curses::init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, background_colour )
-          Curses::init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, background_colour )
-          Curses::init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, background_colour )
-          Curses::init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, background_colour )
-          Curses::init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, background_colour )
-          Curses::init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, background_colour )
+          Curses.init_pair( Curses::COLOR_BLACK, Curses::COLOR_BLACK, background_colour )
+          Curses.init_pair( Curses::COLOR_RED, Curses::COLOR_RED, background_colour )
+          Curses.init_pair( Curses::COLOR_GREEN, Curses::COLOR_GREEN, background_colour )
+          Curses.init_pair( Curses::COLOR_YELLOW, Curses::COLOR_YELLOW, background_colour )
+          Curses.init_pair( Curses::COLOR_BLUE, Curses::COLOR_BLUE, background_colour )
+          Curses.init_pair( Curses::COLOR_MAGENTA, Curses::COLOR_MAGENTA, background_colour )
+          Curses.init_pair( Curses::COLOR_CYAN, Curses::COLOR_CYAN, background_colour )
+          Curses.init_pair( Curses::COLOR_WHITE, Curses::COLOR_WHITE, background_colour )
           @colour_pairs.each do |cp|
-            Curses::init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
+            Curses.init_pair( cp[ :number ], cp[ :fg ], cp[ :bg ] )
           end
         end
       end
 
       if settings[ 'view.line_numbers' ]
         @win_line_numbers = ::Diakonos::Window.new( main_window_height, settings[ 'view.line_numbers.width' ], 0, 0 )
-        @win_main = ::Diakonos::Window.new( main_window_height, Curses::cols - settings[ 'view.line_numbers.width' ], 0, settings[ 'view.line_numbers.width' ] )
+        @win_main = ::Diakonos::Window.new( main_window_height, Curses.cols - settings[ 'view.line_numbers.width' ], 0, settings[ 'view.line_numbers.width' ] )
       else
-        @win_main = ::Diakonos::Window.new( main_window_height, Curses::cols, 0, 0 )
+        @win_main = ::Diakonos::Window.new( main_window_height, Curses.cols, 0, 0 )
         @win_line_numbers = nil
       end
-      @win_status = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 2, 0 )
+      @win_status = ::Diakonos::Window.new( 1, Curses.cols, Curses.lines - 2, 0 )
       @win_status.attrset @settings[ 'status.format' ]
-      @win_interaction = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - 1, 0 )
+      @win_interaction = ::Diakonos::Window.new( 1, Curses.cols, Curses.lines - 1, 0 )
 
       @interaction_handler = InteractionHandler.new(
         win_main: @win_main,
@@ -78,7 +78,7 @@ module Diakonos
         else
           pos = 3
         end
-        @win_context = ::Diakonos::Window.new( 1, Curses::cols, Curses::lines - pos, 0 )
+        @win_context = ::Diakonos::Window.new( 1, Curses.cols, Curses.lines - pos, 0 )
       else
         @win_context = nil
       end
@@ -127,7 +127,7 @@ module Diakonos
       # One line for the status line
       # One line for the input line
       # One line for the context line
-      retval = Curses::lines - 2
+      retval = Curses.lines - 2
       if @settings['context.visible'] && ! @settings['context.combined']
         retval = retval - 1
       end
@@ -135,7 +135,7 @@ module Diakonos
     end
 
     def main_window_width
-      Curses::cols
+      Curses.cols
     end
 
     def set_iline(s = "")
@@ -207,7 +207,7 @@ module Diakonos
         status_left = status_left % var_array[ 0...field_count ]
         status_right = @settings[ "status.right" ] % var_array[ field_count..-1 ]
         filler_string = @settings[ "status.filler" ]
-        fill_amount = (Curses::cols - status_left.length - status_right.length) / filler_string.length
+        fill_amount = (Curses.cols - status_left.length - status_right.length) / filler_string.length
         if fill_amount > 0
           filler = filler_string * fill_amount
         else
@@ -218,7 +218,7 @@ module Diakonos
         debug_log e
         debug_log e.backtrace[ 0 ]
         debug_log "var_array: #{var_array.inspect}"
-        str = "%-#{Curses::cols}s" % "(status line configuration error)"
+        str = "%-#{Curses.cols}s" % "(status line configuration error)"
       end
       str
     end
@@ -228,14 +228,14 @@ module Diakonos
       return  if @testing
 
       str = build_status_line
-      if str.length > Curses::cols
-        str = build_status_line( str.length - Curses::cols )
+      if str.length > Curses.cols
+        str = build_status_line( str.length - Curses.cols )
       end
-      Curses::curs_set 0
+      Curses.curs_set 0
       @win_status.setpos( 0, 0 )
       @win_status.addstr str
       @win_status.refresh
-      Curses::curs_set 1
+      Curses.curs_set 1
     end
 
     def update_context_line
@@ -246,14 +246,14 @@ module Diakonos
       @context_thread = Thread.new do
         context = buffer_current.context
 
-        Curses::curs_set 0
+        Curses.curs_set 0
         @win_context.setpos( 0, 0 )
         chars_printed = 0
         if context.length > 0
           truncation = [ @settings[ "context.max_levels" ], context.length ].min
           max_length = [
-            ( Curses::cols / truncation ) - @settings[ "context.separator" ].length,
-            ( @settings[ "context.max_segment_width" ] || Curses::cols )
+            ( Curses.cols / truncation ) - @settings[ "context.separator" ].length,
+            ( @settings[ "context.max_segment_width" ] || Curses.cols )
           ].min
           line = nil
           context_subset = context[ 0...truncation ]
@@ -273,14 +273,14 @@ module Diakonos
 
         @context_line_mutex.synchronize do
           @win_context.attrset @settings[ "context.format" ]
-          @win_context.addstr( " " * ( Curses::cols - chars_printed ) )
+          @win_context.addstr( " " * ( Curses.cols - chars_printed ) )
           @win_context.refresh
         end
         @display_mutex.synchronize do
           @win_main.setpos( buffer_current.last_screen_y, buffer_current.last_screen_x )
           @win_main.refresh
         end
-        Curses::curs_set 1
+        Curses.curs_set 1
       end
 
       @context_thread.priority = -2
@@ -298,9 +298,9 @@ module Diakonos
           end
         else
           begin
-            Curses::curs_set 0
+            Curses.curs_set 0
             buffer.display
-            Curses::curs_set 1
+            Curses.curs_set 1
           rescue Exception => e
             $diakonos.log( "Display Exception:" )
             $diakonos.log( e.message )

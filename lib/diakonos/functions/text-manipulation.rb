@@ -62,7 +62,7 @@ module Diakonos
         b.cursor_to( b.last_row, b.last_col + word.length - partial.length )
         b.set_selection( r, c, r, c + word.length - partial.length )
         n = words.size
-        middle_word = words[ i ].center( Curses::cols / 4, ' ' )
+        middle_word = words[ i ].center( Curses.cols / 4, ' ' )
         shown_words = [
           words[ ( n+i-2 ) % n ],
           words[ ( n+i-1 ) % n ],
@@ -71,7 +71,7 @@ module Diakonos
           words[ ( n+i+2 ) % n ],
         ].compact.uniq.reject { |w| w == middle_word.strip }.join( ' ' )
         mi = shown_words.index( middle_word )
-        padding = " " * ( Curses::cols / 2 - mi - ( middle_word.length / 2 ) )
+        padding = " " * ( Curses.cols / 2 - mi - ( middle_word.length / 2 ) )
         set_iline padding + shown_words
       end
     end

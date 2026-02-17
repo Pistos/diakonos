@@ -248,9 +248,9 @@ module Diakonos
 
     # Send the Diakonos job to background, as if with Ctrl-Z
     def suspend
-      Curses::close_screen
+      Curses.close_screen
       Process.kill( "SIGSTOP", $PID )
-      Curses::init_screen
+      Curses.init_screen
       refresh_all
     end
 

@@ -7,7 +7,7 @@ module Diakonos
         # Setup some variables to keep track of a fake cursor
         @row, @col = 0, 0
         super
-        Curses::close_screen
+        Curses.close_screen
       end
 
       def refresh

@@ -120,21 +120,21 @@ module Diakonos
 
       start_char = end_char = char
       case char
-        when '('
+      when '('
           end_char = ')'
-        when '{'
+      when '{'
           end_char = '}'
-        when '['
+      when '['
           end_char = ']'
-        when '<'
+      when '<'
           end_char = '>'
-        when ')'
+      when ')'
           end_char = '('
-        when '}'
+      when '}'
           end_char = '{'
-        when ']'
+      when ']'
           end_char = '['
-        when '>'
+      when '>'
           end_char = '<'
       end
 

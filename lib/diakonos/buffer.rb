@@ -442,7 +442,7 @@ module Diakonos
     def column_to_x( col )
       return nil if col.nil?
       x = col - @left_column
-      x = nil if ( x < 0 ) || ( x > @left_column + Curses::cols - 1 )
+      x = nil if ( x < 0 ) || ( x > @left_column + Curses.cols - 1 )
       x
     end
 
@@ -522,7 +522,7 @@ module Diakonos
         number: @last_col,
         min: @left_column,
         max: [
-          @left_column + Curses::cols - 1,
+          @left_column + Curses.cols - 1,
           @lines[@last_row].length
         ].min
       )

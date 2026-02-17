@@ -287,7 +287,7 @@ module Diakonos
       loop do
         ch = nil
         begin
-          Timeout::timeout(0.02) do
+          Timeout.timeout(0.02) do
             ch = @modes[mode].window.getch
           end
         rescue Timeout::Error => e

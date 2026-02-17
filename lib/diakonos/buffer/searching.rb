@@ -236,7 +236,7 @@ module Diakonos
           cursor_to( finding.end_row, finding.end_col )
         end
         if show_context_after
-          watermark = Curses::lines / 6
+          watermark = Curses.lines / 6
           if @last_row - @top_line > watermark
             pitch_view( @last_row - @top_line - watermark )
           end

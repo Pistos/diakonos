@@ -1,7 +1,7 @@
 module Diakonos
   class Diakonos
     def handle_mouse_event
-      event = Curses::getmouse
+      event = Curses.getmouse
       return  if event.nil?
 
       if event.bstate & Curses::BUTTON1_CLICKED > 0

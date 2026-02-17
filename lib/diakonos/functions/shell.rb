@@ -100,7 +100,7 @@ module Diakonos
       completed = false
       result_file = "#{@diakonos_home}/#{result_filename}"
       File.open( result_file , "w" ) do |f|
-        Curses::close_screen
+        Curses.close_screen
 
         stdin, stdout, stderr = Open3.popen3( command )
 
@@ -118,10 +118,10 @@ module Diakonos
         catch :stop do
           loop do
             begin
-              Timeout::timeout( 5 ) do
+              Timeout.timeout( 5 ) do
                 t1.join
                 t2.join
-                Curses::init_screen
+                Curses.init_screen
                 refresh_all
                 completed = true
                 throw :stop
@@ -170,7 +170,7 @@ module Diakonos
 
       command = sub_shell_variables( command )
 
-      Curses::close_screen
+      Curses.close_screen
 
       success = system( command )
       if ! success
@@ -179,7 +179,7 @@ module Diakonos
         result = "Exit code: #{$?}"
       end
 
-      Curses::init_screen
+      Curses.init_screen
       refresh_all
 
       set_iline result
@@ -204,7 +204,7 @@ module Diakonos
 
       command = sub_shell_variables( command )
 
-      Curses::close_screen
+      Curses.close_screen
 
       begin
         buffer_current.paste( `#{command} 2<&1`.split( /\n/, -1 ) )
@@ -214,7 +214,7 @@ module Diakonos
         show_exception e
       end
 
-      Curses::init_screen
+      Curses.init_screen
       refresh_all
     end
 

@@ -81,7 +81,7 @@ module Diakonos
       session = nil
 
       File.open(yaml_filename) do |f|
-        loaded = YAML::load(f) or break
+        loaded = YAML.load(f) or break
 
         if(
           loaded[ 'filename' ] &&

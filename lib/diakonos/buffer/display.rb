@@ -72,8 +72,8 @@ module Diakonos
 
       if retval
         # Truncate based on right edge of display area
-        if write_cursor_col + retval.length > @left_column + Curses::cols - 1
-          new_length = ( @left_column + Curses::cols - write_cursor_col )
+        if write_cursor_col + retval.length > @left_column + Curses.cols - 1
+          new_length = ( @left_column + Curses.cols - write_cursor_col )
           if new_length <= 0
             retval = nil
           else
@@ -88,7 +88,7 @@ module Diakonos
     # Worker function for painting only part of a row.
     def paint_single_row_mark( row, text_mark, string, curx, cury )
       expanded_col = tab_expanded_column( text_mark.start_col, row )
-      if expanded_col < @left_column + Curses::cols
+      if expanded_col < @left_column + Curses.cols
         left = [ expanded_col - @left_column, 0 ].max
         right = tab_expanded_column( text_mark.end_col, row ) - @left_column
         if left < right
@@ -99,7 +99,7 @@ module Diakonos
     end
 
     def paint_marks( row )
-      string = @lines[ row ][ @left_column ... @left_column + Curses::cols ]
+      string = @lines[ row ][ @left_column ... @left_column + Curses.cols ]
       return  if string.nil? || string == ""
       string = string.expand_tabs( @tab_size )
       cury = @win_main.cury
@@ -119,7 +119,7 @@ module Diakonos
             paint_single_row_mark( row, text_mark, string, curx, cury )
           elsif row == text_mark.start_row
             expanded_col = tab_expanded_column( text_mark.start_col, row )
-            if expanded_col < @left_column + Curses::cols
+            if expanded_col < @left_column + Curses.cols
               left = [ expanded_col - @left_column, 0 ].max
               @win_main.setpos( cury, curx + left )
               @win_main.addstr string[ left..-1 ]
@@ -146,7 +146,7 @@ module Diakonos
       $diakonos.column_markers.each_value do |data|
         column = data[ :column ]
         next  if column.nil?
-        next  if column > Curses::cols - @left_column || column - @left_column < 0
+        next  if column > Curses.cols - @left_column || column - @left_column < 0
 
         num_lines_to_paint = [ $diakonos.main_window_height, @lines.size - @top_line ].min
         ( 0...num_lines_to_paint ).each do |row|
@@ -259,9 +259,9 @@ module Diakonos
       return  if ! @pen_down
 
       if col < @left_column
-        remainder = Curses::cols
+        remainder = Curses.cols
       else
-        remainder = @left_column + Curses::cols - col
+        remainder = @left_column + Curses.cols - col
       end
 
       if remainder > 0
@@ -328,7 +328,7 @@ module Diakonos
 
         @win_main.setpos( y, 0 )
         @win_main.attrset @default_formatting
-        linestr = " " * Curses::cols
+        linestr = " " * Curses.cols
         if @settings[ "view.nonfilelines.visible" ]
           linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] || "~" )
         end

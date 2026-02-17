@@ -29,27 +29,27 @@ module Diakonos
       str.split( /\s+/ ).each do |format|
         colour_number = format.to_i
         if colour_number > Curses::COLOR_WHITE
-          formatting |= Curses::color_pair( colour_number )
+          formatting |= Curses.color_pair( colour_number )
         elsif format.downcase == 'normal'
           formatting = Curses::A_NORMAL
         else
           formatting |= case format.downcase
           when "black", "0"
-            Curses::color_pair( Curses::COLOR_BLACK )
+            Curses.color_pair( Curses::COLOR_BLACK )
           when "red", "1"
-            Curses::color_pair( Curses::COLOR_RED )
+            Curses.color_pair( Curses::COLOR_RED )
           when "green", "2"
-            Curses::color_pair( Curses::COLOR_GREEN )
+            Curses.color_pair( Curses::COLOR_GREEN )
           when "yellow", "brown", "3"
-            Curses::color_pair( Curses::COLOR_YELLOW )
+            Curses.color_pair( Curses::COLOR_YELLOW )
           when "blue", "4"
-            Curses::color_pair( Curses::COLOR_BLUE )
+            Curses.color_pair( Curses::COLOR_BLUE )
           when "magenta", "purple", "5"
-            Curses::color_pair( Curses::COLOR_MAGENTA )
+            Curses.color_pair( Curses::COLOR_MAGENTA )
           when "cyan", "6"
-            Curses::color_pair( Curses::COLOR_CYAN )
+            Curses.color_pair( Curses::COLOR_CYAN )
           when "white", "7"
-            Curses::color_pair( Curses::COLOR_WHITE )
+            Curses.color_pair( Curses::COLOR_WHITE )
           when "standout", "s", "so"
             Curses::A_STANDOUT
           when "underline", "u", "un", "ul"
