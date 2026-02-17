@@ -13,15 +13,19 @@ module Diakonos
 
     def == (other)
       return false if other.nil?
+
       ( @buffer == other.buffer && @row == other.row && @col == other.col )
     end
 
     def <=> (other)
       return nil if other.nil?
+
       comparison = ( $diakonos.buffer_to_number( @buffer ) <=> $diakonos.buffer_to_number( other.buffer ) )
       return comparison if comparison != 0
+
       comparison = ( @row <=> other.row )
       return comparison if comparison != 0
+
       @col <=> other.col
     end
 

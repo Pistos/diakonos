@@ -8,6 +8,7 @@ module Diakonos
     # @return [Boolean] true iff the buffer was successfully switched to
     def switch_to( buffer, opts = {} )
       return false  if buffer.nil?
+
       do_display = opts.fetch( :do_display, true )
 
       @buffer_stack -= [ @buffer_current ]

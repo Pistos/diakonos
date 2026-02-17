@@ -96,6 +96,7 @@ module Diakonos
       # Find block end
       ( @last_row...@lines.size ).each do |row|
         next  if @lines[ row ].strip.empty?
+
         if indentation_level( row ) < block_level
           end_row = row
           break
@@ -105,6 +106,7 @@ module Diakonos
       # Go to block beginning
       ( 0...@last_row ).reverse_each do |row|
         next  if @lines[ row ].strip.empty?
+
         if indentation_level( row ) < block_level
           start_row = row + 1
           break
@@ -192,6 +194,7 @@ module Diakonos
 
     def remove_selection( do_display = DO_DISPLAY )
       return  if selection_mark.nil?
+
       @mark_anchor = nil
       record_mark_start_and_end
       @changing_selection = false

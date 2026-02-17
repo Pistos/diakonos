@@ -33,6 +33,7 @@ module Diakonos
 
     def cursor_left
       return false  if @input_cursor < 1
+
       @input_cursor -= 1
       sync
       true
@@ -40,12 +41,14 @@ module Diakonos
 
     def cursor_right
       return  if @input_cursor >= @input.length
+
       @input_cursor += 1
       sync
     end
 
     def delete
       return  if @input_cursor >= @input.length
+
       @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1).. ]
       sync
     end
@@ -65,6 +68,7 @@ module Diakonos
 
     def history_up
       return  if @history_index < 1
+
       @history[ @history_index ] = @input
       @history_index -= 1
       @input = @history[ @history_index ]
@@ -72,6 +76,7 @@ module Diakonos
 
     def history_down
       return  if @history_index > @history.length - 2
+
       @history[ @history_index ] = @input
       @history_index += 1
       @input = @history[ @history_index ]

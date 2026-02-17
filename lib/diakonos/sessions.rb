@@ -78,6 +78,7 @@ module Diakonos
     #   or nil on failure to load
     def self.from_yaml_file(yaml_filename)
       return nil  if ! File.exist?(yaml_filename)
+
       session = nil
 
       File.open(yaml_filename) do |f|

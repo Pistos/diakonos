@@ -9,12 +9,14 @@ module Diakonos
       when :up
         from_row = start_row-1
         return  if from_row < 0
+
         to_row = end_row-1
         selection_delta = 0
       when :down
         from_row = end_row
         to_row = start_row
         return  if to_row > @buffer.lines.count - 2
+
         selection_delta = @buffer.selecting? ? 1 : 0
       end
 

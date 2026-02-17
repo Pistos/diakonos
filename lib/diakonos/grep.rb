@@ -4,6 +4,7 @@ module Diakonos
     line_numbers = []
     array.each_with_index do |line,index|
       next if line !~ regexp
+
       start_index = [ 0, index - lines_of_context ].max
       end_index = [ index + lines_of_context, num_lines-1 ].min
       (start_index..end_index).each do |i|
@@ -66,6 +67,7 @@ module Diakonos
         will_display_after_select: true
       ) { |input|
         next  if input.length < 2
+
         actually_grep input, *buffers
       }
 

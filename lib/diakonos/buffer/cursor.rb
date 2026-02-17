@@ -190,6 +190,7 @@ module Diakonos
       new_level = initial_level
       ( 0...@last_row ).reverse_each do |row|
         next  if @lines[ row ].strip.empty?
+
         level = indentation_level( row )
         if ! passed
           passed = ( level < initial_level )
@@ -209,6 +210,7 @@ module Diakonos
       new_row = @lines.length
       ( @last_row...@lines.length ).each do |row|
         next  if @lines[ row ].strip.empty?
+
         level = indentation_level( row )
         if level > initial_level
           new_row = row
@@ -227,6 +229,7 @@ module Diakonos
       passed = false
       ( @last_row+1...@lines.length ).each do |row|
         next  if @lines[ row ].strip.empty?
+
         level = indentation_level( row )
         if ! passed
           if level < initial_level
@@ -249,6 +252,7 @@ module Diakonos
       passed2 = false  # search for reindent
       ( 0...@last_row ).reverse_each do |row|
         next  if @lines[ row ].strip.empty?
+
         level = indentation_level( row )
         if ! passed
           if level < initial_level

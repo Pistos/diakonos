@@ -19,6 +19,7 @@ module Diakonos
     # and only non-nil text can be added.
     def add_clip( text )
       return false if text.nil?
+
       @clips.unshift text
       @clips.pop if @clips.length > @max_clips
       true
@@ -37,6 +38,7 @@ module Diakonos
     def append_to_clip( text )
       return false if text.nil?
       return add_clip( text ) if @clips.length == 0
+
       last_clip = @clips[ 0 ]
       last_clip.pop if last_clip[ -1 ] == ""
       @clips[ 0 ] = last_clip + text

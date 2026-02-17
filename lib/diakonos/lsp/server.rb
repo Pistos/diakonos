@@ -137,6 +137,7 @@ module Diakonos
             if message.nil?
               break
             end
+
             @queue.push(message)
           end
         rescue => e

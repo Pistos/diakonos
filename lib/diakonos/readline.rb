@@ -88,6 +88,7 @@ module Diakonos
 
     def list_sync( line )
       return  if line.nil?
+
       set_input line
       cursor_write_input
     end

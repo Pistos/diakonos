@@ -583,6 +583,7 @@ module Diakonos
 
     def start_recording_macro( name = nil )
       return if @macro_history
+
       @macro_name = name
       @macro_history = Array.new
       @macro_input_history = Array.new

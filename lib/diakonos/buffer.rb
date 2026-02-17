@@ -163,6 +163,7 @@ module Diakonos
 
     def == (other)
       return false  if other.nil?
+
       @name == other.name
     end
 
@@ -355,6 +356,7 @@ module Diakonos
 
       self.selected_lines.each do |line|
         next  if line.strip.empty?
+
         old_line = line.dup
         line.gsub!( /^(\s*)/, "\\1" + @settings[ "lang.#{@language}.comment_string" ].to_s )
         if ! closer.empty? && line !~ /#{Regexp.escape(closer)}$/
@@ -433,6 +435,7 @@ module Diakonos
     # Returns nil if the row is off-screen.
     def row_to_y( row )
       return nil if row.nil?
+
       y = row - @top_line
       y = nil if ( y < 0 ) || ( y > @top_line + $diakonos.main_window_height - 1 )
       y
@@ -441,6 +444,7 @@ module Diakonos
     # Returns nil if the column is off-screen.
     def column_to_x( col )
       return nil if col.nil?
+
       x = col - @left_column
       x = nil if ( x < 0 ) || ( x > @left_column + Curses.cols - 1 )
       x
@@ -614,6 +618,7 @@ module Diakonos
 
     def set_type( type )
       return false  if type.nil?
+
       configure( type )
       display
       true

@@ -185,6 +185,7 @@ module Diakonos
         if arg.nil?
           command, arg = line.split( /\s+/, 2 )
           next  if command.nil?
+
           if arg.nil?
             config_file.problems << "error on line #{line_number+1}"
             next

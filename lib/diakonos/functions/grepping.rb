@@ -38,6 +38,7 @@ module Diakonos
         initial_text: regexp_source || selected_text || ""
       ) { |input|
         next if input.length < 2
+
         escaped_input = input.gsub( /'/ ) { "\\047" }
         matching_files = `egrep '#{escaped_input}' -rniIl #{dir}`.split( /\n/ )
 

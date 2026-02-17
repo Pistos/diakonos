@@ -175,6 +175,7 @@ module Diakonos
     # @return [Integer] the number of replacements made
     def find( regexps, options = {} )
       return  if regexps.nil?
+
       regexp = regexps[ 0 ]
       return  if regexp.nil? || regexp == //
 
@@ -402,6 +403,7 @@ module Diakonos
       c = @lines[ row ][ col ]
       data = CHARACTER_PAIRS[ c ]
       return  if data.nil?
+
       d = data[ :partner ]
       c_ = Regexp.escape c
       d_ = Regexp.escape d
@@ -413,6 +415,7 @@ module Diakonos
         while char == c  # Take care of nested pairs
           row, col = pos_of_pair_match( row, col )
           break  if col.nil?
+
           row, col, char = pos_of_next( target, row, col + 1 )
         end
       when :backward
@@ -420,6 +423,7 @@ module Diakonos
         while char == c  # Take care of nested pairs
           row, col = pos_of_pair_match( row, col )
           break  if col.nil?
+
           row, col, char = pos_of_prev( target, row, col - 1 )
         end
       end

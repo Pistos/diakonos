@@ -9,6 +9,7 @@ module Diakonos
     # Returns true iff some text was copied to xclip.
     def send_to_xclip( text )
       return false  if text.nil?
+
       clip_filename = write_to_clip_file( text.join( "\n" ) )
       t = Thread.new do
         `xclip -i #{clip_filename}`
@@ -37,6 +38,7 @@ module Diakonos
     # and only non-nil text can be added.
     def add_clip( text )
       return false  if text.nil?
+
       send_to_xclip text
     end
 

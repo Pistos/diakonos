@@ -101,6 +101,7 @@ module Diakonos
     def paint_marks( row )
       string = @lines[ row ][ @left_column ... @left_column + Curses.cols ]
       return  if string.nil? || string == ""
+
       string = string.expand_tabs( @tab_size )
       cury = @win_main.cury
       curx = @win_main.curx

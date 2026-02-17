@@ -230,6 +230,7 @@ module Diakonos
       save_session
       @buffers.each do |buffer|
         next  if ! buffer.modified?
+
         switch_to buffer
         closure_choice = close_buffer( buffer, to_all: )
         case closure_choice

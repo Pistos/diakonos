@@ -39,6 +39,7 @@ module Diakonos
     # and only non-nil text can be added.
     def add_clip( text )
       return false  if text.nil?
+
       send_to_klipper text
     end
 
