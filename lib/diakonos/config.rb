@@ -339,6 +339,7 @@ module Diakonos
             /^lang\.(.+?)\.column_delimiters$/,
             /^lang\..+?\.lsp\.command$/,
             /^extension\.(.+?)\.(.+?)/,
+            "view.line_numbers.diagnostic_marker",
             "view.nonfilelines.character",
             'diff_command', 'session.default_session',
             'clipboard.external'

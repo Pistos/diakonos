@@ -465,10 +465,14 @@ module Diakonos
     end
 
     def diagnostics_for_current_line
+      diagnostics_for_line(line: @last_row)
+    end
+
+    def diagnostics_for_line(line:)
       if @lsp_session && name
         uri = "file://#{name}"
 
-        @lsp_session.diagnostics_for_line(uri:, line: @last_row)
+        @lsp_session.diagnostics_for_line(uri:, line:)
       else
         []
       end

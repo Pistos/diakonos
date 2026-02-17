@@ -1,6 +1,7 @@
 module Diakonos
 
   class Buffer
+    COLUMNS_FOR_DIAGNOSTICS = 1  # width in characters
 
     attr_reader :top_line, :left_column
 
@@ -306,6 +307,12 @@ module Diakonos
               n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min.. ],
             ]
           )
+          line_index = @top_line + row
+          if diagnostics_for_line(line: line_index).any?
+            @win_line_numbers.addstr( @settings[ 'view.line_numbers.diagnostic_marker' ] || '●' )
+          else
+            @win_line_numbers.addstr( ' ' )
+          end
         end
         @win_main.setpos( y, 0 )
         print_line line.expand_tabs( @tab_size )
@@ -324,7 +331,9 @@ module Diakonos
         if @win_line_numbers
           @win_line_numbers.setpos( y, 0 )
           @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
-          @win_line_numbers.addstr( ' ' * @settings[ 'view.line_numbers.width' ] )
+          @win_line_numbers.addstr(
+            ' ' * (@settings[ 'view.line_numbers.width' ] + COLUMNS_FOR_DIAGNOSTICS)
+          )
         end
 
         @win_main.setpos( y, 0 )

@@ -52,8 +52,15 @@ module Diakonos
       end
 
       if settings[ 'view.line_numbers' ]
-        @win_line_numbers = ::Diakonos::Window.new( main_window_height, settings[ 'view.line_numbers.width' ], 0, 0 )
-        @win_main = ::Diakonos::Window.new( main_window_height, Curses.cols - settings[ 'view.line_numbers.width' ], 0, settings[ 'view.line_numbers.width' ] )
+        line_numbers_width = settings[ 'view.line_numbers.width' ] + Buffer::COLUMNS_FOR_DIAGNOSTICS
+
+        @win_line_numbers = ::Diakonos::Window.new( main_window_height, line_numbers_width, 0, 0 )
+        @win_main = ::Diakonos::Window.new(
+          main_window_height,
+          Curses.cols - line_numbers_width,
+          0,
+          line_numbers_width
+        )
       else
         @win_main = ::Diakonos::Window.new( main_window_height, Curses.cols, 0, 0 )
         @win_line_numbers = nil
