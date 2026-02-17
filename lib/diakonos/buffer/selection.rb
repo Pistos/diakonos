@@ -41,8 +41,8 @@ module Diakonos
           end
         elsif ccol < acol
           @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, ccol, crow, acol), @selection_formatting )  # Southwest
-          else            # Southeast
-            @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, acol, crow, ccol), @selection_formatting )
+        else            # Southeast
+          @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, acol, crow, ccol), @selection_formatting )
         end
       end
     end
@@ -225,10 +225,10 @@ module Diakonos
         @lines[ selection.start_row..selection.end_row ].collect { |line|
             line[ selection.start_col...selection.end_col ]
           }
-        else
-          [ @lines[ selection.start_row ][ selection.start_col.. ] ] +
-            ( @lines[ (selection.start_row + 1)..(selection.end_row - 1) ] || [] ) +
-            [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
+      else
+        [ @lines[ selection.start_row ][ selection.start_col.. ] ] +
+        ( @lines[ (selection.start_row + 1)..(selection.end_row - 1) ] || [] ) +
+        [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
       end
     end
 

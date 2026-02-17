@@ -263,8 +263,8 @@ module Diakonos
             @buffers[ @buffers.index( existing_buffer ) ] = buffer
           elsif @settings['open_as_first_buffer']
             @buffers.unshift buffer
-            else
-              @buffers << buffer
+          else
+            @buffers << buffer
           end
           run_hook_procs( :after_open, buffer )
           ensure_language_lsp(buffer:, language: buffer.original_language)
