@@ -40,70 +40,72 @@ module Diakonos
     ]
 
     def self.keycodes_for( str )
-      retval = case str.downcase
-      when "down"
-        Curses::KEY_DOWN
-      when "up"
-        Curses::KEY_UP
-      when "left"
-        Curses::KEY_LEFT
-      when "right"
-        Curses::KEY_RIGHT
-      when "home"
-        Curses::KEY_HOME
-      when "end"
-        Curses::KEY_END
-      when "insert", "ins"
-        Curses::KEY_IC
-      when "delete", "del"
-        Curses::KEY_DC
-      when "backspace"
-        ::Diakonos::BACKSPACE
-      when "tab"
-        9
-      when "pageup", "page-up"
-        Curses::KEY_PPAGE
-      when "pagedown", "page-down"
-        Curses::KEY_NPAGE
-      when "enter", "return"
-        ::Diakonos::ENTER
-      when "numpad7", "keypad7", "kp-7"
-        Curses::KEY_A1
-      when "numpad9", "keypad9", "kp-9"
-        Curses::KEY_A3
-      when "numpad5", "keypad5", "kp-5"
-        Curses::KEY_B2
-      when "numpad1", "keypad1", "kp-1"
-        Curses::KEY_C1
-      when "numpad3", "keypad3", "kp-3"
-        Curses::KEY_C3
-      when "escape", "esc"
-        ::Diakonos::ESCAPE
-      when "space"
-        32
-      when "ctrl+space"
-        0
-      when "find"
-        Curses::KEY_FIND
-      when "select"
-        Curses::KEY_SELECT
-      when "suspend"
-        Curses::KEY_SUSPEND
-      when /^f(\d\d?)$/
-        Curses::KEY_F0 + ::Regexp.last_match(1).to_i
-      when /^ctrl\+[a-gi-z]$/
-        str.downcase[ -1 ].ord - 96
-      when /^ctrl\+h$/
-        ::Diakonos::CTRL_H
-      when /^alt\+(.)$/
-        [ ::Diakonos::ESCAPE, ::Regexp.last_match(1)[ 0 ].ord ]
-      when /^ctrl\+alt\+(.)$/, /^alt\+ctrl\+(.)$/
-        [ ::Diakonos::ESCAPE, str.downcase[ -1 ].ord - 96 ]
-      when /^keycode(\d+)$/
-        ::Regexp.last_match(1).to_i
-      when /^.$/
-        str[ 0 ].ord
-      end
+      retval = (
+        case str.downcase
+        when "down"
+          Curses::KEY_DOWN
+        when "up"
+          Curses::KEY_UP
+        when "left"
+          Curses::KEY_LEFT
+        when "right"
+          Curses::KEY_RIGHT
+        when "home"
+          Curses::KEY_HOME
+        when "end"
+          Curses::KEY_END
+        when "insert", "ins"
+          Curses::KEY_IC
+        when "delete", "del"
+          Curses::KEY_DC
+        when "backspace"
+          ::Diakonos::BACKSPACE
+        when "tab"
+          9
+        when "pageup", "page-up"
+          Curses::KEY_PPAGE
+        when "pagedown", "page-down"
+          Curses::KEY_NPAGE
+        when "enter", "return"
+          ::Diakonos::ENTER
+        when "numpad7", "keypad7", "kp-7"
+          Curses::KEY_A1
+        when "numpad9", "keypad9", "kp-9"
+          Curses::KEY_A3
+        when "numpad5", "keypad5", "kp-5"
+          Curses::KEY_B2
+        when "numpad1", "keypad1", "kp-1"
+          Curses::KEY_C1
+        when "numpad3", "keypad3", "kp-3"
+          Curses::KEY_C3
+        when "escape", "esc"
+          ::Diakonos::ESCAPE
+        when "space"
+          32
+        when "ctrl+space"
+          0
+        when "find"
+          Curses::KEY_FIND
+        when "select"
+          Curses::KEY_SELECT
+        when "suspend"
+          Curses::KEY_SUSPEND
+        when /^f(\d\d?)$/
+          Curses::KEY_F0 + ::Regexp.last_match(1).to_i
+        when /^ctrl\+[a-gi-z]$/
+          str.downcase[ -1 ].ord - 96
+        when /^ctrl\+h$/
+          ::Diakonos::CTRL_H
+        when /^alt\+(.)$/
+          [ ::Diakonos::ESCAPE, ::Regexp.last_match(1)[ 0 ].ord ]
+        when /^ctrl\+alt\+(.)$/, /^alt\+ctrl\+(.)$/
+          [ ::Diakonos::ESCAPE, str.downcase[ -1 ].ord - 96 ]
+        when /^keycode(\d+)$/
+          ::Regexp.last_match(1).to_i
+        when /^.$/
+          str[ 0 ].ord
+        end
+      )
 
       Array( retval )
     end
@@ -111,52 +113,54 @@ module Diakonos
     def self.key_string_for( num )
       retval = KEYSTRINGS[ num ]
       if retval.nil?
-        retval = case num
-        when Curses::KEY_DOWN
-          "down"
-        when Curses::KEY_UP
-          "up"
-        when Curses::KEY_LEFT
-          "left"
-        when Curses::KEY_RIGHT
-          "right"
-        when Curses::KEY_HOME
-          "home"
-        when Curses::KEY_END
-          "end"
-        when Curses::KEY_IC
-          "insert"
-        when Curses::KEY_DC
-          "delete"
-        when Curses::KEY_PPAGE
-          "page-up"
-        when Curses::KEY_NPAGE
-          "page-down"
-        when Curses::KEY_A1
-          "numpad7"
-        when Curses::KEY_A3
-          "numpad9"
-        when Curses::KEY_B2
-          "numpad5"
-        when Curses::KEY_C1
-          "numpad1"
-        when Curses::KEY_C3
-          "numpad3"
-        when Curses::KEY_FIND
-          "find"
-        when Curses::KEY_SELECT
-          "select"
-        when Curses::KEY_SUSPEND
-          "suspend"
-        when Curses::KEY_F0..(Curses::KEY_F0 + 24)
-          "f" + ( num - Curses::KEY_F0 ).to_s
-        when CTRL_H
-          "ctrl+h"
-        when Curses::KEY_RESIZE
-          "resize"
-        when RESIZE2
-          "resize2"
-        end
+        retval = (
+          case num
+          when Curses::KEY_DOWN
+            "down"
+          when Curses::KEY_UP
+            "up"
+          when Curses::KEY_LEFT
+            "left"
+          when Curses::KEY_RIGHT
+            "right"
+          when Curses::KEY_HOME
+            "home"
+          when Curses::KEY_END
+            "end"
+          when Curses::KEY_IC
+            "insert"
+          when Curses::KEY_DC
+            "delete"
+          when Curses::KEY_PPAGE
+            "page-up"
+          when Curses::KEY_NPAGE
+            "page-down"
+          when Curses::KEY_A1
+            "numpad7"
+          when Curses::KEY_A3
+            "numpad9"
+          when Curses::KEY_B2
+            "numpad5"
+          when Curses::KEY_C1
+            "numpad1"
+          when Curses::KEY_C3
+            "numpad3"
+          when Curses::KEY_FIND
+            "find"
+          when Curses::KEY_SELECT
+            "select"
+          when Curses::KEY_SUSPEND
+            "suspend"
+          when Curses::KEY_F0..(Curses::KEY_F0 + 24)
+            "f" + ( num - Curses::KEY_F0 ).to_s
+          when CTRL_H
+            "ctrl+h"
+          when Curses::KEY_RESIZE
+            "resize"
+          when RESIZE2
+            "resize2"
+          end
+        )
       end
       if retval.nil? && num.class == Integer
         retval = "keycode#{num}"

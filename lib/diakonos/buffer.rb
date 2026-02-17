@@ -268,19 +268,21 @@ module Diakonos
         h[ :regexp ] =~ line
         lm = Regexp.last_match
         if lm
-          str = case h[ :closer ]
-          when String
-            if lm[ 1 ].nil?
-              h[ :closer ]
-            else
-              lm[ 1 ].gsub(
-                Regexp.new( "(#{ Regexp.escape( lm[1] ) })" ),
+          str = (
+            case h[ :closer ]
+            when String
+              if lm[ 1 ].nil?
                 h[ :closer ]
-              )
+              else
+                lm[ 1 ].gsub(
+                  Regexp.new( "(#{ Regexp.escape( lm[1] ) })" ),
+                  h[ :closer ]
+                )
+              end
+            when Proc
+              h[ :closer ].call( lm ).to_s
             end
-          when Proc
-            h[ :closer ].call( lm ).to_s
-          end
+          )
           r, c = @last_row, @last_col
           paste str, !TYPING, @indent_closers
           cursor_to r, c
