@@ -14,6 +14,7 @@ module Diakonos
         @reader_thread = nil
         @request_id = 0
         @stderr_io = nil
+        @stopping = false
         @transport = nil
         @working_directory = working_directory
 
@@ -23,6 +24,7 @@ module Diakonos
       end
 
       def stop
+        @stopping = true
         @reader_thread&.kill
         @reader_thread&.join
         if alive?
@@ -147,7 +149,9 @@ module Diakonos
             @queue.push(message)
           end
         rescue => e
-          $diakonos.log("LSP reader thread error: #{e.class}: #{e.message}")
+          if ! (e.is_a?(IOError) && @stopping)
+            $diakonos.log("LSP reader thread error: #{e.class}: #{e.message}")
+          end
         end
       end
     end
