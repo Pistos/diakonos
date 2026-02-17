@@ -420,12 +420,11 @@ module Diakonos
       when 'input'
         if ! @readline.numbered_list?
           @readline.paste c
-        else
-          if(
+        elsif (
             showing_list? &&
             ( (48..57).include?( c.ord ) || (97..122).include?( c.ord ) )
           )
-            line = list_buffer.to_a.select { |l|
+          line = list_buffer.to_a.select { |l|
               l =~ /^#{c}  /
             }[ 0 ]
 
@@ -433,7 +432,6 @@ module Diakonos
               @readline.list_sync line
               @readline.finish
             end
-          end
         end
       end
     end

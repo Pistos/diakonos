@@ -193,13 +193,11 @@ module Diakonos
         if ! passed
           passed = ( level < initial_level )
           new_level = level
-        else
-          if level < new_level
-            new_row = ( row+1..@last_row ).find { |r|
+        elsif level < new_level
+          new_row = ( row+1..@last_row ).find { |r|
               ! @lines[ r ].strip.empty?
             }
             break
-          end
         end
       end
       go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
@@ -233,13 +231,11 @@ module Diakonos
           if level < initial_level
             passed = true
           end
-        else
-          if level == initial_level
-            new_row = row
+        elsif level == initial_level
+          new_row = row
             break
           elsif level < initial_level - 1
             break
-          end
         end
       end
       go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )
@@ -257,23 +253,19 @@ module Diakonos
           if level < initial_level
             passed = true
           end
-        else
-          if ! passed2
-            if level >= initial_level
+        elsif ! passed2
+          if level >= initial_level
               new_row = row
               passed2 = true
             elsif level <= initial_level - 2
               # No previous block
               break
             end
-          else
-            if level < initial_level
-              new_row = ( row+1..@last_row ).find { |r|
+          elsif level < initial_level
+            new_row = ( row+1..@last_row ).find { |r|
                 ! @lines[ r ].strip.empty?
               }
               break
-            end
-          end
         end
       end
       go_to_line( new_row, @lines[ new_row ].index( /\S/ ) )

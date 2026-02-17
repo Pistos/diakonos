@@ -23,10 +23,8 @@ module Diakonos
           anchor_first = false
         elsif crow > arow
           anchor_first = true
-        else
-          if ccol < acol
-            anchor_first = false
-          end
+        elsif ccol < acol
+          anchor_first = false
         end
 
         if anchor_first
@@ -41,12 +39,10 @@ module Diakonos
           else           # Northeast
             @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(crow, acol, arow, ccol), @selection_formatting )
           end
-        else
-          if ccol < acol  # Southwest
-            @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, ccol, crow, acol), @selection_formatting )
+        elsif ccol < acol
+          @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, ccol, crow, acol), @selection_formatting )  # Southwest
           else            # Southeast
             @text_marks[ :selection ] = TextMark.new( ::Diakonos::Range.new(arow, acol, crow, ccol), @selection_formatting )
-          end
         end
       end
     end
@@ -222,16 +218,14 @@ module Diakonos
         nil
       elsif selection.start_row == selection.end_row
         [ @lines[ selection.start_row ][ selection.start_col...selection.end_col ] ]
-      else
-        if @selection_mode == :block
-          @lines[ selection.start_row .. selection.end_row ].collect { |line|
+      elsif @selection_mode == :block
+        @lines[ selection.start_row .. selection.end_row ].collect { |line|
             line[ selection.start_col ... selection.end_col ]
           }
         else
           [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
             ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] || [] ) +
             [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
-        end
       end
     end
 
