@@ -30,7 +30,7 @@ module Diakonos
       end
       if @settings[ "lang.#{@language}.indent.using_tabs" ]
         num_tabs = 0
-        indent_text.gsub!( / {#{@tab_size}}/ ) do |match|
+        indent_text.gsub!( / {#{@tab_size}}/ ) do
           num_tabs += 1
           "\t"
         end

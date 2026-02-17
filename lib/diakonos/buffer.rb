@@ -218,7 +218,7 @@ module Diakonos
     end
 
     def surround( text, parenthesis )
-      pattern, pair = @surround_pairs.select { |r, p| parenthesis =~ r }.to_a[ 0 ]
+      pattern, pair = @surround_pairs.select { |r, _| parenthesis =~ r }.to_a[0]
 
       if pair.nil?
         $diakonos.set_iline "No matching parentheses pair found."
@@ -653,7 +653,7 @@ module Diakonos
 
     def word_under_cursor_pos( options = {} )
       or_after = options[:or_after]
-      @lines[ @last_row ].scan( WORD_REGEXP ) do |match_text|
+      @lines[ @last_row ].scan( WORD_REGEXP ) do
         last_match = Regexp.last_match
         if (
           last_match.begin( 0 ) <= @last_col && @last_col < last_match.end( 0 ) ||

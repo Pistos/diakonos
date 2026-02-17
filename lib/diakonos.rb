@@ -407,7 +407,7 @@ module Diakonos
 
       run_scripts
 
-      @hooks.each do |hook_name, hook|
+      @hooks.each_value do |hook|
         hook.sort { |a,b| a[ :priority ] <=> b[ :priority ] }
       end
 

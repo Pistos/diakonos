@@ -40,7 +40,7 @@ module Diakonos
       close_match_text = nil
       close_index = nil
 
-      line_segment.scan(regexp) do |m|
+      line_segment.scan(regexp) do
         match = Regexp.last_match
         if match.length > 1
           index = match.begin 1

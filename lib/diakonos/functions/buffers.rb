@@ -120,26 +120,28 @@ module Diakonos
     def list_buffers
       bullets = ( ('0'..'9').to_a + ('a'..'z').to_a ).map { |s| "#{s}  " }
       buffers_unnamed = @buffers.find_all { |b| b.name.nil? }
-      buffers_named = @buffers.find_all { |b| b.name }
+      buffers_named = @buffers.find_all(&:name)
 
       with_list_file do |f|
         if buffers_unnamed.size == 1
           bullet = bullets.shift
           f.puts "#{bullet}(unnamed buffer)"
         else
-          buffers_unnamed.each_with_index do |b,i|
+          buffers_unnamed.each_with_index do |_, i|
             bullet = bullets.shift
             f.puts "#{bullet}(unnamed buffer #{i+1})"
           end
         end
 
-        buffers_named.collect { |b| b.name }.sort.each_with_index do |name, index|
+        buffers_named.collect(&:name).sort.each_with_index do |name, _|
           bullet = bullets.shift
           f.puts "#{bullet}#{name}"
         end
       end
+
       open_list_buffer
       filename = get_user_input( "Switch to buffer: ", numbered_list: true )
+
       buffer = buffers_named.find { |b| b.name == filename }
       if buffer
         switch_to buffer

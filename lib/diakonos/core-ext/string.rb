@@ -9,14 +9,17 @@ class String
     end
   end
 
-  def expand_tabs( tab_size )
+  def expand_tabs(tab_size)
     s = dup
-    while s.sub!( /\t/ ) { |match_text|
+
+    while s.sub!( /\t/ ) {
       match = Regexp.last_match
       index = match.begin( 0 )
-      " " * ( tab_size - ( index % tab_size ) )
+
+      " " * ( tab_size - (index % tab_size) )
     }
     end
+
     s
   end
 

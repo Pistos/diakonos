@@ -1,14 +1,16 @@
 module Enumerable
   # Returns [array-index, string-index, string-index] triples for each match.
-  def grep_indices( regexp )
+  def grep_indices(regexp)
     array = Array.new
-    each_with_index do |element,index|
-      element.scan( regexp ) do |match_text|
+
+    each_with_index do |element, index|
+      element.scan(regexp) do
         match = Regexp.last_match
-        strindex = match.begin( 0 )
-        array.push [ index, strindex, strindex + match[ 0 ].length ]
+        strindex = match.begin(0)
+        array.push [ index, strindex, strindex + match[0].length ]
       end
     end
+
     array
   end
 end
