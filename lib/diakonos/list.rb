@@ -17,13 +17,11 @@ module Diakonos
     end
 
     def list_item_selected?
-      @list_buffer && @list_buffer.selecting?
+      @list_buffer&.selecting?
     end
 
     def current_list_item
-      if @list_buffer
-        @list_buffer.set_selection_current_line
-      end
+      @list_buffer&.set_selection_current_line
     end
 
     def select_list_item

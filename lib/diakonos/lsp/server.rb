@@ -27,9 +27,7 @@ module Diakonos
         if alive?
           shut_down
         end
-        if @reader_thread
-          @reader_thread.join
-        end
+        @reader_thread&.join
       end
 
       def write(message:)

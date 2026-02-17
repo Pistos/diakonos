@@ -10,11 +10,11 @@ module Diakonos
     def cleanup_display
       return  if @testing
 
-      @win_main.close          if @win_main
-      @win_status.close        if @win_status
-      @win_interaction.close   if @win_interaction
-      @win_context.close       if @win_context
-      @win_line_numbers.close  if @win_line_numbers
+      @win_main&.close
+      @win_status&.close
+      @win_interaction&.close
+      @win_context&.close
+      @win_line_numbers&.close
 
       Curses.close_screen
     end
@@ -87,12 +87,8 @@ module Diakonos
         @win_main.keypad( true )
         @win_status.keypad( true )
         @win_interaction.keypad( true )
-        if @win_line_numbers
-          @win_line_numbers.keypad( true )
-        end
-        if @win_context
-          @win_context.keypad( true )
-        end
+        @win_line_numbers&.keypad( true )
+        @win_context&.keypad( true )
       end
 
       if ! @testing
@@ -104,15 +100,11 @@ module Diakonos
 
       @win_interaction.refresh
       @win_main.refresh
-      if @win_line_numbers
-        @win_line_numbers.refresh
-      end
+      @win_line_numbers&.refresh
 
-      if @buffers
-        @buffers.each do |buffer|
+      @buffers&.each do |buffer|
           buffer.reset_display
         end
-      end
     end
 
     def redraw
@@ -242,7 +234,7 @@ module Diakonos
       return  if @testing
       return  if @win_context.nil?
 
-      @context_thread.exit  if @context_thread
+      @context_thread&.exit
       @context_thread = Thread.new do
         context = buffer_current.context
 
@@ -325,14 +317,10 @@ module Diakonos
 
     def refresh_all
       @win_main.refresh
-      if @win_context
-        @win_context.refresh
-      end
+      @win_context&.refresh
       @win_status.refresh
       @win_interaction.refresh
-      if @win_line_numbers
-        @win_line_numbers.refresh
-      end
+      @win_line_numbers&.refresh
     end
 
   end

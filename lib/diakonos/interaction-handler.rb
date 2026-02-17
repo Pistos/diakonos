@@ -200,7 +200,7 @@ module Diakonos
     end
 
     def terminate_message
-      if @message_thread && @message_thread.alive?
+      if @message_thread&.alive?
         @message_thread.terminate
         @message_thread = nil
       end

@@ -371,9 +371,7 @@ module Diakonos
             to_eval = function
           end
 
-          if @macro_history
-            @macro_history.push to_eval
-          end
+          @macro_history&.push to_eval
 
           begin
             if buffer_current.search_area? && ! ( /^(?:find|readline)/ === to_eval )
@@ -404,9 +402,7 @@ module Diakonos
     end
 
     def type_character( c, mode = 'edit' )
-      if @macro_history
-        @macro_history.push "type_character #{c.inspect}, #{mode.inspect}"
-      end
+      @macro_history&.push "type_character #{c.inspect}, #{mode.inspect}"
       @there_was_non_movement = true
 
       case mode

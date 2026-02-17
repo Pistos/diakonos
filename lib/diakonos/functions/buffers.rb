@@ -432,7 +432,7 @@ module Diakonos
     end
 
     def save_file_as
-      if buffer_current && buffer_current.name
+      if buffer_current&.name
         path = File.expand_path( File.dirname( buffer_current.name ) ) + "/"
         file = get_user_input( "Filename: ", history: @rlh_files, initial_text: path )
       else

@@ -338,9 +338,7 @@ module Diakonos
 
       paint_column_markers
 
-      if @win_line_numbers
-        @win_line_numbers.refresh
-      end
+      @win_line_numbers&.refresh
       @win_main.setpos( @last_screen_y , @last_screen_x )
       @win_main.refresh
 

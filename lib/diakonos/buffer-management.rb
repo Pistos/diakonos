@@ -32,9 +32,7 @@ module Diakonos
       return nil  if buffer_number < 1
 
       b = @buffers[ buffer_number - 1 ]
-      if b
-        b.name
-      end
+      b&.name
     end
 
     # @return [Integer] 1-based, not zero-based.

@@ -110,10 +110,8 @@ module Diakonos
       end
       @log = File.open( @logfilename, "a" )
 
-      if @buffers
-        @buffers.each do |buffer|
-          buffer.configure
-        end
+      @buffers&.each do |buffer|
+        buffer.configure
       end
     end
 
