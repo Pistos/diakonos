@@ -378,7 +378,7 @@ module Diakonos
             if buffer_current.search_area? && ! ( /^(?:find|readline)/ === to_eval )
               buffer_current.clear_search_area
             end
-            eval to_eval, nil, "eval"
+            eval(to_eval, nil, "eval")  # rubocop:disable Security/Eval
             @functions_last << to_eval  unless to_eval == "repeat_last"
             if ! @there_was_non_movement
               @there_was_non_movement = !( /^((cursor|page|scroll)_?(up|down|left|right)|find|seek)/i === to_eval )

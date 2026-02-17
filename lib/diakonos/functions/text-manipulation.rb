@@ -98,7 +98,7 @@ module Diakonos
       if ruby_code
         str = buffer_current.selected_string
         if str && ! str.empty?
-          buffer_current.paste eval( ruby_code )
+          buffer_current.paste eval(ruby_code)  # rubocop:disable Security/Eval
         end
       end
     end
@@ -117,7 +117,7 @@ module Diakonos
             lines.pop
             popped = true
           end
-          new_lines = eval( ruby_code )
+          new_lines = eval(ruby_code)  # rubocop:disable Security/Eval
           if popped
             new_lines << ''
           end
@@ -140,7 +140,7 @@ module Diakonos
             lines.pop
             popped = true
           end
-          new_lines = eval( "lines.collect { |line| #{ruby_code} }" )
+          new_lines = eval("lines.collect { |line| #{ruby_code} }")  # rubocop:disable Security/Eval
           if popped
             new_lines << ''
           end

@@ -415,7 +415,7 @@ module Diakonos
       run_hook_procs :after_startup
       if @post_load_script
         begin
-          eval @post_load_script
+          eval @post_load_script  # rubocop:disable Security/Eval
         rescue Exception => e
           show_exception(
             e,

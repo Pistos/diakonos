@@ -90,7 +90,7 @@ module Diakonos
 
       if code
         begin
-          eval code
+          eval code  # rubocop:disable Security/Eval
         rescue Exception => e
           show_exception(
             e,
@@ -206,7 +206,7 @@ module Diakonos
         if macro
           @playing_macro = true
           macro.each do |command|
-            eval command
+            eval command  # rubocop:disable Security/Eval
           end
           @playing_macro = false
           @macro_input_history = nil
@@ -245,7 +245,9 @@ module Diakonos
     end
 
     def repeat_last
-      eval @functions_last[ -1 ] if ! @functions_last.empty?
+      if ! @functions_last.empty?
+        eval @functions_last[-1]  # rubocop:disable Security/Eval
+      end
     end
 
     # Send the Diakonos job to background, as if with Ctrl-Z

@@ -308,7 +308,7 @@ module Diakonos
             when 'closer'
               begin
                 if arg =~ /^\{.+\}$/
-                  eval( "Proc.new " + arg )
+                  eval("Proc.new " + arg)  # rubocop:disable Security/Eval
                 else
                   arg
                 end
