@@ -8,7 +8,7 @@ module Diakonos
       range = range_.dup
 
       i = range.start_row + 1
-      regexps[1..-1].each do |re|
+      regexps[1..].each do |re|
         if lines[i] !~ re
           matches = false
           break

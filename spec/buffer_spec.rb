@@ -176,7 +176,7 @@ RSpec.describe 'A Diakonos::Buffer' do
   it 'can delete a line' do
     original_lines = @b.to_a
     expect(@b.delete_line).to eq '#!/usr/bin/env ruby'
-    expect(@b.to_a).to eq original_lines[ 1..-1 ]
+    expect(@b.to_a).to eq original_lines[ 1.. ]
   end
 
   it 'knows the word under the cursor' do

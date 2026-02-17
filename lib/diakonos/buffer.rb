@@ -58,7 +58,7 @@ module Diakonos
         @name = File.expand_path( @name )
         if FileTest.exist? @name
           @lines = IO.readlines( @name )
-          if ( @lines.length == 0 ) || ( @lines[ -1 ][ -1..-1 ] == "\n" )
+          if ( @lines.length == 0 ) || ( @lines[ -1 ][ -1.. ] == "\n" )
             @lines.push ""
           end
           @lines = @lines.collect { |line|
@@ -195,7 +195,7 @@ module Diakonos
       col = @last_col
       take_snapshot( TYPING )
       line = @lines[ row ]
-      @lines[ row ] = line[ 0...col ] + c.chr + line[ col..-1 ]
+      @lines[ row ] = line[ 0...col ] + c.chr + line[ col.. ]
       set_modified modified_from_line: row
     end
 
@@ -204,7 +204,7 @@ module Diakonos
       col = @last_col
       take_snapshot( TYPING )
       line = @lines[ row ]
-      @lines[ row ] = line[ 0...col ] + str + line[ col..-1 ]
+      @lines[ row ] = line[ 0...col ] + str + line[ col.. ]
       set_modified modified_from_line: row
     end
 
@@ -297,7 +297,7 @@ module Diakonos
 
       line = @lines[ @last_row ]
       head = line[ 0...@last_col ]
-      tail = line[ @last_col..-1 ]
+      tail = line[ @last_col.. ]
       new_head = head.sub( /\s+$/, '' )
       new_line = new_head + tail.sub( /^\s+/, ' ' )
       if new_line != line
@@ -393,8 +393,8 @@ module Diakonos
       col = @last_col
       @lines = @lines[ 0...row ] +
         [ @lines[ row ][ 0...col ] ] +
-        [ @lines[ row ][ col..-1 ] ] +
-        @lines[ (row+1)..-1 ]
+        [ @lines[ row ][ col.. ] ] +
+        @lines[ (row+1).. ]
       cursor_to( row + 1, 0 )
       if @auto_indent
         parsed_indent  undoable: false

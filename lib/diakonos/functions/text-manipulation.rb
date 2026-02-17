@@ -56,7 +56,7 @@ module Diakonos
           i = words.find_index { |w| w == freq_word }
         end
         word = words[ i ]
-        b.insert_string word[ partial.length..-1 ]
+        b.insert_string word[ partial.length.. ]
         r, c = b.last_row, b.last_col
         b.cursor_to( b.last_row, b.last_col + word.length - partial.length )
         b.set_selection( r, c, r, c + word.length - partial.length )

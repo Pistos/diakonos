@@ -26,7 +26,7 @@ module Diakonos
 
       if do_it
         undo_size = 0
-        @buffer_states[ 1..-1 ].each do |state|
+        @buffer_states[ 1.. ].each do |state|
           undo_size += state.length
         end
         while ( ( undo_size + @lines.length ) >= @settings[ "max_undo_lines" ] ) && @buffer_states.length > 1

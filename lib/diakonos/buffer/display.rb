@@ -66,7 +66,7 @@ module Diakonos
 
       # Truncate based on left edge of display area
       if write_cursor_col < @left_column
-        retval = retval[ (@left_column - write_cursor_col)..-1 ]
+        retval = retval[ (@left_column - write_cursor_col).. ]
         write_cursor_col = @left_column
       end
 
@@ -122,7 +122,7 @@ module Diakonos
             if expanded_col < @left_column + Curses.cols
               left = [ expanded_col - @left_column, 0 ].max
               @win_main.setpos( cury, curx + left )
-              @win_main.addstr string[ left..-1 ]
+              @win_main.addstr string[ left.. ]
             end
           elsif row == text_mark.end_row
             right = tab_expanded_column( text_mark.end_col, row ) - @left_column
@@ -174,7 +174,7 @@ module Diakonos
       substr = nil
       index = nil
       while i < line.length
-        substr = line[ i..-1 ]
+        substr = line[ i.. ]
         if @continued_format_class
           close_index, close_match_text = find_closing_match(
             substr,
@@ -302,7 +302,7 @@ module Diakonos
           n = ( @top_line+row+1 ).to_s
           @win_line_numbers.addstr(
             @settings[ 'view.line_numbers.number_format' ] % [
-              n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min..-1 ]
+              n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min.. ]
             ]
           )
         end

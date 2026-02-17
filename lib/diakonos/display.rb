@@ -160,7 +160,7 @@ module Diakonos
           var_array.push( buffer_current.last_screen_col + 1 )
         when "filename"
           name = buffer_current.nice_name
-          var_array.push name[ ([ truncation, name.length ].min)..-1 ]
+          var_array.push name[ ([ truncation, name.length ].min).. ]
         when "modified"
           if buffer_current.modified?
             var_array.push @settings[ "status.modified_str" ]
@@ -205,7 +205,7 @@ module Diakonos
         status_left = @settings[ "status.left" ]
         field_count = status_left.count "%"
         status_left = status_left % var_array[ 0...field_count ]
-        status_right = @settings[ "status.right" ] % var_array[ field_count..-1 ]
+        status_right = @settings[ "status.right" ] % var_array[ field_count.. ]
         filler_string = @settings[ "status.filler" ]
         fill_amount = (Curses.cols - status_left.length - status_right.length) / filler_string.length
         if fill_amount > 0

@@ -58,7 +58,7 @@ module Diakonos
       return []  if @search_area.nil?
 
       lines = @lines[@search_area.start_row..@search_area.end_row]
-      lines[0] = lines[0][@search_area.start_col..-1]
+      lines[0] = lines[0][@search_area.start_col..]
       lines[-1] = lines[-1][0..@search_area.end_col]
 
       lines

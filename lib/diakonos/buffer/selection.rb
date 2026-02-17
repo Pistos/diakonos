@@ -150,7 +150,7 @@ module Diakonos
       end
       if start_row
         end_row = nil
-        @lines[ start_row..-1 ].each_with_index do |line,index|
+        @lines[ start_row.. ].each_with_index do |line,index|
           if line =~ to_regexp
             end_row = start_row + index
             break
@@ -223,7 +223,7 @@ module Diakonos
             line[ selection.start_col ... selection.end_col ]
           }
         else
-          [ @lines[ selection.start_row ][ selection.start_col..-1 ] ] +
+          [ @lines[ selection.start_row ][ selection.start_col.. ] ] +
             ( @lines[ (selection.start_row + 1) .. (selection.end_row - 1) ] || [] ) +
             [ @lines[ selection.end_row ][ 0...selection.end_col ] ]
       end
@@ -273,16 +273,16 @@ module Diakonos
       start_line = @lines[ start_row ]
 
       if end_row == selection.start_row
-        @lines[ start_row ] = start_line[ 0...start_col ] + start_line[ end_col..-1 ]
+        @lines[ start_row ] = start_line[ 0...start_col ] + start_line[ end_col.. ]
       else
         case @selection_mode
         when :normal
           end_line = @lines[ end_row ]
-          @lines[ start_row ] = start_line[ 0...start_col ] + end_line[ end_col..-1 ]
-          @lines = @lines[ 0..start_row ] + @lines[ (end_row + 1)..-1 ]
+          @lines[ start_row ] = start_line[ 0...start_col ] + end_line[ end_col.. ]
+          @lines = @lines[ 0..start_row ] + @lines[ (end_row + 1).. ]
         when :block
           @lines[ start_row..end_row ] = @lines[ start_row..end_row ].collect { |line|
-            line[ 0...start_col ] + ( line[ end_col..-1 ] || '' )
+            line[ 0...start_col ] + ( line[ end_col.. ] || '' )
           }
         end
       end
@@ -314,7 +314,7 @@ module Diakonos
       new_col = nil
       line = @lines[ row ]
       if text.length == 1
-        @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col..-1 ]
+        @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col.. ]
         if do_parsed_indent
           parsed_indent  row:, do_display: false
         end
@@ -324,14 +324,14 @@ module Diakonos
         case @selection_mode
         when :normal
           @lines[ row ] = line[ 0...col ] + text[ 0 ]
-          @lines[ row + 1, 0 ] = text[ -1 ] + line[ col..-1 ]
+          @lines[ row + 1, 0 ] = text[ -1 ] + line[ col.. ]
           @lines[ row + 1, 0 ] = text[ 1..-2 ]
           new_col = column_of( text[ -1 ].length )
         when :block
           @lines += [ '' ] * [ 0, ( row + text.length - @lines.length ) ].max
           @lines[ row...( row + text.length ) ] = @lines[ row...( row + text.length ) ].collect.with_index { |line,index|
             pre = line[ 0...col ].ljust( col )
-            post = line[ col..-1 ]
+            post = line[ col.. ]
             "#{pre}#{text[ index ]}#{post}"
           }
           new_col = col + text[ -1 ].length

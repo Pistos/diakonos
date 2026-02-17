@@ -73,7 +73,7 @@ module Diakonos
 
     def set_input( input = '' )
       if numbered_list? && input =~ /^\w  /
-        input = input[ 3..-1 ]
+        input = input[ 3.. ]
       end
       @input = input
     end
@@ -114,7 +114,7 @@ module Diakonos
     end
 
     def paste( s )
-      @input = @input[ 0...@input_cursor ] + s + @input[ @input_cursor..-1 ]
+      @input = @input[ 0...@input_cursor ] + s + @input[ @input_cursor.. ]
       @input_cursor += s.length
       sync
     end

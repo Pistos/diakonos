@@ -7,7 +7,7 @@ class Hash
     if path.length > 1
       subtree = self[ path[ 0 ] ]
       if subtree.respond_to?( :delete_key_path )
-        subtree.delete_key_path( path[ 1..-1 ] )
+        subtree.delete_key_path( path[ 1.. ] )
         if subtree.empty?
           delete( path[ 0 ] )
         end
@@ -25,7 +25,7 @@ class Hash
       if ! node.respond_to?( :set_key_path )
         node = self[ path[ 0 ] ] = Hash.new
       end
-      node.set_key_path( path[ 1..-1 ], leaf )
+      node.set_key_path( path[ 1.. ], leaf )
     elsif path.length == 1
       self[ path[ 0 ] ] = leaf
     end
@@ -37,7 +37,7 @@ class Hash
     node = self[ path[ 0 ] ]
     if path.length > 1
       if node && node.respond_to?( :get_node )
-        return node.get_node( path[ 1..-1 ] )
+        return node.get_node( path[ 1.. ] )
       end
     elsif path.length == 1
       return node

@@ -16,7 +16,7 @@ module Diakonos
       begin
         raise Exception
       rescue Exception => e
-        e.backtrace[ 1..-1 ].each do |x|
+        e.backtrace[ 1.. ].each do |x|
           debug_log x
         end
       end

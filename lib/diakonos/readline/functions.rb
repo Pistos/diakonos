@@ -46,7 +46,7 @@ module Diakonos
 
     def delete
       return  if @input_cursor >= @input.length
-      @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1)..-1 ]
+      @input = @input[ 0...@input_cursor ] + @input[ (@input_cursor + 1).. ]
       sync
     end
 
@@ -58,7 +58,7 @@ module Diakonos
     def delete_word
       head = @input[ 0...@input_cursor ]
       chopped = head.sub( /\w+\W*$/, '' )
-      @input = chopped + @input[ @input_cursor..-1 ]
+      @input = chopped + @input[ @input_cursor.. ]
       @input_cursor -= head.length - chopped.length
       sync
     end
