@@ -48,7 +48,13 @@ module Diakonos
             id: request_id,
             method: 'initialize',
             params: {
-              capabilities: {},
+              capabilities: {
+                textDocument: {
+                  publishDiagnostics: {
+                    relatedInformation: true,
+                  },
+                },
+              },
               processId: Process.pid,
               rootUri: "file://#{@working_directory}",
             },
