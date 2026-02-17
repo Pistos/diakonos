@@ -1,10 +1,10 @@
 module Diakonos
 
   class Buffer
-    attr_reader :name, :original_language, :language, :changing_selection, :read_only,
-      :tab_size, :selection_mode
+    attr_accessor :read_only
+    attr_reader :name, :original_language, :language, :changing_selection, :tab_size, :selection_mode
     attr_accessor :lsp_session
-    attr_writer :desired_column, :read_only
+    attr_writer :desired_column
     attr_accessor :lines
 
     TYPING                 = true

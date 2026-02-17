@@ -145,14 +145,12 @@ module Diakonos
 
   class Diakonos
 
-    attr_reader :diakonos_home, :script_dir, :clipboard,
-      :list_filename, :hooks, :indenters, :indenters_next_line, :unindenters, :closers,
-      :functions_last, :there_was_non_movement, :do_display, :testing, :buffers
+    attr_accessor :do_display
+    attr_reader :diakonos_home, :script_dir, :clipboard, :list_filename, :hooks, :indenters, :indenters_next_line, :unindenters, :closers, :functions_last, :there_was_non_movement, :testing, :buffers
 
     # Temporarily a writer, so that collaborating classes can get at it
     # TODO: Rewrite things so that this doesn't need to be a writer.
     # e.g. pass do_display to methods as needed.
-    attr_writer :do_display
 
     include ::Diakonos::Functions
 
