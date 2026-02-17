@@ -248,7 +248,7 @@ module Diakonos
           @colour_pairs << {
             number: number,
             fg: fg,
-            bg: bg
+            bg: bg,
           }
         when /^lang\.(.+?)\.indent\.indenters(\.case_insensitive)?$/
           case_insensitive = ( $2 != nil )

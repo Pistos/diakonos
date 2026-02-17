@@ -12,7 +12,7 @@ module Diakonos
         buffer: buffer_current,
         top_line: top_line,
         row: row,
-        col: col
+        col: col,
       }
       if ! @cursor_stack.include? new_state
         @cursor_stack << new_state

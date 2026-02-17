@@ -359,7 +359,7 @@ class FuzzyFileFinder
                    highlighted_directory: path_match[:result],
                    highlighted_name: match_result[:result],
                    highlighted_path: full_match_result,
-                   score: path_match[:score] * match_result[:score] }
+                   score: path_match[:score] * match_result[:score], }
         yield result
       end
     end

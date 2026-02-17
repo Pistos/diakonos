@@ -24,8 +24,8 @@ RSpec.describe 'A KeyMap' do
 
     g = {
       'a' => {
-        'b' => 'x'
-      }
+        'b' => 'x',
+      },
     }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     expect(h.delete_key_path( [] )).to eq( { 'a' => { 'b' => 'x' } } )
@@ -43,8 +43,8 @@ RSpec.describe 'A KeyMap' do
     g = {
       'a' => {
         'b' => 'x',
-        'c' => 'y'
-      }
+        'c' => 'y',
+      },
     }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     expect(h.delete_key_path( [] )).to eq( { 'a' => { 'b' => 'x', 'c' => 'y' } } )
@@ -63,11 +63,11 @@ RSpec.describe 'A KeyMap' do
 
     g = {
       'a' => {
-        'b' => 'x'
+        'b' => 'x',
       },
       'c' => {
-        'd' => 'y'
-      }
+        'd' => 'y',
+      },
     }.extend( Diakonos::KeyMap )
     h = g.deep_clone
     expect(h.delete_key_path( [] )).to eq( { 'a' => { 'b' => 'x' }, 'c' => { 'd' => 'y' } } )

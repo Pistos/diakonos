@@ -34,7 +34,7 @@ module Diakonos
         'buffer_current' => @buffer_current,
         'dir' => @dir,
         'buffers' => @buffers,
-        'readline_histories' => @readline_histories
+        'readline_histories' => @readline_histories,
       }.to_yaml
     end
 
@@ -51,7 +51,7 @@ module Diakonos
           },
           'display'  => {
             'top_line'    => buffer.top_line,
-            'left_column' => buffer.left_column
+            'left_column' => buffer.left_column,
           },
           'last_search_regexps' => buffer.last_search_regexps.map { |r| r.to_s },
         }
@@ -125,7 +125,7 @@ module Diakonos
         },
         'display'   => {
           'top_line'    => 0,
-          'left_column' => 0
+          'left_column' => 0,
         },
       }
     end

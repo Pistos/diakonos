@@ -8,7 +8,7 @@
     e: {
       f: 5,
     },
-  }
+  },
 }
 
 # Test mismatched pairs
