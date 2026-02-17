@@ -90,7 +90,7 @@ module Diakonos
     end
 
     def print_usage_and_exit
-      puts "#{$0} [options]"
+      puts "#{$PROGRAM_NAME} [options]"
       puts "    -h / --help          show usage (can be used with other options to preview paths)"
       puts "    -v / --verbose       print each step"
       puts "    -p / --pretend       don't actually do anything"

@@ -1,3 +1,5 @@
+require 'English'
+
 module Diakonos
   module Functions
 
@@ -174,7 +176,7 @@ module Diakonos
       if ! success
         result = "Could not execute: #{command}"
       else
-        result = "Exit code: #{$?}"
+        result = "Exit code: #{$CHILD_STATUS}"
       end
 
       Curses.init_screen
@@ -237,9 +239,9 @@ module Diakonos
 
       Thread.new do
         if system( command )
-          set_iline "Return code #{$?} from '#{command}'"
+          set_iline "Return code #{$CHILD_STATUS} from '#{command}'"
         else
-          set_iline "Error code #{$?} executing '#{command}'"
+          set_iline "Error code #{$CHILD_STATUS} executing '#{command}'"
         end
       end
     end

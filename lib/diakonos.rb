@@ -350,7 +350,7 @@ module Diakonos
     end
 
     def print_usage
-      puts "Usage: #{$0} [options] [file] [file...]"
+      puts "Usage: #{$PROGRAM_NAME} [options] [file] [file...]"
       puts "\t--help\tDisplay usage"
       puts "\t-c <config file>\tLoad this config file instead of ~/.diakonos/diakonos.conf"
       puts "\t-e, --execute <Ruby code>\tExecute Ruby code (such as Diakonos commands) after startup"
