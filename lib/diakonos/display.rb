@@ -257,9 +257,9 @@ module Diakonos
           ].min
           line = nil
           context_subset = context[ 0...truncation ]
-          context_subset = context_subset.collect do |line|
+          context_subset = context_subset.collect { |line|
             line.strip[ 0...max_length ]
-          end
+          }
 
           context_subset.each do |line|
             @win_context.attrset @settings[ "context.format" ]

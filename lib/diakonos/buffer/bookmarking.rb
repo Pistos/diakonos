@@ -4,9 +4,9 @@ module Diakonos
 
     def go_to_next_bookmark
       cur_pos = Bookmark.new( self, @last_row, @last_col )
-      next_bm = @bookmarks.find do |bm|
+      next_bm = @bookmarks.find { |bm|
         bm > cur_pos
-      end
+      }
       if next_bm
         cursor_to( next_bm.row, next_bm.col, DO_DISPLAY )
       end
@@ -29,9 +29,9 @@ module Diakonos
 
     def toggle_bookmark
       bookmark = Bookmark.new( self, @last_row, @last_col )
-      existing = @bookmarks.find do |bm|
+      existing = @bookmarks.find { |bm|
         bm == bookmark
-      end
+      }
       if existing
         @bookmarks.delete existing
         $diakonos.set_iline "Bookmark #{existing.to_s} deleted."

@@ -15,7 +15,7 @@ RSpec.describe 'A Diakonos user can' do
   it 'collapse whitespace' do
     expect(@b.to_a[ 2 ]).to eq '# This is only a sample file used in the tests.'
     @b.cursor_to 2,9
-    5.times { @d.type_character ' ' }
+    5.times do @d.type_character ' ' end
     cursor_should_be_at 2,14
     expect(@b.to_a[ 2 ]).to eq '# This is      only a sample file used in the tests.'
     @d.collapse_whitespace
@@ -25,7 +25,7 @@ RSpec.describe 'A Diakonos user can' do
 
   it 'columnize source code' do
     @b.cursor_to 8,7
-    3.times { @d.type_character ' ' }
+    3.times do @d.type_character ' ' end
     expect(@b.to_a[ 8..10 ]).to eq [
       '    @x    = 1',
       '    @y = 2',
@@ -33,7 +33,7 @@ RSpec.describe 'A Diakonos user can' do
     ]
     @b.cursor_to 8,0
     @d.anchor_selection
-    2.times { @d.cursor_down }
+    2.times do @d.cursor_down end
     @d.columnize '='
     expect(@b.to_a[ 8..10 ]).to eq [
       '    @x    = 1',
@@ -62,7 +62,7 @@ RSpec.describe 'A Diakonos user can' do
   it 'comment out and uncomment selected lines' do
     @b.cursor_to 7,0
     @d.anchor_selection
-    4.times { @d.cursor_down }
+    4.times do @d.cursor_down end
     @d.comment_out
     expect(@b.to_a[ 7..11 ]).to eq [
       '  # def initialize',
@@ -113,7 +113,7 @@ RSpec.describe 'A Diakonos user can' do
 
     @b.cursor_to 5,0
     @d.anchor_selection
-    3.times { @d.cursor_down }
+    3.times do @d.cursor_down end
     @d.comment_out
     expect(@b.to_a[ 5..7 ]).to eq [
       '  # attr_reader :x, :y',

@@ -19,7 +19,7 @@ RSpec.describe 'A Diakonos user can' do
   end
 
   it 'backspace the previous character' do
-    3.times{ @d.cursor_right }
+    3.times do @d.cursor_right end
     cursor_should_be_at 0,3
     @d.backspace
     expect(@b.to_a[ 0 ]).to eq '#!usr/bin/env ruby'
@@ -27,7 +27,7 @@ RSpec.describe 'A Diakonos user can' do
   end
 
   it 'insert a newline character' do
-    5.times{ @d.cursor_right }
+    5.times do @d.cursor_right end
     @d.carriage_return
     cursor_should_be_at 1,0
     lines = @b.to_a

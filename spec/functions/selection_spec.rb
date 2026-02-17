@@ -48,7 +48,7 @@ RSpec.describe 'A Diakonos user can' do
 
   it 'delete the selection' do
     @d.anchor_selection
-    3.times { @d.cursor_down }
+    3.times do @d.cursor_down end
     @d.delete
     expect(@b.to_a[ 0..2 ]).to eq [
       '',

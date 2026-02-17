@@ -255,14 +255,14 @@ module Diakonos
         if replacement
           # Substitute placeholders (e.g. \1) in str for the group matches of the last match.
           actual_replacement = replacement.dup
-          actual_replacement.gsub!( /\\(\\|\d+)/ ) { |m|
+          actual_replacement.gsub!( /\\(\\|\d+)/ ) do |m|
             ref = $1
             if ref == "\\"
               "\\"
             else
               finding.captured_group(ref.to_i)
             end
-          }
+          end
 
           choices = [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP, ]
           if @search_area
@@ -347,7 +347,7 @@ module Diakonos
 
       grepped_lines = lines.grep_indices( @highlight_regexp )
       n = grepped_lines.count
-      found_marks = grepped_lines.collect do |line_index, start_col, end_col|
+      found_marks = grepped_lines.collect { |line_index, start_col, end_col|
         TextMark.new(
           ::Diakonos::Range.new(
             line_index + line_index_offset,
@@ -357,7 +357,7 @@ module Diakonos
           ),
           @settings["lang.#{@language}.format.found"]
         )
-      end
+      }
       @text_marks[:found] = found_marks
       @num_matches_found ||= found_marks.size
     end

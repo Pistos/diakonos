@@ -114,9 +114,9 @@ module Diakonos
       @saved_main_y = @win_main.cury
 
       msg = prompt + " "
-      choice_strings = choices.collect do |choice|
+      choice_strings = choices.collect { |choice|
         CHOICE_STRINGS[ choice ]
-      end
+      }
       msg << choice_strings.join( ", " )
 
       if default

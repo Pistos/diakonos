@@ -57,7 +57,7 @@ RSpec.describe Diakonos::Lsp::Transport do
 
       it 'parses the framed JSON-RPC message and yields it' do
         received = []
-        transport.send(:read) { |msg| received << msg }
+        transport.send(:read) do |msg| received << msg end
 
         expect(received.length).to eq 1
         expect(received[0][:method]).to eq 'textDocument/publishDiagnostics'
@@ -84,7 +84,7 @@ RSpec.describe Diakonos::Lsp::Transport do
 
       it 'yields each message' do
         received = []
-        transport.send(:read) { |msg| received << msg }
+        transport.send(:read) do |msg| received << msg end
 
         expect(received.length).to eq 2
         expect(received[0][:id]).to eq 1

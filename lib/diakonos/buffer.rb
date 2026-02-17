@@ -61,9 +61,9 @@ module Diakonos
           if ( @lines.length == 0 ) || ( @lines[ -1 ][ -1..-1 ] == "\n" )
             @lines.push ""
           end
-          @lines = @lines.collect do |line|
+          @lines = @lines.collect { |line|
             line.chomp
-          end
+          }
         else
           @lines = Array.new
           @lines[ 0 ] = ""

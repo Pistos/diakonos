@@ -50,7 +50,7 @@ RSpec.describe 'A Diakonos user can' do
 
   it 'paste from the clipboard' do
     @d.anchor_selection
-    3.times { @d.cursor_down }
+    3.times do @d.cursor_down end
     @d.copy_selection
     @d.paste
 
