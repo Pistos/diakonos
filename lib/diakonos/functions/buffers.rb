@@ -88,9 +88,9 @@ module Diakonos
         end
 
         if to_switch_to
-          switch_to  to_switch_to, do_display: do_display
+          switch_to(to_switch_to, do_display:)
         elsif previous_buffer
-          switch_to  previous_buffer, do_display: do_display
+          switch_to(previous_buffer, do_display:)
         end
 
         @buffer_closed = del_buffer

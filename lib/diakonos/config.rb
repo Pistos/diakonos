@@ -246,9 +246,9 @@ module Diakonos
           fg = Display.to_colour_constant( fg )
           bg = Display.to_colour_constant( bg )
           @colour_pairs << {
-            number: number,
-            fg: fg,
-            bg: bg,
+            number:,
+            fg:,
+            bg:,
           }
         when /^lang\.(.+?)\.indent\.indenters(\.case_insensitive)?$/
           case_insensitive = ( $2 != nil )

@@ -1,5 +1,9 @@
 # Ruby Compatibility
 
+## Ruby 3.1
+
+Ruby 0.10.0 and later require at least Ruby 3.1.
+
 ## Ruby 1.9
 
 Usage to date has shown that Diakonos is fully compatible with Ruby 1.9.

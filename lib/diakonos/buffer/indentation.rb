@@ -157,17 +157,17 @@ module Diakonos
         end
       end
 
-      set_indent  row, level, do_display: do_display, undoable: undoable, cursor_eol: cursor_eol
+      set_indent  row, level, do_display:, undoable:, cursor_eol:
     end
 
     def indent( row = @last_row, do_display = DO_DISPLAY )
       level = indentation_level( row, DONT_USE_INDENT_IGNORE )
-      set_indent  row, level + 1, do_display: do_display
+      set_indent  row, level + 1, do_display:
     end
 
     def unindent( row = @last_row, do_display = DO_DISPLAY )
       level = indentation_level( row, DONT_USE_INDENT_IGNORE )
-      set_indent  row, level - 1, do_display: do_display
+      set_indent  row, level - 1, do_display:
     end
 
   end

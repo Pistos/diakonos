@@ -2,7 +2,7 @@
 
 ## REQUIREMENTS
 
-- Ruby 2.3+
+- Ruby 3.1+
 - curses gem
 
 Diakonos is built to run on Linux, but may run under other flavours of UNIX.

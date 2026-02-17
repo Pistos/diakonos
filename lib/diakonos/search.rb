@@ -42,7 +42,7 @@ module Diakonos
       num_replacements = buffer_current.find(
         regexps,
         direction: options[:direction],
-        replacement: replacement,
+        replacement:,
         starting_row: options[:starting_row],
         starting_col: options[:starting_col],
         quiet: options[:quiet],

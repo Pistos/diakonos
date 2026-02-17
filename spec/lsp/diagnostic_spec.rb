@@ -8,7 +8,7 @@ RSpec.describe Diakonos::Lsp::Diagnostic do
         end: { character: 10, line: 4 },
         start: { character: 0, line: 4 },
       },
-      severity: severity,
+      severity:,
     }
   }
   let(:diagnostic) { described_class.new(data:) }

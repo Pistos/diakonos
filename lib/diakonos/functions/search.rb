@@ -46,11 +46,11 @@ module Diakonos
           if input.length > 1
             regexp_source = word_only ? "\\b#{input}\\b" : input
             find_(
-              direction: direction,
-              case_sensitive: case_sensitive,
-              regexp_source: regexp_source,
-              starting_row: starting_row,
-              starting_col: starting_col,
+              direction:,
+              case_sensitive:,
+              regexp_source:,
+              starting_row:,
+              starting_col:,
               quiet: true
             )
           else
@@ -65,12 +65,12 @@ module Diakonos
           regexp_source = "\\b#{regexp_source}\\b"
         end
         num_replacements = find_(
-          direction: direction,
-          case_sensitive: case_sensitive,
-          regexp_source: regexp_source,
-          replacement: replacement,
-          starting_row: starting_row,
-          starting_col: starting_col,
+          direction:,
+          case_sensitive:,
+          regexp_source:,
+          replacement:,
+          starting_row:,
+          starting_col:,
           quiet: false
         )
         show_number_of_matches_found( replacement ? num_replacements : nil )
@@ -91,7 +91,7 @@ module Diakonos
     #   Whether or not the search should be case_sensitive.  Default is insensitive.
     # @see #find
     def find_clip( direction = :down, case_sensitive = CASE_INSENSITIVE )
-      find @clipboard.clip[-1], direction: direction, case_sensitive: case_sensitive
+      find @clipboard.clip[-1], direction:, case_sensitive:
     end
 
     # Search again for the most recently sought search term.
@@ -131,7 +131,7 @@ module Diakonos
       end
       if search_term
         regexp = [ Regexp.new( Regexp.escape( search_term ) ) ]
-        buffer_current.find( regexp, direction: direction )
+        buffer_current.find( regexp, direction: )
         @last_search_regexps = regexp
       end
     end
@@ -144,7 +144,7 @@ module Diakonos
     # Wrapper method for calling #find for search and replace.
     # @see #find
     def search_and_replace( case_sensitive = CASE_INSENSITIVE )
-      find nil, case_sensitive: case_sensitive, replacement: ASK_REPLACEMENT
+      find nil, case_sensitive:, replacement: ASK_REPLACEMENT
     end
     alias_method :find_and_replace, :search_and_replace
 

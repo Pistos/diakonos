@@ -321,7 +321,7 @@ module Diakonos
       if text.length == 1
         @lines[ row ] = line[ 0...col ] + text[ 0 ] + line[ col..-1 ]
         if do_parsed_indent
-          parsed_indent  row: row, do_display: false
+          parsed_indent  row:, do_display: false
         end
         cursor_to( @last_row, @last_col + text[ 0 ].length, DONT_DISPLAY, ! typing )
       elsif text.length > 1

@@ -24,7 +24,7 @@ module Diakonos
         testing: @testing,
         window: @win_interaction,
         start_pos: cursor_pos,
-        options: options,
+        options:,
         &block
       )
 

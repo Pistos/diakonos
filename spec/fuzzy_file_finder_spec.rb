@@ -3,10 +3,10 @@ require 'spec_helper'
 RSpec.describe FuzzyFileFinder do
   let(:params) {
     {
-      ceiling: ceiling,
-      directories: directories,
-      ignores: ignores,
-      recursive: recursive,
+      ceiling:,
+      directories:,
+      ignores:,
+      recursive:,
     }
   }
   let(:finder) { described_class.new(params) }

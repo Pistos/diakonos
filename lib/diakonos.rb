@@ -235,10 +235,10 @@ module Diakonos
       @rlh_sessions = Array.new
 
       @hooks = {
-        :after_buffer_switch => [],
-        :after_open          => [],
-        :after_save          => [],
-        :after_startup       => [],
+        after_buffer_switch: [],
+        after_open: [],
+        after_save: [],
+        after_startup: [],
       }
     end
 

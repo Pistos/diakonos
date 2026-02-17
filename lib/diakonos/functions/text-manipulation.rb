@@ -86,7 +86,7 @@ module Diakonos
 
     def move_lines(direction:)
       mover = LineMover.new(buffer: buffer_current)
-      mover.move_selected_lines(direction: direction)
+      mover.move_selected_lines(direction:)
     end
 
     def operate_on_string(

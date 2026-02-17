@@ -10,9 +10,9 @@ module Diakonos
     def push_cursor_state( top_line, row, col, clear_stack_pointer = CLEAR_STACK_POINTER )
       new_state = {
         buffer: buffer_current,
-        top_line: top_line,
-        row: row,
-        col: col,
+        top_line:,
+        row:,
+        col:,
       }
       if ! @cursor_stack.include? new_state
         @cursor_stack << new_state
