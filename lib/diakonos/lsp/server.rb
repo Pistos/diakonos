@@ -53,13 +53,16 @@ module Diakonos
             params: {
               capabilities: {
                 textDocument: {
+                  definition: {
+                    dynamicRegistration: false,
+                  },
                   publishDiagnostics: {
                     relatedInformation: true,
                   },
                 },
               },
               processId: Process.pid,
-              rootUri: "file://#{@working_directory}",
+              rootUri: "#{FILE_URI_PREFIX}#{@working_directory}",
             },
           },
         )

@@ -36,6 +36,38 @@ RSpec.describe Diakonos::Lsp::Session do
     end
   end
 
+  describe '#go_to_definition' do
+    let(:buffer) {
+      instance_double(
+        Diakonos::Buffer,
+        last_col: 10,
+        last_row: 5,
+        lsp_uri: 'file:///project/foo.rb',
+      )
+    }
+    let(:on_result) { instance_double(Proc) }
+
+    it 'sends a textDocument/definition request with cursor position' do
+      session.go_to_definition(buffer:, on_result:)
+
+      expect(server).to have_received(:write).with(
+        message: {
+          id: 1,
+          method: 'textDocument/definition',
+          params: {
+            position: {
+              character: 10,
+              line: 5,
+            },
+            textDocument: {
+              uri: 'file:///project/foo.rb',
+            },
+          },
+        },
+      )
+    end
+  end
+
   describe '#send_notification' do
     it 'writes a message without an ID to the server' do
       session.send_notification(
@@ -65,6 +97,25 @@ RSpec.describe Diakonos::Lsp::Session do
         expect($diakonos).to have_received(:log).with(
           %r{LSP response for textDocument/hover \(id=1\)}
         )
+      end
+    end
+
+    context 'when the response has an on_response callback' do
+      let(:callback) { instance_double(Proc) }
+
+      before do
+        allow(callback).to receive(:call)
+        session.send_request(
+          method: 'textDocument/definition',
+          on_response: callback,
+        )
+        queue.push({ id: 1, result: { uri: 'file:///foo.rb' } })
+      end
+
+      it 'invokes the callback with the result' do
+        session.process_queue
+
+        expect(callback).to have_received(:call).with({ uri: 'file:///foo.rb' })
       end
     end
 

@@ -482,7 +482,7 @@ module Diakonos
 
     def lsp_uri
       if name
-        "file://#{name}"
+        "#{Lsp::FILE_URI_PREFIX}#{name}"
       end
     end
 

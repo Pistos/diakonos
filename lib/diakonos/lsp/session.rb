@@ -11,6 +11,22 @@ module Diakonos
         @server = server
       end
 
+      def go_to_definition(buffer:, on_result:)
+        send_request(
+          method: 'textDocument/definition',
+          on_response: on_result,
+          params: {
+            position: {
+              character: buffer.last_col,
+              line: buffer.last_row,
+            },
+            textDocument: {
+              uri: buffer.lsp_uri,
+            },
+          },
+        )
+      end
+
       def diagnostics_for_line(uri:, line:)
         Array(
           @diagnostics[uri]&.select { |d|
@@ -87,11 +103,12 @@ module Diakonos
         )
       end
 
-      def send_request(method:, params: {})
+      def send_request(method:, on_response: nil, params: {})
         request_id = @server.next_request_id
         @pending_requests[request_id] = {
           id: request_id,
           method:,
+          on_response:,
           sent_at: Time.now,
         }
         @server.write(
@@ -142,6 +159,7 @@ module Diakonos
           $diakonos.log(
             "LSP response for #{request[:method]} (id=#{message[:id]}): #{message[:result]}"
           )
+          request[:on_response]&.call(message[:result])
         else
           $diakonos.log(
             "LSP response for unknown request id=#{message[:id]}: #{message[:result]}"
