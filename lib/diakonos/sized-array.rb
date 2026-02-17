@@ -20,7 +20,7 @@ class SizedArray < Array
   end
 
   def fill( *args )
-    retval = super( *args )
+    super( *args )
     resize
     self
   end

@@ -194,19 +194,15 @@ module Diakonos
         cursor_right( Buffer::STILL_TYPING, str.length )
       else
         keychain_pressed = context.concat [ c ]
-
         function_and_args = @modes[ 'edit' ].keymap.get_leaf( keychain_pressed )
-
-        if function_and_args
-          function, args = function_and_args
-        end
-
         partial_keychain = @modes[ 'edit' ].keymap.get_node( keychain_pressed )
+
         if partial_keychain
           set_iline( "Part of existing keychain: " + keychain_str_for( keychain_pressed ) + "..." )
         else
           set_iline keychain_str_for( keychain_pressed ) + "..."
         end
+
         process_keystroke keychain_pressed
       end
     end
@@ -290,7 +286,7 @@ module Diakonos
           Timeout.timeout(0.02) do
             ch = @modes[mode].window.getch
           end
-        rescue Timeout::Error => e
+        rescue Timeout::Error
           break
         end
         break  if ch.nil?

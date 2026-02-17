@@ -347,7 +347,7 @@ module Diakonos
       end
 
       grepped_lines = lines.grep_indices( @highlight_regexp )
-      n = grepped_lines.count
+      grepped_lines.count
       found_marks = grepped_lines.collect { |line_index, start_col, end_col|
         TextMark.new(
           ::Diakonos::Range.new(

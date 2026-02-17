@@ -153,7 +153,8 @@ module Diakonos
             f.puts "(#{selected.strip})"
             f.puts "Close this message with Ctrl-W (default keychord)."
           end
-          error_file = open_file( @error_filename )
+
+          open_file @error_filename
         else
           help selected
         end

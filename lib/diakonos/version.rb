@@ -15,16 +15,16 @@ module Diakonos
     ruby_version = parse_version( RUBY_VERSION )
 
     if ruby_version < [ 3, 1 ]
-      $stderr.puts "This version of Diakonos (#{Diakonos::VERSION}) requires Ruby 3.1 or higher."
+      warn "This version of Diakonos (#{Diakonos::VERSION}) requires Ruby 3.1 or higher."
 
       if ruby_version >= [ 3, 0 ]
-        $stderr.puts "Version 0.9.12 is the last version of Diakonos which can run under Ruby 3.0."
+        warn "Version 0.9.12 is the last version of Diakonos which can run under Ruby 3.0."
       elsif ruby_version >= [ 2, 0 ]
-        $stderr.puts "Version 0.9.5 is the last version of Diakonos which can run under Ruby 2.0."
+        warn "Version 0.9.5 is the last version of Diakonos which can run under Ruby 2.0."
       elsif ruby_version >= [ 1, 9 ]
-        $stderr.puts "Version 0.9.2 is the last version of Diakonos which can run under Ruby 1.9."
+        warn "Version 0.9.2 is the last version of Diakonos which can run under Ruby 1.9."
       elsif ruby_version >= [ 1, 8 ]
-        $stderr.puts "Version 0.8.9 is the last version of Diakonos which can run under Ruby 1.8."
+        warn "Version 0.8.9 is the last version of Diakonos which can run under Ruby 1.8."
       end
 
       exit 1

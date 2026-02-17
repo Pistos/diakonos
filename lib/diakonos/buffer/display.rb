@@ -173,7 +173,7 @@ module Diakonos
     def print_line( line )
       i = 0
       substr = nil
-      index = nil
+
       while i < line.length
         substr = line[ i.. ]
         if @continued_format_class

@@ -61,10 +61,9 @@ module Diakonos
         end
 
         list_buffer = open_list_buffer
-        regexp = nil
         begin
           list_buffer.highlight_matches Regexp.new( input )
-        rescue RegexpError => e
+        rescue RegexpError
           # ignore
         end
         display_buffer list_buffer

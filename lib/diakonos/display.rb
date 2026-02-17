@@ -247,7 +247,6 @@ module Diakonos
             ( Curses.cols / truncation ) - @settings[ "context.separator" ].length,
             ( @settings[ "context.max_segment_width" ] || Curses.cols ),
           ].min
-          line = nil
           context_subset = context[ 0...truncation ]
           context_subset = context_subset.collect { |line|
             line.strip[ 0...max_length ]

@@ -13,7 +13,7 @@ begin
 rescue LoadError
   desc "Generate source code documentation with YARD"
   task :docs do
-    $stderr.puts "('gem install yard' in order to be able to generate Diakonos source code documentation.)"
+    warn "('gem install yard' in order to be able to generate Diakonos source code documentation.)"
   end
 end
 

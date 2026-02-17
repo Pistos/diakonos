@@ -102,7 +102,7 @@ module Diakonos
       File.open( result_file , "w" ) do |f|
         Curses.close_screen
 
-        stdin, stdout, stderr = Open3.popen3( command )
+        _, stdout, stderr = Open3.popen3( command )
 
         t1 = Thread.new do
           stdout.each_line do |line|
@@ -126,7 +126,7 @@ module Diakonos
                 completed = true
                 throw :stop
               end
-            rescue Timeout::Error => e
+            rescue Timeout::Error
               choice = get_choice(
                 "Keep waiting for shell results?",
                 [ CHOICE_YES, CHOICE_NO ],

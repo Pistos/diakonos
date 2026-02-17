@@ -336,8 +336,8 @@ module Diakonos
           if post !~ /^\s/
             del = "#{del} "
           end
-          del.sub!( /^\s+/, ' ' * num_spaces_padding )
-          del.sub!( /\s+$/, ' ' * num_spaces_padding )
+          del.sub!( /^\s+/, padding )
+          del.sub!( /\s+$/, padding )
           line.replace( ( "%-#{column_width}s" % pre ) + del + post )
         end
         one_modified ||= ( line != old_line )
@@ -558,8 +558,8 @@ module Diakonos
     end
 
     def wrap_paragraph
-      start_row = end_row = cursor_row = @last_row
-      cursor_col = @last_col
+      start_row = end_row = @last_row
+      @last_col
       until start_row == 0 || @lines[ start_row - 1 ].strip == ''
         start_row -= 1
       end

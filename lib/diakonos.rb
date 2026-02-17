@@ -528,7 +528,7 @@ module Diakonos
         rescue Errno::ENOTEMPTY
         end
         if File.exist? d
-          $stderr.puts "(#{d} not removed)"
+          warn "(#{d} not removed)"
         end
       end
 
@@ -574,8 +574,8 @@ module Diakonos
         end
         open_file @error_filename
       rescue Exception => e2
-        debug_log "EXCEPTION: #{e.message}"
-        debug_log "\t#{e.backtrace}"
+        debug_log "EXCEPTION: #{e2.message}"
+        debug_log "\t#{e2.backtrace}"
       end
     end
 

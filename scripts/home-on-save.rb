@@ -2,7 +2,6 @@
 # Create a Proc object, then register it with $diakonos.register_proc.
 
 example_proc = Proc.new do |buffer|
-  filename = buffer.name
   $diakonos.cursorBOF
 end
 

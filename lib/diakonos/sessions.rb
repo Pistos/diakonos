@@ -182,7 +182,6 @@ module Diakonos
       @stale_session_files = []
 
       if @session_to_load
-        pid_session = @session
         @session = nil
         session_path = session_filepath_for( @session_to_load )
         load_session session_path

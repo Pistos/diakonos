@@ -438,11 +438,9 @@ module Diakonos
       else
         file = get_user_input( "Filename: ", history: @rlh_files )
       end
-      if file
-        old_name = buffer_current.name
-        if buffer_current.save( file, PROMPT_OVERWRITE )
-          save_session
-        end
+
+      if file && buffer_current.save( file, PROMPT_OVERWRITE )
+        save_session
       end
     end
 

@@ -37,11 +37,6 @@ module Diakonos
       ( ( self <=> other ) > 0 )
     end
 
-    def shift( row_inc, col_inc )
-      row += row_inc
-      col += col_inc
-    end
-
     def to_s
       "[#{@name}|#{@buffer.name}:#{@row+1},#{@col+1}]"
     end
