@@ -161,7 +161,7 @@ end
       dest_file = File.join( dest, File.basename( source ) )
       dest_dir_file = File.join( @dest_dir, dest_file )
 
-      install source, dest_dir_file, mode: 0755
+      install source, dest_dir_file, mode: 0o755
 
       # Rewrite shebang line
       command = "sed -i_ '1s|.*|#{@shebang}|' #{dest_dir_file}"
