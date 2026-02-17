@@ -5,6 +5,8 @@ Diakonos Changelog
 
 - Fix syntax highlighting of multi-line things (e.g. strings, comments)
 - Add preliminary Language Server Protocol support
+  - diagnostics (errors, info) per line
+  - go to definition
 
 0.9.12
 

@@ -74,22 +74,28 @@ module Diakonos
       end
 
       File.open( name, "w" ) do |f|
+        was_modified = false
+
         @lines[ 0..-2 ].each do |line|
           if @settings[ 'strip_trailing_whitespace_on_save' ]
-            line.rstrip!
+            stripped = line.rstrip!
+            was_modified ||= stripped
           end
           f.puts line
         end
 
         line = @lines[ -1 ]
         if @settings[ 'strip_trailing_whitespace_on_save' ]
-          line.rstrip!
+          stripped = line.rstrip!
+          was_modified ||= stripped
         end
+
         if line != ""
           # No final newline character
           if @settings[ "eof_newline" ]
             line << "\n"
             @lines << ''
+            was_modified = true
           end
           f.print line
         end
@@ -98,6 +104,10 @@ module Diakonos
           if @last_col > @lines[ @last_row ].size
             cursor_to @last_row, @lines[ @last_row ].size
           end
+        end
+
+        if was_modified
+          set_modified
         end
       end
     end
