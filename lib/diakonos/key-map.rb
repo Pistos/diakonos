@@ -38,7 +38,7 @@ module Diakonos
     def get_node( path )
       node = self[ path[ 0 ] ]
       if path.length > 1
-        if node&.respond_to?( :get_node )
+        if node.respond_to?( :get_node )
           return node.get_node( path[ 1.. ] )
         end
       elsif path.length == 1

@@ -305,7 +305,7 @@ module Diakonos
             rescue Exception => e
               show_exception(
                 e,
-                [ "Failed to process Proc for #{command}.", ]
+                [ "Failed to process Proc for #{command}." ]
               )
             end
           end

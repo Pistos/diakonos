@@ -303,7 +303,7 @@ RSpec.describe 'A Diakonos user can' do
     @d.surround_selection '('
     expect(@b[ 4..5 ]).to eq [
       '( class Sample',
-      '  attr_reader :x, :y )'
+      '  attr_reader :x, :y )',
     ]
     @d.undo
 

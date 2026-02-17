@@ -265,7 +265,7 @@ module Diakonos
             end
           end
 
-          choices = [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP, ]
+          choices = [ CHOICE_YES, CHOICE_NO, CHOICE_ALL, CHOICE_CANCEL, CHOICE_YES_AND_STOP ]
           if @search_area
             choices << CHOICE_WITHIN_SELECTION
           end

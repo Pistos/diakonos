@@ -493,7 +493,7 @@ module Diakonos
             e,
             [
               "There is a syntax error in the script.",
-              "An invalid hook name was used."
+              "An invalid hook name was used.",
             ]
           )
         end

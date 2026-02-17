@@ -25,7 +25,7 @@ end
 __DIR__ = File.dirname( File.expand_path( __FILE__ ) )
 
 if $diakonos.nil?
-  $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test', ]
+  $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test' ]
   $diakonos.start
   $diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )
 

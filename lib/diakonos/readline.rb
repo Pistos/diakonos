@@ -128,7 +128,7 @@ module Diakonos
       @window.setpos( @icury, @icurx )
       @window.addstr "%-#{ Curses.cols - curx }s%s" % [
         input,
-        " " * [ ( Curses.cols - input.length ), 0 ].max
+        " " * [ ( Curses.cols - input.length ), 0 ].max,
       ]
       @window.setpos( cury, curx )
       @window.refresh

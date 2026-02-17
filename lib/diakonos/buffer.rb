@@ -527,7 +527,7 @@ module Diakonos
         min: @left_column,
         max: [
           @left_column + Curses.cols - 1,
-          @lines[@last_row].length
+          @lines[@last_row].length,
         ].min
       )
 
@@ -678,7 +678,7 @@ module Diakonos
       if @lines[ @last_row ] =~ /^\s*$/
         return [
           [ @last_row, 0 ],
-          [ @last_row, @lines[ @last_row ].length - 1 ]
+          [ @last_row, @lines[ @last_row ].length - 1 ],
         ]
       end
 
@@ -703,7 +703,7 @@ module Diakonos
 
       [
         [ upper_boundary, 0 ],
-        [ lower_boundary, @lines[ lower_boundary ].length - 1 ]
+        [ lower_boundary, @lines[ lower_boundary ].length - 1 ],
       ]
     end
     # TODO paragraph_before_cursor(_pos)?

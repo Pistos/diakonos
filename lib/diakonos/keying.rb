@@ -36,7 +36,7 @@ module Diakonos
       nil,            # 31
       "space",        # 32
     ] + (33..126).map(&:chr) + [
-      "backspace"    # 127
+      "backspace",    # 127
     ]
 
     def self.keycodes_for( str )

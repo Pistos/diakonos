@@ -303,7 +303,7 @@ module Diakonos
           n = ( @top_line+row+1 ).to_s
           @win_line_numbers.addstr(
             @settings[ 'view.line_numbers.number_format' ] % [
-              n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min.. ]
+              n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min.. ],
             ]
           )
         end

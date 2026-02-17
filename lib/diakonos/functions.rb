@@ -180,7 +180,7 @@ module Diakonos
                 "The filename given is not accessible or readable.",
                 "The loaded script does not reference Diakonos commands as members of the global Diakonos object.  e.g. cursor_bol instead of $diakonos.cursor_bol",
                 "The loaded script has syntax errors.",
-                "The loaded script references objects or object members which do not exist."
+                "The loaded script references objects or object members which do not exist.",
               ]
             )
           end

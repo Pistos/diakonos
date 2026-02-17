@@ -27,7 +27,7 @@ RSpec.describe 'A Diakonos::Buffer' do
         "#!/usr/bin/env ruby",
         "",
         "# This is only a sample file used in the tests.",
-        ""
+        "",
       ]
     )
   end

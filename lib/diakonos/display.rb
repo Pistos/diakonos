@@ -245,7 +245,7 @@ module Diakonos
           truncation = [ @settings[ "context.max_levels" ], context.length ].min
           max_length = [
             ( Curses.cols / truncation ) - @settings[ "context.separator" ].length,
-            ( @settings[ "context.max_segment_width" ] || Curses.cols )
+            ( @settings[ "context.max_segment_width" ] || Curses.cols ),
           ].min
           line = nil
           context_subset = context[ 0...truncation ]

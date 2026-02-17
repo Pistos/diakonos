@@ -90,8 +90,8 @@ module Diakonos
           loaded[ 'settings' ].respond_to?( :values ) &&
           loaded.has_key?( 'name' ) &&
           (
-            loaded[ 'files' ]&.respond_to?( :each ) ||
-            loaded[ 'buffers' ]&.respond_to?( :each )
+            loaded[ 'files' ].respond_to?( :each ) ||
+            loaded[ 'buffers' ].respond_to?( :each )
           )
         )
           # Convert old sessions
