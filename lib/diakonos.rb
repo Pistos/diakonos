@@ -613,7 +613,7 @@ module Diakonos
           # <tagname>\t<filepath>\t<line number or regexp>\t<kind of tag>
           tag, file, command, kind, rest = line.split( /\t/ )
           command.gsub!( /;"$/, "" )
-          if command =~ /^\/.*\/$/
+          if command =~ %r{^/.*/$}
             command = command[ 1...-1 ]
           end
           @tags[ tag ] ||= Array.new

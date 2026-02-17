@@ -213,7 +213,7 @@ module Diakonos
 
           pair_key = args.shift
 
-          if pair_key =~ /^\/.+\/$/
+          if pair_key =~ %r{^/.+/$}
             pair_key = Regexp.new( pair_key[ 1..-2 ] )
           else
             pair_key = Regexp.new( "^#{Regexp.escape(pair_key)}$" )

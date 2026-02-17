@@ -63,7 +63,7 @@ RSpec.describe Diakonos::Lsp::Session do
         session.process_queue
 
         expect($diakonos).to have_received(:log).with(
-          /LSP response for textDocument\/hover \(id=1\)/
+          %r{LSP response for textDocument/hover \(id=1\)}
         )
       end
     end
@@ -88,7 +88,7 @@ RSpec.describe Diakonos::Lsp::Session do
       it 'logs the notification method' do
         session.process_queue
 
-        expect($diakonos).to have_received(:log).with(/LSP notification: textDocument\/publishDiagnostics/)
+        expect($diakonos).to have_received(:log).with(%r{LSP notification: textDocument/publishDiagnostics})
       end
     end
 
@@ -101,7 +101,7 @@ RSpec.describe Diakonos::Lsp::Session do
         session.process_queue
 
         expect($diakonos).to have_received(:log).with(
-          /LSP server request: window\/workDoneProgress\/create \(id=5\)/
+          %r{LSP server request: window/workDoneProgress/create \(id=5\)}
         )
       end
     end

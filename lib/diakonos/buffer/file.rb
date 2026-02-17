@@ -43,7 +43,7 @@ module Diakonos
             @last_modification_check = File.mtime( @name )
             saved = true
 
-            if @name =~ /#{$diakonos.diakonos_home}\/.*\.conf/
+            if @name =~ %r{#{$diakonos.diakonos_home}/.*\.conf}
               $diakonos.load_configuration
               $diakonos.initialize_display
             end
