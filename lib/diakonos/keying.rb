@@ -326,9 +326,13 @@ module Diakonos
 
     # context is an array of characters (bytes) which are keystrokes previously
     # typed (in a chain of keystrokes)
+    # @return [Symbol] :waiting_for_keystroke if no character was read
     def process_keystroke( context = [], mode = 'edit', ch = nil )
       ch ||= @modes[ mode ].window.getch
-      return  if ch.nil?
+      if ch.nil?
+        # Preserve partial keychains
+        return :waiting_for_keystroke
+      end
 
       if ch == Curses::KEY_MOUSE
         handle_mouse_event
@@ -398,7 +402,10 @@ module Diakonos
             if mode != 'input'
               set_iline( keychain_str_for( keychain_pressed ) + "..." )
             end
-            process_keystroke keychain_pressed, mode
+            waiting_for_keystroke = :waiting_for_keystroke
+            while waiting_for_keystroke == :waiting_for_keystroke
+              waiting_for_keystroke = process_keystroke(keychain_pressed, mode)
+            end
           elsif mode != 'input'
             set_iline "Nothing assigned to #{keychain_str_for( keychain_pressed )}"
           end
