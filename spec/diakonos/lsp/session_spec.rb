@@ -36,6 +36,38 @@ RSpec.describe Diakonos::Lsp::Session do
     end
   end
 
+  describe '#hover' do
+    let(:buffer) {
+      instance_double(
+        Diakonos::Buffer,
+        last_col: 7,
+        last_row: 3,
+        lsp_uri: 'file:///project/bar.rb',
+      )
+    }
+    let(:on_result) { instance_double(Proc) }
+
+    it 'sends a textDocument/hover request with cursor position' do
+      session.hover(buffer:, on_result:)
+
+      expect(server).to have_received(:write).with(
+        message: {
+          id: 1,
+          method: 'textDocument/hover',
+          params: {
+            position: {
+              character: 7,
+              line: 3,
+            },
+            textDocument: {
+              uri: 'file:///project/bar.rb',
+            },
+          },
+        },
+      )
+    end
+  end
+
   describe '#go_to_definition' do
     let(:buffer) {
       instance_double(

@@ -11,6 +11,22 @@ module Diakonos
         @server = server
       end
 
+      def hover(buffer:, on_result:)
+        send_request(
+          method: 'textDocument/hover',
+          on_response: on_result,
+          params: {
+            position: {
+              character: buffer.last_col,
+              line: buffer.last_row,
+            },
+            textDocument: {
+              uri: buffer.lsp_uri,
+            },
+          },
+        )
+      end
+
       def go_to_definition(buffer:, on_result:)
         send_request(
           method: 'textDocument/definition',

@@ -56,6 +56,9 @@ module Diakonos
                   definition: {
                     dynamicRegistration: false,
                   },
+                  hover: {
+                    dynamicRegistration: false,
+                  },
                   publishDiagnostics: {
                     relatedInformation: true,
                   },

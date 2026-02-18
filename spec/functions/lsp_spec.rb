@@ -7,6 +7,7 @@ RSpec.describe 'LSP functions' do
     instance_double(
       Diakonos::Lsp::Session,
       go_to_definition: nil,
+      hover: nil,
     )
   }
 
@@ -149,6 +150,98 @@ RSpec.describe 'LSP functions' do
         callback.call([])
 
         expect(d).to have_received(:set_iline).with('No definition found.')
+      end
+    end
+  end
+
+  describe '#hover' do
+    context 'when the buffer has an LSP session' do
+      it 'sends a hover request to the session' do
+        d.hover
+
+        expect(session).to have_received(:hover).with(
+          buffer:,
+          on_result: anything,
+        )
+      end
+    end
+
+    context 'when the buffer has no LSP session' do
+      before do
+        buffer.lsp_session = nil
+      end
+
+      it 'shows a message on the interaction line' do
+        d.hover
+
+        expect(d).to have_received(:set_iline).with('No LSP session for this buffer.')
+      end
+    end
+  end
+
+  describe 'handle_hover_result' do
+    let(:callback) {
+      captured_callback = nil
+      allow(session).to receive(:hover) do |on_result:, **|
+        captured_callback = on_result
+      end
+      d.hover
+
+      captured_callback
+    }
+
+    after do
+      d.send(:hide_dock)
+    end
+
+    context 'with a MarkupContent result' do
+      let(:result) {
+        {
+          contents: {
+            kind: 'markdown',
+            value: "String\n\nA string class.",
+          },
+        }
+      }
+
+      it 'populates dock_lines from the hover content' do
+        callback.call(result)
+
+        expect(d.instance_variable_get(:@dock_lines)).to eq(
+          ['String', '', 'A string class.']
+        )
+      end
+    end
+
+    context 'with a plain string result' do
+      let(:result) {
+        { contents: "just a string" }
+      }
+
+      it 'populates dock_lines' do
+        callback.call(result)
+
+        expect(d.instance_variable_get(:@dock_lines)).to eq(['just a string'])
+      end
+    end
+
+    context 'with nil result' do
+      it 'shows a message on the interaction line' do
+        callback.call(nil)
+
+        expect(d).to have_received(:set_iline).with('No hover information.')
+      end
+    end
+
+    context 'with empty contents' do
+      let(:result) {
+        { contents: { kind: 'markdown', value: '' } }
+      }
+
+      it 'shows a message on the interaction line' do
+        callback.call(result)
+
+        expect(d).to have_received(:set_iline).with('No hover information.')
       end
     end
   end

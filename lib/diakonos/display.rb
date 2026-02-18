@@ -1,20 +1,24 @@
 require 'curses'
 
 module Diakonos
-  DO_REDRAW             = true
-  DONT_REDRAW           = false
+  CONTEXT_LINE_HEIGHT = 1
+  DO_REDRAW           = true
+  DONT_REDRAW         = false
+  INPUT_LINE_HEIGHT   = 1
+  STATUS_LINE_HEIGHT  = 1
 
   class Diakonos
-    attr_reader :win_main, :display_mutex, :win_line_numbers
+    attr_reader :display_mutex, :win_dock, :win_line_numbers, :win_main
 
     def cleanup_display
       return  if @testing
 
+      @win_context&.close
+      @win_dock&.close
+      @win_interaction&.close
+      @win_line_numbers&.close
       @win_main&.close
       @win_status&.close
-      @win_interaction&.close
-      @win_context&.close
-      @win_line_numbers&.close
 
       Curses.close_screen
     end
@@ -64,6 +68,11 @@ module Diakonos
       else
         @win_main = ::Diakonos::Window.new( main_window_height, Curses.cols, 0, 0 )
         @win_line_numbers = nil
+      end
+      if @dock_lines && ! @dock_lines.empty?
+        @win_dock = ::Diakonos::Window.new(dock_height, Curses.cols, main_window_height, 0)
+      else
+        @win_dock = nil
       end
       @win_status = ::Diakonos::Window.new( 1, Curses.cols, Curses.lines - 2, 0 )
       @win_status.attrset @settings[ 'status.format' ]
@@ -123,18 +132,32 @@ module Diakonos
     end
 
     def main_window_height
-      # One line for the status line
-      # One line for the input line
-      # One line for the context line
-      retval = Curses.lines - 2
+      retval = Curses.lines - (INPUT_LINE_HEIGHT + STATUS_LINE_HEIGHT)
       if @settings['context.visible'] && ! @settings['context.combined']
-        retval = retval - 1
+        retval -= CONTEXT_LINE_HEIGHT
       end
+      retval -= dock_height
+
       retval
     end
 
     def main_window_width
       Curses.cols
+    end
+
+    def show_dock(lines:)
+      @dock_lines = lines
+      initialize_display
+      render_dock
+      update_status_line
+      update_context_line
+
+      buffer_current.cursor_to(
+        buffer_current.last_row,
+        buffer_current.last_col,
+        Buffer::DONT_DISPLAY,
+      )
+      display_buffer buffer_current
     end
 
     def set_iline(s = "")
@@ -325,7 +348,61 @@ module Diakonos
       @win_context&.refresh
       @win_status.refresh
       @win_interaction.refresh
+      @win_dock&.refresh
       @win_line_numbers&.refresh
+    end
+
+    DOCK_SEPARATOR_CHAR = '─'
+
+    private def dock_height
+      if @dock_lines && ! @dock_lines.empty?
+        max_height = @settings['dock.max_height'] || 10
+        separator_height = 1
+        unclamped_height = @dock_lines.length + separator_height
+        available = Curses.lines - (INPUT_LINE_HEIGHT + STATUS_LINE_HEIGHT + 1)
+
+        [unclamped_height, max_height, available].min
+      else
+        0
+      end
+    end
+
+    private def hide_dock
+      @dock_lines = nil
+      initialize_display
+      update_status_line
+      update_context_line
+
+      display_buffer buffer_current
+    end
+
+    private def render_dock
+      return  if @win_dock.nil?
+
+      separator_height = 1
+      num_content_rows = dock_height - separator_height
+
+      Curses.curs_set 0
+      @win_dock.setpos(0, 0)
+      @win_dock.addstr(DOCK_SEPARATOR_CHAR * Curses.cols)
+
+      @dock_lines[0...num_content_rows].each_with_index do |line, row|
+        @win_dock.setpos(row + separator_height, 0)
+        truncated_line = line[0...Curses.cols]
+        @win_dock.addstr("%-#{Curses.cols}s" % truncated_line)
+      end
+
+      num_remaining_rows = num_content_rows - @dock_lines.length
+      if num_remaining_rows > 0
+        (0...num_remaining_rows).each do |i|
+          row = @dock_lines.length + separator_height + i
+          @win_dock.setpos(row, 0)
+          @win_dock.addstr(" " * Curses.cols)
+        end
+      end
+
+      @win_dock.refresh
+      Curses.curs_set 1
     end
 
   end

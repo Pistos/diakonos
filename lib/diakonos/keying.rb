@@ -335,6 +335,10 @@ module Diakonos
         return
       end
 
+      if @dock_lines
+        hide_dock
+      end
+
       c = ch.ord
 
       self.handle_utf_8(c, mode) and return
