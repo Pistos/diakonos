@@ -83,7 +83,11 @@ module Diakonos
         if cursor_state
           buffer = cursor_state[ :buffer ]
           switch_to buffer
-          buffer.pitch_view( cursor_state[ :top_line ] - buffer.top_line, Buffer::DONT_PITCH_CURSOR, Buffer::DO_DISPLAY )
+          buffer.pitch_view(
+            cursor_state[ :top_line ] - buffer.top_line,
+            Buffer::DONT_PITCH_CURSOR,
+            Buffer::DO_DISPLAY
+          )
           buffer.cursor_to( cursor_state[ :row ], cursor_state[ :col ] )
           update_status_line
         end

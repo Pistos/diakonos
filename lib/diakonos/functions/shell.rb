@@ -31,7 +31,10 @@ module Diakonos
       # Current buffer filename
       retval.gsub!( /\$f/, ( ::Regexp.last_match(1) || "" ) + File.expand_path( buffer_current.name || "" ) )
       # Current buffer dir
-      retval.gsub!( /\$d/, ( ::Regexp.last_match(1) || "" ) + File.dirname( File.expand_path( buffer_current.name || '' ) ) )
+      retval.gsub!(
+        /\$d/,
+        (::Regexp.last_match(1) || "") + File.dirname(File.expand_path( buffer_current.name || '' ))
+      )
 
       # space-separated list of all buffer filenames
       name_array = Array.new

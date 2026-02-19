@@ -147,7 +147,21 @@ module Diakonos
   class Diakonos
 
     attr_accessor :do_display
-    attr_reader :diakonos_home, :script_dir, :clipboard, :list_filename, :hooks, :indenters, :indenters_next_line, :unindenters, :closers, :functions_last, :there_was_non_movement, :testing, :buffers
+    attr_reader(
+      :buffers,
+      :clipboard,
+      :closers,
+      :diakonos_home,
+      :functions_last,
+      :hooks,
+      :indenters,
+      :indenters_next_line,
+      :list_filename,
+      :script_dir,
+      :testing,
+      :there_was_non_movement,
+      :unindenters,
+    )
 
     include ::Diakonos::Functions
 
@@ -525,7 +539,8 @@ module Diakonos
         puts
         puts inst[ :dirs ].sort.map { |d| "#{d}/" }.join( "\n" )
         puts
-        puts "The above files will be removed.  The above directories will be removed if they are empty.  Proceed?  (y/n)"
+        puts "The above files will be removed.  The above directories will be removed if they are empty."
+        puts "Proceed?  (y/n)"
         answer = $stdin.gets
         case answer
         when /^y/i

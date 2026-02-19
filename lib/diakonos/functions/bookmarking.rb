@@ -9,8 +9,13 @@ module Diakonos
       end
 
       if name
-        @bookmarks[ name ] = Bookmark.new( buffer_current, buffer_current.current_row, buffer_current.current_column, name )
-        set_iline "Added bookmark #{@bookmarks[ name ].to_s}."
+        @bookmarks[name] = Bookmark.new(
+          buffer_current,
+          buffer_current.current_row,
+          buffer_current.current_column,
+          name
+        )
+        set_iline "Added bookmark #{@bookmarks[name]}."
       end
     end
 
