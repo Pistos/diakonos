@@ -5,7 +5,6 @@ module Diakonos
     attr_reader :name, :original_language, :language, :changing_selection, :tab_size, :selection_mode
     attr_writer :desired_column
 
-    TYPING                 = true
     STOPPED_TYPING         = true
     STILL_TYPING           = false
 
@@ -204,7 +203,7 @@ module Diakonos
     def replace_char( c )
       row = @last_row
       col = @last_col
-      take_snapshot TYPING
+      take_snapshot(typing: true)
       @lines[ row ][ col ] = c
       set_modified modified_from_line: row
     end
@@ -212,7 +211,7 @@ module Diakonos
     def insert_char( c )
       row = @last_row
       col = @last_col
-      take_snapshot( TYPING )
+      take_snapshot(typing: true)
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + c.chr + line[ col.. ]
       set_modified modified_from_line: row
@@ -221,7 +220,7 @@ module Diakonos
     def insert_string( str )
       row = @last_row
       col = @last_col
-      take_snapshot( TYPING )
+      take_snapshot(typing: true)
       line = @lines[ row ]
       @lines[ row ] = line[ 0...col ] + str + line[ col.. ]
       set_modified modified_from_line: row
@@ -269,7 +268,7 @@ module Diakonos
     end
 
     def join_lines( row = @last_row, strip = DONT_STRIP_LINE )
-      take_snapshot( TYPING )
+      take_snapshot(typing: true)
       next_line = @lines.delete_at( row + 1 )
       return false  if next_line.nil?
 
@@ -302,7 +301,7 @@ module Diakonos
             end
           )
           r, c = @last_row, @last_col
-          paste str, !TYPING, @indent_closers
+          paste str, do_parsed_indent: @indent_closers, typing: false
           cursor_to r, c
           if /%_/ === str
             find [/%_/], direction: :down, replacement: '', auto_choice: CHOICE_YES_AND_STOP
@@ -322,7 +321,7 @@ module Diakonos
       new_head = head.sub( /\s+$/, '' )
       new_line = new_head + tail.sub( /^\s+/, ' ' )
       if new_line != line
-        take_snapshot( TYPING )
+        take_snapshot(typing: true)
         @lines[ @last_row ] = new_line
         cursor_to( @last_row, @last_col - ( head.length - new_head.length ) )
         set_modified modified_from_line: @last_row

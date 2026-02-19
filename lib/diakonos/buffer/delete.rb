@@ -18,7 +18,7 @@ module Diakonos
               cursor_to( @last_row, @last_col )
             end
           else
-            take_snapshot( TYPING )
+            take_snapshot(typing: true)
             @lines[ row ] = line[ 0...col ] + line[ (col + 1).. ]
             set_modified modified_from_line: row
           end

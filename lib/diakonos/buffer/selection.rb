@@ -311,7 +311,7 @@ module Diakonos
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
-    def paste( text, typing = ! TYPING, do_parsed_indent = false )
+    def paste( text, do_parsed_indent: false, typing: false )
       return  if text.nil?
 
       if ! text.kind_of?(Array)
@@ -323,7 +323,7 @@ module Diakonos
         end
       end
 
-      take_snapshot typing
+      take_snapshot(typing:)
 
       delete_selection DONT_DISPLAY
 

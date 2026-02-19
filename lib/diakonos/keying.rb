@@ -313,7 +313,7 @@ module Diakonos
       if ! s.empty?
         case mode
         when 'edit'
-          buffer_current.paste s, Buffer::TYPING
+          buffer_current.paste(s, typing: true)
         when 'input'
           @readline.paste s
         end

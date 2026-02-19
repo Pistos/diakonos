@@ -20,7 +20,7 @@ module Diakonos
         selection_delta = @buffer.selecting? ? 1 : 0
       end
 
-      @buffer.take_snapshot Buffer::TYPING
+      @buffer.take_snapshot(typing: true)
       @buffer.lines.insert(
         to_row,
         @buffer.lines.delete_at(from_row)

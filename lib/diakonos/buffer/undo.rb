@@ -5,7 +5,7 @@ module Diakonos
     DO_USE_MD5 = true
     DONT_USE_MD5 = false
 
-    def take_snapshot( typing = false )
+    def take_snapshot( typing: false )
       do_it = false
 
       if ! @modified && file_modified? && file_different?
