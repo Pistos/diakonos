@@ -17,14 +17,19 @@ module Diakonos
         @stopping = false
         @transport = nil
         @working_directory = working_directory
+        @write_queue = Thread::Queue.new
+        @writer_thread = nil
 
         spawn_process
         handshake
         start_reader_thread
+        start_writer_thread
       end
 
       def stop
         @stopping = true
+        @write_queue.push(nil)
+        @writer_thread&.join
         @reader_thread&.kill
         @reader_thread&.join
         if alive?
@@ -33,7 +38,7 @@ module Diakonos
       end
 
       def write(message:)
-        @transport.write(message:)
+        @write_queue.push(message)
       end
 
       private def alive?
@@ -142,6 +147,21 @@ module Diakonos
           reader_io: child_stdout_read,
           writer_io: child_stdin_write,
         )
+      end
+
+      private def start_writer_thread
+        @writer_thread = Thread.new do
+          loop do
+            message = @write_queue.pop
+            if message.nil?
+              break
+            end
+
+            @transport.write(message:)
+          end
+        rescue => e
+          $diakonos.log("LSP writer thread error: #{e.class}: #{e.message}")
+        end
       end
 
       private def start_reader_thread
