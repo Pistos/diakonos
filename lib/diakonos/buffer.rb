@@ -1,33 +1,42 @@
 module Diakonos
 
   class Buffer
-    attr_accessor :read_only
-    attr_reader :name, :original_language, :language, :changing_selection, :tab_size, :selection_mode
-    attr_accessor :lsp_session
+    attr_accessor :lines, :lsp_session, :read_only
+    attr_reader :name, :original_language, :language, :changing_selection, :tab_size, :selection_mode, :time_last_modified
     attr_writer :desired_column
-    attr_accessor :lines
 
     TYPING                 = true
     STOPPED_TYPING         = true
     STILL_TYPING           = false
+
     NO_SNAPSHOT            = true
+
     DO_DISPLAY             = true
     DONT_DISPLAY           = false
+
     READ_ONLY              = true
     READ_WRITE             = false
+
     ROUND_DOWN             = false
     ROUND_UP               = true
+
     PAD_END                = true
     DONT_PAD_END           = false
+
     MATCH_CLOSE            = true
     MATCH_ANY              = false
+
     START_FROM_BEGINNING   = -1
+
     DO_PITCH_CURSOR        = true
     DONT_PITCH_CURSOR      = false
+
     STRIP_LINE             = true
     DONT_STRIP_LINE        = false
+
     USE_INDENT_IGNORE      = true
     DONT_USE_INDENT_IGNORE = false
+
     WORD_REGEXP            = /\w+/
 
     # Set name to nil to create a buffer that is not associated with a file.
@@ -48,6 +57,7 @@ module Diakonos
       @name = options[ 'filepath' ]
       @modified = false
       @last_modification_check = Time.now
+      @time_last_viewed = Time.now
 
       @buffer_states = Array.new
       @cursor_states = Array.new
@@ -425,6 +435,16 @@ module Diakonos
 
     def current_line
       @lines[ @last_row ]
+    end
+
+    SECONDS_PER_DAY = 60 * 60 * 24
+
+    def forgotten?
+      @settings['close_forgotten_buffers_after'] &&
+      @time_last_viewed < (
+        Time.now -
+        @settings['close_forgotten_buffers_after'] * SECONDS_PER_DAY
+      )
     end
 
     # Returns true iff the given column, x, is less than the length of the given line, y.

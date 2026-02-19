@@ -360,6 +360,8 @@ module Diakonos
       if @language != @original_language
         set_language( @original_language )
       end
+
+      @time_last_viewed = Time.now
     end
 
   end

@@ -204,6 +204,7 @@ module Diakonos
 
         @setting_strings[ command ] = arg
 
+        # rubocop:disable Lint/RedundantSplatExpansion
         case command
         when "include"
           self.parse_configuration_file( File.expand_path( arg ), config_file )
@@ -383,11 +384,17 @@ module Diakonos
           else # default
             @settings[ "eol_behaviour" ] = EOL_ALT_END
           end
-        when "context.delay", 'interaction.blink_duration', 'interaction.choice_delay'
+        when *[
+          'close_forgotten_buffers_after',
+          'context.delay',
+          'interaction.blink_duration',
+          'interaction.choice_delay'
+        ]
           @settings[ command ] = arg.to_f
         when 'fuzzy_file_find.ignore'
           @fuzzy_ignores << arg
         end
+        # rubocop:enable Lint/RedundantSplatExpansion
       end
     end
 

@@ -7,6 +7,8 @@ Diakonos Changelog
 - Add preliminary Language Server Protocol support
   - diagnostics (errors, info) per line
   - go to definition
+  - hover info
+- Automatically close forgotten buffers
 
 0.9.12
 

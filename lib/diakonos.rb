@@ -149,11 +149,18 @@ module Diakonos
     attr_accessor :do_display
     attr_reader :diakonos_home, :script_dir, :clipboard, :list_filename, :hooks, :indenters, :indenters_next_line, :unindenters, :closers, :functions_last, :there_was_non_movement, :testing, :buffers
 
-    # Temporarily a writer, so that collaborating classes can get at it
-    # TODO: Rewrite things so that this doesn't need to be a writer.
-    # e.g. pass do_display to methods as needed.
-
     include ::Diakonos::Functions
+
+    def close_forgotten_buffers
+      @buffers
+      .find_all { |buffer|
+        buffer.forgotten? &&
+        ! buffer.modified? &&
+        buffer != buffer_current
+      }.each do |buffer|
+        close_buffer buffer
+      end
+    end
 
     def initialize( argv = [] )
       @diakonos_home = File.expand_path( ( ENV[ 'HOME' ] || '' ) + '/.diakonos' )
@@ -470,6 +477,8 @@ module Diakonos
         while ! @quitting
           process_keystroke
           process_async
+          close_forgotten_buffers
+
           @win_main.refresh
         end
       rescue SignalException => e
