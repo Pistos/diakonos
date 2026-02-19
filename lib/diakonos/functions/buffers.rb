@@ -453,12 +453,10 @@ module Diakonos
     def set_buffer_type( type_ = nil )
       type = type_ || get_user_input( "Content type: " )
 
-      if type
-        if buffer_current.set_type( type )
-          ensure_language_lsp(buffer: buffer_current, language: type)
-          update_status_line
-          update_context_line
-        end
+      if type && buffer_current.set_type(type)
+        ensure_language_lsp(buffer: buffer_current, language: type)
+        update_status_line
+        update_context_line
       end
     end
 

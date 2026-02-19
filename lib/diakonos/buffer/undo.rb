@@ -8,8 +8,13 @@ module Diakonos
     def take_snapshot( typing: false )
       do_it = false
 
-      if ! @modified && file_modified? && file_different?
-        return  if $diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+      if (
+        ! @modified &&
+        file_modified? &&
+        file_different? &&
+        $diakonos.revert( "File has been altered externally.  Load on-disk version?" )
+      )
+        return
       end
 
       if @typing != typing

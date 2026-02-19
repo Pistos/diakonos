@@ -23,14 +23,18 @@ module Diakonos
             match_text = match[ 0 ]
           end
 
-          if ( ! regexp.uses_bos ) || ( bos_allowed && ( whole_match_index == 0 ) )
-            if index < open_index
-              if ( ( ! match_close ) || @close_token_regexps[ token_class ] )
-                open_index = index
-                open_token_class = token_class
-                open_match_text = match_text
-              end
-            end
+          if(
+            ! regexp.uses_bos || (
+              bos_allowed && ( whole_match_index == 0 )
+            ) && (
+              index < open_index
+            ) && (
+              ! match_close || @close_token_regexps[token_class]
+            )
+          )
+            open_index = index
+            open_token_class = token_class
+            open_match_text = match_text
           end
         end
       end
@@ -73,15 +77,15 @@ module Diakonos
         write_cursor_col = @left_column
       end
 
-      if retval
+      if retval && (
         # Truncate based on right edge of display area
-        if write_cursor_col + retval.length > @left_column + Curses.cols - 1
-          new_length = ( @left_column + Curses.cols - write_cursor_col )
-          if new_length <= 0
-            retval = nil
-          else
-            retval = retval[ 0...new_length ]
-          end
+        write_cursor_col + retval.length > @left_column + Curses.cols - 1
+      )
+        new_length = ( @left_column + Curses.cols - write_cursor_col )
+        if new_length <= 0
+          retval = nil
+        else
+          retval = retval[ 0...new_length ]
         end
       end
 

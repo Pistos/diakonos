@@ -105,10 +105,11 @@ module Diakonos
           f.print line
         end
 
-        if @settings[ 'strip_trailing_whitespace_on_save' ]
-          if @last_col > @lines[ @last_row ].size
-            cursor_to @last_row, @lines[ @last_row ].size
-          end
+        if (
+          @settings['strip_trailing_whitespace_on_save'] &&
+          @last_col > @lines[@last_row].size
+        )
+          cursor_to @last_row, @lines[ @last_row ].size
         end
 
         if was_modified
