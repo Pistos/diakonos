@@ -153,7 +153,7 @@ module Diakonos
       end
     end
 
-    def select( from_regexp, to_regexp, include_ending = true )
+    def select( from_regexp, to_regexp, include_ending: true )
       start_row = nil
 
       @lines[ 0..@last_row ].reverse.each_with_index do |line,index|

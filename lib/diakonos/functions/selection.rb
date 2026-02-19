@@ -34,7 +34,7 @@ module Diakonos
     end
 
     # Selects text between two regexps.
-    def select_block( beginning = nil, ending = nil, including_ending = true )
+    def select_block( beginning = nil, ending = nil, including_ending: true )
       if beginning.nil?
         input = get_user_input( "Start at regexp: " )
         if input
@@ -48,7 +48,7 @@ module Diakonos
         end
       end
       if beginning && ending
-        buffer_current.select( beginning, ending, including_ending )
+        buffer_current.select( beginning, ending, include_ending: including_ending )
       end
     end
 

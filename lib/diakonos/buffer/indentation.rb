@@ -80,7 +80,7 @@ module Diakonos
     # @param starting_row [Integer]
     # @param next_line_check [Boolean]
     # @return [Integer]
-    def nearest_basis_row_from(starting_row, next_line_check = true)
+    def nearest_basis_row_from(starting_row, next_line_check: true)
       row = starting_row-1
 
       if @lines[row] =~ @indenters_next_line || @lines[row] =~ @indenters
@@ -100,7 +100,7 @@ module Diakonos
         end
 
         if next_line_check
-          row_before = nearest_basis_row_from(row, false)
+          row_before = nearest_basis_row_from(row, next_line_check: false)
           if row_before && @lines[row_before] =~ @indenters_next_line
             row = row_before
             next

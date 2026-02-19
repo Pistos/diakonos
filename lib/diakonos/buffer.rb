@@ -22,9 +22,6 @@ module Diakonos
     PAD_END                = true
     DONT_PAD_END           = false
 
-    MATCH_CLOSE            = true
-    MATCH_ANY              = false
-
     START_FROM_BEGINNING   = -1
 
     DO_PITCH_CURSOR        = true

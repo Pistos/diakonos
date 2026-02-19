@@ -282,7 +282,7 @@ module Diakonos
           when CHOICE_ALL
             num_replacements += replace_all(regexp, replacement)
           when CHOICE_WITHIN_SELECTION
-            num_replacements += replace_all(regexp, replacement, :within_search_area)
+            num_replacements += replace_all(regexp, replacement, within_search_area: true)
           when CHOICE_NO
             num_replacements += find( regexps, direction:, replacement: )
           when CHOICE_CANCEL
@@ -299,7 +299,7 @@ module Diakonos
     end
 
     # @return [Integer] the number of replacements made
-    def replace_all( regexp, replacement, within_search_area = false )
+    def replace_all( regexp, replacement, within_search_area: false )
       return  if ( regexp.nil? || replacement.nil? )
 
       num_replacements = 0

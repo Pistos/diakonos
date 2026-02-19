@@ -304,7 +304,7 @@ module Diakonos
         when '--uninstall'
           uninstall
         when '--uninstall-without-confirmation'
-          uninstall false
+          uninstall(confirm: false)
         when '--version'
           puts "Diakonos #{::Diakonos::VERSION} (#{::Diakonos::LAST_MODIFIED})"
           exit 0
@@ -531,7 +531,7 @@ module Diakonos
       end
     end
 
-    def uninstall( confirm = true )
+    def uninstall( confirm: true )
       inst = ::Diakonos::INSTALL_SETTINGS[ :installed ]
 
       if confirm

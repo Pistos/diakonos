@@ -5,7 +5,7 @@ module Diakonos
 
     attr_reader :top_line, :left_column
 
-    def find_opening_match( line, match_close = true, bos_allowed = true )
+    def find_opening_match( line, bos_allowed: true, match_close: true )
       open_index = line.length
       open_token_class = nil
       open_match_text = nil
@@ -38,7 +38,7 @@ module Diakonos
       [ open_index, open_token_class, open_match_text ]
     end
 
-    private def find_closing_match(line_segment, regexp, bos_allowed = true)
+    private def find_closing_match(line_segment, regexp, bos_allowed: true)
       close_match_text = nil
       close_index = nil
 
@@ -183,7 +183,7 @@ module Diakonos
           close_index, close_match_text = find_closing_match(
             substr,
             @close_token_regexps[@continued_format_class],
-            i == 0
+            bos_allowed: i == 0
           )
 
           if close_match_text.nil?
@@ -197,14 +197,14 @@ module Diakonos
             i += end_index
           end
         else
-          first_index, first_token_class, first_word = find_opening_match( substr, MATCH_ANY, i == 0 )
+          first_index, first_token_class, first_word = find_opening_match( substr, bos_allowed: i == 0, match_close: false )
 
           if @lang_stack.length > 0
             prev_lang, close_token_class = @lang_stack[-1]
             close_index, close_match_text = find_closing_match(
               substr,
               $diakonos.close_token_regexps[prev_lang][close_token_class],
-              i == 0
+              bos_allowed: i == 0
             )
 
             if close_match_text && close_index <= first_index
