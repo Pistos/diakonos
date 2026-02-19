@@ -6,7 +6,7 @@ module Diakonos
     if s
       s
       .split( '.' )
-      .map { |part| part.to_i }
+      .map(&:to_i)
       .extend(Comparable)
     end
   end

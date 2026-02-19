@@ -218,7 +218,7 @@ module Diakonos
           row = buffer_current.last_row + ::Regexp.last_match(1).to_i
           col = buffer_current.last_col
         else
-          input = input.split( /\D+/ ).collect { |n| n.to_i }
+          input = input.split( /\D+/ ).collect(&:to_i)
           if input.size > 0
             if input[ 0 ] == 0
               row = nil

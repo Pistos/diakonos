@@ -422,9 +422,7 @@ module Diakonos
       end
 
       initialize_display
-      @buffers.each do |buffer|
-        buffer.reset_display
-      end
+      @buffers.each(&:reset_display)
 
       set_initial_iline
 

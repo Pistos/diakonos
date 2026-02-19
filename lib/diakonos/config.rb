@@ -118,9 +118,7 @@ module Diakonos
       end
       @log = File.open( @logfilename, "a" )
 
-      @buffers&.each do |buffer|
-        buffer.configure
-      end
+      @buffers&.each(&:configure)
     end
 
     def get_token_regexp( hash, arg, match )

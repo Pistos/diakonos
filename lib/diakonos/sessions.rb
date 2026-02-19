@@ -53,7 +53,7 @@ module Diakonos
             'top_line'    => buffer.top_line,
             'left_column' => buffer.left_column,
           },
-          'last_search_regexps' => buffer.last_search_regexps.map { |r| r.to_s },
+          'last_search_regexps' => buffer.last_search_regexps.map(&:to_s),
         }
       }.compact
     end

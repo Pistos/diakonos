@@ -82,7 +82,7 @@ module Diakonos
           "Ruby code: ",
           history: @rlh_general,
           initial_text: selected_text || "",
-          completion_array: ::Diakonos::Functions.public_instance_methods.map { |m| m.to_s }
+          completion_array: ::Diakonos::Functions.public_instance_methods.map(&:to_s)
         )
       else
         code = code_

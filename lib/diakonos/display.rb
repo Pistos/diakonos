@@ -118,9 +118,7 @@ module Diakonos
       @win_main.refresh
       @win_line_numbers&.refresh
 
-      @buffers&.each do |buffer|
-        buffer.reset_display
-      end
+      @buffers&.each(&:reset_display)
     end
 
     def redraw
