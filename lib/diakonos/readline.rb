@@ -145,7 +145,7 @@ module Diakonos
     end
 
     def complete_input
-      if @completion_array && @input.length > 0
+      if @completion_array && @input.any?
         len = @input.length
         matches = @completion_array.find_all { |el| el[ 0...len ] == @input && len <= el.length }
       else

@@ -259,7 +259,7 @@ module Diakonos
 
     def parse_options( argv )
       @post_load_script = ""
-      while argv.length > 0
+      while argv.any?
         arg = argv.shift
         case arg
         when '-c', '--config'

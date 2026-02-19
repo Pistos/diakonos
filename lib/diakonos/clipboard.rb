@@ -37,7 +37,7 @@ module Diakonos
     # Returns true iff the text was successfully appended.
     def append_to_clip( text )
       return false if text.nil?
-      return add_clip( text ) if @clips.length == 0
+      return add_clip( text ) if @clips.empty?
 
       last_clip = @clips[ 0 ]
       last_clip.pop if last_clip[ -1 ] == ""

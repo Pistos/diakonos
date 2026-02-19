@@ -199,7 +199,7 @@ module Diakonos
         else
           first_index, first_token_class, first_word = find_opening_match( substr, bos_allowed: i == 0, match_close: false )
 
-          if @lang_stack.length > 0
+          if @lang_stack.any?
             prev_lang, close_token_class = @lang_stack[-1]
             close_index, close_match_text = find_closing_match(
               substr,

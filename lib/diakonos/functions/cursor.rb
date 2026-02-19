@@ -219,7 +219,7 @@ module Diakonos
           col = buffer_current.last_col
         else
           input = input.split( /\D+/ ).collect(&:to_i)
-          if input.size > 0
+          if input.any?
             if input[ 0 ] == 0
               row = nil
             else

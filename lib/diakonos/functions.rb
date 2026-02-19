@@ -107,7 +107,7 @@ module Diakonos
 
     # Starts the interactive help system.
     def help( prefill = '' )
-      if ! File.exist?( @help_dir ) || Dir[ "#{@help_dir}/*" ].size == 0
+      if ! File.exist?( @help_dir ) || Dir[ "#{@help_dir}/*" ].empty?
         set_iline 'There are no help files installed.'
         return
       end

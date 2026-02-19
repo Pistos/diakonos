@@ -64,7 +64,7 @@ module Diakonos
         @name = File.expand_path( @name )
         if FileTest.exist? @name
           @lines = IO.readlines( @name )
-          if ( @lines.length == 0 ) || ( @lines[ -1 ][ -1.. ] == "\n" )
+          if ( @lines.empty? ) || ( @lines[ -1 ][ -1.. ] == "\n" )
             @lines.push ""
           end
           @lines = @lines.collect(&:chomp)

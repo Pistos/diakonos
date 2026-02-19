@@ -269,7 +269,7 @@ module Diakonos
         Curses.curs_set 0
         @win_context.setpos( 0, 0 )
         chars_printed = 0
-        if context.length > 0
+        if context.any?
           truncation = [ @settings[ "context.max_levels" ], context.length ].min
           max_length = [
             ( Curses.cols / truncation ) - @settings[ "context.separator" ].length,
