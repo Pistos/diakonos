@@ -151,17 +151,6 @@ module Diakonos
 
     include ::Diakonos::Functions
 
-    def close_forgotten_buffers
-      @buffers
-      .find_all { |buffer|
-        buffer.forgotten? &&
-        ! buffer.modified? &&
-        buffer != buffer_current
-      }.each do |buffer|
-        close_buffer buffer
-      end
-    end
-
     def initialize( argv = [] )
       @diakonos_home = File.expand_path( ( ENV[ 'HOME' ] || '' ) + '/.diakonos' )
       mkdir @diakonos_home
@@ -309,6 +298,17 @@ module Diakonos
           # a name of a file to open
           @files.push Session.file_hash_for( arg )
         end
+      end
+    end
+
+    private def close_forgotten_buffers
+      @buffers
+      .find_all { |buffer|
+        buffer.forgotten? &&
+        ! buffer.modified? &&
+        buffer != buffer_current
+      }.each do |buffer|
+        close_buffer buffer
       end
     end
 
