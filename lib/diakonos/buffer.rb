@@ -591,7 +591,6 @@ module Diakonos
 
     def wrap_paragraph
       start_row = end_row = @last_row
-      @last_col
       until start_row == 0 || @lines[ start_row - 1 ].strip == ''
         start_row -= 1
       end

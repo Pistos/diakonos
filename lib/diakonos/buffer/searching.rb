@@ -33,7 +33,6 @@ module Diakonos
     def set_search_area(mark)
       if mark.nil?
         raise 'Call Diakonos::Buffer#clear_search_area instead'
-        return
       end
 
       @search_area = mark

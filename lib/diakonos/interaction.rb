@@ -46,7 +46,7 @@ module Diakonos
     end
 
     def get_choice(*args)
-      @interaction_handler.get_choice *args
+      @interaction_handler.get_choice(*args)
     end
   end
 end

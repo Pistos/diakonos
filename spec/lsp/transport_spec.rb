@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-RSpec.describe Diakonos::Lsp::Transport do
-  READ_BUFFER_SIZE = 4096
+SERVER_READ_BUFFER_SIZE = 4096
 
+RSpec.describe Diakonos::Lsp::Transport do
   let(:server_read) { ios[0] }
   let(:client_write) { ios[1] }
   let(:client_read) { ios[2] }
@@ -32,7 +32,7 @@ RSpec.describe Diakonos::Lsp::Transport do
     it 'frames a message with Content-Length header and JSON-RPC envelope' do
       transport.send(:write, message: { method: 'initialize', id: 1 })
 
-      raw = server_read.readpartial(READ_BUFFER_SIZE)
+      raw = server_read.readpartial(SERVER_READ_BUFFER_SIZE)
       header, body = raw.split("\r\n\r\n", 2)
       parsed = JSON.parse(body)
 

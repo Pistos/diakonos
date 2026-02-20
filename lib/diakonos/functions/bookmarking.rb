@@ -54,7 +54,7 @@ module Diakonos
 
       if name
         bookmark = @bookmarks.delete name
-        set_iline "Removed bookmark #{bookmark.to_s}."
+        set_iline "Removed bookmark #{bookmark}."
       end
     end
 

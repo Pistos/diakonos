@@ -24,7 +24,6 @@ require 'diakonos/core-ext/enumerable'
 require 'diakonos/core-ext/regexp'
 require 'diakonos/core-ext/hash'
 require 'diakonos/core-ext/string'
-require 'diakonos/buffer-hash'
 require 'diakonos/number-fitter'
 require 'diakonos/sized-array'
 

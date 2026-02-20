@@ -134,9 +134,9 @@ module Diakonos
       if coords.nil?
         remove_selection
       else
-        cursor_to *coords[0]
+        cursor_to(*coords[0])
         anchor_selection
-        cursor_to *coords[1]
+        cursor_to(*coords[1])
         display
       end
     end
@@ -201,7 +201,7 @@ module Diakonos
 
     def anchor_unanchored_selection(*args)
       if @mark_anchor.nil?
-        anchor_selection *args
+        anchor_selection(*args)
         @changing_selection = false
       end
       @auto_anchored = true

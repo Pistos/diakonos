@@ -34,11 +34,11 @@ module Diakonos
       }
       if existing
         @bookmarks.delete existing
-        $diakonos.set_iline "Bookmark #{existing.to_s} deleted."
+        $diakonos.set_iline "Bookmark #{existing} deleted."
       else
         @bookmarks.push bookmark
         @bookmarks.sort
-        $diakonos.set_iline "Bookmark #{bookmark.to_s} set."
+        $diakonos.set_iline "Bookmark #{bookmark} set."
       end
     end
 

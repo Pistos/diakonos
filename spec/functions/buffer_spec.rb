@@ -132,7 +132,7 @@ RSpec.describe 'A Diakonos user can' do
     numbered_buffer_should_be_named 4, 'sample-file.rb'
 
     expect {
-      @d.renumber_buffer -1
+      @d.renumber_buffer(-1)
     }.to raise_error(RuntimeError, /Invalid buffer index/)
     numbered_buffer_should_be_named 1, 'sample-file.c'
     numbered_buffer_should_be_named 3, 'longer-sample-file.rb'
