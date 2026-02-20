@@ -162,7 +162,7 @@ module Diakonos
           end
         )
       end
-      if retval.nil? && num.class == Integer
+      if retval.nil? && num.instance_of?(Integer)
         retval = "keycode#{num}"
       end
       retval

@@ -33,7 +33,8 @@ module Diakonos
           if FileTest.exist?( @global_diakonos_conf )
             puts "No personal configuration file found."
             puts "Would you like to copy the system-wide configuration file (#{@global_diakonos_conf}) to use"
-            $stdout.print "as a basis for your personal configuration (recommended)? (y/n)"; $stdout.flush
+            $stdout.print "as a basis for your personal configuration (recommended)? (y/n)"
+            $stdout.flush
             answer = $stdin.gets
             if answer =~ /^y/i
               FileUtils.cp @global_diakonos_conf, @diakonos_conf
@@ -124,7 +125,7 @@ module Diakonos
     def get_token_regexp( hash, arg, match )
       language = match[ 1 ]
       token_class = match[ 2 ]
-      case_insensitive = ( match[ 3 ] != nil )
+      case_insensitive = match[ 3 ]
       hash[ language ] = ( hash[ language ] || Hash.new )
       if case_insensitive
         hash[ language ][ token_class ] = Regexp.new( arg, Regexp::IGNORECASE )
@@ -258,21 +259,21 @@ module Diakonos
             bg:,
           }
         when /^lang\.(.+?)\.indent\.indenters(\.case_insensitive)?$/
-          case_insensitive = ( ::Regexp.last_match(2) != nil )
+          case_insensitive = ::Regexp.last_match(2)
           if case_insensitive
             @indenters[ ::Regexp.last_match(1) ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
             @indenters[ ::Regexp.last_match(1) ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.indenters_next_line(\.case_insensitive)?$/
-          case_insensitive = ( ::Regexp.last_match(2) != nil )
+          case_insensitive = ::Regexp.last_match(2)
           if case_insensitive
             @indenters_next_line[ ::Regexp.last_match(1) ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
             @indenters_next_line[ ::Regexp.last_match(1) ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.unindenters(\.case_insensitive)?$/
-          case_insensitive = ( ::Regexp.last_match(2) != nil )
+          case_insensitive = ::Regexp.last_match(2)
           if case_insensitive
             @unindenters[ ::Regexp.last_match(1) ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
@@ -280,14 +281,14 @@ module Diakonos
           end
         when /^lang\.(.+?)\.indent\.(?:preventers|ignore|not_indented)(\.case_insensitive)?$/,
             /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
-          case_insensitive = ( ::Regexp.last_match(2) != nil )
+          case_insensitive = ::Regexp.last_match(2)
           if case_insensitive
             @settings[ command ] = Regexp.new( arg, Regexp::IGNORECASE )
           else
             @settings[ command ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.triggers(\.case_insensitive)?$/
-          case_insensitive = ( ::Regexp.last_match(2) != nil )
+          case_insensitive = ::Regexp.last_match(2)
           if case_insensitive
             @indent_triggers[::Regexp.last_match(1)] = Regexp.new( arg, Regexp::IGNORECASE )
           else

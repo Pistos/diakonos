@@ -356,7 +356,7 @@ module Diakonos
           session
         end
       end
-    rescue => e
+    rescue StandardError => e
       log("LSP: failed to start server for #{language}: #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}")
 
       nil

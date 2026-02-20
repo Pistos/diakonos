@@ -151,7 +151,7 @@ end
     end
 
     def mkdir_( dir )
-      mkdir_p File.join( @dest_dir, dir ), mode: 0755
+      mkdir_p File.join( @dest_dir, dir ), mode: 0o755
       @installed_dirs << dir
     rescue Errno::EEXIST
       # Don't panic if the directory already exists

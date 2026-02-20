@@ -158,7 +158,7 @@ module Diakonos
 
             @transport.write(message:)
           end
-        rescue => e
+        rescue StandardError => e
           $diakonos.log("LSP writer thread error: #{e.class}: #{e.message}")
         end
       end
@@ -173,7 +173,7 @@ module Diakonos
 
             @queue.push(message)
           end
-        rescue => e
+        rescue StandardError => e
           if ! (e.is_a?(IOError) && @stopping)
             $diakonos.log("LSP reader thread error: #{e.class}: #{e.message}")
           end

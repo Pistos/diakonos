@@ -61,12 +61,12 @@ module Diakonos
       return  if key.nil?
 
       value = nil
-      if @session.settings[ key ].class == TrueClass || @session.settings[ key ].class == FalseClass
+      if @session.settings[ key ].instance_of?(TrueClass) || @session.settings[ key ].instance_of?(FalseClass)
         value = ! @session.settings[ key ]
-      elsif @settings[ key ].class == TrueClass || @settings[ key ].class == FalseClass
+      elsif @settings[ key ].instance_of?(TrueClass) || @settings[ key ].instance_of?(FalseClass)
         value = ! @settings[ key ]
       end
-      if value != nil   # explicitly true or false
+      if ! value.nil?   # explicitly true or false
         @session.settings[ key ] = value
         merge_session_settings
         redraw  if do_redraw
