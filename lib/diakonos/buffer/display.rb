@@ -201,7 +201,11 @@ module Diakonos
             i += end_index
           end
         else
-          first_index, first_token_class, first_word = find_opening_match( substr, bos_allowed: i == 0, match_close: false )
+          first_index, first_token_class, first_word = find_opening_match(
+            substr,
+            bos_allowed: i == 0,
+            match_close: false
+          )
 
           if @lang_stack.any?
             prev_lang, close_token_class = @lang_stack[-1]

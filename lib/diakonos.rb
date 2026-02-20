@@ -555,6 +555,7 @@ module Diakonos
         begin
           FileUtils.rmdir d
         rescue Errno::ENOTEMPTY
+          # Don't delete directories with contents
         end
         if File.exist? d
           warn "(#{d} not removed)"

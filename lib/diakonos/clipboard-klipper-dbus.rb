@@ -13,7 +13,10 @@ module Diakonos
       clip_filename = write_to_clip_file( text.join( "\n" ) )
 
       # A little shell sorcery to ensure the shell doesn't strip off trailing newlines.
-      `clipping=$(cat #{clip_filename};printf "_"); dbus-send --type=method_call --dest=org.kde.klipper /klipper org.kde.klipper.klipper.setClipboardContents string:"${clipping%_}"`
+      `clipping=$(cat #{clip_filename};printf "_"); \
+      dbus-send --type=method_call --dest=org.kde.klipper \
+      /klipper org.kde.klipper.klipper.setClipboardContents string:"${clipping%_}"`
+
       true
     end
 
@@ -28,9 +31,18 @@ module Diakonos
     # ------------------------------
 
     def clip
-      text = `dbus-send --print-reply --dest=org.kde.klipper /klipper org.kde.klipper.klipper.getClipboardContents | awk 'BEGIN { output = ""; } { if ( NR > 1 ) { output = output $0 "\\n"; } } END { print substr(output, 12, length(output) - 13); }'`.split( "\n", -1 )
+      awk_script = (
+        'BEGIN { output = ""; } { if ( NR > 1 ) { output = output $0 "\\n"; } } END ' +
+        '{ print substr(output, 12, length(output) - 13); }'
+      )
+
+      text = (
+        `dbus-send --print-reply --dest=org.kde.klipper \
+        /klipper org.kde.klipper.klipper.getClipboardContents | awk '#{awk_script}'`
+      ).split( "\n", -1 )
       # getClipboardContents puts an extra newline on end; pop it off.
       text.pop
+
       text
     end
 

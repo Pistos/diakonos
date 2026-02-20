@@ -1,4 +1,3 @@
-
 require 'diakonos/lsp/transport'
 
 module Diakonos

@@ -199,7 +199,6 @@ module Diakonos
         cursor_right( Buffer::STILL_TYPING, str.length )
       else
         keychain_pressed = context.concat [ c ]
-        function_and_args = @modes[ 'edit' ].keymap.get_leaf( keychain_pressed )
         partial_keychain = @modes[ 'edit' ].keymap.get_node( keychain_pressed )
 
         if partial_keychain
