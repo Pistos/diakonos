@@ -1,0 +1,20 @@
+inherit_from:
+  # - https://raw.githubusercontent.com/Pistos/lintfiles/refs/heads/master/.rubocop.yml
+  - <%= File.join(Dir.home, '.rubocop.yml') %>
+inherit_mode:
+  merge:
+    - AllowedNames
+Layout/TrailingEmptyLines:
+  Exclude:
+    - spec/test-files/sample-file.rb
+Naming/AccessorMethodName:
+  Enabled: false
+Naming/MethodParameterName:
+  AllowedNames: ['c', 'ch', 'w']
+Naming/MethodName:
+  Exclude:
+    - lib/diakonos/functions-deprecated.rb
+Naming/VariableNumber:
+  Enabled: false
+Style/GlobalVars:
+  AllowedVariables: ['$diakonos', '$keystrokes']
