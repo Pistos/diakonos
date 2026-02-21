@@ -5,14 +5,16 @@ module Diakonos
 
     attr_reader :top_line, :left_column
 
-    def find_opening_match( line, bos_allowed: true, match_close: true )
+    def find_opening_match(line, bos_allowed: true, match_close: true)
       open_index = line.length
       open_token_class = nil
       open_match_text = nil
       match = nil
       match_text = nil
-      @token_regexps.each do |token_class,regexp|
+
+      @token_regexps.each do |token_class, regexp|
         match = regexp.match(line)
+
         if match
           if match.length > 1
             index = match.begin 1
@@ -23,14 +25,18 @@ module Diakonos
             match_text = match[ 0 ]
           end
 
-          if(
+          bos_condition = (
             ! regexp.uses_bos || (
-              bos_allowed && ( whole_match_index == 0 )
-            ) && (
-              index < open_index
-            ) && (
-              ! match_close || @close_token_regexps[token_class]
+              bos_allowed && (whole_match_index == 0)
             )
+          )
+          index_is_earlier = (index < open_index)
+          can_be_closed = (! match_close || @close_token_regexps[token_class])
+
+          if(
+            bos_condition &&
+            index_is_earlier &&
+            can_be_closed
           )
             open_index = index
             open_token_class = token_class
@@ -39,7 +45,7 @@ module Diakonos
         end
       end
 
-      [ open_index, open_token_class, open_match_text ]
+      [open_index, open_token_class, open_match_text]
     end
 
     private def find_closing_match(line_segment, regexp, bos_allowed: true)
