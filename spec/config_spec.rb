@@ -215,4 +215,103 @@ RSpec.describe 'Diakonos::Diakonos#parse_configuration_file' do
       expect(d.settings).not_to have_key('# Basic')
     end
   end
+
+  context 'with accessor-less instance variables' do
+    before do
+      d.parse_configuration_file(config_path('config-ivars.conf'))
+    end
+
+    context '@bangmasks' do
+      let(:bangmasks) { d.instance_variable_get(:@bangmasks) }
+
+      it 'stores bangmask regexps keyed by language' do
+        expect(bangmasks['ruby']).to be_a Regexp
+        expect(bangmasks['ruby']).to match 'ruby'
+        expect(bangmasks['python']).to be_a Regexp
+        expect(bangmasks['python']).to match 'python'
+      end
+    end
+
+    context '@colour_pairs' do
+      let(:colour_pairs) { d.instance_variable_get(:@colour_pairs) }
+
+      it 'accumulates colour pair hashes with number, fg, and bg' do
+        red_pair = colour_pairs.find { |cp| cp[:number] == 1 }
+        green_pair = colour_pairs.find { |cp| cp[:number] == 2 }
+
+        expect(red_pair[:fg]).to eq Curses::COLOR_RED
+        expect(red_pair[:bg]).to eq Curses::COLOR_BLACK
+        expect(green_pair[:fg]).to eq Curses::COLOR_GREEN
+        expect(green_pair[:bg]).to eq Curses::COLOR_BLUE
+      end
+    end
+
+    context '@configs' do
+      let(:configs) { d.instance_variable_get(:@configs) }
+      let(:project_root) { File.expand_path('..', __dir__) }
+      let(:spec_dir) { __dir__ }
+
+      it 'contains the global, test, and ivars config files' do
+        filenames = configs.map(&:filename)
+
+        expected = [
+          File.realpath(File.join(project_root, 'diakonos.conf')),
+          File.realpath(File.join(spec_dir, 'test-files', 'test.conf')),
+          File.realpath(config_path('config-ivars.conf')),
+        ]
+
+        expect(filenames).to eq expected
+      end
+    end
+
+    context '@filemasks' do
+      let(:filemasks) { d.instance_variable_get(:@filemasks) }
+
+      it 'stores filemask regexps keyed by language' do
+        expect(filemasks['ruby']).to be_a Regexp
+        expect(filemasks['ruby']).to match 'foo.rb'
+        expect(filemasks['python']).to be_a Regexp
+        expect(filemasks['python']).to match 'bar.py'
+      end
+    end
+
+    context '@fuzzy_ignores' do
+      let(:fuzzy_ignores) { d.instance_variable_get(:@fuzzy_ignores) }
+
+      it 'accumulates ignore patterns as strings' do
+        expect(fuzzy_ignores).to include('\.git')
+        expect(fuzzy_ignores).to include('node_modules')
+        expect(fuzzy_ignores).to include('\.svn')
+      end
+    end
+
+    context '@indent_triggers' do
+      let(:indent_triggers) { d.instance_variable_get(:@indent_triggers) }
+
+      it 'stores indent trigger regexps keyed by language' do
+        expect(indent_triggers['ruby']).to be_a Regexp
+        expect(indent_triggers['ruby']).to match 'end'
+        expect(indent_triggers['python']).to be_a Regexp
+        expect(indent_triggers['python']).to match '  else:'
+      end
+    end
+
+    context '@logfilename' do
+      let(:logfilename) { d.instance_variable_get(:@logfilename) }
+
+      it 'expands and stores the logfile path' do
+        expect(logfilename).to eq File.expand_path('./tmp/test-diakonos.log')
+      end
+    end
+
+    context '@setting_strings' do
+      let(:setting_strings) { d.instance_variable_get(:@setting_strings) }
+
+      it 'stores the raw argument string for each setting' do
+        expect(setting_strings['context.separator']).to eq '---'
+        expect(setting_strings['max_clips']).to eq '20'
+        expect(setting_strings['view.line_numbers']).to eq 'true'
+      end
+    end
+  end
 end
