@@ -387,7 +387,7 @@ module Diakonos
           'close_forgotten_buffers_after',
           'context.delay',
           'interaction.blink_duration',
-          'interaction.choice_delay'
+          'interaction.choice_delay',
         ]
           @settings[ command ] = arg.to_f
         when 'fuzzy_file_find.ignore'

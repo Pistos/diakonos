@@ -24,16 +24,24 @@ end
 
 __DIR__ = File.dirname( File.expand_path( __FILE__ ) )
 
+# Boot once so the Window class is loaded with $diakonos.testing == true.
 if $diakonos.nil?
   $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test' ]
   $diakonos.start
-  $diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )
+end
 
-  # The $keystrokes Array is used to buffer keystrokes to be typed during tests.
-  # Multiple keystrokes are typed in rapid succession, and trigger the X windows
-  # paste handling of Diakonos.
-  # @see Diakonos::Diakonos#process_keystroke .
-  $keystrokes = []
+RSpec.configure do |config|
+  config.before do
+    $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test' ]
+    $diakonos.start
+    $diakonos.parse_configuration_file( File.join( __DIR__, 'test-files', 'test.conf' ) )
+
+    # The $keystrokes Array is used to buffer keystrokes to be typed during tests.
+    # Multiple keystrokes are typed in rapid succession, and trigger the X windows
+    # paste handling of Diakonos.
+    # @see Diakonos::Diakonos#process_keystroke .
+    $keystrokes = []
+  end
 end
 
 if ! Object.const_defined? 'TEST_DIR'

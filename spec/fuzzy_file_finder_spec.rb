@@ -14,7 +14,7 @@ RSpec.describe FuzzyFileFinder do
   let(:ceiling) { nil }
   let(:root_dir) { "spec/test-files" }
   let(:directories) { [root_dir] }
-  let(:ignores) { [] }
+  let(:ignores) { ['conf/*'] }
   let(:recursive) { nil }
 
   describe "#find" do
@@ -40,7 +40,7 @@ RSpec.describe FuzzyFileFinder do
 
       it "raises a TooManyEntries exception" do
         expect { finder.find(input) }
-        .to raise_exception(FuzzyFileFinder::TooManyEntries, /14.*#{root_dir}/)
+        .to raise_exception(FuzzyFileFinder::TooManyEntries, /15.*#{root_dir}/)
       end
     end
   end
