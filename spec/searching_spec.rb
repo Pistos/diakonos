@@ -5,6 +5,7 @@ RSpec.describe 'A Diakonos user' do
   before do
     @d = $diakonos
     @b = @d.open_file( SAMPLE_FILE )
+
     cursor_should_be_at 0,0
   end
 
@@ -97,9 +98,11 @@ RSpec.describe 'A Diakonos user' do
   end
 
   it 'can find exact literal strings' do
-    @d.find_exact :down, 'x.inspect'
+    # should skip past "def inspection"
+    @d.find_exact :down, '.inspect'
+
     cursor_should_be_at 13, 13
-    selection_should_be 13, 4, 13, 13
+    selection_should_be 13, 5, 13, 13
   end
 
   it 'can seek to next match' do
