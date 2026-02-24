@@ -1,3 +1,5 @@
+ENV['DIAKONOS_TESTING'] = '1'
+
 require 'diakonos'
 
 # TODO: Rewrite these as rspec custom expectations
@@ -23,12 +25,6 @@ def selection_should_be( start_row, start_col, end_row, end_col )
 end
 
 __DIR__ = File.dirname( File.expand_path( __FILE__ ) )
-
-# Boot once so the Window class is loaded with $diakonos.testing == true.
-if $diakonos.nil?
-  $diakonos = Diakonos::Diakonos.new [ '-e', 'quit', '--test' ]
-  $diakonos.start
-end
 
 RSpec.configure do |config|
   config.before do

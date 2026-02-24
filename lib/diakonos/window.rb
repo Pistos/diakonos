@@ -1,10 +1,10 @@
 module Diakonos
   class Window < ::Curses::Window
 
-    if $diakonos.testing
+    if ENV['DIAKONOS_TESTING']
 
       def initialize( *args )
-        # Setup some variables to keep track of a fake cursor
+        # Set up some variables to keep track of a fake cursor
         @row, @col = 0, 0
         super
         Curses.close_screen
