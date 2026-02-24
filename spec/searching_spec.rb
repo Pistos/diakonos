@@ -45,6 +45,89 @@ RSpec.describe 'A Diakonos user' do
     selection_should_be 13,6, 13,13
   end
 
+  it 'can find text searching down' do
+    @d.find 'inspect'
+    cursor_should_be_at 12, 13
+    selection_should_be 12, 6, 12, 13
+
+    @d.find 'inspect'
+    cursor_should_be_at 13, 13
+    selection_should_be 13, 6, 13, 13
+  end
+
+  it 'can find text searching up' do
+    @b.cursor_to 26, 0
+    @d.find 'inspect', direction: :up
+    cursor_should_be_at 19, 9
+    selection_should_be 19, 2, 19, 9
+  end
+
+  it 'finds case-insensitively by default' do
+    @d.find 'Sample'
+    cursor_should_be_at 2, 23
+    selection_should_be 2, 17, 2, 23
+  end
+
+  it 'can find case-sensitively' do
+    @d.find 'Sample', case_sensitive: true
+    cursor_should_be_at 4, 12
+    selection_should_be 4, 6, 4, 12
+  end
+
+  it 'wraps around when searching past end of file' do
+    @b.cursor_to 20, 0
+    @d.find 'inspect'
+    cursor_should_be_at 12, 13
+
+    expect(@b.instance_variable_get(:@wrapped)).to be true
+  end
+
+  it 'can find again after an initial find' do
+    @d.find 'def'
+    cursor_should_be_at 7, 5
+    selection_should_be 7, 2, 7, 5
+
+    @d.find_again
+    cursor_should_be_at 12, 5
+    selection_should_be 12, 2, 12, 5
+
+    @d.find_again :up
+    cursor_should_be_at 7, 5
+    selection_should_be 7, 2, 7, 5
+  end
+
+  it 'can find exact literal strings' do
+    @d.find_exact :down, 'x.inspect'
+    cursor_should_be_at 13, 13
+    selection_should_be 13, 4, 13, 13
+  end
+
+  it 'can seek to next match' do
+    @d.seek 'def'
+    cursor_should_be_at 7, 2
+
+    @d.seek 'def'
+    cursor_should_be_at 12, 2
+
+    @d.seek 'def', :up
+    cursor_should_be_at 7, 2
+  end
+
+  it 'tracks the number of matches found' do
+    @d.find 'inspect'
+
+    expect(@b.num_matches_found).to eq 4
+  end
+
+  it 'can go to a matching pair character' do
+    @b.cursor_to 21, 0
+    @d.go_to_pair_match
+    cursor_should_be_at 24, 0
+
+    @d.go_to_pair_match
+    cursor_should_be_at 21, 0
+  end
+
 end
 
 RSpec.describe 'A Diakonos Buffer' do
@@ -107,5 +190,29 @@ RSpec.describe 'A Diakonos Buffer' do
     expect(@b.pos_of_pair_match( 5, 20 )).to eq [ nil, nil ]
     expect(@b.pos_of_pair_match( 5, 13 )).to eq [ nil, nil ]
     expect(@b.pos_of_pair_match( 23, 0 )).to eq [ nil, nil ]
+  end
+end
+
+RSpec.describe 'Buffer#replace_all' do
+
+  before do
+    @d = $diakonos
+    @b = @d.open_file(SAMPLE_FILE_LONGER)
+  end
+
+  after do
+    @d.close_buffer @b, to_all: Diakonos::CHOICE_NO_TO_ALL
+  end
+
+  it 'replaces all occurrences and returns the count' do
+    num_replaced = @b.replace_all(/blah/, 'stuff')
+
+    expect(num_replaced).to eq 45
+
+    lines = @b.instance_variable_get(:@lines)
+    blah_count = lines.count { |line| line.include?('blah') }
+    stuff_count = lines.count { |line| line.include?('stuff') }
+    expect(blah_count).to eq 0
+    expect(stuff_count).to eq 45
   end
 end

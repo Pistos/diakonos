@@ -92,22 +92,17 @@ class String
       rindex( regexp, working_offset )
       match = Regexp.last_match
       if match
-        i = match.end( 0 ) - 1
+        i = match.begin( 0 )
         match_text = match[ 0 ]
         if match.length > 1
           # Find first matching group
           1.upto( match.length - 1 ) do |match_item_index|
             if match[ match_item_index ]
-              i = match.end( match_item_index ) - 1
+              i = match.begin( match_item_index )
               match_text = match[ match_item_index ]
               break
             end
           end
-        end
-
-        if match_text == ""
-          # Assume that an empty string means that it matched $
-          i += 1
         end
 
         break if i <= offset
