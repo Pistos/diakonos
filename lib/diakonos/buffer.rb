@@ -52,7 +52,6 @@ module Diakonos
     def initialize( options = {} )
       @name = options[ 'filepath' ]
       @modified = false
-      @last_modification_check = Time.now
       @time_last_viewed = Time.now
 
       @buffer_states = Array.new
@@ -60,6 +59,7 @@ module Diakonos
       if @name.nil?
         @lines = Array.new
         @lines[ 0 ] = ""
+        @last_modification_check = Time.now
       else
         @name = File.expand_path( @name )
         if FileTest.exist? @name
@@ -68,9 +68,11 @@ module Diakonos
             @lines.push ""
           end
           @lines = @lines.collect(&:chomp)
+          @last_modification_check = File.mtime(@name)
         else
           @lines = Array.new
           @lines[ 0 ] = ""
+          @last_modification_check = Time.now
         end
       end
 

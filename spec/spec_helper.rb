@@ -64,3 +64,5 @@ end
 if ! Object.const_defined? 'TEMP_FILE_C'
   TEMP_FILE_C = File.join( TEST_DIR, '/temp-file.c' )
 end
+
+SPEC_TMP = File.join(File.dirname(File.expand_path(__FILE__)), '..', 'tmp')
