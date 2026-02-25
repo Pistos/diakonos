@@ -59,7 +59,14 @@ RSpec.describe 'LSP functions' do
     }
 
     before do
-      allow($diakonos).to receive(:log)
+      buffer.cursor_to(18, 5, Diakonos::Buffer::DONT_DISPLAY)
+      allow(d).to receive(:get_user_input)
+    end
+
+    after do
+      if d.list_buffer
+        d.close_list_buffer
+      end
     end
 
     context 'with a CompletionList hash' do
@@ -67,43 +74,92 @@ RSpec.describe 'LSP functions' do
         {
           isIncomplete: false,
           items: [
-            { label: 'each' },
-            { label: 'each_with_index' },
+            { label: 'Sample' },
+            { label: 'SampleClass' },
           ],
         }
       }
 
-      it 'logs the completion items in order' do
+      it 'opens the list buffer with completion labels' do
         callback.call(result)
 
-        expect($diakonos).to have_received(:log).with('LSP completion: 2 items').ordered
-        expect($diakonos).to have_received(:log).with('  each').ordered
-        expect($diakonos).to have_received(:log).with('  each_with_index').ordered
+        expect(d.list_buffer).not_to be_nil
+        list_contents = d.list_buffer.to_a
+        expect(list_contents).to include('Sample')
+        expect(list_contents).to include('SampleClass')
       end
     end
 
     context 'with a plain array of CompletionItems' do
       let(:result) {
         [
-          { label: 'map' },
-          { label: 'select' },
+          { label: 'Sample' },
+          { label: 'SampleClass' },
         ]
       }
 
-      it 'logs the completion items in order' do
+      it 'opens the list buffer with completion labels' do
         callback.call(result)
 
-        expect($diakonos).to have_received(:log).with('LSP completion: 2 items').ordered
-        expect($diakonos).to have_received(:log).with('  map').ordered
-        expect($diakonos).to have_received(:log).with('  select').ordered
+        expect(d.list_buffer).not_to be_nil
+        list_contents = d.list_buffer.to_a
+        expect(list_contents).to include('Sample')
+        expect(list_contents).to include('SampleClass')
       end
     end
 
     context 'with nil result' do
-      it 'logs zero items' do
+      it 'shows a message on the interaction line' do
         callback.call(nil)
 
-        expect($diakonos).to have_received(:log).with('LSP completion: 0 items')
+        expect(d).to have_received(:set_iline).with('No completions.')
+      end
+    end
+
+    context 'with an empty items list' do
+      let(:result) {
+        { isIncomplete: false, items: [] }
+      }
+
+      it 'shows a message on the interaction line' do
+        callback.call(result)
+
+        expect(d).to have_received(:set_iline).with('No completions.')
+      end
+    end
+
+    context 'when the buffer has changed' do
+      let(:result) {
+        [{ label: 'Sample' }]
+      }
+      let(:other_buffer) { d.open_file(SAMPLE_FILE_C) }
+
+      after do
+        d.close_buffer other_buffer, to_all: Diakonos::CHOICE_NO_TO_ALL
+      end
+
+      it 'silently discards the result' do
+        captured = callback
+        other_buffer
+        captured.call(result)
+
+        expect(d.list_buffer).to be_nil
+      end
+    end
+
+    context 'when the cursor row has changed' do
+      let(:result) {
+        [{ label: 'Sample' }]
+      }
+
+      before do
+        buffer.cursor_to(0, 0, Diakonos::Buffer::DONT_DISPLAY)
+      end
+
+      it 'silently discards the result' do
+        callback.call(result)
+
+        expect(d.list_buffer).to be_nil
       end
     end
   end
@@ -211,7 +267,7 @@ RSpec.describe 'LSP functions' do
       it 'opens the list buffer with formatted entries' do
         callback.call(locations)
 
-        expect(d.list_buffer).to_not be_nil
+        expect(d.list_buffer).not_to be_nil
         list_contents = d.list_buffer.to_a
         expect(list_contents).to include('/first/file.rb:11')
         expect(list_contents).to include('/second/file.rb:21')

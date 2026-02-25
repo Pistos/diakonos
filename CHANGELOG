@@ -8,6 +8,7 @@ Diakonos Changelog
   - diagnostics (errors, info) per line
   - go to definition
   - hover info
+  - code completion
 - Automatically close forgotten buffers
 - Fix automatic indentation
 

@@ -7,9 +7,22 @@ module Diakonos
       if ! session
         set_iline "No LSP session for this buffer."
       else
+        trigger_buffer = buffer_current
+        trigger_col = buffer_current.last_col
+        trigger_prefix = buffer_current.word_before_cursor
+        trigger_row = buffer_current.last_row
+
         session.complete(
           buffer: buffer_current,
-          on_response: method(:handle_completion_result),
+          on_response: ->(result) {
+            handle_completion_result(
+              result:,
+              trigger_buffer:,
+              trigger_col:,
+              trigger_prefix:,
+              trigger_row:,
+            )
+          },
         )
       end
     end
@@ -40,6 +53,23 @@ module Diakonos
       end
     end
 
+    private def completion_context_valid?(
+      trigger_buffer:,
+      trigger_prefix:,
+      trigger_row:
+    )
+      buffer_current == trigger_buffer &&
+      buffer_current.last_row == trigger_row && (
+        buffer_current
+        .word_before_cursor
+        &.start_with?(trigger_prefix.to_s)
+      )
+    end
+
+    private def completion_text_for(item:)
+      item[:insertText] || item[:label]
+    end
+
     private def extract_hover_text(content:)
       case content
       when String
@@ -60,17 +90,48 @@ module Diakonos
       end
     end
 
-    private def handle_completion_result(result)
-      items = Array(
-        result.respond_to?(:key) ?
-        result[:items] :
-        result
-      )
+    private def filter_completion_items(items:, prefix:)
+      if prefix.nil? || prefix.empty?
+        items
+      else
+        items.select { |item|
+          item[:label]
+          &.downcase
+          &.start_with?(prefix.downcase)
+        }
+      end
+    end
 
-      $diakonos.log("LSP completion: #{items.size} items")
+    private def handle_completion_result(
+      result:,
+      trigger_buffer:,
+      trigger_col:,
+      trigger_prefix:,
+      trigger_row:
+    )
+      if completion_context_valid?(trigger_buffer:, trigger_prefix:, trigger_row:)
+        items = Array(
+          result.respond_to?(:key) ?
+          result[:items] :
+          result
+        )
 
-      items.each do |item|
-        $diakonos.log("  #{item[:label]}")
+        if items.empty?
+          set_iline "No completions."
+        else
+          filtered_items = filter_completion_items(items:, prefix: trigger_prefix)
+
+          if filtered_items.empty?
+            set_iline "No matching completions."
+          else
+            show_completion_list(
+              items: filtered_items,
+              trigger_col:,
+              trigger_prefix:,
+              trigger_row:,
+            )
+          end
+        end
       end
     end
 
@@ -101,6 +162,29 @@ module Diakonos
       end
     end
 
+    private def insert_completion(
+      item:,
+      trigger_col:,
+      trigger_prefix:,
+      trigger_row:
+    )
+      text = completion_text_for(item:)
+      prefix_len = trigger_prefix.to_s.length
+      prefix_start_col = trigger_col - prefix_len
+
+      buffer_current.cursor_to(trigger_row, prefix_start_col, Buffer::DONT_DISPLAY)
+      buffer_current.delete_from_to(
+        trigger_row, prefix_start_col,
+        trigger_row, trigger_col,
+      )
+      buffer_current.insert_string(text)
+      buffer_current.cursor_to(
+        trigger_row,
+        prefix_start_col + text.length,
+        Buffer::DO_DISPLAY,
+      )
+    end
+
     private def navigate_to_location(location:)
       uri = location[:uri] || location[:targetUri]
       range = location[:range] || location[:targetSelectionRange]
@@ -114,6 +198,34 @@ module Diakonos
         end
       else
         set_iline "Cannot open URI: #{uri}"
+      end
+    end
+
+    private def show_completion_list(
+      items:,
+      trigger_col:,
+      trigger_prefix:,
+      trigger_row:
+    )
+      entries = items.map { |item| item[:label] }
+
+      with_list_file do |list|
+        list.puts entries.join("\n")
+      end
+      open_list_buffer
+
+      selection = get_user_input "Select a completion. "
+
+      if selection
+        selected_item = items.find { |item| item[:label] == selection }
+        if selected_item
+          insert_completion(
+            item: selected_item,
+            trigger_col:,
+            trigger_prefix:,
+            trigger_row:,
+          )
+        end
       end
     end
 
