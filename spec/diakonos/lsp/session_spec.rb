@@ -45,10 +45,10 @@ RSpec.describe Diakonos::Lsp::Session do
         lsp_uri: 'file:///project/bar.rb',
       )
     }
-    let(:on_result) { instance_double(Proc) }
+    let(:on_response) { instance_double(Proc) }
 
     it 'sends a textDocument/hover request with cursor position' do
-      session.hover(buffer:, on_result:)
+      session.hover(buffer:, on_response:)
 
       expect(server).to have_received(:write).with(
         message: {
@@ -68,6 +68,38 @@ RSpec.describe Diakonos::Lsp::Session do
     end
   end
 
+  describe '#complete' do
+    let(:buffer) {
+      instance_double(
+        Diakonos::Buffer,
+        last_col: 4,
+        last_row: 8,
+        lsp_uri: 'file:///project/baz.rb',
+      )
+    }
+    let(:on_response) { instance_double(Proc) }
+
+    it 'sends a textDocument/completion request with cursor position' do
+      session.complete(buffer:, on_response:)
+
+      expect(server).to have_received(:write).with(
+        message: {
+          id: 1,
+          method: 'textDocument/completion',
+          params: {
+            position: {
+              character: 4,
+              line: 8,
+            },
+            textDocument: {
+              uri: 'file:///project/baz.rb',
+            },
+          },
+        },
+      )
+    end
+  end
+
   describe '#go_to_definition' do
     let(:buffer) {
       instance_double(
@@ -77,10 +109,10 @@ RSpec.describe Diakonos::Lsp::Session do
         lsp_uri: 'file:///project/foo.rb',
       )
     }
-    let(:on_result) { instance_double(Proc) }
+    let(:on_response) { instance_double(Proc) }
 
     it 'sends a textDocument/definition request with cursor position' do
-      session.go_to_definition(buffer:, on_result:)
+      session.go_to_definition(buffer:, on_response:)
 
       expect(server).to have_received(:write).with(
         message: {

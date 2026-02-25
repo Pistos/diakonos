@@ -6,6 +6,7 @@ RSpec.describe 'LSP functions' do
   let(:session) {
     instance_double(
       Diakonos::Lsp::Session,
+      complete: nil,
       go_to_definition: nil,
       hover: nil,
     )
@@ -21,6 +22,92 @@ RSpec.describe 'LSP functions' do
     d.close_buffer buffer, to_all: Diakonos::CHOICE_NO_TO_ALL
   end
 
+  describe '#complete_code' do
+    context 'when the buffer has an LSP session' do
+      it 'sends a complete request to the session' do
+        d.complete_code
+
+        expect(session).to have_received(:complete).with(
+          buffer:,
+          on_response: anything,
+        )
+      end
+    end
+
+    context 'when the buffer has no LSP session' do
+      before do
+        buffer.lsp_session = nil
+      end
+
+      it 'shows a message on the interaction line' do
+        d.complete_code
+
+        expect(d).to have_received(:set_iline).with('No LSP session for this buffer.')
+      end
+    end
+  end
+
+  describe 'handle_completion_result' do
+    let(:callback) {
+      captured_callback = nil
+      allow(session).to receive(:complete) do |on_response:, **|
+        captured_callback = on_response
+      end
+      d.complete_code
+
+      captured_callback
+    }
+
+    before do
+      allow($diakonos).to receive(:log)
+    end
+
+    context 'with a CompletionList hash' do
+      let(:result) {
+        {
+          isIncomplete: false,
+          items: [
+            { label: 'each' },
+            { label: 'each_with_index' },
+          ],
+        }
+      }
+
+      it 'logs the completion items in order' do
+        callback.call(result)
+
+        expect($diakonos).to have_received(:log).with('LSP completion: 2 items').ordered
+        expect($diakonos).to have_received(:log).with('  each').ordered
+        expect($diakonos).to have_received(:log).with('  each_with_index').ordered
+      end
+    end
+
+    context 'with a plain array of CompletionItems' do
+      let(:result) {
+        [
+          { label: 'map' },
+          { label: 'select' },
+        ]
+      }
+
+      it 'logs the completion items in order' do
+        callback.call(result)
+
+        expect($diakonos).to have_received(:log).with('LSP completion: 2 items').ordered
+        expect($diakonos).to have_received(:log).with('  map').ordered
+        expect($diakonos).to have_received(:log).with('  select').ordered
+      end
+    end
+
+    context 'with nil result' do
+      it 'logs zero items' do
+        callback.call(nil)
+
+        expect($diakonos).to have_received(:log).with('LSP completion: 0 items')
+      end
+    end
+  end
+
   describe '#go_to_definition' do
     context 'when the buffer has an LSP session' do
       it 'sends a go_to_definition request to the session' do
@@ -28,7 +115,7 @@ RSpec.describe 'LSP functions' do
 
         expect(session).to have_received(:go_to_definition).with(
           buffer:,
-          on_result: anything,
+          on_response: anything,
         )
       end
     end
@@ -46,11 +133,11 @@ RSpec.describe 'LSP functions' do
     end
   end
 
-  describe 'handle_definition_result' do
+  describe 'handle_definition_response' do
     let(:callback) {
       captured_callback = nil
-      allow(session).to receive(:go_to_definition) do |on_result:, **|
-        captured_callback = on_result
+      allow(session).to receive(:go_to_definition) do |on_response:, **|
+        captured_callback = on_response
       end
       d.go_to_definition
 
@@ -161,7 +248,7 @@ RSpec.describe 'LSP functions' do
 
         expect(session).to have_received(:hover).with(
           buffer:,
-          on_result: anything,
+          on_response: anything,
         )
       end
     end
@@ -182,8 +269,8 @@ RSpec.describe 'LSP functions' do
   describe 'handle_hover_result' do
     let(:callback) {
       captured_callback = nil
-      allow(session).to receive(:hover) do |on_result:, **|
-        captured_callback = on_result
+      allow(session).to receive(:hover) do |on_response:, **|
+        captured_callback = on_response
       end
       d.hover
 

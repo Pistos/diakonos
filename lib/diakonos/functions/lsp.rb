@@ -1,28 +1,41 @@
 module Diakonos
   module Functions
 
+    def complete_code
+      session = buffer_current.lsp_session
+
+      if ! session
+        set_iline "No LSP session for this buffer."
+      else
+        session.complete(
+          buffer: buffer_current,
+          on_response: method(:handle_completion_result),
+        )
+      end
+    end
+
     def go_to_definition
-      buffer = buffer_current
-      session = buffer.lsp_session
+      session = buffer_current.lsp_session
+
       if ! session
         set_iline "No LSP session for this buffer."
       else
         session.go_to_definition(
-          buffer:,
-          on_result: method(:handle_definition_result),
+          buffer: buffer_current,
+          on_response: method(:handle_definition_result),
         )
       end
     end
 
     def hover
-      buffer = buffer_current
-      session = buffer.lsp_session
+      session = buffer_current.lsp_session
+
       if ! session
         set_iline "No LSP session for this buffer."
       else
         session.hover(
-          buffer:,
-          on_result: method(:handle_hover_result),
+          buffer: buffer_current,
+          on_response: method(:handle_hover_result),
         )
       end
     end
@@ -44,6 +57,20 @@ module Diakonos
         }
         .compact
         .join("\n")
+      end
+    end
+
+    private def handle_completion_result(result)
+      items = Array(
+        result.respond_to?(:key) ?
+        result[:items] :
+        result
+      )
+
+      $diakonos.log("LSP completion: #{items.size} items")
+
+      items.each do |item|
+        $diakonos.log("  #{item[:label]}")
       end
     end
 

@@ -57,6 +57,9 @@ module Diakonos
             params: {
               capabilities: {
                 textDocument: {
+                  completion: {
+                    dynamicRegistration: false,
+                  },
                   definition: {
                     dynamicRegistration: false,
                   },
