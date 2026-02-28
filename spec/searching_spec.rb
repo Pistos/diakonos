@@ -123,12 +123,12 @@ RSpec.describe 'A Diakonos user' do
   end
 
   it 'can go to a matching pair character' do
-    @b.cursor_to 21, 0
+    @b.cursor_to 27, 0
     @d.go_to_pair_match
-    cursor_should_be_at 24, 0
+    cursor_should_be_at 30, 0
 
     @d.go_to_pair_match
-    cursor_should_be_at 21, 0
+    cursor_should_be_at 27, 0
   end
 
 end

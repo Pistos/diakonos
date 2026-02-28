@@ -19,6 +19,12 @@ end
 s = Sample.new
 s.inspection
 
+if 1 < 2
+  s
+else
+  nil
+end
+
 {
   just: :a,
   test: :hash,

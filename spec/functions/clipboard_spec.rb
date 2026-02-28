@@ -40,7 +40,7 @@ RSpec.describe 'A Diakonos user can' do
     ]
 
     lines = @b.to_a
-    expect(lines.size).to eq 24
+    expect(lines.size).to eq 30
     expect(lines[ 0..2 ]).to eq [
       '',
       'class Sample',
@@ -55,7 +55,7 @@ RSpec.describe 'A Diakonos user can' do
     @d.paste
 
     lines = @b.to_a
-    expect(lines.size).to eq 30
+    expect(lines.size).to eq 36
     expect(lines[ 0..8 ]).to eq [
       '#!/usr/bin/env ruby',
       '',

@@ -138,21 +138,24 @@ module Diakonos
             line = line.gsub( @preventers, "" )
           end
 
-          indenter_index = (prev_line =~ @indenters)
           nl_indenter_index = (prev_line =~ @indenters_next_line)
 
           if nl_indenter_index && basis_row == row-1
             level += 1
-          elsif indenter_index
-            level += 1
-            unindenter_index = (prev_line =~ @unindenters)
-            if unindenter_index && unindenter_index != indenter_index
-              level -= 1
+          elsif prev_line =~ @indenters
+            last_indenter = last_match_index(prev_line, @indenters)
+            last_unindenter = last_match_index(prev_line, @unindenters)
+            if last_unindenter.nil? || last_indenter >= last_unindenter
+              level += 1
             end
           end
 
-          if line =~ @unindenters
-            level -= 1
+          unindenter_index = (line =~ @unindenters)
+          if unindenter_index
+            indenter_index = (line =~ @indenters)
+            if indenter_index.nil? || unindenter_index <= indenter_index
+              level -= 1
+            end
           end
         end
       end
@@ -168,6 +171,12 @@ module Diakonos
     def unindent( row = @last_row, do_display = DO_DISPLAY )
       level = indentation_level( row, DONT_USE_INDENT_IGNORE )
       set_indent  row, level - 1, do_display:
+    end
+
+    private def last_match_index(str, pattern)
+      str.scan(pattern)
+
+      Regexp.last_match&.begin(0)
     end
 
   end

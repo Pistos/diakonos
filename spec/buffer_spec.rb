@@ -86,9 +86,15 @@ RSpec.describe 'A Diakonos::Buffer' do
     expect(@b.indentation_level( 20 )).to eq 0
     expect(@b.indentation_level( 21 )).to eq 0
     expect(@b.indentation_level( 22 )).to eq 1
-    expect(@b.indentation_level( 23 )).to eq 1
-    expect(@b.indentation_level( 24 )).to eq 0
+    expect(@b.indentation_level( 23 )).to eq 0
+    expect(@b.indentation_level( 24 )).to eq 1
     expect(@b.indentation_level( 25 )).to eq 0
+    expect(@b.indentation_level( 26 )).to eq 0
+    expect(@b.indentation_level( 27 )).to eq 0
+    expect(@b.indentation_level( 28 )).to eq 1
+    expect(@b.indentation_level( 29 )).to eq 1
+    expect(@b.indentation_level( 30 )).to eq 0
+    expect(@b.indentation_level( 31 )).to eq 0
 
     indentation_file = File.join( TEST_DIR, 'indentation.test1' )
     b2 = Diakonos::Buffer.new( 'filepath' => indentation_file )
@@ -212,9 +218,9 @@ RSpec.describe 'A Diakonos::Buffer' do
     check_word_at 14, 4, 'y'
     check_word_at 14, 5, nil
     check_word_at 14, 6, 'inspect'
-    check_word_at 21, 0, nil
-    check_word_at 26, 39, 'EOF'
-    check_word_at 26, 40, nil
+    check_word_at 26, 0, nil
+    check_word_at 32, 39, 'EOF'
+    check_word_at 32, 40, nil
   end
 
   it 'knows the paragraph under the cursor' do
@@ -241,13 +247,20 @@ RSpec.describe 'A Diakonos::Buffer' do
       '  end',
       'end',
     ]
-    check_paragraph_at 22, 7, [
+    check_paragraph_at 21, 0, [
+      'if 1 < 2',
+      '  s',
+      'else',
+      '  nil',
+      'end',
+    ]
+    check_paragraph_at 28, 7, [
       '{',
       '  just: :a,',
       '  test: :hash,',
       '}',
     ]
-    check_paragraph_at 26, 12, [
+    check_paragraph_at 32, 12, [
       '# Comment at end, with no newline at EOF',
     ]
   end

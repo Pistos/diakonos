@@ -9,6 +9,7 @@ Diakonos Changelog
   - go to definition
   - hover info
 - Automatically close forgotten buffers
+- Fix automatic indentation
 
 0.9.12
 

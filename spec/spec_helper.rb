@@ -66,3 +66,22 @@ if ! Object.const_defined? 'TEMP_FILE_C'
 end
 
 SPEC_TMP = File.join(File.dirname(File.expand_path(__FILE__)), '..', 'tmp')
+
+RSpec::Matchers.define :have_lines do |expected|
+  match do |actual|
+    actual == expected
+  end
+
+  failure_message do |actual|
+    max_lines = [expected.size, actual.size].max
+    lines = (0...max_lines).map { |i|
+      exp = expected[i]
+      act = actual[i]
+      marker = (exp != act) ? ">>>" : "   "
+
+      "#{marker} #{i.to_s.rjust(3)}: expected #{exp.inspect}, got #{act.inspect}"
+    }
+
+    "Lines differ:\n#{lines.join("\n")}"
+  end
+end

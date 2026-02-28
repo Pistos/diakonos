@@ -42,7 +42,7 @@ RSpec.describe 'A Diakonos user can' do
     s = @b.selection_mark
     expect(s.start_row).to eq 0
     expect(s.start_col).to eq 0
-    expect(s.end_row).to eq 26
+    expect(s.end_row).to eq 32
     expect(s.end_col).to eq 40
   end
 
@@ -83,11 +83,11 @@ RSpec.describe 'A Diakonos user can' do
     cursor_should_be_at 2,7
 
     @d.remove_selection
-    @b.cursor_to 26,40
+    @b.cursor_to 32,40
     @d.select_word
     s = @b.selection_mark
     expect(s).to be_nil
-    cursor_should_be_at 26,40
+    cursor_should_be_at 32,40
   end
 
   it 'extend a selection wordwise' do
@@ -112,14 +112,14 @@ RSpec.describe 'A Diakonos user can' do
     cursor_should_be_at 2,24
 
     @d.remove_selection
-    @b.cursor_to 26,34
+    @b.cursor_to 32,34
     @d.select_word
-    selection_should_be 26,34, 26,36
+    selection_should_be 32,34, 32,36
 
     @d.select_word_another
-    selection_should_be 26,34, 26,40
+    selection_should_be 32,34, 32,40
     @d.select_word_another
-    selection_should_be 26,34, 26,40
+    selection_should_be 32,34, 32,40
   end
 
 end

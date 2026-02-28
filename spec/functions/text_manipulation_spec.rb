@@ -128,13 +128,13 @@ RSpec.describe 'A Diakonos user can' do
     b = @d.open_file(SAMPLE_FILE_JS)
 
     @d.comment_out
-    expect(b.to_a[0]).to eq '/* function() { */'
+    expect(b.to_a[0]).to eq '/* function func() { */'
     @d.comment_out
-    expect(b.to_a[0]).to eq '/* /* function() { */'
+    expect(b.to_a[0]).to eq '/* /* function func() { */'
     @d.uncomment
-    expect(b.to_a[0]).to eq '/* function() { */'
+    expect(b.to_a[0]).to eq '/* function func() { */'
     @d.uncomment
-    expect(b.to_a[0]).to eq 'function() {'
+    expect(b.to_a[0]).to eq 'function func() {'
   end
 
   it 'delete until a character' do
@@ -176,11 +176,11 @@ RSpec.describe 'A Diakonos user can' do
     expect(@b.to_a[ 2 ]).to eq '# Thhe tests.'
     cursor_should_be_at 2,4
 
-    @b.cursor_to 22,2
+    @b.cursor_to 28,2
     @d.delete_to_and_from :not_inclusive, '{'
     lines = @b.to_a
-    expect(lines.size).to eq 24
-    expect(lines[ 21..22 ]).to eq [
+    expect(lines.size).to eq 30
+    expect(lines[ 27..28 ]).to eq [
       '{}',
       '',
     ]
@@ -193,11 +193,11 @@ RSpec.describe 'A Diakonos user can' do
     expect(@b.to_a[ 2 ]).to eq '# Te tests.'
     cursor_should_be_at 2,3
 
-    @b.cursor_to 22,2
+    @b.cursor_to 28,2
     @d.delete_to_and_from :inclusive, '{'
     lines = @b.to_a
-    expect(lines.size).to eq 24
-    expect(lines[ 21..22 ]).to eq [
+    expect(lines.size).to eq 30
+    expect(lines[ 27..28 ]).to eq [
       '',
       '',
     ]
@@ -231,6 +231,12 @@ RSpec.describe 'A Diakonos user can' do
       's = Sample.new',
       's.inspection',
       '',
+      'if 1 < 2',
+      's',
+      'else',
+      'nil',
+      'end',
+      '',
       '{',
       'just: :a,',
       'test: :hash,',
@@ -242,7 +248,7 @@ RSpec.describe 'A Diakonos user can' do
     @d.set_buffer_type 'ruby'
     expect(@b.selection_mark).not_to be_nil
     @d.parsed_indent
-    expect(@b.to_a).to eq [
+    expect(@b.to_a).to have_lines [
       '#!/usr/bin/env ruby',
       '',
       '# This is only a sample file used in the tests.',
@@ -264,6 +270,12 @@ RSpec.describe 'A Diakonos user can' do
       's = Sample.new',
       's.inspection',
       '',
+      'if 1 < 2',
+      '  s',
+      'else',
+      '  nil',
+      'end',
+      '',
       '{',
       '  just: :a,',
       '  test: :hash,',
@@ -271,6 +283,54 @@ RSpec.describe 'A Diakonos user can' do
       '',
       '# Comment at end, with no newline at EOF',
     ]
+  end
+
+  context "when the file has an unindenter on a line following an indenter line" do
+    before do
+      @b = @d.open_file(SAMPLE_FILE_JS)
+    end
+
+    it 'automatically indent selected code' do
+      @d.set_buffer_type 'text'
+      @d.anchor_selection
+      @d.cursor_eof
+      # expect(@b.selection_mark).not_to be_nil
+      @d.parsed_indent
+
+      expect(@b.to_a).to eq [
+        'function func() {',
+        'hash = {};',
+        '',
+        'if (1 < 2) {',
+          'x = 1;',
+        '} else {',
+          'x = 2;',
+        '}',
+        '',
+        'return true;',
+        '}',
+        '',
+      ]
+
+      @d.set_buffer_type 'javascript'
+      # expect(@b.selection_mark).not_to be_nil
+      @d.parsed_indent
+
+      expect(@b.to_a).to eq [
+        'function func() {',
+        '  hash = {};',
+        '  ',
+        '  if (1 < 2) {',
+        '    x = 1;',
+        '  } else {',
+        '    x = 2;',
+        '  }',
+        '  ',
+        '  return true;',
+        '}',
+        '',
+      ]
+    end
   end
 
   it 'join lines' do
