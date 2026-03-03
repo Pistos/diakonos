@@ -17,4 +17,4 @@ Naming/MethodName:
 Naming/VariableNumber:
   Enabled: false
 Style/GlobalVars:
-  AllowedVariables: ['$diakonos', '$keystrokes']
+  AllowedVariables: ['$diakonos', '$keystrokes', '$use_virtual_screen']

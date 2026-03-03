@@ -28,5 +28,5 @@ Gem::Specification.new do |s|
   s.name        = "diakonos"
   s.required_ruby_version = ">= 3.1", "< 4"
   s.summary     = "Console text editor for the masses"
-  s.version     = "0.10.0"
+  s.version     = "0.10.1"
 end

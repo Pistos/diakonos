@@ -348,38 +348,39 @@ module Diakonos
     end
 
     def display_buffer( buffer )
-      return  if @testing
-      return  if ! @do_display
+      if @testing
+        buffer.display
+      elsif @do_display
+        Thread.new { synchronized_display_buffer(buffer) }
+      end
+    end
 
-      Thread.new do
-
-        if ! @display_mutex.try_lock
-          @display_queue_mutex.synchronize do
-            @display_queue = buffer
-          end
-        else
-          begin
-            Curses.curs_set 0
-            buffer.display
-            Curses.curs_set 1
-          rescue StandardError => e
-            $diakonos.log( "Display Exception:" )
-            $diakonos.log( e.message )
-            $diakonos.log( e.backtrace.join( "\n" ) )
-            show_exception e
-          end
-
-          @display_mutex.unlock
-
-          @display_queue_mutex.synchronize do
-            if @display_queue
-              b = @display_queue
-              @display_queue = nil
-              display_buffer b
-            end
-          end
+    private def synchronized_display_buffer( buffer )
+      if ! @display_mutex.try_lock
+        @display_queue_mutex.synchronize do
+          @display_queue = buffer
+        end
+      else
+        begin
+          Curses.curs_set 0
+          buffer.display
+          Curses.curs_set 1
+        rescue StandardError => e
+          $diakonos.log( "Display Exception:" )
+          $diakonos.log( e.message )
+          $diakonos.log( e.backtrace.join( "\n" ) )
+          show_exception e
         end
 
+        @display_mutex.unlock
+
+        @display_queue_mutex.synchronize do
+          if @display_queue
+            b = @display_queue
+            @display_queue = nil
+            display_buffer b
+          end
+        end
       end
     end
 

@@ -67,6 +67,24 @@ end
 
 SPEC_TMP = File.join(File.dirname(File.expand_path(__FILE__)), '..', 'tmp')
 
+RSpec.shared_context 'virtual screen' do
+  before do
+    $use_virtual_screen = true
+    cols = Curses.cols
+    main_h = $diakonos.main_window_height
+    $diakonos.win_main&.reset_virtual_screen(height: main_h, width: cols)
+    $diakonos.instance_variable_get(:@win_status)&.reset_virtual_screen(height: 1, width: cols)
+    $diakonos.instance_variable_get(:@win_interaction)&.reset_virtual_screen(height: 1, width: cols)
+    $diakonos.win_dock&.reset_virtual_screen(width: cols)
+    $diakonos.win_line_numbers&.reset_virtual_screen(height: main_h)
+    $diakonos.instance_variable_get(:@win_context)&.reset_virtual_screen(height: 1, width: cols)
+  end
+
+  after do
+    $use_virtual_screen = false
+  end
+end
+
 RSpec::Matchers.define :have_lines do |expected|
   match do |actual|
     actual == expected
