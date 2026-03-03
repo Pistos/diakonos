@@ -153,7 +153,7 @@ module Diakonos
       if result && result[:contents]
         text = extract_hover_text(content: result[:contents])
         if text && ! text.empty?
-          show_dock(lines: text.lines.map(&:chomp))
+          show_info_dock(lines: text.lines.map(&:chomp))
         else
           set_iline "No hover information."
         end

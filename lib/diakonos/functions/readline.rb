@@ -6,7 +6,11 @@ module Diakonos
     end
 
     def readline_accept
-      @readline.accept current_list_item
+      if showing_dock_list?
+        @readline.accept @dock_list.selected_item
+      else
+        @readline.accept current_list_item
+      end
     end
 
     def readline_backspace
@@ -39,9 +43,14 @@ module Diakonos
           previous_list_item
         end
         @readline.set_input select_list_item
+      elsif showing_dock_list?
+        @dock_list.previous_item
+        dock_select(index: @dock_list.selected_index)
+        @readline.set_input @dock_list.selected_item
       else
         @readline.history_up
       end
+
       @readline.cursor_write_input
     end
 
@@ -51,9 +60,14 @@ module Diakonos
           next_list_item
         end
         @readline.set_input select_list_item
+      elsif showing_dock_list?
+        @dock_list.next_item
+        dock_select(index: @dock_list.selected_index)
+        @readline.set_input @dock_list.selected_item
       else
         @readline.history_down
       end
+
       @readline.cursor_write_input
     end
 

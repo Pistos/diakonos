@@ -338,7 +338,7 @@ module Diakonos
         return
       end
 
-      if @dock_lines
+      if showing_info_dock?
         hide_dock
       end
 

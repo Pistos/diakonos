@@ -34,6 +34,7 @@ module Diakonos
       else
         close_list_buffer
       end
+      hide_dock
       options[ :history ][ -1 ] = @readline.input
       @readline = nil
 

@@ -2,6 +2,7 @@ require 'curses'
 
 module Diakonos
   CONTEXT_LINE_HEIGHT = 1
+  DEFAULT_DOCK_HEIGHT = 10
   DO_REDRAW           = true
   DONT_REDRAW         = false
   INPUT_LINE_HEIGHT   = 1
@@ -69,7 +70,7 @@ module Diakonos
         @win_main = ::Diakonos::Window.new( main_window_height, Curses.cols, 0, 0 )
         @win_line_numbers = nil
       end
-      if @dock_lines && ! @dock_lines.empty?
+      if dock_visible?
         @win_dock = ::Diakonos::Window.new(dock_height, Curses.cols, main_window_height, 0)
       else
         @win_dock = nil
@@ -143,8 +144,49 @@ module Diakonos
       Curses.cols
     end
 
-    def show_dock(lines:)
+    def show_info_dock(lines:)
+      @dock_feature = 'info'
       @dock_lines = lines
+      refresh_dock
+    end
+
+    def prepare_dock_list(feature:)
+      @dock_feature = feature
+      @dock_list = DockList.new(items: [])
+      @dock_scroll_offset = 0
+      @dock_lines = []
+      refresh_dock
+    end
+
+    def show_dock_list(items:, feature: nil)
+      @dock_feature = feature
+      @dock_list = DockList.new(items:)
+      @dock_scroll_offset = 0
+      @dock_lines = @dock_list.display_lines
+
+      render_dock
+    end
+
+    def showing_dock_list?
+      @dock_list
+    end
+
+    def showing_info_dock?
+      @dock_feature == 'info'
+    end
+
+    def dock_select(index:)
+      num_content_rows = dock_height - 1
+      if index < @dock_scroll_offset
+        @dock_scroll_offset = index
+      elsif index >= @dock_scroll_offset + num_content_rows
+        @dock_scroll_offset = index - num_content_rows + 1
+      end
+
+      render_dock
+    end
+
+    private def refresh_dock
       initialize_display
       render_dock
       update_status_line
@@ -352,21 +394,39 @@ module Diakonos
 
     DOCK_SEPARATOR_CHAR = '─'
 
-    private def dock_height
-      if @dock_lines && ! @dock_lines.empty?
-        max_height = @settings['dock.max_height'] || 10
-        separator_height = 1
-        unclamped_height = @dock_lines.length + separator_height
-        available = Curses.lines - (INPUT_LINE_HEIGHT + STATUS_LINE_HEIGHT + 1)
+    private def dock_visible?
+      @dock_list || (@dock_lines && ! @dock_lines.empty?)
+    end
 
-        [unclamped_height, max_height, available].min
+    private def dock_height
+      if dock_visible?
+        configured_height = configured_dock_height
+        separator_height = 1
+        available = Curses.lines - (INPUT_LINE_HEIGHT + STATUS_LINE_HEIGHT + 1)
+        if @dock_list
+          [configured_height, available].min
+        else
+          unclamped_height = @dock_lines.length + separator_height
+
+          [unclamped_height, configured_height, available].min
+        end
       else
         0
       end
     end
 
+    private def configured_dock_height
+      feature = @dock_feature || 'info'
+      size_name = @settings["dock.height.#{feature}"] || 'small'
+
+      @settings["dock.height.#{size_name}"] || DEFAULT_DOCK_HEIGHT
+    end
+
     private def hide_dock
+      @dock_feature = nil
       @dock_lines = nil
+      @dock_list = nil
+      @dock_scroll_offset = 0
       initialize_display
       update_status_line
       update_context_line
@@ -379,28 +439,53 @@ module Diakonos
 
       separator_height = 1
       num_content_rows = dock_height - separator_height
+      offset = @dock_scroll_offset || 0
+      visible_lines = @dock_lines[offset, num_content_rows] || []
 
       Curses.curs_set 0
       @win_dock.setpos(0, 0)
       @win_dock.addstr(DOCK_SEPARATOR_CHAR * Curses.cols)
 
-      @dock_lines[0...num_content_rows].each_with_index do |line, row|
-        @win_dock.setpos(row + separator_height, 0)
-        truncated_line = line[0...Curses.cols]
-        @win_dock.addstr("%-#{Curses.cols}s" % truncated_line)
+      visible_lines.each_with_index do |line, row|
+        render_dock_line(
+          line:,
+          row: row + separator_height,
+          selected: dock_line_selected?(offset + row),
+        )
       end
 
-      num_remaining_rows = num_content_rows - @dock_lines.length
-      if num_remaining_rows > 0
-        (0...num_remaining_rows).each do |i|
-          row = @dock_lines.length + separator_height + i
-          @win_dock.setpos(row, 0)
-          @win_dock.addstr(" " * Curses.cols)
-        end
-      end
+      render_dock_blank_rows(
+        count: num_content_rows - visible_lines.length,
+        start_row: visible_lines.length + separator_height,
+      )
 
       @win_dock.refresh
       Curses.curs_set 1
+    end
+
+    private def dock_line_selected?(line_index)
+      @dock_list && line_index == @dock_list.selected_index
+    end
+
+    private def render_dock_blank_rows(count:, start_row:)
+      if count > 0
+        (0...count).each do |i|
+          @win_dock.setpos(start_row + i, 0)
+          @win_dock.addstr(" " * Curses.cols)
+        end
+      end
+    end
+
+    private def render_dock_line(line:, row:, selected: false)
+      @win_dock.setpos(row, 0)
+      formatted_line = "%-#{Curses.cols}s" % line[0...Curses.cols]
+      if selected
+        @win_dock.attron(Curses::A_REVERSE) do
+          @win_dock.addstr(formatted_line)
+        end
+      else
+        @win_dock.addstr(formatted_line)
+      end
     end
 
   end

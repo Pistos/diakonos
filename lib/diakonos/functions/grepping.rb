@@ -32,6 +32,8 @@ module Diakonos
       end
       starting_row, starting_col = buffer_current.last_row, buffer_current.last_col
 
+      # TODO: Match highlighting within dock lines (lost from list buffer conversion)
+      prepare_dock_list(feature: 'grep')
       selected = get_user_input(
         "Grep regexp: ",
         history: @rlh_search,
@@ -56,17 +58,8 @@ module Diakonos
         else
           join_str = "\n---\n"
         end
-        with_list_file do |list|
-          list.puts grep_results.join( join_str )
-        end
-
-        list_buffer = open_list_buffer
-        begin
-          list_buffer.highlight_matches Regexp.new( input )
-        rescue RegexpError
-          # ignore
-        end
-        display_buffer list_buffer
+        dock_items = grep_results.join(join_str).split("\n")
+        show_dock_list(items: dock_items, feature: 'grep')
       }
 
       if selected

@@ -17,23 +17,23 @@ RSpec.describe 'A Diakonos user' do
     dir = File.dirname( File.expand_path( __FILE__ ) )
 
     @d.actually_grep( 'inspect', @d.buffer_current )
-    lines = File.readlines( @d.list_filename )
+    lines = @d.instance_variable_get(:@dock_list).items
 
     expect(lines[ 0 ])
-    .to match %r(^sample-file\.rb:13:   def inspection {100,} \| #{dir}/test-files/sample-file\.rb:13\n$)
+    .to match %r(^sample-file\.rb:13:   def inspection {100,} \| #{dir}/test-files/sample-file\.rb:13$)
 
     expect(lines[ 1 ])
-    .to match %r(^sample-file\.rb:14:     x\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:14\n$)
+    .to match %r(^sample-file\.rb:14:     x\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:14$)
 
     expect(lines[ 2 ])
-    .to match %r(^sample-file\.rb:15:     y\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:15\n$)
+    .to match %r(^sample-file\.rb:15:     y\.inspect {100,} \| #{dir}/test-files/sample-file\.rb:15$)
 
     expect(lines[ 3 ])
-    .to match %r(^sample-file\.rb:20: s\.inspection {100,} \| #{dir}/test-files/sample-file\.rb:20\n$)
+    .to match %r(^sample-file\.rb:20: s\.inspection {100,} \| #{dir}/test-files/sample-file\.rb:20$)
 
     expect(lines.size).to eq 4
 
-    @d.close_list_buffer
+    @d.send(:hide_dock)
   end
 
   it 'can find words' do
