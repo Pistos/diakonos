@@ -174,9 +174,11 @@ module Diakonos
     end
 
     private def last_match_index(str, pattern)
-      str.scan(pattern)
+      if pattern
+        str.scan(pattern)
 
-      Regexp.last_match&.begin(0)
+        Regexp.last_match&.begin(0)
+      end
     end
 
   end
