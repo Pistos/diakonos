@@ -156,8 +156,7 @@ module Diakonos
       @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
       @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] || 4 )
       @indent_roundup = (
-        @settings[ "lang.#{@language}.indent.roundup" ].nil? ?
-        true :
+        @settings[ "lang.#{@language}.indent.roundup" ].nil? ||
         @settings[ "lang.#{@language}.indent.roundup" ]
       )
       @indent_closers = (
@@ -697,7 +696,7 @@ module Diakonos
 
       word
     end
-    # TODO word_before_cursor_pos
+    # TODO: word_before_cursor_pos
 
     # Returns an array of lines of the current paragraph.
     def paragraph_under_cursor
@@ -739,7 +738,7 @@ module Diakonos
         [ lower_boundary, @lines[ lower_boundary ].length - 1 ],
       ]
     end
-    # TODO paragraph_before_cursor(_pos)?
+    # TODO: paragraph_before_cursor(_pos)?
 
     def words( filter_regexp = nil )
       w = @lines.join( ' ' ).scan( WORD_REGEXP )

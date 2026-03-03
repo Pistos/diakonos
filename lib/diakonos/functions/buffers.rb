@@ -463,11 +463,10 @@ module Diakonos
     # If read_only is nil, the read_only state of the current buffer is toggled.
     # Otherwise, the read_only state of the current buffer is set to read_only.
     def set_read_only( read_only = nil )
-      if read_only
-        buffer_current.read_only = read_only
-      else
-        buffer_current.read_only = ( ! buffer_current.read_only )
-      end
+      buffer_current.read_only = (
+        read_only || ! buffer_current.read_only
+      )
+
       update_status_line
     end
 

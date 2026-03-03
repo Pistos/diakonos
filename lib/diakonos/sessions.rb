@@ -58,14 +58,14 @@ module Diakonos
       }.compact
     end
 
-    def set_readline_histories(rlh_general, rlh_files, rlh_search, rlh_shell, rlh_help, rlh_sessions)
+    def set_readline_histories(files:, general:, help:, search:, sessions:, shell:)
       @readline_histories = {
-        'general'  => rlh_general,
-        'files'    => rlh_files,
-        'search'   => rlh_search,
-        'shell'    => rlh_shell,
-        'help'     => rlh_help,
-        'sessions' => rlh_sessions,
+        'files'    => files,
+        'general'  => general,
+        'help'     => help,
+        'search'   => search,
+        'sessions' => sessions,
+        'shell'    => shell,
       }
     end
 
@@ -163,7 +163,14 @@ module Diakonos
       return  if @testing && Session.pid_session?(session_file)
 
       @session.set_buffers(@buffers)
-      @session.set_readline_histories(@rlh_general, @rlh_files, @rlh_search, @rlh_shell, @rlh_help, @rlh_sessions)
+      @session.set_readline_histories(
+        files: @rlh_files,
+        general: @rlh_general,
+        help: @rlh_help,
+        search: @rlh_search,
+        sessions: @rlh_sessions,
+        shell: @rlh_shell,
+      )
 
       File.open( session_file, 'w' ) do |f|
         f.puts @session.to_yaml

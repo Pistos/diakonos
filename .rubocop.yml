@@ -4,6 +4,10 @@ inherit_from:
 inherit_mode:
   merge:
     - AllowedNames
+AllCops:
+  Exclude:
+    - 'lib/diakonos/vendor/**/*'
+    - 'spec/test-files/**/*'
 Layout/TrailingEmptyLines:
   Exclude:
     - spec/test-files/sample-file.rb
@@ -14,7 +18,12 @@ Naming/MethodParameterName:
 Naming/MethodName:
   Exclude:
     - lib/diakonos/functions-deprecated.rb
+Naming/VariableName:
+  AllowedIdentifiers:
+    - '__DIR__'
 Naming/VariableNumber:
+  Enabled: false
+Style/CharacterLiteral:
   Enabled: false
 Style/GlobalVars:
   AllowedVariables: ['$diakonos', '$keystrokes', '$use_virtual_screen']
