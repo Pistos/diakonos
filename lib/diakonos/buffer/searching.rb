@@ -239,7 +239,15 @@ module Diakonos
         if show_context_after
           watermark = Curses.lines / 6
           if @last_row - @top_line > watermark
+            saved_row = @last_row
+            saved_col = @last_col
             pitch_view( @last_row - @top_line - watermark )
+            # pitch_view_to's margin enforcement can clobber @last_row
+            # and the selection mark; restore after the view scroll.
+            @last_row = saved_row
+            @last_col = saved_col
+            @last_screen_y = saved_row - @top_line
+            record_mark_start_and_end
           end
         end
 
