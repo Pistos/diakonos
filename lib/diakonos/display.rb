@@ -9,7 +9,7 @@ module Diakonos
   STATUS_LINE_HEIGHT  = 1
 
   class Diakonos
-    attr_reader :display_mutex, :win_dock, :win_line_numbers, :win_main
+    attr_reader :display_mutex, :win_dock, :win_line_numbers, :win_main, :win_status
 
     def cleanup_display
       return  if @testing
@@ -171,6 +171,18 @@ module Diakonos
       @dock_list
     end
 
+    def hide_cursor
+      if ! @testing
+        Curses.curs_set 0
+      end
+    end
+
+    def show_cursor
+      if ! @testing
+        Curses.curs_set 1
+      end
+    end
+
     def showing_info_dock?
       @dock_feature == 'info'
     end
@@ -217,7 +229,7 @@ module Diakonos
       @settings[ "status.vars" ].each do |var|
         case var
         when "buffer_number"
-          var_array.push buffer_to_number( buffer_current )
+          var_array.push(buffer_to_number(buffer_current) || 0)
         when "col"
           var_array.push( buffer_current.last_screen_col + 1 )
         when "filename"
@@ -255,7 +267,7 @@ module Diakonos
             var_array.push ''
           end
         when 'session_name'
-          var_array.push @session.name
+          var_array.push(@session.name || '')
         when "type"
           var_array.push buffer_current.original_language
         when /^@/
@@ -287,17 +299,15 @@ module Diakonos
     protected :build_status_line
 
     def update_status_line
-      return  if @testing
-
       str = build_status_line
       if str.length > Curses.cols
         str = build_status_line( str.length - Curses.cols )
       end
-      Curses.curs_set 0
+      hide_cursor
       @win_status.setpos( 0, 0 )
       @win_status.addstr str
       @win_status.refresh
-      Curses.curs_set 1
+      show_cursor
     end
 
     def update_context_line
@@ -308,7 +318,7 @@ module Diakonos
       @context_thread = Thread.new do
         context = buffer_current.context
 
-        Curses.curs_set 0
+        hide_cursor
         @win_context.setpos( 0, 0 )
         chars_printed = 0
         if context.any?
@@ -341,7 +351,7 @@ module Diakonos
           @win_main.setpos( buffer_current.last_screen_y, buffer_current.last_screen_x )
           @win_main.refresh
         end
-        Curses.curs_set 1
+        show_cursor
       end
 
       @context_thread.priority = -2
@@ -362,9 +372,9 @@ module Diakonos
         end
       else
         begin
-          Curses.curs_set 0
+          hide_cursor
           buffer.display
-          Curses.curs_set 1
+          show_cursor
         rescue StandardError => e
           $diakonos.log( "Display Exception:" )
           $diakonos.log( e.message )
@@ -443,7 +453,7 @@ module Diakonos
       offset = @dock_scroll_offset || 0
       visible_lines = @dock_lines[offset, num_content_rows] || []
 
-      Curses.curs_set 0
+      hide_cursor
       @win_dock.setpos(0, 0)
       @win_dock.addstr(DOCK_SEPARATOR_CHAR * Curses.cols)
 
@@ -461,7 +471,7 @@ module Diakonos
       )
 
       @win_dock.refresh
-      Curses.curs_set 1
+      show_cursor
     end
 
     private def dock_line_selected?(line_index)
