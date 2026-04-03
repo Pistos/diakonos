@@ -279,6 +279,26 @@ module Diakonos
       end
     end
 
+    # @return [Boolean] true iff a bracketed paste was detected and handled
+    def handle_bracketed_paste(c:, context:, mode:)
+      if c == ESCAPE && context.empty?
+        text = @bracketed_paste.try_read(
+          mode:,
+          window: @modes[mode].window,
+        )
+        if text
+          case mode
+          when 'edit'
+            buffer_current.paste(text, typing: true)
+          when 'input'
+            @readline.paste(text)
+          end
+
+          true
+        end
+      end
+    end
+
     # Handle paste from a GUI (like x.org).  i.e. Shift-Insert
     def handle_gui_paste(mode)
       s = ""
@@ -345,6 +365,7 @@ module Diakonos
       c = ch.ord
 
       self.handle_utf_8(c, mode) and return
+      self.handle_bracketed_paste(c:, context:, mode:) and return
 
       if @capturing_keychain
         capture_keychain c, context

@@ -14,6 +14,8 @@ module Diakonos
     def cleanup_display
       return  if @testing
 
+      @bracketed_paste.disable_paste_mode
+
       @win_context&.close
       @win_dock&.close
       @win_interaction&.close
@@ -118,6 +120,8 @@ module Diakonos
       @win_interaction.refresh
       @win_main.refresh
       @win_line_numbers&.refresh
+
+      @bracketed_paste.enable_paste_mode
 
       @buffers&.each(&:reset_display)
     end

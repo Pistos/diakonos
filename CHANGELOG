@@ -1,6 +1,10 @@
 Diakonos Changelog
 ------------------
 
+0.10.1
+
+- Defend against malicious clipboard contents
+
 0.10.0
 
 - Fix syntax highlighting of multi-line things (e.g. strings, comments)

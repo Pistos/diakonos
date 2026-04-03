@@ -31,6 +31,7 @@ require 'diakonos/version'
 require 'diakonos/installation'
 
 require 'diakonos/about'
+require 'diakonos/bracketed-paste'
 require 'diakonos/buffer-management'
 require 'diakonos/config'
 require 'diakonos/config-file'
@@ -214,6 +215,7 @@ module Diakonos
       @cursor_stack_pointer   = nil
 
       @bookmarks              = Hash.new
+      @bracketed_paste        = BracketedPaste.new(testing: @testing)
 
       @macro_history          = nil
       @macro_input_history    = nil
