@@ -1,9 +1,9 @@
 module Diakonos
   class BracketedPaste
 
-    START_SUFFIX = "[200~".chars.map(&:ord).freeze
     END_SUFFIX = "[201~".chars.map(&:ord).freeze
     QUIESCENCE_SECONDS = 0.02
+    START_SUFFIX = "[200~".chars.map(&:ord).freeze
 
     def disable_paste_mode
       if ! @testing
@@ -38,7 +38,9 @@ module Diakonos
 
           return nil
         end
+
         chars_read << ch.ord
+
         if ch.ord != expected
           ungetch_chars(chars: chars_read)
 
@@ -49,15 +51,18 @@ module Diakonos
       collect(mode:, window:)
     end
 
-    private def append_char(c:, mode:, text:, window:)
+    private def append_char(c:, mode:, window:)
       if c == ENTER
-        text << "\n" if mode == 'edit'
+        if mode == 'edit'
+          "\n"
+        end
       else
         utf_8_char = read_utf_8(byte: c, window:)
+
         if utf_8_char
-          text << utf_8_char
+          utf_8_char
         elsif typeable?(char: c)
-          text << c
+          c
         end
       end
     end
@@ -77,7 +82,10 @@ module Diakonos
             next if c.nil?
           end
 
-          append_char(c:, mode:, text:, window:)
+          to_append = append_char(c:, mode:, window:)
+          if to_append
+            text << to_append
+          end
         end
       end
 
