@@ -6,9 +6,9 @@ RSpec.describe Diakonos::BracketedPaste do
 
   before do
     allow(Curses)
-    .to receive(:ungetch) { |c|
+    .to receive(:ungetch) do |c|
       $keystrokes.unshift(c)
-    }
+    end
   end
 
   describe '#try_read' do
@@ -102,13 +102,22 @@ RSpec.describe Diakonos::BracketedPaste do
     end
   end
 
-  describe '#enable_paste_mode / #disable_paste_mode' do
+  describe '#disable_paste_mode' do
+    context 'in testing mode' do
+      it 'does not write to stdout' do
+        expect($stdout).not_to receive(:write)
+
+        bp.disable_paste_mode
+      end
+    end
+  end
+
+  describe '#enable_paste_mode' do
     context 'in testing mode' do
       it 'does not write to stdout' do
         expect($stdout).not_to receive(:write)
 
         bp.enable_paste_mode
-        bp.disable_paste_mode
       end
     end
   end

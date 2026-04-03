@@ -1,20 +1,24 @@
 module Diakonos
   class BracketedPaste
 
+    DISABLE_PASTE_SEQ = "\e[?2004l"
+    ENABLE_PASTE_SEQ = "\e[?2004h"
     END_SUFFIX = "[201~".chars.map(&:ord).freeze
+    ASCII_EXTENDED_END = 255
+    ASCII_LAST_CONTROL_CHAR = 31
     QUIESCENCE_SECONDS = 0.02
     START_SUFFIX = "[200~".chars.map(&:ord).freeze
 
     def disable_paste_mode
       if ! @testing
-        $stdout.write("\e[?2004l")
+        $stdout.write(DISABLE_PASTE_SEQ)
         $stdout.flush
       end
     end
 
     def enable_paste_mode
       if ! @testing
-        $stdout.write("\e[?2004h")
+        $stdout.write(ENABLE_PASTE_SEQ)
         $stdout.flush
       end
     end
@@ -29,42 +33,30 @@ module Diakonos
     # Returns nil if this was not a bracketed paste; any chars read are
     # ungetch'd so normal keystroke processing can continue.
     def try_read(mode:, window:)
-      chars_read = []
+      matched = try_read_start_suffix(window:)
 
-      START_SUFFIX.each do |expected|
-        ch = timed_getch(window:)
-        if ch.nil?
-          ungetch_chars(chars: chars_read)
-
-          return nil
-        end
-
-        chars_read << ch.ord
-
-        if ch.ord != expected
-          ungetch_chars(chars: chars_read)
-
-          return nil
-        end
+      if matched
+        collect(mode:, window:)
       end
-
-      collect(mode:, window:)
     end
 
     private def append_char(c:, mode:, window:)
+      appended = nil
+
       if c == ENTER
         if mode == 'edit'
-          "\n"
+          appended = "\n"
         end
       else
         utf_8_char = read_utf_8(byte: c, window:)
-
         if utf_8_char
-          utf_8_char
+          appended = utf_8_char
         elsif typeable?(char: c)
-          c
+          appended = c
         end
       end
+
+      appended
     end
 
     private def collect(mode:, window:)
@@ -73,18 +65,22 @@ module Diakonos
       catch(:paste_done) do
         loop do
           ch = timed_getch(window:)
-          break if ch.nil?
+
+          if ch.nil?
+            throw :paste_done
+          end
 
           c = ch.ord
 
           if c == ESCAPE
             c = handle_escape_in_paste(window:)
-            next if c.nil?
           end
 
-          to_append = append_char(c:, mode:, window:)
-          if to_append
-            text << to_append
+          if c
+            to_append = append_char(c:, mode:, window:)
+            if to_append
+              text << to_append
+            end
           end
         end
       end
@@ -101,6 +97,7 @@ module Diakonos
           false
         else
           chars_read << ch.ord
+
           ch.ord == expected
         end
       }
@@ -118,28 +115,38 @@ module Diakonos
     # next character to process (when a fake end marker was detected and
     # there is trailing input to continue collecting).
     private def handle_escape_in_paste(window:)
+      result = nil
+
       if end_marker?(window:)
         trailing_ch = timed_getch(window:)
         if trailing_ch.nil?
           throw :paste_done
         end
 
-        # Input continued after end marker -- it was injected.
-        trailing_ch.ord
+        result = trailing_ch.ord
       end
+
+      result
     end
 
     private def read_utf_8(byte:, window:)
       continuation_bytes = utf_8_continuation_byte_count(byte:)
-      if continuation_bytes > 0
-        byte_array = [byte] + continuation_bytes.times.map { window.getch.ord }
 
-        byte_array.pack('C*').force_encoding('utf-8')
+      if continuation_bytes > 0
+        remaining = continuation_bytes.times.map {
+          window.getch.ord
+        }
+        byte_array = [byte] + remaining
+
+        byte_array
+        .pack('C*')
+        .force_encoding('utf-8')
       end
     end
 
     private def timed_getch(window:)
       ch = nil
+
       begin
         Timeout.timeout(QUIESCENCE_SECONDS) do
           ch = window.getch
@@ -151,8 +158,36 @@ module Diakonos
       ch
     end
 
+    private def try_read_start_suffix(window:)
+      chars_read = []
+      matched = true
+
+      START_SUFFIX.each do |expected|
+        if matched
+          ch = timed_getch(window:)
+
+          if ch.nil?
+            matched = false
+          elsif ch.ord != expected
+            chars_read << ch.ord
+            matched = false
+          else
+            chars_read << ch.ord
+          end
+        end
+      end
+
+      if ! matched
+        ungetch_chars(chars: chars_read)
+      end
+
+      matched
+    end
+
     private def typeable?(char:)
-      char > 31 && char < 255 && char != BACKSPACE
+      char > ASCII_LAST_CONTROL_CHAR &&
+      char < ASCII_EXTENDED_END &&
+      char != BACKSPACE
     end
 
     private def ungetch_chars(chars:)
