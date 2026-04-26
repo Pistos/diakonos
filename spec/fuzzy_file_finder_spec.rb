@@ -40,7 +40,7 @@ RSpec.describe FuzzyFileFinder do
 
       it "raises a TooManyEntries exception" do
         expect { finder.find(input) }
-        .to raise_exception(FuzzyFileFinder::TooManyEntries, /15.*#{root_dir}/)
+        .to raise_exception(FuzzyFileFinder::TooManyEntries, /16.*#{root_dir}/)
       end
     end
   end
