@@ -4,6 +4,7 @@ Diakonos Changelog
 0.10.1
 
 - Defend against malicious clipboard contents
+- Add bracket-aligned indentation
 
 0.10.0
 
