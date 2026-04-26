@@ -280,7 +280,8 @@ module Diakonos
             @unindenters[ ::Regexp.last_match(1) ] = Regexp.new arg
           end
         when /^lang\.(.+?)\.indent\.(?:preventers|ignore|not_indented)(\.case_insensitive)?$/,
-            /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/
+            /^lang\.(.+?)\.context\.ignore(\.case_insensitive)?$/,
+            /^lang\.(.+?)\.indent\.align\.special_forms(\.case_insensitive)?$/
           case_insensitive = ::Regexp.last_match(2)
           if case_insensitive
             @settings[ command ] = Regexp.new( arg, Regexp::IGNORECASE )
@@ -321,7 +322,7 @@ module Diakonos
             end
           )
         when "context.visible", "context.combined", "eof_newline", "view.nonfilelines.visible",
-            /^lang\.(.+?)\.indent\.(?:auto|roundup|using_tabs|closers)$/,
+            /^lang\.(.+?)\.indent\.(?:align|auto|roundup|using_tabs|closers)$/,
             "found_cursor_start", "convert_tabs", 'delete_newline_on_delete_to_eol',
             'suppress_welcome', 'strip_trailing_whitespace_on_save', 'save_backup_files',
             'find.return_on_abort', 'fuzzy_file_find', 'fuzzy_file_find.recursive', 'view.line_numbers',

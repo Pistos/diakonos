@@ -154,6 +154,8 @@ module Diakonos
       @preventers = @settings[ "lang.#{@language}.indent.preventers" ]
       @closers = $diakonos.closers[ @language ] || Hash.new
       @auto_indent = @settings[ "lang.#{@language}.indent.auto" ]
+      @indent_align = @settings[ "lang.#{@language}.indent.align" ]
+      @indent_align_special_forms = @settings[ "lang.#{@language}.indent.align.special_forms" ]
       @indent_size = ( @settings[ "lang.#{@language}.indent.size" ] || 4 )
       @indent_roundup = (
         @settings[ "lang.#{@language}.indent.roundup" ].nil? ||
