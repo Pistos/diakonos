@@ -417,6 +417,54 @@ RSpec.describe 'Diakonos::Buffer file operations' do
           expect(File.read(dest)).to eq "first\nlast with spaces"
         end
       end
+
+      context "when cursor is within trailing whitespace of current line" do
+        let(:source) do
+          write_tmp_file('cursor-in-trailing.txt', "hello   \nworld\n")
+        end
+
+        before do
+          b.cursor_to(0, 8)
+          b.save_copy(dest)
+        end
+
+        it 'repositions cursor to end of stripped line' do
+          expect(b.current_row).to eq 0
+          expect(b.current_column).to eq 5
+        end
+      end
+
+      context "when cursor is before trailing whitespace of current line" do
+        let(:source) do
+          write_tmp_file('cursor-before-trailing.txt', "hello   \nworld\n")
+        end
+
+        before do
+          b.cursor_to(0, 3)
+          b.save_copy(dest)
+        end
+
+        it 'does not move cursor' do
+          expect(b.current_row).to eq 0
+          expect(b.current_column).to eq 3
+        end
+      end
+
+      context "when cursor is on a line without trailing whitespace" do
+        let(:source) do
+          write_tmp_file('cursor-no-trailing.txt', "has trailing   \nclean line\n")
+        end
+
+        before do
+          b.cursor_to(1, 5)
+          b.save_copy(dest)
+        end
+
+        it 'does not move cursor' do
+          expect(b.current_row).to eq 1
+          expect(b.current_column).to eq 5
+        end
+      end
     end
 
     context "with strip_trailing_whitespace_on_save disabled" do
