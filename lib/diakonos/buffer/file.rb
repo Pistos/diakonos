@@ -95,6 +95,13 @@ module Diakonos
           was_modified ||= stripped
         end
 
+        if (
+          @settings['strip_trailing_whitespace_on_save'] &&
+          @last_col > @lines[@last_row].size
+        )
+          cursor_to @last_row, @lines[ @last_row ].size
+        end
+
         if line != ""
           # No final newline character
           if @settings[ "eof_newline" ]
@@ -103,13 +110,6 @@ module Diakonos
             was_modified = true
           end
           f.print line
-        end
-
-        if (
-          @settings['strip_trailing_whitespace_on_save'] &&
-          @last_col > @lines[@last_row].size
-        )
-          cursor_to @last_row, @lines[ @last_row ].size
         end
 
         if was_modified

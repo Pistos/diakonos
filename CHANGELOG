@@ -5,6 +5,7 @@ Diakonos Changelog
 
 - Defend against malicious clipboard contents
 - Add bracket-aligned indentation
+- Fix cursor repositioning after strip_trailing_whitespace_on_save
 
 0.10.0
 

@@ -465,6 +465,23 @@ RSpec.describe 'Diakonos::Buffer file operations' do
           expect(b.current_column).to eq 5
         end
       end
+
+      context "when cursor is within trailing whitespace of the last line and eof_newline is enabled" do
+        let(:source) do
+          write_tmp_file('cursor-last-line-no-nl.txt', "first\nhello   ")
+        end
+
+        before do
+          buffer_settings(b)['eof_newline'] = true
+          b.cursor_to(1, 6)
+          b.save_copy(dest)
+        end
+
+        it 'repositions cursor to end of stripped line' do
+          expect(b.current_row).to eq 1
+          expect(b.current_column).to eq 5
+        end
+      end
     end
 
     context "with strip_trailing_whitespace_on_save disabled" do
