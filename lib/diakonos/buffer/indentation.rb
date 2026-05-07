@@ -107,6 +107,34 @@ module Diakonos
       col + delta
     end
 
+    # Inverse of tab_expanded_column. Given an expanded (visual) column
+    # within +row+, returns the corresponding buffer column. If the
+    # expanded column lands inside a tab's expansion, snaps to the
+    # tab's own buffer column.
+    def unexpand_tab_column( row, expanded_col )
+      line = @lines[ row ]
+      buffer_col = 0
+      expanded = 0
+      target = expanded_col
+
+      while buffer_col < line.length && expanded < target
+        if line[ buffer_col ] == "\t"
+          step = @tab_size - ( expanded % @tab_size )
+        else
+          step = 1
+        end
+
+        if expanded + step > target
+          target = expanded
+        else
+          expanded += step
+          buffer_col += 1
+        end
+      end
+
+      buffer_col
+    end
+
     def unindent( row = @last_row, do_display = DO_DISPLAY )
       level = indentation_level( row, DONT_USE_INDENT_IGNORE )
       set_indent_leveled  row:, level: level - 1, do_display:

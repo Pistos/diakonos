@@ -46,6 +46,10 @@ RSpec.describe 'Diakonos::Diakonos#parse_configuration_file' do
         expect(d.settings['convert_tabs']).to be false
         expect(d.settings['fuzzy_file_find.recursive']).to be false
       end
+
+      it 'defaults view.wrap.soft to false' do
+        expect(d.settings['view.wrap.soft']).to be false
+      end
     end
 
     context 'integer settings' do
