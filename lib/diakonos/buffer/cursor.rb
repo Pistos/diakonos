@@ -50,8 +50,9 @@ module Diakonos
 
       new_col = tab_expanded_column( col, row )
       view_changed = show_character( row, new_col )
-      @last_screen_y = row - @top_line
-      @last_screen_x = new_col - @left_column
+      position = screen_position_of( row:, expanded_col: new_col )
+      @last_screen_y = position[ :y ]
+      @last_screen_x = position[ :x ]
 
       @typing = false  if stopped_typing
       @last_row = row
@@ -158,6 +159,36 @@ module Diakonos
       old_top_line = @top_line
       old_left_column = @left_column
 
+      if soft_wrap?
+        scroll_visual_into_view( row:, col: )
+      else
+        scroll_buffer_into_view( row, col )
+      end
+
+      @top_line != old_top_line || @left_column != old_left_column
+    end
+
+    private def scroll_visual_into_view(row:, col:)
+      margin_y = @settings["view.margin.y"]
+      height = $diakonos.main_window_height
+      jump_y = @settings["view.jump.y"]
+
+      keep_going = true
+      while keep_going && screen_position_of( row:, expanded_col: col )[:y] < margin_y
+        if pitch_view_visual(-jump_y) == 0
+          keep_going = false
+        end
+      end
+
+      keep_going = true
+      while keep_going && screen_position_of( row:, expanded_col: col )[:y] > height - 1 - margin_y
+        if pitch_view_visual(jump_y) == 0
+          keep_going = false
+        end
+      end
+    end
+
+    private def scroll_buffer_into_view(row, col)
       while row < @top_line + @settings[ "view.margin.y" ]
         amount = (-1) * @settings[ "view.jump.y" ]
         break  if ( pitch_view( amount, DONT_PITCH_CURSOR, DONT_DISPLAY ) != amount )
@@ -175,8 +206,6 @@ module Diakonos
         amount = @settings[ "view.jump.x" ]
         break  if ( pan_view( amount, DONT_DISPLAY ) != amount )
       end
-
-      @top_line != old_top_line || @left_column != old_left_column
     end
 
     def go_to_line( line = nil, column = nil, do_display = DO_DISPLAY )

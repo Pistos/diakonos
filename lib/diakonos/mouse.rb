@@ -5,9 +5,13 @@ module Diakonos
       return  if event.nil?
 
       if event.bstate & Curses::BUTTON1_CLICKED > 0
+        position = buffer_current.buffer_position_at_screen(
+          screen_y: event.y,
+          screen_x: event.x,
+        )
         buffer_current.cursor_to(
-          buffer_current.top_line + event.y,
-          buffer_current.left_column + event.x,
+          position[ :row ],
+          position[ :col ],
           Buffer::DO_DISPLAY
         )
       else

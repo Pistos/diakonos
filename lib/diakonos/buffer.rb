@@ -104,6 +104,7 @@ module Diakonos
       @lang_stack = Array.new
 
       configure
+      @last_soft_wrap_state = soft_wrap?
 
       if @settings[ "convert_tabs" ]
         tabs_subbed = false
@@ -511,9 +512,14 @@ module Diakonos
 
     # Returns the amount the view was actually panned.
     def pan_view( x = 1, do_display = DO_DISPLAY )
-      old_left_column = @left_column
-      pan_view_to( @left_column + x, do_display )
-      @left_column - old_left_column
+      if soft_wrap?
+        0
+      else
+        old_left_column = @left_column
+        pan_view_to( @left_column + x, do_display )
+
+        @left_column - old_left_column
+      end
     end
 
     def pitch_view_to( new_top_line, do_pitch_cursor = DONT_PITCH_CURSOR, do_display = DO_DISPLAY )

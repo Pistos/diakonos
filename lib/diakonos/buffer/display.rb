@@ -73,29 +73,37 @@ module Diakonos
 
     # Prints text to the screen, truncating where necessary.
     # Returns nil if the string is completely off-screen.
-    # write_cursor_col is buffer-relative, not screen-relative
+    # write_cursor_col is buffer-relative, not screen-relative.
+    # When soft wrap is on, returns the string unchanged so curses can
+    # auto-wrap it onto subsequent visual rows.
     def truncate_off_screen( string, write_cursor_col )
-      retval = string
+      if soft_wrap?
+        retval = (string == "" ? nil : string)
+      else
+        retval = string
 
-      # Truncate based on left edge of display area
-      if write_cursor_col < @left_column
-        retval = retval[ (@left_column - write_cursor_col).. ]
-        write_cursor_col = @left_column
-      end
-
-      if retval && (
-        # Truncate based on right edge of display area
-        write_cursor_col + retval.length > @left_column + Curses.cols - 1
-      )
-        new_length = ( @left_column + Curses.cols - write_cursor_col )
-        if new_length <= 0
-          retval = nil
-        else
-          retval = retval[ 0...new_length ]
+        # Truncate based on left edge of display area
+        if write_cursor_col < @left_column
+          retval = retval[ (@left_column - write_cursor_col).. ]
+          write_cursor_col = @left_column
         end
+
+        if retval && (
+          # Truncate based on right edge of display area
+          write_cursor_col + retval.length > @left_column + Curses.cols - 1
+        )
+          new_length = ( @left_column + Curses.cols - write_cursor_col )
+          if new_length <= 0
+            retval = nil
+          else
+            retval = retval[ 0...new_length ]
+          end
+        end
+
+        retval = nil  if retval == ""
       end
 
-      retval == "" ? nil : retval
+      retval
     end
 
     # Worker function for painting only part of a row.
@@ -114,6 +122,10 @@ module Diakonos
     def paint_marks( row )
       string = @lines[ row ][ @left_column...@left_column + Curses.cols ]
       return  if string.nil? || string == ""
+
+      # TODO: Selection painting on wrapped lines is not yet wrap-aware.
+      # Short-circuit so the cursor positioning math doesn't go off-screen.
+      return  if soft_wrap? && num_visual_segments_for( row ) > 1
 
       string = string.expand_tabs( @tab_size )
       cury = @win_main.cury
@@ -157,6 +169,9 @@ module Diakonos
     end
 
     def paint_column_markers
+      # TODO: column markers on wrapped lines.
+      return  if soft_wrap?
+
       $diakonos.column_markers.each_value do |data|
         column = data[ :column ]
         next  if column.nil?
@@ -276,10 +291,117 @@ module Diakonos
       print_padding_from i
     end
 
+    # Draws each on-screen buffer row, advancing visual y by
+    # num_visual_segments_for(row) so wrapped lines occupy multiple rows.
+    # Returns the visual y just past the last drawn row.
+    private def paint_visible_buffer_rows(visible_height:)
+      y = 0
+      buffer_row_offset = 0
+
+      while(
+        y < visible_height &&
+        (@top_line + buffer_row_offset) < @lines.length
+      )
+        line_index = @top_line + buffer_row_offset
+        segments = num_visual_segments_for( line_index )
+
+        if @win_line_numbers
+          paint_line_number_gutter(
+            buffer_row: line_index,
+            segments:,
+            visible_height:,
+            y:,
+          )
+        end
+
+        @win_main.setpos( y, 0 )
+        print_line @lines[ line_index ].expand_tabs( @tab_size )
+
+        @highlight_cache[ line_index ] = snapshot_highlight_state
+        if line_index > @highlight_cache_valid_to
+          @highlight_cache_valid_to = line_index
+        end
+
+        @win_main.setpos( y, 0 )
+        paint_marks line_index
+
+        y += segments
+        buffer_row_offset += 1
+      end
+
+      y
+    end
+
+    private def paint_continuation_gutter_rows(segments:, start_y:, visible_height:)
+      blank_width = @settings[ 'view.line_numbers.width' ] + COLUMNS_FOR_DIAGNOSTICS
+
+      ( 1...segments ).each do |seg_offset|
+        cont_y = start_y + seg_offset
+        if cont_y < visible_height
+          @win_line_numbers.setpos( cont_y, 0 )
+          @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
+          @win_line_numbers.addstr( ' ' * blank_width )
+        end
+      end
+    end
+
+    private def paint_empty_rows_below(start_y:, visible_height:)
+      blank_width = @settings[ 'view.line_numbers.width' ] + COLUMNS_FOR_DIAGNOSTICS
+
+      (start_y...visible_height).each do |y|
+        if @win_line_numbers
+          @win_line_numbers.setpos( y, 0 )
+          @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
+          @win_line_numbers.addstr( ' ' * blank_width )
+        end
+
+        @win_main.setpos( y, 0 )
+        @win_main.attrset @default_formatting
+        linestr = " " * Curses.cols
+        if @settings["view.nonfilelines.visible"]
+          linestr[0] = @settings["view.nonfilelines.character"] || "~"
+        end
+
+        @win_main.addstr linestr
+      end
+    end
+
+    private def paint_first_segment_gutter(buffer_row:, y:)
+      @win_line_numbers.setpos( y, 0 )
+      @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
+      n = ( buffer_row + 1 ).to_s
+      @win_line_numbers.addstr(
+        @settings[ 'view.line_numbers.number_format' ] % [
+          n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min.. ],
+        ]
+      )
+
+      if diagnostics_for_line( line: buffer_row ).any?
+        @win_line_numbers.addstr( @settings[ 'view.line_numbers.diagnostic_marker' ] || '●' )
+      else
+        @win_line_numbers.addstr( ' ' )
+      end
+    end
+
+    private def paint_line_number_gutter(buffer_row:, segments:, visible_height:, y:)
+      paint_first_segment_gutter(buffer_row:, y:)
+
+      paint_continuation_gutter_rows(
+        segments:,
+        start_y: y,
+        visible_height:,
+      )
+    end
+
     def print_padding_from( col )
       return  if ! @pen_down
 
-      if col < @left_column
+      if soft_wrap?
+        # After auto-wrap, the cursor is somewhere on the last visual row of
+        # this buffer line. Pad from there to the right edge of that visual
+        # row, regardless of how many wraps happened.
+        remainder = wrap_width - @win_main.curx
+      elsif col < @left_column
         remainder = Curses.cols
       else
         remainder = @left_column + Curses.cols - col
@@ -291,6 +413,8 @@ module Diakonos
     end
 
     def display
+      after_soft_wrap_toggled
+
       @pen_down = false
 
       # Ensure highlight cache is valid up to @top_line - 1
@@ -314,56 +438,9 @@ module Diakonos
 
       @pen_down = true
 
-      # Draw each on-screen line.
-      y = 0
-      @lines[ @top_line...($diakonos.main_window_height + @top_line) ].each_with_index do |line, row|
-        if @win_line_numbers
-          @win_line_numbers.setpos( y, 0 )
-          @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
-          n = ( @top_line+row+1 ).to_s
-          @win_line_numbers.addstr(
-            @settings[ 'view.line_numbers.number_format' ] % [
-              n[ -[ @settings[ 'view.line_numbers.width' ], n.length ].min.. ],
-            ]
-          )
-          line_index = @top_line + row
-          if diagnostics_for_line(line: line_index).any?
-            @win_line_numbers.addstr( @settings[ 'view.line_numbers.diagnostic_marker' ] || '●' )
-          else
-            @win_line_numbers.addstr( ' ' )
-          end
-        end
-        @win_main.setpos( y, 0 )
-        print_line line.expand_tabs( @tab_size )
-        line_index = @top_line + row
-        @highlight_cache[line_index] = snapshot_highlight_state
-        if line_index > @highlight_cache_valid_to
-          @highlight_cache_valid_to = line_index
-        end
-        @win_main.setpos( y, 0 )
-        paint_marks line_index
-        y += 1
-      end
-
-      # Paint the empty space below the file if the file is too short to fit in one screen.
-      ( y...$diakonos.main_window_height ).each do |y|
-        if @win_line_numbers
-          @win_line_numbers.setpos( y, 0 )
-          @win_line_numbers.attrset @settings[ 'view.line_numbers.format' ]
-          @win_line_numbers.addstr(
-            ' ' * (@settings[ 'view.line_numbers.width' ] + COLUMNS_FOR_DIAGNOSTICS)
-          )
-        end
-
-        @win_main.setpos( y, 0 )
-        @win_main.attrset @default_formatting
-        linestr = " " * Curses.cols
-        if @settings[ "view.nonfilelines.visible" ]
-          linestr[ 0 ] = ( @settings[ "view.nonfilelines.character" ] || "~" )
-        end
-
-        @win_main.addstr linestr
-      end
+      visible_height = $diakonos.main_window_height
+      y = paint_visible_buffer_rows(visible_height:)
+      paint_empty_rows_below(start_y: y, visible_height:)
 
       paint_column_markers
 
