@@ -7,6 +7,7 @@ Diakonos Changelog
 - Add bracket-aligned indentation
 - Fix cursor repositioning after strip_trailing_whitespace_on_save
 - Fix loading of default config in non-UTF-8 locales
+- Added soft wrapping
 
 0.10.0
 
