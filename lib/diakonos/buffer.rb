@@ -82,6 +82,7 @@ module Diakonos
       @top_line = options[ 'display' ][ 'top_line' ] || 0
       @left_column = options[ 'display' ][ 'left_column' ] ||  0
       @desired_column = @left_column
+      @desired_visual_x = 0
       @mark_anchor = nil
       @text_marks = Hash.new
       @selection_mode = :normal

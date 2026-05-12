@@ -9,13 +9,19 @@ module Diakonos
 
     # @return [true,false] true iff the cursor changed positions
     def cursor_down
-      buffer_current.cursor_to(
-        buffer_current.last_row + 1,
-        buffer_current.last_col,
-        Buffer::DO_DISPLAY,
-        Buffer::STOPPED_TYPING,
-        DONT_ADJUST_ROW
-      )
+      if buffer_current.soft_wrap?
+        moved = buffer_current.cursor_visual_down
+      else
+        moved = buffer_current.cursor_to(
+          buffer_current.last_row + 1,
+          buffer_current.last_col,
+          Buffer::DO_DISPLAY,
+          Buffer::STOPPED_TYPING,
+          DONT_ADJUST_ROW
+        )
+      end
+
+      moved
     end
 
     # @return [true,false] true iff the cursor changed positions
@@ -108,13 +114,19 @@ module Diakonos
 
     # @return [true,false] true iff the cursor changed positions
     def cursor_up
-      buffer_current.cursor_to(
-        buffer_current.last_row - 1,
-        buffer_current.last_col,
-        Buffer::DO_DISPLAY,
-        Buffer::STOPPED_TYPING,
-        DONT_ADJUST_ROW
-      )
+      if buffer_current.soft_wrap?
+        moved = buffer_current.cursor_visual_up
+      else
+        moved = buffer_current.cursor_to(
+          buffer_current.last_row - 1,
+          buffer_current.last_col,
+          Buffer::DO_DISPLAY,
+          Buffer::STOPPED_TYPING,
+          DONT_ADJUST_ROW
+        )
+      end
+
+      moved
     end
 
     # Moves the cursor to the beginning of the current buffer.
@@ -239,18 +251,32 @@ module Diakonos
 
     # Pitches the current buffer's view one screenful down.
     def page_down
-      if buffer_current.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+      if buffer_current.soft_wrap?
+        shifted = buffer_current.pitch_cursor_visual( main_window_height )
+      else
+        shifted = buffer_current.pitch_view( main_window_height, Buffer::DO_PITCH_CURSOR )
+      end
+
+      if shifted == 0
         buffer_current.cursor_to_eof
       end
+
       update_status_line
       update_context_line
     end
 
     # Pitches the current buffer's view one screenful up.
     def page_up
-      if buffer_current.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR ) == 0
+      if buffer_current.soft_wrap?
+        shifted = buffer_current.pitch_cursor_visual( -main_window_height )
+      else
+        shifted = buffer_current.pitch_view( -main_window_height, Buffer::DO_PITCH_CURSOR )
+      end
+
+      if shifted == 0
         cursor_bof
       end
+
       update_status_line
       update_context_line
     end

@@ -70,6 +70,51 @@ module Diakonos
       result
     end
 
+    # Returns true iff the cursor moved.
+    def cursor_visual_down
+      pitch_cursor_visual( 1 ) != 0
+    end
+
+    # Returns true iff the cursor moved.
+    def cursor_visual_up
+      pitch_cursor_visual( -1 ) != 0
+    end
+
+    # Move the cursor by +amount+ visual rows
+    # (positive = down, negative = up), preserving @desired_visual_x.
+    # Returns the actual number of visual rows shifted.
+    def pitch_cursor_visual(amount)
+      if amount > 0
+        target = pitch_cursor_visual_down( steps: amount )
+      elsif amount < 0
+        target = pitch_cursor_visual_up( steps: -amount )
+      else
+        target = { row: @last_row, segment: nil, shifted: 0 }
+      end
+
+      if target[:shifted] != 0
+        target_col = buffer_col_for_visual(
+          row: target[:row],
+          segment_index: target[:segment],
+          visual_x: @desired_visual_x,
+        )
+
+        cursor_to(
+          target[:row],
+          target_col,
+          DO_DISPLAY,
+          STOPPED_TYPING,
+          DONT_ADJUST_ROW,
+        )
+      end
+
+      if amount >= 0
+        target[:shifted]
+      else
+        -target[:shifted]
+      end
+    end
+
     # Shift the view by +amount+ visual rows. Returns the actual number of
     # visual rows shifted. Operates in whole-buffer-row chunks: smooth
     # mid-line scrolling (via @top_segment) is a future enhancement.
@@ -80,6 +125,24 @@ module Diakonos
         pitch_up_visually( amount )
       else
         0
+      end
+    end
+
+    # Translate a screen y into a buffer row, walking visual segments
+    # forward from @top_line. Mirrors row_of when soft wrap is off.
+    def row_of_visual_y(y)
+      if soft_wrap?
+        row = @top_line
+        accumulated = num_visual_segments_for( row )
+
+        while accumulated <= y && row < @lines.length - 1
+          row += 1
+          accumulated += num_visual_segments_for( row )
+        end
+
+        row
+      else
+        @top_line + y
       end
     end
 
@@ -157,6 +220,53 @@ module Diakonos
       end
 
       Curses.cols - gutter
+    end
+
+    private def pitch_cursor_visual_down(steps:)
+      shifted = 0
+      row = @last_row
+      expanded_col = tab_expanded_column( @last_col, row )
+      segment = visual_segment_index( expanded_col )
+      blocked = false
+
+      while ! blocked && shifted < steps
+        last_segment = num_visual_segments_for( row ) - 1
+        if segment < last_segment
+          segment += 1
+          shifted += 1
+        elsif row < @lines.length - 1
+          row += 1
+          segment = 0
+          shifted += 1
+        else
+          blocked = true
+        end
+      end
+
+      { row:, segment:, shifted: }
+    end
+
+    private def pitch_cursor_visual_up(steps:)
+      shifted = 0
+      row = @last_row
+      expanded_col = tab_expanded_column( @last_col, row )
+      segment = visual_segment_index( expanded_col )
+      blocked = false
+
+      while ! blocked && shifted < steps
+        if segment > 0
+          segment -= 1
+          shifted += 1
+        elsif row > 0
+          row -= 1
+          segment = num_visual_segments_for( row ) - 1
+          shifted += 1
+        else
+          blocked = true
+        end
+      end
+
+      { row:, segment:, shifted: }
     end
 
     private def pitch_down_visually(amount)

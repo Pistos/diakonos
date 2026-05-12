@@ -41,7 +41,7 @@ module Diakonos
 
       if adjust_row
         @desired_column = col
-      else
+      elsif ! soft_wrap?
         goto_col = [ @desired_column, @lines[ row ].length ].min
         if col < goto_col
           col = goto_col
@@ -49,6 +49,11 @@ module Diakonos
       end
 
       new_col = tab_expanded_column( col, row )
+
+      if adjust_row
+        @desired_visual_x = visual_x_of( new_col )
+      end
+
       view_changed = show_character( row, new_col )
       position = screen_position_of( row:, expanded_col: new_col )
       @last_screen_y = position[ :y ]
@@ -145,12 +150,12 @@ module Diakonos
 
     # Top of view
     def cursor_to_tov
-      cursor_to( row_of( 0 ), @last_col, DO_DISPLAY )
+      cursor_to( row_of_visual_y( 0 ), @last_col, DO_DISPLAY )
     end
 
     # Bottom of view
     def cursor_to_bov
-      cursor_to( row_of( 0 + $diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
+      cursor_to( row_of_visual_y( $diakonos.main_window_height - 1 ), @last_col, DO_DISPLAY )
     end
 
     # col and row are given relative to the buffer, not any window or screen.

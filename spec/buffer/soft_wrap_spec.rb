@@ -550,4 +550,213 @@ RSpec.describe 'Diakonos::Buffer soft wrap helpers' do
       end
     end
   end
+
+  describe '#cursor_visual_down' do
+    include_context "with lines set up"
+
+    before do
+      enable_soft_wrap
+      buffer.instance_variable_set(:@last_soft_wrap_state, true)
+    end
+
+    let(:lines) {
+      [
+        'a' * (wrap_width * 2 + 5),  # 3 segments
+        'short',                      # 1 segment
+        'b' * (wrap_width + 3),       # 2 segments
+      ]
+    }
+
+    context 'when on segment 0 of a multi-segment row' do
+      before do
+        buffer.cursor_to(0, 7)
+      end
+
+      it 'lands on segment 1 of the same buffer row' do
+        buffer.cursor_visual_down
+
+        expect(buffer.last_row).to eq 0
+        expect(buffer.last_col).to eq wrap_width + 7
+      end
+    end
+
+    context 'when on the last segment of a buffer row' do
+      before do
+        buffer.cursor_to(0, wrap_width * 2 + 2)
+      end
+
+      it 'advances to segment 0 of the next buffer row' do
+        buffer.cursor_visual_down
+
+        expect(buffer.last_row).to eq 1
+      end
+    end
+
+    context 'on the last visual row of the buffer' do
+      before do
+        buffer.cursor_to(2, wrap_width + 2)
+      end
+
+      it 'is a no-op and returns false' do
+        expect(buffer.cursor_visual_down).to be false
+        expect(buffer.last_row).to eq 2
+      end
+    end
+  end
+
+  describe '#cursor_visual_up' do
+    include_context "with lines set up"
+
+    before do
+      enable_soft_wrap
+      buffer.instance_variable_set(:@last_soft_wrap_state, true)
+    end
+
+    let(:lines) {
+      [
+        'a' * (wrap_width + 3),       # 2 segments
+        'short',                      # 1 segment
+        'b' * (wrap_width * 2 + 5),   # 3 segments
+      ]
+    }
+
+    context 'when on a non-zero segment' do
+      before do
+        buffer.cursor_to(2, wrap_width + 4)
+      end
+
+      it 'lands on the previous segment of the same buffer row' do
+        buffer.cursor_visual_up
+
+        expect(buffer.last_row).to eq 2
+        expect(buffer.last_col).to eq 4
+      end
+    end
+
+    context 'when on segment 0 of a row' do
+      before do
+        buffer.cursor_to(2, 3)
+      end
+
+      it 'lands on the last segment of the previous buffer row' do
+        buffer.cursor_visual_up
+
+        expect(buffer.last_row).to eq 1
+      end
+    end
+
+    context 'at the very top of the buffer' do
+      before do
+        buffer.cursor_to(0, 2)
+      end
+
+      it 'is a no-op and returns false' do
+        expect(buffer.cursor_visual_up).to be false
+        expect(buffer.last_row).to eq 0
+      end
+    end
+  end
+
+  describe '#row_of_visual_y' do
+    subject(:row_of_visual_y) {
+      buffer.row_of_visual_y(y)
+    }
+
+    include_context "with lines set up"
+
+    let(:lines) {
+      [
+        'a' * (wrap_width * 2 + 5),  # row 0: 3 segments
+        'short',                      # row 1: 1 segment
+        'c' * (wrap_width + 1),       # row 2: 2 segments
+      ]
+    }
+
+    context 'when soft wrap is off' do
+      before do
+        disable_soft_wrap
+      end
+
+      context 'on the last y' do
+        let(:y) { 2 }
+
+        it('just adds top_line') { is_expected.to eq 2 }
+      end
+    end
+
+    context 'when soft wrap is on' do
+      before do
+        enable_soft_wrap
+      end
+
+      context 'on a continuation row of row 0' do
+        let(:y) { 2 }
+
+        it { is_expected.to eq 0 }
+      end
+
+      context 'at the start of row 1' do
+        let(:y) { 3 }
+
+        it { is_expected.to eq 1 }
+      end
+
+      context 'on the second segment of row 2' do
+        let(:y) { 5 }
+
+        it { is_expected.to eq 2 }
+      end
+    end
+  end
+
+  describe '#pitch_cursor_visual' do
+    include_context "with lines set up"
+
+    before do
+      enable_soft_wrap
+      buffer.instance_variable_set(:@last_soft_wrap_state, true)
+    end
+
+    let(:lines) {
+      [
+        'a' * (wrap_width * 3 + 2),  # row 0: 4 segments
+        'b' * 5,
+        'c' * (wrap_width + 1),       # row 2: 2 segments
+      ]
+    }
+
+    context 'with a positive amount that fits' do
+      let(:num_to_move) { 3 }
+
+      before do
+        buffer.cursor_to(0, 3)
+      end
+
+      it 'reports the visual rows actually shifted' do
+        expect(buffer.pitch_cursor_visual(num_to_move)).to eq num_to_move
+      end
+    end
+
+    context 'when blocked at the bottom' do
+      before do
+        buffer.cursor_to(2, wrap_width + 1)
+      end
+
+      it 'returns 0' do
+        expect(buffer.pitch_cursor_visual(5)).to eq 0
+      end
+    end
+
+    context 'with a negative amount' do
+      let(:num_to_move) { -2 }
+
+      before do
+        buffer.cursor_to(2, 0)
+      end
+
+      it 'reports the visual rows shifted (negative)' do
+        expect(buffer.pitch_cursor_visual(num_to_move)).to eq(num_to_move)
+      end
+    end
+  end
 end
