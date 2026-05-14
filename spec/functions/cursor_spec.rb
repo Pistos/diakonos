@@ -25,8 +25,47 @@ RSpec.describe 'A Diakonos user can' do
   end
 
   it 'move the cursor to the end of a line' do
+    cursor_should_be_at 0, 0
     @d.cursor_eol
-    cursor_should_be_at 0,19
+    cursor_should_be_at 0, 19
+  end
+
+  context 'with soft wrap enabled and a long line above the cursor' do
+    let(:long_line) { 'x' * (Curses.cols + 5) }
+    let(:target_line) { 'hello' }
+
+    before do
+      @b.instance_variable_set(:@lines, [long_line, target_line])
+      @b.instance_variable_get(:@settings)['view.wrap.soft'] = true
+    end
+
+    after do
+      @b.instance_variable_get(:@settings)['view.wrap.soft'] = false
+    end
+
+    context 'when the cursor is on the line after the wrapped line' do
+      before do
+        @b.cursor_to(1, 0)
+      end
+
+      it 'move the cursor to the end of the actual current line' do
+        cursor_should_be_at 1, 0
+        @d.cursor_eol
+        cursor_should_be_at 1, target_line.length
+      end
+    end
+
+    context 'when the cursor is on a continuation visual segment of the wrapped line' do
+      before do
+        @b.cursor_to(0, Curses.cols + 2)
+      end
+
+      it 'move the cursor to the end of that same buffer line' do
+        cursor_should_be_at 0, Curses.cols + 2
+        @d.cursor_eol
+        cursor_should_be_at 0, long_line.length
+      end
+    end
   end
 
   it 'move the cursor to the beginning of a line' do

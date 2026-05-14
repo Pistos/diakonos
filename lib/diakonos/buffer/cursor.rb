@@ -124,9 +124,8 @@ module Diakonos
     end
 
     def cursor_to_eol
-      y = @win_main.cury
-      end_col = line_at( y ).length
-      last_char_col = line_at( y ).rstrip.length
+      end_col = current_line.length
+      last_char_col = current_line.rstrip.length
       case @settings[ 'eol_behaviour' ]
       when EOL_END
         col = end_col
