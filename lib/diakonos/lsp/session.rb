@@ -69,7 +69,7 @@ module Diakonos
 
       def notify_did_change(buffer:)
         uri = buffer.lsp_uri
-        if @document_versions.key?(uri)
+        if @document_versions.has_key?(uri)
           @document_versions[uri] += 1
           send_notification(
             method: 'textDocument/didChange',
@@ -88,7 +88,7 @@ module Diakonos
 
       def notify_did_close(buffer:)
         uri = buffer.lsp_uri
-        if @document_versions.key?(uri)
+        if @document_versions.has_key?(uri)
           @document_versions.delete(uri)
           send_notification(
             method: 'textDocument/didClose',

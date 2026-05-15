@@ -180,9 +180,14 @@ module Diakonos
       retval
     end
 
-    private
+    private def interaction_blink( message = nil )
+      terminate_message
+      set_iline @blink_string
+      sleep @blink_duration
+      set_iline message if message
+    end
 
-    def show_message( message, non_interaction_duration = @choice_delay )
+    private def show_message( message, non_interaction_duration = @choice_delay )
       terminate_message
 
       @message_expiry = Time.now + non_interaction_duration
@@ -199,18 +204,11 @@ module Diakonos
       end
     end
 
-    def terminate_message
+    private def terminate_message
       if @message_thread&.alive?
         @message_thread.terminate
         @message_thread = nil
       end
-    end
-
-    def interaction_blink( message = nil )
-      terminate_message
-      set_iline @blink_string
-      sleep @blink_duration
-      set_iline message if message
     end
   end
 end

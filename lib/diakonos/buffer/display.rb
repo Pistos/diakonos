@@ -138,7 +138,7 @@ module Diakonos
 
         case @selection_mode
         when :normal
-          if ( (text_mark.start_row + 1)..(text_mark.end_row - 1) ) === row
+          if ( (text_mark.start_row + 1)..(text_mark.end_row - 1) ).include?(row)
             @win_main.setpos( cury, curx )
             @win_main.addstr string
           elsif row == text_mark.start_row && row == text_mark.end_row
@@ -154,9 +154,8 @@ module Diakonos
             right = tab_expanded_column( text_mark.end_col, row ) - @left_column
             @win_main.setpos( cury, curx )
             @win_main.addstr string[ 0...right ]
-          else
-            # This row not in selection.
           end
+          # else this row not in selection
         when :block
           if (
             text_mark.start_row <= row && row <= text_mark.end_row ||

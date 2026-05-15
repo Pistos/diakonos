@@ -5,19 +5,18 @@
 # A Linux console text editor for the masses.
 #
 # Author:: Pistos
-# Copyright (c) 2004-2023 Pistos
+# Copyright (c) 2004-2026 Pistos
 #
 # This software is released under the GNU GPL licence v3.
 # See the LICENCE file included with this program, or
 # http://www.opensource.org/licenses/mit-license.php
-#
-require 'open3'
-require 'English'
-require 'set'
-require 'yaml'
+
 require 'digest/md5'
-require 'timeout'
+require 'English'
 require 'fileutils'
+require 'open3'
+require 'timeout'
+require 'yaml'
 
 require 'diakonos/core-ext/object'
 require 'diakonos/core-ext/enumerable'
@@ -104,28 +103,31 @@ require 'diakonos/vendor/fuzzy_file_finder'
 
 module Diakonos
 
-  DONT_ADJUST_ROW       = false
-  ADJUST_ROW            = true
-  PROMPT_OVERWRITE      = true
-  DONT_PROMPT_OVERWRITE = false
-  QUIET                 = true
-  NOISY                 = false
-  AFTER_CHAR            = true
-  ON_CHAR               = false
-  INCLUSIVE             = true
-  NOT_INCLUSIVE         = false
+  DONT_ADJUST_ROW = false
+  ADJUST_ROW = true
 
-  DEFAULT_TAB_SIZE = 8
+  PROMPT_OVERWRITE = true
+  DONT_PROMPT_OVERWRITE = false
+
+  QUIET = true
+  NOISY = false
+
+  AFTER_CHAR = true
+  ON_CHAR = false
+
+  INCLUSIVE = true
+  NOT_INCLUSIVE = false
 
   FORCE_REVERT = true
-  ASK_REVERT   = false
+  ASK_REVERT = false
 
   ASK_REPLACEMENT = true
-  NO_REPLACEMENT  = nil
+  NO_REPLACEMENT = nil
 
-  CASE_SENSITIVE   = true
+  CASE_SENSITIVE = true
   CASE_INSENSITIVE = false
 
+  DEFAULT_TAB_SIZE = 8
   LANG_TEXT = 'text'
 
   # @return [Array] the filename and line number parsed

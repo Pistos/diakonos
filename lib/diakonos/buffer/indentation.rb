@@ -26,11 +26,16 @@ module Diakonos
           end
         end
       else
-        whitespace_prefix = line[ /^([\s]+)/, 1 ]
+        whitespace_prefix = line[ /^(\s+)/, 1 ]
+
         if whitespace_prefix
           whitespace = whitespace_prefix.expand_tabs( @tab_size )
           level = whitespace.length / @indent_size
-          if @indent_roundup && ( whitespace.length % @indent_size > 0 )
+
+          if(
+            @indent_roundup &&
+            (whitespace.length % @indent_size > 0)
+          )
             level += 1
           end
         else
@@ -94,7 +99,7 @@ module Diakonos
       delta = 0
       line = @lines[row]
 
-      for i in 0...col
+      (0...col).each do |i|
         if line[i] == "\t"
           delta += (
             @tab_size - (

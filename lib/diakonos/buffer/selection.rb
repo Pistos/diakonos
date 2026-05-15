@@ -248,12 +248,7 @@ module Diakonos
     end
 
     def selected_string
-      lines = selected_text
-      if lines
-        lines.join( "\n" )
-      else
-        nil
-      end
+      selected_text&.join("\n")
     end
 
     def selected_lines
@@ -311,11 +306,13 @@ module Diakonos
     end
 
     # text is an array of Strings, or a String with zero or more newlines ("\n")
-    def paste( text, do_parsed_indent: false, typing: false )
-      return  if text.nil?
+    def paste( text_, do_parsed_indent: false, typing: false )
+      return  if text_.nil?
 
-      if ! text.kind_of?(Array)
-        s = text.to_s
+      if text_.is_a?(Array)
+        text = text_
+      else
+        s = text_.to_s
         if s.include?( "\n" )
           text = s.split( "\n", -1 )
         else

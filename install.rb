@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require './lib/diakonos/version.rb'
+require './lib/diakonos/version'
 require 'fileutils'
 require 'pp'
 require 'rbconfig'

@@ -80,7 +80,7 @@ module Diakonos
           @buffer_stack.any? &&
           ! @buffers.include?( buf ) ||
           buf == del_buffer
-        ) do
+        )
           buf = @buffer_stack.pop
         end
         if @buffers.include?( buf )
@@ -167,12 +167,14 @@ module Diakonos
     # @return [Buffer] the buffer of the opened file
     # @return [NilClass] nil on failure
     def open_file( filename = nil, meta = {} )
-      read_only    = !!meta[ 'read_only' ]
-      force_revert = meta[ 'revert' ] || ASK_REVERT
+      read_only = !! meta['read_only']  # rubocop:disable Style/DoubleNegation
+      force_revert = meta['revert'] || ASK_REVERT
+
       if meta[ 'cursor' ]
         last_row = meta[ 'cursor' ][ 'row' ]
         last_col = meta[ 'cursor' ][ 'col' ]
       end
+
       if meta[ 'display' ]
         top_line    = meta[ 'display' ][ 'top_line' ]
         left_column = meta[ 'display' ][ 'left_column' ]
@@ -419,8 +421,8 @@ module Diakonos
           'revert' => FORCE_REVERT,
           'cursor' => {
             'row' => buffer_current.last_row,
-            'col' => buffer_current.last_col
-          }
+            'col' => buffer_current.last_col,
+          },
         )
       end
     end
