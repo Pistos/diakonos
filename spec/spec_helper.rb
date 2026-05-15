@@ -1,5 +1,13 @@
 ENV['DIAKONOS_TESTING'] = '1'
 
+require 'simplecov'
+require 'simplecov_json_formatter'
+SimpleCov.formatters = [
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::JSONFormatter,
+]
+SimpleCov.start
+
 require 'diakonos'
 
 # TODO: Rewrite these as rspec custom expectations

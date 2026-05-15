@@ -3,6 +3,7 @@
 *.tar.gz
 .bundle
 .yardoc
+coverage
 doc
 spec/test-files/temp-file.rb
 spec/tmp
