@@ -207,7 +207,7 @@ module Diakonos
           set_iline keychain_str_for( keychain_pressed ) + "..."
         end
 
-        process_keystroke keychain_pressed
+        process_keychain_step(keychain_pressed)
       end
     end
 
@@ -470,6 +470,13 @@ module Diakonos
       set_getch_timeout
 
       char
+    end
+
+    private def process_keychain_step(keychain_pressed)
+      waiting = :waiting_for_keystroke
+      while waiting == :waiting_for_keystroke
+        waiting = process_keystroke(keychain_pressed)
+      end
     end
   end
 end
