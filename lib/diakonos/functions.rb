@@ -15,17 +15,21 @@ module Diakonos
     # Deletes characters up to, but not including, a given character.
     # Also puts the deleted text into the clipboard.
     def delete_to( char = nil )
-      if char.nil?
+      resolved_char = char
+
+      if resolved_char.nil?
         set_iline "Type character to delete to..."
-        char = @win_main.getch
+        resolved_char = blocking_getch
         set_iline
       end
-      if char
-        removed_text = buffer_current.delete_to char
+
+      if resolved_char
+        removed_text = buffer_current.delete_to resolved_char
+
         if removed_text
           @clipboard.add_clip removed_text
         else
-          set_iline "'#{char}' not found."
+          set_iline "'#{resolved_char}' not found."
         end
       end
     end
@@ -34,17 +38,21 @@ module Diakonos
     # up to (but not including) the current cursor position.
     # Also puts the deleted text into the clipboard.
     def delete_from( char = nil )
-      if char.nil?
+      resolved_char = char
+
+      if resolved_char.nil?
         set_iline "Type character to delete from..."
-        char = @win_main.getch
+        resolved_char = blocking_getch
         set_iline
       end
-      if char
-        removed_text = buffer_current.delete_from(char)
+
+      if resolved_char
+        removed_text = buffer_current.delete_from(resolved_char)
+
         if removed_text
           @clipboard.add_clip removed_text
         else
-          set_iline "'#{char}' not found."
+          set_iline "'#{resolved_char}' not found."
         end
       end
     end
@@ -54,20 +62,24 @@ module Diakonos
     # Brace characters are intelligently matched with their opposite-side
     # counterparts if the left-side brace is given (e.g. '[').
     def delete_to_and_from( inclusive = nil, char = nil )
-      if char.nil?
+      resolved_char = char
+
+      if resolved_char.nil?
         set_iline "Type character to delete to and from..."
-        char = @win_main.getch
+        resolved_char = blocking_getch
         set_iline
       end
-      if char
+
+      if resolved_char
         removed_text = buffer_current.delete_to_and_from(
-          char,
+          resolved_char,
           inclusive == :inclusive ? INCLUSIVE : NOT_INCLUSIVE
         )
+
         if removed_text
-          @clipboard.add_clip( [ removed_text ] )
+          @clipboard.add_clip([removed_text])
         else
-          set_iline "'#{char}' not found."
+          set_iline "'#{resolved_char}' not found."
         end
       end
     end

@@ -464,5 +464,12 @@ module Diakonos
       end
     end
 
+    private def blocking_getch
+      unset_getch_timeout
+      char = @win_main.getch
+      set_getch_timeout
+
+      char
+    end
   end
 end

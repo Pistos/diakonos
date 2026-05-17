@@ -1,7 +1,9 @@
 require 'curses'
 
 module Diakonos
+  BLOCKING_TIMEOUT = -1
   CONTEXT_LINE_HEIGHT = 1
+  DEFAULT_ASYNC_UPDATE_INTERVAL = 100
   DEFAULT_DOCK_HEIGHT = 10
   DO_REDRAW           = true
   DONT_REDRAW         = false
@@ -110,9 +112,7 @@ module Diakonos
         @win_context&.keypad( true )
       end
 
-      if ! @testing
-        @win_main.timeout = @settings['async_update_interval'] || 100
-      end
+      set_getch_timeout
 
       @modes[ 'edit' ].window = @win_main
       @modes[ 'input' ].window = @win_interaction
@@ -409,6 +409,13 @@ module Diakonos
 
     DOCK_SEPARATOR_CHAR = '─'
 
+    private def configured_dock_height
+      feature = @dock_feature || 'info'
+      size_name = @settings["dock.height.#{feature}"] || 'small'
+
+      @settings["dock.height.#{size_name}"] || DEFAULT_DOCK_HEIGHT
+    end
+
     private def dock_visible?
       @dock_list || (@dock_lines && ! @dock_lines.empty?)
     end
@@ -430,11 +437,8 @@ module Diakonos
       end
     end
 
-    private def configured_dock_height
-      feature = @dock_feature || 'info'
-      size_name = @settings["dock.height.#{feature}"] || 'small'
-
-      @settings["dock.height.#{size_name}"] || DEFAULT_DOCK_HEIGHT
+    private def dock_line_selected?(line_index)
+      @dock_list && line_index == @dock_list.selected_index
     end
 
     private def hide_dock
@@ -478,10 +482,6 @@ module Diakonos
       show_cursor
     end
 
-    private def dock_line_selected?(line_index)
-      @dock_list && line_index == @dock_list.selected_index
-    end
-
     private def render_dock_blank_rows(count:, start_row:)
       if count > 0
         (0...count).each do |i|
@@ -500,6 +500,18 @@ module Diakonos
         end
       else
         @win_dock.addstr(formatted_line)
+      end
+    end
+
+    private def set_getch_timeout
+      if ! @testing
+        @win_main.timeout = @settings['async_update_interval'] || DEFAULT_ASYNC_UPDATE_INTERVAL
+      end
+    end
+
+    private def unset_getch_timeout
+      if ! @testing
+        @win_main.timeout = BLOCKING_TIMEOUT
       end
     end
 
