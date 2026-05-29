@@ -48,7 +48,30 @@ module Diakonos
       @time_last_viewed = Time.now
     end
 
-    def find_opening_match(line, bos_allowed: true, match_close: true)
+    private def find_closing_match(line_segment, regexp, bos_allowed: true)
+      close_match_text = nil
+      close_index = nil
+
+      line_segment.scan(regexp) do
+        match = Regexp.last_match
+        if match.length > 1
+          index = match.begin 1
+          match_text = match[1]
+        else
+          index = match.begin 0
+          match_text = match[0]
+        end
+        if ( ! regexp.uses_bos ) || ( bos_allowed && ( index == 0 ) )
+          close_index = index
+          close_match_text = match_text
+          break
+        end
+      end
+
+      [close_index, close_match_text]
+    end
+
+    private def find_opening_match(line, bos_allowed: true, match_close: true)
       open_index = line.length
       open_token_class = nil
       open_match_text = nil
@@ -91,80 +114,7 @@ module Diakonos
       [open_index, open_token_class, open_match_text]
     end
 
-    # Prints text to the screen, truncating where necessary.
-    # Returns nil if the string is completely off-screen.
-    # write_cursor_col is buffer-relative, not screen-relative.
-    # When soft wrap is on, returns the string unchanged so curses can
-    # auto-wrap it onto subsequent visual rows.
-    def truncate_off_screen( string, write_cursor_col )
-      if soft_wrap?
-        retval = (string == "" ? nil : string)
-      else
-        retval = string
-
-        # Truncate based on left edge of display area
-        if write_cursor_col < @left_column
-          retval = retval[ (@left_column - write_cursor_col).. ]
-          write_cursor_col = @left_column
-        end
-
-        if retval && (
-          # Truncate based on right edge of display area
-          write_cursor_col + retval.length > @left_column + Curses.cols - 1
-        )
-          new_length = ( @left_column + Curses.cols - write_cursor_col )
-          if new_length <= 0
-            retval = nil
-          else
-            retval = retval[ 0...new_length ]
-          end
-        end
-
-        retval = nil  if retval == ""
-      end
-
-      retval
-    end
-
-    def paint_marks( row )
-      expanded_line = @lines[ row ].expand_tabs( @tab_size )
-      base_y = @win_main.cury
-
-      @text_marks
-      .values
-      .flatten
-      .reverse_each do |text_mark|
-        if text_mark
-          range = paint_marks__range_of_mark_in_row(
-            line_length: expanded_line.length,
-            row:,
-            text_mark:,
-          )
-
-          if range
-            @win_main.attrset text_mark.formatting
-
-            if soft_wrap?
-              paint_mark_wrapped(
-                base_y:,
-                expanded_line:,
-                from: range[ :from ],
-                to: range[ :to ],
-              )
-            else
-              paint_marks__paint(
-                base_y:,
-                expanded_line:,
-                from: range[ :from ],
-                to: range[ :to ],
-              )
-            end
-          end
-        end
-      end
-    end
-
-    def paint_column_markers
+    private def paint_column_markers
       # TODO: column markers on wrapped lines.
       return  if soft_wrap?
 
@@ -180,153 +130,6 @@ module Diakonos
           @win_main.addstr( @lines[ @top_line + row ][ column + @left_column ] || ' ' )
         end
       end
-    end
-
-    def print_string( string, formatting = ( @token_formats[ @continued_format_class ] || @default_formatting ) )
-      return  if ! @pen_down
-      return  if string.nil?
-
-      @win_main.attrset formatting
-      @win_main.addstr string
-    end
-
-    # This method assumes that the cursor has been set up already at
-    # the left-most column of the correct on-screen row.
-    # It merely unintelligently prints the characters on the current curses line,
-    # refusing to print characters of the in-buffer line which are offscreen.
-    def print_line( line )
-      i = 0
-      substr = nil
-
-      while i < line.length
-        substr = line[ i.. ]
-        if @continued_format_class
-          close_index, close_match_text = find_closing_match(
-            substr,
-            @close_token_regexps[@continued_format_class],
-            bos_allowed: i == 0
-          )
-
-          if close_match_text.nil?
-            print_string truncate_off_screen( substr, i )
-            print_padding_from( line.length )
-            i = line.length
-          else
-            end_index = close_index + close_match_text.length
-            print_string truncate_off_screen( substr[ 0...end_index ], i )
-            @continued_format_class = nil
-            i += end_index
-          end
-        else
-          first_index, first_token_class, first_word = find_opening_match(
-            substr,
-            bos_allowed: i == 0,
-            match_close: false
-          )
-
-          if @lang_stack.any?
-            prev_lang, close_token_class = @lang_stack[-1]
-            close_index, close_match_text = find_closing_match(
-              substr,
-              $diakonos.close_token_regexps[prev_lang][close_token_class],
-              bos_allowed: i == 0
-            )
-
-            if close_match_text && close_index <= first_index
-              # Print any remaining text in the embedded language
-              s = substr[0...close_index]
-              print_string( truncate_off_screen(s, i) )
-              i += s.length
-
-              @lang_stack.pop
-              set_language prev_lang
-
-              print_string(
-                truncate_off_screen(
-                  substr[
-                    close_index...(close_index + close_match_text.length)
-                  ],
-                  i
-                ),
-                @token_formats[close_token_class]
-              )
-              i += close_match_text.length
-
-              # Continue printing from here.
-              next
-            end
-          end
-
-          if first_word
-            if first_index > 0
-              # Print any preceding text in the default format
-              print_string truncate_off_screen( substr[ 0...first_index ], i )
-              i += substr[ 0...first_index ].length
-            end
-
-            print_string( truncate_off_screen( first_word, i ), @token_formats[ first_token_class ] )
-            i += first_word.length
-
-            if @close_token_regexps[first_token_class]
-              change_to = @settings["lang.#{@language}.tokens.#{first_token_class}.change_to"]
-              if change_to
-                @lang_stack.push [ @language, first_token_class ]
-                set_language change_to
-              else
-                @continued_format_class = first_token_class
-              end
-            end
-          else
-            print_string truncate_off_screen( substr, i )
-            i += substr.length
-            break
-          end
-        end
-      end
-
-      print_padding_from i
-    end
-
-    def print_padding_from( col )
-      return  if ! @pen_down
-
-      if soft_wrap?
-        # After auto-wrap, the cursor is somewhere on the last visual row of
-        # this buffer line. Pad from there to the right edge of that visual
-        # row, regardless of how many wraps happened.
-        remainder = wrap_width - @win_main.curx
-      elsif col < @left_column
-        remainder = Curses.cols
-      else
-        remainder = @left_column + Curses.cols - col
-      end
-
-      if remainder > 0
-        print_string( " " * remainder )
-      end
-    end
-
-    private def find_closing_match(line_segment, regexp, bos_allowed: true)
-      close_match_text = nil
-      close_index = nil
-
-      line_segment.scan(regexp) do
-        match = Regexp.last_match
-        if match.length > 1
-          index = match.begin 1
-          match_text = match[1]
-        else
-          index = match.begin 0
-          match_text = match[0]
-        end
-        if ( ! regexp.uses_bos ) || ( bos_allowed && ( index == 0 ) )
-          close_index = index
-          close_match_text = match_text
-          break
-        end
-      end
-
-      [close_index, close_match_text]
     end
 
     private def paint_continuation_gutter_rows(segments:, start_y:, visible_height:)
@@ -407,6 +210,44 @@ module Diakonos
             @win_main.setpos( screen_y, visual_x_of( segment_from ) )
 
             @win_main.addstr expanded_line[ segment_from...segment_to ]
+          end
+        end
+      end
+    end
+
+    private def paint_marks( row )
+      expanded_line = @lines[ row ].expand_tabs( @tab_size )
+      base_y = @win_main.cury
+
+      @text_marks
+      .values
+      .flatten
+      .reverse_each do |text_mark|
+        if text_mark
+          range = paint_marks__range_of_mark_in_row(
+            line_length: expanded_line.length,
+            row:,
+            text_mark:,
+          )
+
+          if range
+            @win_main.attrset text_mark.formatting
+
+            if soft_wrap?
+              paint_mark_wrapped(
+                base_y:,
+                expanded_line:,
+                from: range[ :from ],
+                to: range[ :to ],
+              )
+            else
+              paint_marks__paint(
+                base_y:,
+                expanded_line:,
+                from: range[ :from ],
+                to: range[ :to ],
+              )
+            end
           end
         end
       end
@@ -508,6 +349,165 @@ module Diakonos
       end
 
       y
+    end
+
+    # This method assumes that the cursor has been set up already at
+    # the left-most column of the correct on-screen row.
+    # It merely unintelligently prints the characters on the current curses line,
+    # refusing to print characters of the in-buffer line which are offscreen.
+    private def print_line( line )
+      i = 0
+      substr = nil
+
+      while i < line.length
+        substr = line[ i.. ]
+        if @continued_format_class
+          close_index, close_match_text = find_closing_match(
+            substr,
+            @close_token_regexps[@continued_format_class],
+            bos_allowed: i == 0
+          )
+
+          if close_match_text.nil?
+            print_string truncate_off_screen( substr, i )
+            print_padding_from( line.length )
+            i = line.length
+          else
+            end_index = close_index + close_match_text.length
+            print_string truncate_off_screen( substr[ 0...end_index ], i )
+            @continued_format_class = nil
+            i += end_index
+          end
+        else
+          first_index, first_token_class, first_word = find_opening_match(
+            substr,
+            bos_allowed: i == 0,
+            match_close: false
+          )
+
+          if @lang_stack.any?
+            prev_lang, close_token_class = @lang_stack[-1]
+            close_index, close_match_text = find_closing_match(
+              substr,
+              $diakonos.close_token_regexps[prev_lang][close_token_class],
+              bos_allowed: i == 0
+            )
+
+            if close_match_text && close_index <= first_index
+              # Print any remaining text in the embedded language
+              s = substr[0...close_index]
+              print_string( truncate_off_screen(s, i) )
+              i += s.length
+
+              @lang_stack.pop
+              set_language prev_lang
+
+              print_string(
+                truncate_off_screen(
+                  substr[
+                    close_index...(close_index + close_match_text.length)
+                  ],
+                  i
+                ),
+                @token_formats[close_token_class]
+              )
+              i += close_match_text.length
+
+              # Continue printing from here.
+              next
+            end
+          end
+
+          if first_word
+            if first_index > 0
+              # Print any preceding text in the default format
+              print_string truncate_off_screen( substr[ 0...first_index ], i )
+              i += substr[ 0...first_index ].length
+            end
+
+            print_string( truncate_off_screen( first_word, i ), @token_formats[ first_token_class ] )
+            i += first_word.length
+
+            if @close_token_regexps[first_token_class]
+              change_to = @settings["lang.#{@language}.tokens.#{first_token_class}.change_to"]
+              if change_to
+                @lang_stack.push [ @language, first_token_class ]
+                set_language change_to
+              else
+                @continued_format_class = first_token_class
+              end
+            end
+          else
+            print_string truncate_off_screen( substr, i )
+            i += substr.length
+            break
+          end
+        end
+      end
+
+      print_padding_from i
+    end
+
+    private def print_padding_from( col )
+      return  if ! @pen_down
+
+      if soft_wrap?
+        # After auto-wrap, the cursor is somewhere on the last visual row of
+        # this buffer line. Pad from there to the right edge of that visual
+        # row, regardless of how many wraps happened.
+        remainder = wrap_width - @win_main.curx
+      elsif col < @left_column
+        remainder = Curses.cols
+      else
+        remainder = @left_column + Curses.cols - col
+      end
+
+      if remainder > 0
+        print_string( " " * remainder )
+      end
+    end
+
+    private def print_string( string, formatting = ( @token_formats[ @continued_format_class ] || @default_formatting ) )
+      return  if ! @pen_down
+      return  if string.nil?
+
+      @win_main.attrset formatting
+      @win_main.addstr string
+    end
+
+    # Prints text to the screen, truncating where necessary.
+    # Returns nil if the string is completely off-screen.
+    # write_cursor_col is buffer-relative, not screen-relative.
+    # When soft wrap is on, returns the string unchanged so curses can
+    # auto-wrap it onto subsequent visual rows.
+    private def truncate_off_screen( string, write_cursor_col )
+      if soft_wrap?
+        retval = (string == "" ? nil : string)
+      else
+        retval = string
+
+        # Truncate based on left edge of display area
+        if write_cursor_col < @left_column
+          retval = retval[ (@left_column - write_cursor_col).. ]
+          write_cursor_col = @left_column
+        end
+
+        if retval && (
+          # Truncate based on right edge of display area
+          write_cursor_col + retval.length > @left_column + Curses.cols - 1
+        )
+          new_length = ( @left_column + Curses.cols - write_cursor_col )
+          if new_length <= 0
+            retval = nil
+          else
+            retval = retval[ 0...new_length ]
+          end
+        end
+
+        retval = nil  if retval == ""
+      end
+
+      retval
     end
 
   end
