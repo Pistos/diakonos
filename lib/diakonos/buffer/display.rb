@@ -5,6 +5,49 @@ module Diakonos
 
     attr_reader :top_line, :left_column
 
+    def display
+      after_soft_wrap_toggled
+
+      @pen_down = false
+
+      # Ensure highlight cache is valid up to @top_line - 1
+      if @top_line > 0
+        if @highlight_cache_valid_to < @top_line - 1
+          rebuild_start = @highlight_cache_valid_to + 1
+          restore_highlight_state(
+            @highlight_cache_valid_to >= 0 ? @highlight_cache[@highlight_cache_valid_to] : nil
+          )
+          (rebuild_start..(@top_line - 1)).each do |i|
+            print_line @lines[i].expand_tabs( @tab_size )
+            @highlight_cache[i] = snapshot_highlight_state
+          end
+          @highlight_cache_valid_to = @top_line - 1
+        end
+
+        restore_highlight_state @highlight_cache[@top_line - 1]
+      else
+        restore_highlight_state nil
+      end
+
+      @pen_down = true
+
+      visible_height = $diakonos.main_window_height
+      y = paint_visible_buffer_rows(visible_height:)
+      paint_empty_rows_below(start_y: y, visible_height:)
+
+      paint_column_markers
+
+      @win_line_numbers&.refresh
+      @win_main.setpos( @last_screen_y, @last_screen_x )
+      @win_main.refresh
+
+      if @language != @original_language
+        set_language( @original_language )
+      end
+
+      @time_last_viewed = Time.now
+    end
+
     def find_opening_match(line, bos_allowed: true, match_close: true)
       open_index = line.length
       open_token_class = nil
@@ -48,29 +91,6 @@ module Diakonos
       [open_index, open_token_class, open_match_text]
     end
 
-    private def find_closing_match(line_segment, regexp, bos_allowed: true)
-      close_match_text = nil
-      close_index = nil
-
-      line_segment.scan(regexp) do
-        match = Regexp.last_match
-        if match.length > 1
-          index = match.begin 1
-          match_text = match[1]
-        else
-          index = match.begin 0
-          match_text = match[0]
-        end
-        if ( ! regexp.uses_bos ) || ( bos_allowed && ( index == 0 ) )
-          close_index = index
-          close_match_text = match_text
-          break
-        end
-      end
-
-      [close_index, close_match_text]
-    end
-
     # Prints text to the screen, truncating where necessary.
     # Returns nil if the string is completely off-screen.
     # write_cursor_col is buffer-relative, not screen-relative.
@@ -106,62 +126,39 @@ module Diakonos
       retval
     end
 
-    # Worker function for painting only part of a row.
-    def paint_single_row_mark( row, text_mark, string, curx, cury )
-      expanded_col = tab_expanded_column( text_mark.start_col, row )
-      if expanded_col < @left_column + Curses.cols
-        left = [ expanded_col - @left_column, 0 ].max
-        right = tab_expanded_column( text_mark.end_col, row ) - @left_column
-        if left < right
-          @win_main.setpos( cury, curx + left )
-          @win_main.addstr string[ left...right ]
-        end
-      end
-    end
-
     def paint_marks( row )
-      string = @lines[ row ][ @left_column...@left_column + Curses.cols ]
-      return  if string.nil? || string == ""
+      expanded_line = @lines[ row ].expand_tabs( @tab_size )
+      base_y = @win_main.cury
 
-      # TODO: Selection painting on wrapped lines is not yet wrap-aware.
-      # Short-circuit so the cursor positioning math doesn't go off-screen.
-      return  if soft_wrap? && num_visual_segments_for( row ) > 1
-
-      string = string.expand_tabs( @tab_size )
-      cury = @win_main.cury
-      curx = @win_main.curx
-
-      @text_marks.values.flatten.reverse_each do |text_mark|
-        next  if text_mark.nil?
-
-        @win_main.attrset text_mark.formatting
-
-        case @selection_mode
-        when :normal
-          if ( (text_mark.start_row + 1)..(text_mark.end_row - 1) ).include?(row)
-            @win_main.setpos( cury, curx )
-            @win_main.addstr string
-          elsif row == text_mark.start_row && row == text_mark.end_row
-            paint_single_row_mark( row, text_mark, string, curx, cury )
-          elsif row == text_mark.start_row
-            expanded_col = tab_expanded_column( text_mark.start_col, row )
-            if expanded_col < @left_column + Curses.cols
-              left = [ expanded_col - @left_column, 0 ].max
-              @win_main.setpos( cury, curx + left )
-              @win_main.addstr string[ left.. ]
-            end
-          elsif row == text_mark.end_row
-            right = tab_expanded_column( text_mark.end_col, row ) - @left_column
-            @win_main.setpos( cury, curx )
-            @win_main.addstr string[ 0...right ]
-          end
-          # else this row not in selection
-        when :block
-          if (
-            text_mark.start_row <= row && row <= text_mark.end_row ||
-            text_mark.end_row <= row && row <= text_mark.start_row
+      @text_marks
+      .values
+      .flatten
+      .reverse_each do |text_mark|
+        if text_mark
+          range = paint_marks__range_of_mark_in_row(
+            line_length: expanded_line.length,
+            row:,
+            text_mark:,
           )
-            paint_single_row_mark( row, text_mark, string, curx, cury )
+
+          if range
+            @win_main.attrset text_mark.formatting
+
+            if soft_wrap?
+              paint_mark_wrapped(
+                base_y:,
+                expanded_line:,
+                from: range[ :from ],
+                to: range[ :to ],
+              )
+            else
+              paint_marks__paint(
+                base_y:,
+                expanded_line:,
+                from: range[ :from ],
+                to: range[ :to ],
+              )
+            end
           end
         end
       end
@@ -290,45 +287,46 @@ module Diakonos
       print_padding_from i
     end
 
-    # Draws each on-screen buffer row, advancing visual y by
-    # num_visual_segments_for(row) so wrapped lines occupy multiple rows.
-    # Returns the visual y just past the last drawn row.
-    private def paint_visible_buffer_rows(visible_height:)
-      y = 0
-      buffer_row_offset = 0
+    def print_padding_from( col )
+      return  if ! @pen_down
 
-      while(
-        y < visible_height &&
-        (@top_line + buffer_row_offset) < @lines.length
-      )
-        line_index = @top_line + buffer_row_offset
-        segments = num_visual_segments_for( line_index )
-
-        if @win_line_numbers
-          paint_line_number_gutter(
-            buffer_row: line_index,
-            segments:,
-            visible_height:,
-            y:,
-          )
-        end
-
-        @win_main.setpos( y, 0 )
-        print_line @lines[ line_index ].expand_tabs( @tab_size )
-
-        @highlight_cache[ line_index ] = snapshot_highlight_state
-        if line_index > @highlight_cache_valid_to
-          @highlight_cache_valid_to = line_index
-        end
-
-        @win_main.setpos( y, 0 )
-        paint_marks line_index
-
-        y += segments
-        buffer_row_offset += 1
+      if soft_wrap?
+        # After auto-wrap, the cursor is somewhere on the last visual row of
+        # this buffer line. Pad from there to the right edge of that visual
+        # row, regardless of how many wraps happened.
+        remainder = wrap_width - @win_main.curx
+      elsif col < @left_column
+        remainder = Curses.cols
+      else
+        remainder = @left_column + Curses.cols - col
       end
 
-      y
+      if remainder > 0
+        print_string( " " * remainder )
+      end
+    end
+
+    private def find_closing_match(line_segment, regexp, bos_allowed: true)
+      close_match_text = nil
+      close_index = nil
+
+      line_segment.scan(regexp) do
+        match = Regexp.last_match
+        if match.length > 1
+          index = match.begin 1
+          match_text = match[1]
+        else
+          index = match.begin 0
+          match_text = match[0]
+        end
+        if ( ! regexp.uses_bos ) || ( bos_allowed && ( index == 0 ) )
+          close_index = index
+          close_match_text = match_text
+          break
+        end
+      end
+
+      [close_index, close_match_text]
     end
 
     private def paint_continuation_gutter_rows(segments:, start_y:, visible_height:)
@@ -392,66 +390,124 @@ module Diakonos
       )
     end
 
-    def print_padding_from( col )
-      return  if ! @pen_down
+    # Paint a mark's range across the visual segments of a soft-wrapped row.
+    # The row's first visual segment is at +base_y+; later segments follow on
+    # subsequent screen rows.
+    private def paint_mark_wrapped(base_y:, expanded_line:, from:, to:)
+      if from < to
+        first_segment = visual_segment_index( from )
+        last_segment = visual_segment_index( to - 1 )
 
-      if soft_wrap?
-        # After auto-wrap, the cursor is somewhere on the last visual row of
-        # this buffer line. Pad from there to the right edge of that visual
-        # row, regardless of how many wraps happened.
-        remainder = wrap_width - @win_main.curx
-      elsif col < @left_column
-        remainder = Curses.cols
-      else
-        remainder = @left_column + Curses.cols - col
-      end
+        (first_segment..last_segment).each do |segment|
+          segment_from = [ from, segment * wrap_width ].max
+          segment_to = [ to, (segment + 1) * wrap_width ].min
+          screen_y = base_y + segment
 
-      if remainder > 0
-        print_string( " " * remainder )
+          if segment_from < segment_to && screen_y < $diakonos.main_window_height
+            @win_main.setpos( screen_y, visual_x_of( segment_from ) )
+
+            @win_main.addstr expanded_line[ segment_from...segment_to ]
+          end
+        end
       end
     end
 
-    def display
-      after_soft_wrap_toggled
+    # Paint a single buffer row's portion of a mark when soft wrap is off:
+    # one screen row at +base_y+, clipped to the horizontally-scrolled view.
+    private def paint_marks__paint(base_y:, expanded_line:, from:, to:)
+      visible_from = [ from, @left_column ].max
+      visible_to = [ to, @left_column + Curses.cols ].min
 
-      @pen_down = false
+      if visible_from < visible_to
+        @win_main.setpos( base_y, visible_from - @left_column )
 
-      # Ensure highlight cache is valid up to @top_line - 1
-      if @top_line > 0
-        if @highlight_cache_valid_to < @top_line - 1
-          rebuild_start = @highlight_cache_valid_to + 1
-          restore_highlight_state(
-            @highlight_cache_valid_to >= 0 ? @highlight_cache[@highlight_cache_valid_to] : nil
+        @win_main.addstr expanded_line[ visible_from...visible_to ]
+      end
+    end
+
+    # The highlighted range, in expanded-column space, that +text_mark+
+    # contributes to buffer +row+. Returns nil when +row+ falls outside the
+    # mark. +line_length+ is the expanded length of the row's text.
+    private def paint_marks__range_of_mark_in_row(line_length:, row:, text_mark:)
+      range = nil
+
+      case @selection_mode
+      when :normal
+        if text_mark.start_row < row && row < text_mark.end_row
+          range = {
+            from: 0,
+            to: line_length,
+          }
+        elsif row == text_mark.start_row && row == text_mark.end_row
+          range = {
+            from: tab_expanded_column( text_mark.start_col, row ),
+            to: tab_expanded_column( text_mark.end_col, row ),
+          }
+        elsif row == text_mark.start_row
+          range = {
+            from: tab_expanded_column( text_mark.start_col, row ),
+            to: line_length,
+          }
+        elsif row == text_mark.end_row
+          range = {
+            from: 0,
+            to: tab_expanded_column( text_mark.end_col, row ),
+          }
+        end
+      when :block
+        if(
+          text_mark.start_row <= row && row <= text_mark.end_row ||
+          text_mark.end_row <= row && row <= text_mark.start_row
+        )
+          range = {
+            from: tab_expanded_column( text_mark.start_col, row ),
+            to: tab_expanded_column( text_mark.end_col, row ),
+          }
+        end
+      end
+
+      range
+    end
+
+    # Draws each on-screen buffer row, advancing visual y by
+    # num_visual_segments_for(row) so wrapped lines occupy multiple rows.
+    # Returns the visual y just past the last drawn row.
+    private def paint_visible_buffer_rows(visible_height:)
+      y = 0
+      buffer_row_offset = 0
+
+      while(
+        y < visible_height &&
+        (@top_line + buffer_row_offset) < @lines.length
+      )
+        line_index = @top_line + buffer_row_offset
+        segments = num_visual_segments_for( line_index )
+
+        if @win_line_numbers
+          paint_line_number_gutter(
+            buffer_row: line_index,
+            segments:,
+            visible_height:,
+            y:,
           )
-          (rebuild_start..(@top_line - 1)).each do |i|
-            print_line @lines[i].expand_tabs( @tab_size )
-            @highlight_cache[i] = snapshot_highlight_state
-          end
-          @highlight_cache_valid_to = @top_line - 1
         end
 
-        restore_highlight_state @highlight_cache[@top_line - 1]
-      else
-        restore_highlight_state nil
+        @win_main.setpos( y, 0 )
+        print_line @lines[ line_index ].expand_tabs( @tab_size )
+
+        @highlight_cache[ line_index ] = snapshot_highlight_state
+        if line_index > @highlight_cache_valid_to
+          @highlight_cache_valid_to = line_index
+        end
+
+        @win_main.setpos( y, 0 )
+        paint_marks line_index
+
+        y += segments
+        buffer_row_offset += 1
       end
 
-      @pen_down = true
-
-      visible_height = $diakonos.main_window_height
-      y = paint_visible_buffer_rows(visible_height:)
-      paint_empty_rows_below(start_y: y, visible_height:)
-
-      paint_column_markers
-
-      @win_line_numbers&.refresh
-      @win_main.setpos( @last_screen_y, @last_screen_x )
-      @win_main.refresh
-
-      if @language != @original_language
-        set_language( @original_language )
-      end
-
-      @time_last_viewed = Time.now
+      y
     end
 
   end
