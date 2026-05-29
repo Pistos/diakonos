@@ -10,21 +10,25 @@ module Diakonos
 
       @pen_down = false
 
-      # Ensure highlight cache is valid up to @top_line - 1
+      # Ensure highlight cache is valid up to @top_line - 1, but never past the
+      # last line: @top_line can briefly outrun the buffer (e.g. lines deleted
+      # after scrolling down, before the view is re-clamped).
       if @top_line > 0
-        if @highlight_cache_valid_to < @top_line - 1
+        rebuild_end = [ @top_line - 1, @lines.length - 1 ].min
+
+        if @highlight_cache_valid_to < rebuild_end
           rebuild_start = @highlight_cache_valid_to + 1
           restore_highlight_state(
             @highlight_cache_valid_to >= 0 ? @highlight_cache[@highlight_cache_valid_to] : nil
           )
-          (rebuild_start..(@top_line - 1)).each do |i|
+          (rebuild_start..rebuild_end).each do |i|
             print_line @lines[i].expand_tabs( @tab_size )
             @highlight_cache[i] = snapshot_highlight_state
           end
-          @highlight_cache_valid_to = @top_line - 1
+          @highlight_cache_valid_to = rebuild_end
         end
 
-        restore_highlight_state @highlight_cache[@top_line - 1]
+        restore_highlight_state @highlight_cache[rebuild_end]
       else
         restore_highlight_state nil
       end
