@@ -26,6 +26,21 @@ RSpec.describe 'A Diakonos user can' do
     cursor_should_be_at 0,2
   end
 
+  context 'when a search result is selected' do
+    before do
+      @d.find 'inspect'
+    end
+
+    it 'backspace deletes the selected text' do
+      selection_should_be 12, 6, 12, 13
+      expect(@b.to_a[ 12 ]).to eq '  def inspection'
+
+      @d.backspace
+
+      expect(@b.to_a[ 12 ]).to eq '  def ion'
+    end
+  end
+
   it 'insert a newline character' do
     5.times do @d.cursor_right end
     @d.carriage_return

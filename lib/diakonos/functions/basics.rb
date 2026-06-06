@@ -5,7 +5,7 @@ module Diakonos
     #
     # @see Diakonos::Buffer#delete
     def backspace
-      if ( buffer_current.changing_selection || cursor_left( Buffer::STILL_TYPING ) )
+      if ( buffer_current.selecting? || cursor_left( Buffer::STILL_TYPING ) )
         delete
       end
     end

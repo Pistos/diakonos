@@ -8,6 +8,7 @@ Diakonos Changelog
 - Fix cursor repositioning after strip_trailing_whitespace_on_save
 - Fix loading of default config in non-UTF-8 locales
 - Added soft wrapping
+- Fix backspace after search hit
 
 0.10.0
 
