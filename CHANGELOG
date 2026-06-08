@@ -9,6 +9,7 @@ Diakonos Changelog
 - Fix loading of default config in non-UTF-8 locales
 - Added soft wrapping
 - Fix backspace after search hit
+- Expand syntax check to other languages
 
 0.10.0
 

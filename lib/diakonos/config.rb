@@ -346,7 +346,7 @@ module Diakonos
             'diff_command', 'session.default_session',
             'clipboard.external'
           @settings[ command ] = arg
-        when /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format',
+        when /^lang\..+?\.check_syntax$/, /^lang\..+?\.comment_(?:close_)?string$/, 'view.line_numbers.number_format',
             "status.filler", "status.left", "status.right",
             "status.modified_str", "status.unnamed_str", "status.selecting_str",
             "status.read_only_str", 'interaction.blink_string'

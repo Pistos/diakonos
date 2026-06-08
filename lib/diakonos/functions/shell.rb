@@ -3,6 +3,20 @@ require 'English'
 module Diakonos
   module Functions
 
+    # Run the configured syntax check for the current buffer's language.
+    # Uses the command in lang.<language>.check_syntax; supports $f and other
+    # shell variable substitutions via #sub_shell_variables.
+    def check_syntax
+      language = buffer_current.language
+      command = @settings["lang.#{language}.check_syntax"]
+
+      if command
+        shell command
+      else
+        set_iline "No syntax check command configured for: #{language}"
+      end
+    end
+
     # Change the current working directory (CWD) of the Diakonos process.
     # @param [String] dir  The directory to change to
     def chdir( dir = nil )

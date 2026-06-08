@@ -198,6 +198,12 @@ RSpec.describe 'Diakonos::Diakonos#parse_configuration_file' do
       end
     end
 
+    context 'check_syntax command' do
+      it 'stores the check_syntax command with quotes stripped' do
+        expect(d.settings['lang.ruby.check_syntax']).to eq 'ruby -c $f'
+      end
+    end
+
     context 'comment string' do
       it 'stores the comment string with quotes stripped' do
         expect(d.settings['lang.ruby.comment_string']).to eq '#'
